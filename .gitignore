@@ -6,13 +6,8 @@
 
 # Raw and probe data: large, licensed by their sources, re-downloadable. Never committed.
 # Anchored to the repo root so the `src/spatialscout/data/` package stays tracked.
+# Also holds local investigation state (data/investigations/).
 /data/
-
-# Investigation runs (audit logs, packages) written by a local server
-/var/
-
-# Git worktrees created by agent sessions
-/.claude/worktrees/
 
 # Tooling and build output
 .playwright-mcp/
