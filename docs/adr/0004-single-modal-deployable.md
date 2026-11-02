@@ -1,0 +1,3 @@
+# One deployable on Modal; precomputed artifacts in the repo, raw data never
+
+A single FastAPI app runs on Modal and also serves the built web app, so there is one public URL, one set of secrets and no cross-origin setup. Heavy analysis (all 22 sections, every condition) runs offline or as a Modal batch job, and only small derived artifacts are committed: pseudobulk tables, findings, region crops and structure masks, with the GEO citation. Raw GEO downloads stay out of version control and are re-downloaded by script. Modal web requests are capped at 150 seconds, so the live golden path must finish well inside that, and long work streams progress over server-sent events.

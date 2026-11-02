@@ -1,0 +1,3 @@
+# Structure masks: SAM 3.1 box prompts on an RNA-derived image
+
+The dataset has no images, so SpatialScout renders a gene-agnostic image of each section from nucleus positions and sizes and asks SAM 3.1 to delineate glomeruli. In the spike, concept prompts ("glomerulus") and Spark 1.3 box proposals both found nothing on that image, while box prompts seeded from NPHS1 (podocyte) molecule clusters produced masks that concentrate glomerular-tuft genes the seeding never saw (PECAM1 ×10.5, PDGFRB ×18.4) and exclude tubule genes. We use the box-prompt path and validate masks with PECAM1/PDGFRB consistency, never with NPHS1, which seeded them. We do not fine-tune SAM: no SAM 3.1 training recipe exists and the open weights need manual approval.
