@@ -5,8 +5,11 @@ import json
 import zipfile
 
 import pytest
+from fastapi.testclient import TestClient
 
-from .conftest import RECORDED_QUESTION
+from spatialscout.api import create_app
+
+from .conftest import RECORDED_QUESTION, make_settings
 
 
 def start(client, question=RECORDED_QUESTION):
@@ -181,3 +184,28 @@ def test_the_package_is_not_served_before_it_is_ready(client):
 
     assert client.get(f"/api/investigations/{investigation_id}/package").status_code == 409
     assert client.get("/api/investigations/inv-000000000000").status_code == 404
+
+
+def test_an_investigation_awaiting_approval_survives_a_server_restart(tmp_path):
+    with TestClient(create_app(make_settings(tmp_path))) as before_restart:
+        investigation_id = start(before_restart)["investigation_id"]
+
+    with TestClient(create_app(make_settings(tmp_path))) as after_restart:
+        approve(after_restart, investigation_id)
+        events = read_events(after_restart, investigation_id)
+
+    assert [event["type"] for event in events] == FULL_SEQUENCE
+
+
+def test_an_investigation_left_running_by_a_crashed_server_reports_the_interruption(tmp_path):
+    with TestClient(create_app(make_settings(tmp_path))) as before_crash:
+        investigation_id = start(before_crash)["investigation_id"]
+    state_file = tmp_path / "investigations" / investigation_id / "state.json"
+    state = json.loads(state_file.read_text())
+    state_file.write_text(json.dumps({**state, "status": "running"}))  # as a crash mid-run leaves it
+
+    with TestClient(create_app(make_settings(tmp_path))) as after_restart:
+        events = read_events(after_restart, investigation_id)
+        status = after_restart.get(f"/api/investigations/{investigation_id}").json()["status"]
+
+    assert (events[-1]["type"], events[-1]["code"], status) == ("error", "interrupted", "failed")

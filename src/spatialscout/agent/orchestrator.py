@@ -86,9 +86,16 @@ class Orchestrator:
         return investigation
 
     def get(self, investigation_id: str) -> Investigation:
-        """An investigation by id, from memory or, after a restart, from its directory."""
+        """An investigation by id, from memory or, after a restart, from its directory.
+
+        One loaded from disk while planning or running lost its task when the server stopped, so it is failed
+        as interrupted rather than left for clients to wait on. One awaiting approval can still be approved.
+        """
         if investigation_id not in self._investigations:
-            self._investigations[investigation_id] = Investigation.load(self._root, investigation_id, self._clock)
+            investigation = Investigation.load(self._root, investigation_id, self._clock)
+            self._investigations[investigation_id] = investigation
+            if investigation.state.status in (InvestigationStatus.PLANNING, InvestigationStatus.RUNNING):
+                self._fail(investigation, "interrupted", "The server stopped before this investigation finished; ask again.")
         return self._investigations[investigation_id]
 
     def approve(self, investigation_id: str) -> Investigation:

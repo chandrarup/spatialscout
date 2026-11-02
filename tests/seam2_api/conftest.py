@@ -28,13 +28,16 @@ def no_network(monkeypatch):
     monkeypatch.setattr(socket.socket, "connect_ex", refuse)
 
 
-@pytest.fixture
-def client(tmp_path):
-    settings = Settings(
+def make_settings(tmp_path):
+    return Settings(
         fixtures_dir=REPO / "fixtures",
         recordings_dir=REPO / "fixtures" / "recordings",
         investigations_dir=tmp_path / "investigations",
         web_dist=None,
     )
-    with TestClient(create_app(settings)) as test_client:
+
+
+@pytest.fixture
+def client(tmp_path):
+    with TestClient(create_app(make_settings(tmp_path))) as test_client:
         yield test_client
