@@ -5,7 +5,14 @@
 *.env.txt
 
 # Raw and probe data: large, licensed by their sources, re-downloadable. Never committed.
-data/
+# Anchored to the repo root so the `src/spatialscout/data/` package stays tracked.
+/data/
+
+# Investigation runs (audit logs, packages) written by a local server
+/var/
+
+# Git worktrees created by agent sessions
+/.claude/worktrees/
 
 # Tooling and build output
 .playwright-mcp/
