@@ -251,7 +251,7 @@ Compute the four primary assignment conditions per molecule: default, nucleus-on
   - The neighbour-proximity share is correct on a hand-built layout.
   - Evidence-region ranking follows the stated rule.
 - [ ] The marker pairs come from the frozen artifact. The artifact's source and checksum are recorded in every audit result.
-- [ ] Audit labels follow the spec's frozen rules. No label is asserted in advance, including for the hero population and UMOD in B cells.
+- [ ] Audit labels follow the spec's frozen rules, with eligible sections drawn from all 22 sections and listed in each result. No label is asserted in advance, including for the hero population and UMOD in B cells.
 - [ ] The label-sensitivity check reports the hero measure under both label rules, with cell counts.
 - [ ] Fly to evidence works with rank stepping, and no audit number appears without its retention and expectation.
 - [ ] Each audit result renders a composite figure.
