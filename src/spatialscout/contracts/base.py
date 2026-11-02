@@ -35,6 +35,11 @@ def new_id(prefix: str) -> str:
     return f"{prefix}-{secrets.token_hex(6)}"
 
 
+def checksum(model: BaseModel) -> str:
+    """sha256 of a model's canonical JSON: the artifact checksum used in cache keys and the plan hash."""
+    return sha256_hex(canonical_json(model.model_dump(mode="json")))
+
+
 def content_id(prefix: str, payload: Any) -> str:
     """A content-addressed id: the same payload always gets the same id, so artifacts are immutable."""
     return f"{prefix}-{sha256_hex(canonical_json(payload))[:16]}"

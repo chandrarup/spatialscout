@@ -1,0 +1,159 @@
+{
+ "schema_version": "1.0",
+ "info": {
+  "recording_id": "syn01-podocyte-lrp2",
+  "recorded_at": "2026-11-02T19:35:26Z",
+  "origin": "hand_authored",
+  "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
+  "note": "Hand-authored model responses for the walking skeleton (ticket 01); no model was called."
+ },
+ "calls": [
+  {
+   "purpose": "plan",
+   "cache_key": "fbbf3aac71c9b3d7d81d9aa58839f842732c8c2e2efa525661bb3268f3e3f44c",
+   "request": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You are SpatialScout's planner. Propose the smallest plan that answers the researcher's question, using only tools in the registry and only analyses the capability report marks as supported. Give each step the tool's arguments and a one-sentence rationale. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"capability_report\":{\"checks\":[{\"capability\":\"coordinate_inspection\",\"reason\":\"Molecule and cell positions are given in micrometres.\",\"status\":\"supported\"},{\"capability\":\"assignment_audit\",\"reason\":\"Molecules carry cell_id and overlaps_nucleus, so default and nucleus-only conditions can be compared.\",\"status\":\"supported\"},{\"capability\":\"structure_outlines\",\"reason\":\"One glomerulus outline is drawn by construction (not by SAM 3.1).\",\"status\":\"supported\"},{\"capability\":\"disease_contrast\",\"reason\":\"One synthetic section with no disease or control group, so no finding can be estimated.\",\"status\":\"unavailable\"},{\"capability\":\"cell_boundaries\",\"reason\":\"No cell or nucleus boundaries; the viewer draws nuclei as circles from nucleus area, an approximation.\",\"status\":\"unavailable\"}],\"dataset_id\":\"synthetic\",\"schema_version\":\"1.0\"},\"question\":\"Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene; gene sets and pairs arrive with ticket 05.\",\"items\":{\"type\":\"string\"},\"maxItems\":1,\"minItems\":1,\"title\":\"Genes\",\"type\":\"array\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"genes\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one gene's presence in one cell population across assignment conditions, per section: molecules kept, retention against the default condition, share of cells expressing, and nuclear-overlap share.\",\"name\":\"audit_population\",\"version\":\"1\"}]}"
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "ConditionName": {
+       "description": "An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).",
+       "enum": [
+        "default",
+        "nucleus_only",
+        "distance_cap_1um",
+        "distance_cap_2um",
+        "structure_constrained"
+       ],
+       "title": "ConditionName",
+       "type": "string"
+      },
+      "Contrast": {
+       "additionalProperties": false,
+       "description": "One disease group compared with the control group, for example DKD vs Control.",
+       "properties": {
+        "disease": {
+         "title": "Disease",
+         "type": "string"
+        },
+        "control": {
+         "title": "Control",
+         "type": "string"
+        }
+       },
+       "required": [
+        "disease",
+        "control"
+       ],
+       "title": "Contrast",
+       "type": "object"
+      },
+      "ProposedStep": {
+       "additionalProperties": false,
+       "properties": {
+        "tool": {
+         "title": "Tool",
+         "type": "string"
+        },
+        "arguments": {
+         "additionalProperties": true,
+         "title": "Arguments",
+         "type": "object"
+        },
+        "rationale": {
+         "title": "Rationale",
+         "type": "string"
+        }
+       },
+       "required": [
+        "tool",
+        "arguments",
+        "rationale"
+       ],
+       "title": "ProposedStep",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The planner model's structured output, before it is checked against the tool registry.",
+     "properties": {
+      "summary": {
+       "title": "Summary",
+       "type": "string"
+      },
+      "contrast": {
+       "anyOf": [
+        {
+         "$ref": "#/$defs/Contrast"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "cell_types": {
+       "items": {
+        "type": "string"
+       },
+       "title": "Cell Types",
+       "type": "array"
+      },
+      "conditions": {
+       "items": {
+        "$ref": "#/$defs/ConditionName"
+       },
+       "title": "Conditions",
+       "type": "array"
+      },
+      "steps": {
+       "items": {
+        "$ref": "#/$defs/ProposedStep"
+       },
+       "title": "Steps",
+       "type": "array"
+      }
+     },
+     "required": [
+      "summary",
+      "contrast",
+      "cell_types",
+      "conditions",
+      "steps"
+     ],
+     "title": "PlanProposal",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low"
+   },
+   "inputs": [
+    {
+     "name": "capability_report",
+     "version": "1.0",
+     "sha256": "a89b70528d649f6d90aae42d12bfca4df5f95623c3f7e26e5364d33828944e48"
+    },
+    {
+     "name": "tool:audit_population",
+     "version": "1",
+     "sha256": "30b385bf1692be59b965ede3aea74a1c419b4ba4a7052b50a5d80f17dcd06825"
+    }
+   ],
+   "response": {
+    "content": "{\"summary\":\"Audit LRP2 in cells labelled Podocyte in synthetic section SYN-01 under the default and nucleus-only conditions.\",\"contrast\":null,\"cell_types\":[\"Podocyte\"],\"conditions\":[\"default\",\"nucleus_only\"],\"steps\":[{\"tool\":\"audit_population\",\"arguments\":{\"section_ids\":[\"SYN-01\"],\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"conditions\":[\"default\",\"nucleus_only\"]},\"rationale\":\"The capability report supports an assignment audit, and nucleus-only is the stricter condition the question names.\"}]}",
+    "finish_reason": "stop",
+    "usage": null
+   },
+   "latency_ms": null
+  }
+ ]
+}

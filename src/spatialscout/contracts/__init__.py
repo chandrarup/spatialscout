@@ -12,6 +12,7 @@ from .base import (
     FindingKind,
     RunMode,
     canonical_json,
+    checksum,
     content_id,
     new_id,
     sha256_hex,
@@ -74,7 +75,7 @@ from .model_call import (
     TokenUsage,
 )
 from .package import PackageInfo, PackageManifest
-from .plan import Budget, Plan, PlanProposal, PlanStep, ProposedStep
+from .plan import Budget, Plan, PlanProposal, PlanStep, ProposedStep, ToolSpec
 from .region import StructureMask
 from .review import CheckResult, ReviewDecision, VerificationResult
 

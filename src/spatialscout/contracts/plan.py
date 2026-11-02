@@ -3,7 +3,18 @@
 from datetime import datetime
 from typing import Any, Literal
 
+from pydantic import Field
+
 from .base import SCHEMA_VERSION, ConditionName, Contract, Contrast
+
+
+class ToolSpec(Contract):
+    """A tool as the planner sees it in the registry."""
+
+    name: str
+    version: str
+    description: str
+    arguments_schema: dict[str, Any]
 
 
 class ProposedStep(Contract):
@@ -49,5 +60,5 @@ class Plan(Contract):
     budget: Budget
     proposed_by: str
     status: Literal["proposed", "approved", "rejected"] = "proposed"
-    approved_at: datetime | None = None
-    plan_hash: str | None = None
+    approved_at_utc: datetime | None = None
+    plan_hash: str | None = Field(default=None, description="sha256 of the proposed plan's canonical JSON, set at approval.")
