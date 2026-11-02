@@ -1,0 +1,29 @@
+[project]
+name = "spatialscout"
+version = "0.1.0"
+description = "Checks which kidney spatial-transcriptomics findings survive changes to how RNA molecules are assigned to cells."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.9",
+    "numpy>=2.0",
+    "pandas>=2.2",
+]
+
+[project.scripts]
+spatialscout = "spatialscout.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+]
+
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
