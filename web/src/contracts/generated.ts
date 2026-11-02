@@ -161,6 +161,10 @@ export interface AuditResult {
   genes: [string] | [string, string];
   measure: "share_expressing" | "gene_set_share_expressing" | "co_expression_score";
   sections: AuditSectionValues[];
+  /**
+   * Sections with at least 20 cells of the population and 10 of the result's molecules in them under the default condition; pooled values and the label use only these.
+   */
+  eligible_section_ids: string[];
   exploratory_sections: AuditSectionValues[];
   evidence_regions: EvidenceRegion[];
   ranking_rule: string | null;

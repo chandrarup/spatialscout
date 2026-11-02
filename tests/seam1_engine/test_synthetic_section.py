@@ -77,7 +77,9 @@ def test_auditing_podocyte_lrp2_finds_all_four_molecules_outside_the_nucleus(pod
     assert nucleus_only.cells_with_retained_molecule == 0
 
 
-def test_three_podocytes_fail_the_population_gate_so_the_result_is_insufficient_evidence(podocyte_lrp2):
+def test_the_one_synthetic_section_is_not_eligible_so_the_result_is_insufficient_evidence(podocyte_lrp2):
+    # 3 podocytes and 4 LRP2 molecules: short of the 20 cells and 10 molecules a section needs to be eligible.
+    assert podocyte_lrp2.eligible_section_ids == []
     assert podocyte_lrp2.label == EvidenceStatus.INSUFFICIENT_EVIDENCE
     assert podocyte_lrp2.population.label_rule_id == "synthetic-by-construction"
 

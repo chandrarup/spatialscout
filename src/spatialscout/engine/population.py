@@ -22,7 +22,12 @@ from ..contracts import (
 from ..data import SectionTables
 from .conditions import inclusion_mask
 
+# Frozen gates for audit results (spec "Gate precedence"): a section is eligible when it has at least 20 cells
+# of the population and at least 10 of the result's molecules in them under the default condition, and an
+# audit result needs at least 3 eligible sections.
 POPULATION_GATE_MIN_CELLS = 20
+MOLECULE_GATE_MIN_MOLECULES = 10
+MIN_ELIGIBLE_SECTIONS = 3
 
 _NOT_COMPUTED_YET = {
     "expectation_cell_matched": "the random-thinning control is not computed yet (ticket 05)",
@@ -47,7 +52,8 @@ def audit_population(
         raise ValueError("an audit result covers sections of one dataset under one label rule")
     gene = genes[0]
     values = [_section_values(section, cell_type, gene, conditions) for section in sections]
-    label, reason = _label(values, cell_type)
+    eligible = [v.section_id for v in values if _eligible(v)]
+    label, reason = _label(eligible, len(values), cell_type, gene)
     result = AuditResult(
         finding_id="pending",
         dataset_id=sections[0].dataset_id,
@@ -55,6 +61,7 @@ def audit_population(
         genes=[gene],
         measure="share_expressing",
         sections=values,
+        eligible_section_ids=eligible,
         label=label,
         label_reason=reason,
     )
@@ -102,11 +109,16 @@ def _condition_value(
     )
 
 
-def _label(values: list[AuditSectionValues], cell_type: str) -> tuple[EvidenceStatus, str]:
-    small = [v for v in values if v.cells_labelled < POPULATION_GATE_MIN_CELLS]
-    if small:
-        counts = ", ".join(f"{v.cells_labelled} in {v.section_id}" for v in small)
+def _eligible(values: AuditSectionValues) -> bool:
+    default = next(v for v in values.conditions if v.condition == ConditionName.DEFAULT)
+    return values.cells_labelled >= POPULATION_GATE_MIN_CELLS and default.molecules >= MOLECULE_GATE_MIN_MOLECULES
+
+
+def _label(eligible: list[str], n_sections: int, cell_type: str, gene: str) -> tuple[EvidenceStatus, str]:
+    if len(eligible) < MIN_ELIGIBLE_SECTIONS:
         return EvidenceStatus.INSUFFICIENT_EVIDENCE, (
-            f"Population gate: cells labelled {cell_type}: {counts}; every section needs at least {POPULATION_GATE_MIN_CELLS}."
+            f"{len(eligible)} of {n_sections} sections are eligible; an audit result needs at least {MIN_ELIGIBLE_SECTIONS}. "
+            f"A section is eligible with at least {POPULATION_GATE_MIN_CELLS} cells labelled {cell_type} and at least "
+            f"{MOLECULE_GATE_MIN_MOLECULES} {gene} molecules in them under the default condition."
         )
     return EvidenceStatus.INSUFFICIENT_EVIDENCE, "Audit labels need the random-thinning expectations, which ticket 05 adds."

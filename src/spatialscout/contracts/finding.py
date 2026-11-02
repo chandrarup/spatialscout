@@ -83,6 +83,10 @@ class AuditResult(Contract):
     genes: list[str] = Field(min_length=1, max_length=2, description="One gene, or a gene pair for co-expression.")
     measure: Literal["share_expressing", "gene_set_share_expressing", "co_expression_score"]
     sections: list[AuditSectionValues]
+    eligible_section_ids: list[str] = Field(
+        description="Sections with at least 20 cells of the population and 10 of the result's molecules in them under "
+        "the default condition; pooled values and the label use only these."
+    )
     exploratory_sections: list[AuditSectionValues] = Field(default_factory=list)
     evidence_regions: list[EvidenceRegion] = Field(default_factory=list)
     ranking_rule: str | None = None

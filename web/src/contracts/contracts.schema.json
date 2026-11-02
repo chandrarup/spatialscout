@@ -310,6 +310,13 @@
           },
           "type": "array"
         },
+        "eligible_section_ids": {
+          "description": "Sections with at least 20 cells of the population and 10 of the result's molecules in them under the default condition; pooled values and the label use only these.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "exploratory_sections": {
           "items": {
             "$ref": "#/definitions/AuditSectionValues"
@@ -355,6 +362,7 @@
         "genes",
         "measure",
         "sections",
+        "eligible_section_ids",
         "exploratory_sections",
         "evidence_regions",
         "ranking_rule",

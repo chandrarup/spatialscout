@@ -2,7 +2,7 @@
 
 import pytest
 
-from spatialscout.contracts import ConditionName
+from spatialscout.contracts import ConditionName, EvidenceStatus
 from spatialscout.data import make_section
 from spatialscout.engine import audit_population, audit_section
 
@@ -105,3 +105,30 @@ def test_a_population_cell_without_molecules_stays_in_the_share_expressing_denom
     # c1 has LRP2 only outside its nucleus; c4 has no molecules but is still a podocyte.
     assert by_condition[DEFAULT].observed_value == 0.5
     assert by_condition[NUCLEUS_ONLY].observed_value == 0.0
+
+
+def podocyte_section(section_id: str, podocytes: int, lrp2_molecules: int):
+    """`podocytes` cells labelled Podocyte; the first carries `lrp2_molecules` LRP2 molecules over its nucleus."""
+    return make_section(
+        section_id=section_id,
+        dataset_id="hand-built",
+        label_rule_id="hand-built",
+        cells=[cell(f"{section_id}-c{i}", "Podocyte") for i in range(podocytes)],
+        molecules=[molecule(f"{section_id}-m{i}", "LRP2", f"{section_id}-c0", overlaps_nucleus=True) for i in range(lrp2_molecules)],
+    )
+
+
+def test_a_section_is_eligible_with_20_cells_and_10_molecules_and_not_with_one_fewer_of_either():
+    sections = [podocyte_section("S1", 20, 10), podocyte_section("S2", 19, 10), podocyte_section("S3", 20, 9)]
+
+    result = audit_population(sections, cell_type="Podocyte", genes=["LRP2"], conditions=[DEFAULT, NUCLEUS_ONLY])
+
+    assert result.eligible_section_ids == ["S1"]
+
+
+def test_fewer_than_three_eligible_sections_give_insufficient_evidence():
+    sections = [podocyte_section("S1", 20, 10), podocyte_section("S2", 25, 12), podocyte_section("S3", 5, 0)]
+
+    result = audit_population(sections, cell_type="Podocyte", genes=["LRP2"], conditions=[DEFAULT, NUCLEUS_ONLY])
+
+    assert (result.eligible_section_ids, result.label) == (["S1", "S2"], EvidenceStatus.INSUFFICIENT_EVIDENCE)

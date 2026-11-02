@@ -66,7 +66,11 @@ def make_section(
 
 
 def _typed_table(rows: pd.DataFrame | Iterable[Mapping[str, Any]], columns: dict[str, str], name: str) -> pd.DataFrame:
-    frame = rows.copy() if isinstance(rows, pd.DataFrame) else pd.DataFrame.from_records(list(rows), columns=None)
+    if isinstance(rows, pd.DataFrame):
+        frame = rows.copy()
+    else:
+        records = list(rows)
+        frame = pd.DataFrame.from_records(records) if records else pd.DataFrame(columns=list(columns))
     missing = [c for c in columns if c not in frame.columns]
     if missing:
         raise ValueError(f"{name} table is missing columns: {', '.join(missing)}")
