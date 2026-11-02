@@ -27,3 +27,6 @@ build/
 
 # Spike outputs (regenerable)
 spikes/out/
+
+# Agent worktrees live inside the repo folder; never commit them
+.claude/worktrees/

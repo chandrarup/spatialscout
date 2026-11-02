@@ -1,6 +1,6 @@
 # Assignment conditions come from molecule flags, not re-segmentation
 
-GSE286184 deposits molecules with `cell_id`, `overlaps_nucleus` and `nucleus_distance`, but no cell or nucleus boundaries and no images. So SpatialScout compares assignment conditions derived from those flags (default, nucleus-only, distance caps, and a structure-constrained condition from structure masks) instead of re-segmenting with Proseg, Cellpose-SAM or cellAdmix, all of which need inputs or runtimes we do not have. Every condition is a subset of the default molecules, so pseudobulk counts stay integers and PyDESeq2 remains valid. Cell type labels are assigned once from default counts and frozen, so a changed effect is attributable to assignment rather than relabelling.
+GSE286184 deposits molecules with `cell_id`, `overlaps_nucleus` and `nucleus_distance`, but no cell or nucleus boundaries and no images. So SpatialScout compares assignment conditions derived from those flags (default, nucleus-only, distance caps, and a structure-constrained condition from structure masks) instead of re-segmenting with Proseg, Cellpose-SAM or cellAdmix, all of which need inputs or runtimes we do not have. Every condition is a subset of the default molecules, so pseudobulk counts stay integers; that satisfies a count model's input format, not its independence assumptions (see ADR-0007). Cell type labels are assigned once from default counts and frozen, so a changed effect is attributable to assignment rather than relabelling.
 
 ## Considered options
 
