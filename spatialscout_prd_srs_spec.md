@@ -1,3 +1,5 @@
+> **Superseded for execution (Nov 2 2026).** Build from `docs/spec/spec.md` and `docs/spec/tickets-draft.md`. This PRD scripts results before analysis (for example "34.2% → 3.8%" and "≥30% artifacts"), which ADR-0001 forbids; keep it only for the original demo choreography and partner ideas.
+
 # SpatialScout: Product Requirements Document (PRD), Software Requirements Specification (SRS) & Multi-Agent Parallel Build Spec
 
 **Target Event:** [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) ($1,000,000 Prize Pool)  

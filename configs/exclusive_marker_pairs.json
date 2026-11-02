@@ -1,0 +1,2631 @@
+{
+ "schema_version": "1.0",
+ "artifact": "exclusive_marker_pairs",
+ "frozen_on": "2026-11-02",
+ "source": {
+  "dataset": "GSE271188",
+  "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE271188",
+  "donors": {
+   "GSM8371526": {
+    "section_name": "kidney_snRNA_14",
+    "diagnosis": "Control",
+    "nuclei": 10000,
+    "sha256": {
+     "features": "fca929f70cee91b6abfbfa3691f31bd129eee0a6745559157987f7535e80b307",
+     "matrix": "5b555465e84b968ac73e0e69c0cfc5c063147dd87a99483d3c9b9d399e3dd5ac"
+    }
+   },
+   "GSM8371535": {
+    "section_name": "kidney_snRNA_23",
+    "diagnosis": "Control",
+    "nuclei": 14460,
+    "sha256": {
+     "features": "ed2344204a7fc80e48c31235086336696147bff4aaa0a3186d7e9c3c51c36078",
+     "matrix": "e32897cf5095f2ee25633e54c03d0e2e629644d4ea81f78466e5e4758716a6d7"
+    }
+   }
+  }
+ },
+ "rule": {
+  "max_codetection_rate": 0.01,
+  "min_nuclei_detecting_either": 300,
+  "applies_to": "every donor",
+  "definition": "rate = nuclei detecting both / nuclei detecting either (count > 0)"
+ },
+ "compartment_of": {
+  "NPHS1": "Podocyte",
+  "ALDH1A2": "PEC",
+  "LRP2": "PT",
+  "CUBN": "PT",
+  "UMOD": "TAL",
+  "SLC12A3": "DCT",
+  "AQP2": "PC",
+  "SLC4A1": "IC",
+  "PECAM1": "Endothelial",
+  "PDGFRB": "Mesangial/Pericyte",
+  "COL1A1": "Fibroblast",
+  "CD3D": "T cell",
+  "CD8A": "T cell",
+  "MS4A1": "B cell",
+  "CD68": "Myeloid",
+  "ITGAX": "Myeloid"
+ },
+ "pairs": [
+  {
+   "genes": [
+    "ALDH1A2",
+    "CD3D"
+   ],
+   "compartments": [
+    "PEC",
+    "T cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 3,
+     "either": 1589,
+     "rate": 0.00189
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 3776,
+     "rate": 0.00026
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "CD68"
+   ],
+   "compartments": [
+    "PEC",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 16,
+     "either": 1619,
+     "rate": 0.00988
+    },
+    "GSM8371535": {
+     "both": 6,
+     "either": 3787,
+     "rate": 0.00158
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "CD8A"
+   ],
+   "compartments": [
+    "PEC",
+    "T cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 3,
+     "either": 1591,
+     "rate": 0.00189
+    },
+    "GSM8371535": {
+     "both": 18,
+     "either": 3803,
+     "rate": 0.00473
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "ITGAX"
+   ],
+   "compartments": [
+    "PEC",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 12,
+     "either": 1603,
+     "rate": 0.00749
+    },
+    "GSM8371535": {
+     "both": 21,
+     "either": 3833,
+     "rate": 0.00548
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "MS4A1"
+   ],
+   "compartments": [
+    "PEC",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 4,
+     "either": 1591,
+     "rate": 0.00251
+    },
+    "GSM8371535": {
+     "both": 4,
+     "either": 3773,
+     "rate": 0.00106
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "CD3D"
+   ],
+   "compartments": [
+    "PC",
+    "T cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 3,
+     "either": 2485,
+     "rate": 0.00121
+    },
+    "GSM8371535": {
+     "both": 7,
+     "either": 5930,
+     "rate": 0.00118
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "CD68"
+   ],
+   "compartments": [
+    "PC",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 25,
+     "either": 2506,
+     "rate": 0.00998
+    },
+    "GSM8371535": {
+     "both": 15,
+     "either": 5938,
+     "rate": 0.00253
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "CD8A"
+   ],
+   "compartments": [
+    "PC",
+    "T cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 5,
+     "either": 2485,
+     "rate": 0.00201
+    },
+    "GSM8371535": {
+     "both": 29,
+     "either": 5952,
+     "rate": 0.00487
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "ITGAX"
+   ],
+   "compartments": [
+    "PC",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 12,
+     "either": 2499,
+     "rate": 0.0048
+    },
+    "GSM8371535": {
+     "both": 36,
+     "either": 5978,
+     "rate": 0.00602
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "MS4A1"
+   ],
+   "compartments": [
+    "PC",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 6,
+     "either": 2485,
+     "rate": 0.00241
+    },
+    "GSM8371535": {
+     "both": 6,
+     "either": 5931,
+     "rate": 0.00101
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "CUBN"
+   ],
+   "compartments": [
+    "T cell",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 11,
+     "either": 8516,
+     "rate": 0.00129
+    },
+    "GSM8371535": {
+     "both": 3,
+     "either": 3007,
+     "rate": 0.001
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "LRP2"
+   ],
+   "compartments": [
+    "T cell",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 8,
+     "either": 6888,
+     "rate": 0.00116
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 2164,
+     "rate": 0.00046
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "NPHS1"
+   ],
+   "compartments": [
+    "T cell",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 305,
+     "rate": 0.00328
+    },
+    "GSM8371535": {
+     "both": 4,
+     "either": 2441,
+     "rate": 0.00164
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "PECAM1"
+   ],
+   "compartments": [
+    "T cell",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 430,
+     "rate": 0.00233
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 1476,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "T cell",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 7,
+     "either": 7294,
+     "rate": 0.00096
+    },
+    "GSM8371535": {
+     "both": 7,
+     "either": 6480,
+     "rate": 0.00108
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "T cell",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 774,
+     "rate": 0.00129
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 600,
+     "rate": 0.00167
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "UMOD"
+   ],
+   "compartments": [
+    "T cell",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 10,
+     "either": 8391,
+     "rate": 0.00119
+    },
+    "GSM8371535": {
+     "both": 11,
+     "either": 10037,
+     "rate": 0.0011
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "CUBN"
+   ],
+   "compartments": [
+    "Myeloid",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 49,
+     "either": 8521,
+     "rate": 0.00575
+    },
+    "GSM8371535": {
+     "both": 4,
+     "either": 3022,
+     "rate": 0.00132
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "LRP2"
+   ],
+   "compartments": [
+    "Myeloid",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 48,
+     "either": 6891,
+     "rate": 0.00697
+    },
+    "GSM8371535": {
+     "both": 7,
+     "either": 2174,
+     "rate": 0.00322
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "Myeloid",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 44,
+     "either": 7300,
+     "rate": 0.00603
+    },
+    "GSM8371535": {
+     "both": 15,
+     "either": 6488,
+     "rate": 0.00231
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "UMOD"
+   ],
+   "compartments": [
+    "Myeloid",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 49,
+     "either": 8395,
+     "rate": 0.00584
+    },
+    "GSM8371535": {
+     "both": 27,
+     "either": 10037,
+     "rate": 0.00269
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "CUBN"
+   ],
+   "compartments": [
+    "T cell",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 11,
+     "either": 8518,
+     "rate": 0.00129
+    },
+    "GSM8371535": {
+     "both": 14,
+     "either": 3040,
+     "rate": 0.00461
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "LRP2"
+   ],
+   "compartments": [
+    "T cell",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 10,
+     "either": 6888,
+     "rate": 0.00145
+    },
+    "GSM8371535": {
+     "both": 10,
+     "either": 2199,
+     "rate": 0.00455
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "NPHS1"
+   ],
+   "compartments": [
+    "T cell",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 307,
+     "rate": 0.00326
+    },
+    "GSM8371535": {
+     "both": 12,
+     "either": 2477,
+     "rate": 0.00484
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "PECAM1"
+   ],
+   "compartments": [
+    "T cell",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 431,
+     "rate": 0.00464
+    },
+    "GSM8371535": {
+     "both": 6,
+     "either": 1514,
+     "rate": 0.00396
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "T cell",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 10,
+     "either": 7293,
+     "rate": 0.00137
+    },
+    "GSM8371535": {
+     "both": 34,
+     "either": 6497,
+     "rate": 0.00523
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "T cell",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 775,
+     "rate": 0.00258
+    },
+    "GSM8371535": {
+     "both": 3,
+     "either": 642,
+     "rate": 0.00467
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "UMOD"
+   ],
+   "compartments": [
+    "T cell",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 13,
+     "either": 8390,
+     "rate": 0.00155
+    },
+    "GSM8371535": {
+     "both": 47,
+     "either": 10045,
+     "rate": 0.00468
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "ITGAX"
+   ],
+   "compartments": [
+    "PT",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 32,
+     "either": 8518,
+     "rate": 0.00376
+    },
+    "GSM8371535": {
+     "both": 20,
+     "either": 3067,
+     "rate": 0.00652
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "MS4A1"
+   ],
+   "compartments": [
+    "PT",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 15,
+     "either": 8515,
+     "rate": 0.00176
+    },
+    "GSM8371535": {
+     "both": 5,
+     "either": 3005,
+     "rate": 0.00166
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "LRP2"
+   ],
+   "compartments": [
+    "Myeloid",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 28,
+     "either": 6891,
+     "rate": 0.00406
+    },
+    "GSM8371535": {
+     "both": 15,
+     "either": 2227,
+     "rate": 0.00674
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "NPHS1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 328,
+     "rate": 0.00305
+    },
+    "GSM8371535": {
+     "both": 17,
+     "either": 2505,
+     "rate": 0.00679
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "Myeloid",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 26,
+     "either": 7298,
+     "rate": 0.00356
+    },
+    "GSM8371535": {
+     "both": 41,
+     "either": 6523,
+     "rate": 0.00629
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "UMOD"
+   ],
+   "compartments": [
+    "Myeloid",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 32,
+     "either": 8392,
+     "rate": 0.00381
+    },
+    "GSM8371535": {
+     "both": 68,
+     "either": 10057,
+     "rate": 0.00676
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "MS4A1"
+   ],
+   "compartments": [
+    "PT",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 10,
+     "either": 6889,
+     "rate": 0.00145
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 2164,
+     "rate": 0.00046
+    }
+   }
+  },
+  {
+   "genes": [
+    "MS4A1",
+    "NPHS1"
+   ],
+   "compartments": [
+    "B cell",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 309,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 4,
+     "either": 2441,
+     "rate": 0.00164
+    }
+   }
+  },
+  {
+   "genes": [
+    "MS4A1",
+    "PECAM1"
+   ],
+   "compartments": [
+    "B cell",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 432,
+     "rate": 0.00463
+    },
+    "GSM8371535": {
+     "both": 2,
+     "either": 1474,
+     "rate": 0.00136
+    }
+   }
+  },
+  {
+   "genes": [
+    "MS4A1",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "B cell",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 11,
+     "either": 7293,
+     "rate": 0.00151
+    },
+    "GSM8371535": {
+     "both": 10,
+     "either": 6477,
+     "rate": 0.00154
+    }
+   }
+  },
+  {
+   "genes": [
+    "MS4A1",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "B cell",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 777,
+     "rate": 0.00129
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 600,
+     "rate": 0.00167
+    }
+   }
+  },
+  {
+   "genes": [
+    "MS4A1",
+    "UMOD"
+   ],
+   "compartments": [
+    "B cell",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 14,
+     "either": 8390,
+     "rate": 0.00167
+    },
+    "GSM8371535": {
+     "both": 12,
+     "either": 10036,
+     "rate": 0.0012
+    }
+   }
+  }
+ ],
+ "rejected": [
+  {
+   "genes": [
+    "ALDH1A2",
+    "AQP2"
+   ],
+   "compartments": [
+    "PEC",
+    "PC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 445,
+     "either": 3611,
+     "rate": 0.12323
+    },
+    "GSM8371535": {
+     "both": 1528,
+     "either": 8154,
+     "rate": 0.18739
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "COL1A1"
+   ],
+   "compartments": [
+    "PEC",
+    "Fibroblast"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 13,
+     "either": 1624,
+     "rate": 0.008
+    },
+    "GSM8371535": {
+     "both": 173,
+     "either": 4173,
+     "rate": 0.04146
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "CUBN"
+   ],
+   "compartments": [
+    "PEC",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1347,
+     "either": 8748,
+     "rate": 0.15398
+    },
+    "GSM8371535": {
+     "both": 835,
+     "either": 5920,
+     "rate": 0.14105
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "LRP2"
+   ],
+   "compartments": [
+    "PEC",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1100,
+     "either": 7364,
+     "rate": 0.14938
+    },
+    "GSM8371535": {
+     "both": 706,
+     "either": 5204,
+     "rate": 0.13566
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "NPHS1"
+   ],
+   "compartments": [
+    "PEC",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 89,
+     "either": 1785,
+     "rate": 0.04986
+    },
+    "GSM8371535": {
+     "both": 647,
+     "either": 5543,
+     "rate": 0.11672
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "PEC",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 31,
+     "either": 1637,
+     "rate": 0.01894
+    },
+    "GSM8371535": {
+     "both": 257,
+     "either": 4324,
+     "rate": 0.05944
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "PECAM1"
+   ],
+   "compartments": [
+    "PEC",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 89,
+     "either": 1910,
+     "rate": 0.0466
+    },
+    "GSM8371535": {
+     "both": 298,
+     "either": 4923,
+     "rate": 0.06053
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "PEC",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1174,
+     "either": 7695,
+     "rate": 0.15257
+    },
+    "GSM8371535": {
+     "both": 1803,
+     "either": 8429,
+     "rate": 0.2139
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "PEC",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 158,
+     "either": 2185,
+     "rate": 0.07231
+    },
+    "GSM8371535": {
+     "both": 156,
+     "either": 4190,
+     "rate": 0.03723
+    }
+   }
+  },
+  {
+   "genes": [
+    "ALDH1A2",
+    "UMOD"
+   ],
+   "compartments": [
+    "PEC",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1377,
+     "either": 8592,
+     "rate": 0.16027
+    },
+    "GSM8371535": {
+     "both": 2860,
+     "either": 10933,
+     "rate": 0.26159
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "COL1A1"
+   ],
+   "compartments": [
+    "PC",
+    "Fibroblast"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 24,
+     "either": 2509,
+     "rate": 0.00957
+    },
+    "GSM8371535": {
+     "both": 352,
+     "either": 6154,
+     "rate": 0.0572
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "CUBN"
+   ],
+   "compartments": [
+    "PC",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2106,
+     "either": 8885,
+     "rate": 0.23703
+    },
+    "GSM8371535": {
+     "both": 1244,
+     "either": 7671,
+     "rate": 0.16217
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "LRP2"
+   ],
+   "compartments": [
+    "PC",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1696,
+     "either": 7664,
+     "rate": 0.22129
+    },
+    "GSM8371535": {
+     "both": 880,
+     "either": 7190,
+     "rate": 0.12239
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "NPHS1"
+   ],
+   "compartments": [
+    "PC",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 92,
+     "either": 2678,
+     "rate": 0.03435
+    },
+    "GSM8371535": {
+     "both": 1008,
+     "either": 7342,
+     "rate": 0.13729
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "PC",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 29,
+     "either": 2535,
+     "rate": 0.01144
+    },
+    "GSM8371535": {
+     "both": 326,
+     "either": 6415,
+     "rate": 0.05082
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "PECAM1"
+   ],
+   "compartments": [
+    "PC",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 148,
+     "either": 2747,
+     "rate": 0.05388
+    },
+    "GSM8371535": {
+     "both": 531,
+     "either": 6850,
+     "rate": 0.07752
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "PC",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1837,
+     "either": 7928,
+     "rate": 0.23171
+    },
+    "GSM8371535": {
+     "both": 2689,
+     "either": 9703,
+     "rate": 0.27713
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "PC",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 278,
+     "either": 2961,
+     "rate": 0.09389
+    },
+    "GSM8371535": {
+     "both": 263,
+     "either": 6243,
+     "rate": 0.04213
+    }
+   }
+  },
+  {
+   "genes": [
+    "AQP2",
+    "UMOD"
+   ],
+   "compartments": [
+    "PC",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2109,
+     "either": 8756,
+     "rate": 0.24086
+    },
+    "GSM8371535": {
+     "both": 4111,
+     "either": 11842,
+     "rate": 0.34715
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "CD68"
+   ],
+   "compartments": [
+    "T cell",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 67,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 48,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "COL1A1"
+   ],
+   "compartments": [
+    "T cell",
+    "Fibroblast"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 69,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 2,
+     "either": 599,
+     "rate": 0.00334
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "ITGAX"
+   ],
+   "compartments": [
+    "T cell",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 46,
+     "rate": 0.02174
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 109,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "MS4A1"
+   ],
+   "compartments": [
+    "T cell",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 27,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 32,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD3D",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "T cell",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 100,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 4,
+     "either": 832,
+     "rate": 0.00481
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "CD8A"
+   ],
+   "compartments": [
+    "Myeloid",
+    "T cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 69,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 92,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "COL1A1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Fibroblast"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 110,
+     "rate": 0.01818
+    },
+    "GSM8371535": {
+     "both": 3,
+     "either": 614,
+     "rate": 0.00489
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "MS4A1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 70,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 48,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "NPHS1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 6,
+     "either": 343,
+     "rate": 0.01749
+    },
+    "GSM8371535": {
+     "both": 5,
+     "either": 2456,
+     "rate": 0.00204
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 141,
+     "rate": 0.01418
+    },
+    "GSM8371535": {
+     "both": 3,
+     "either": 849,
+     "rate": 0.00353
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "PECAM1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 10,
+     "either": 464,
+     "rate": 0.02155
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 1491,
+     "rate": 0.00067
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD68",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 13,
+     "either": 805,
+     "rate": 0.01615
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 617,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "COL1A1"
+   ],
+   "compartments": [
+    "T cell",
+    "Fibroblast"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 71,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 6,
+     "either": 639,
+     "rate": 0.00939
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "ITGAX"
+   ],
+   "compartments": [
+    "T cell",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 49,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 153,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "MS4A1"
+   ],
+   "compartments": [
+    "T cell",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 29,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 76,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "CD8A",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "T cell",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 102,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 4,
+     "either": 876,
+     "rate": 0.00457
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "CUBN"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 45,
+     "either": 8527,
+     "rate": 0.00528
+    },
+    "GSM8371535": {
+     "both": 130,
+     "either": 3449,
+     "rate": 0.03769
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "ITGAX"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "Myeloid"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 1,
+     "either": 91,
+     "rate": 0.01099
+    },
+    "GSM8371535": {
+     "both": 5,
+     "either": 673,
+     "rate": 0.00743
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "LRP2"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "PT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 34,
+     "either": 6907,
+     "rate": 0.00492
+    },
+    "GSM8371535": {
+     "both": 95,
+     "either": 2639,
+     "rate": 0.036
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "MS4A1"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 72,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 0,
+     "either": 601,
+     "rate": 0.0
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "NPHS1"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 349,
+     "rate": 0.00573
+    },
+    "GSM8371535": {
+     "both": 97,
+     "either": 2917,
+     "rate": 0.03325
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 2,
+     "either": 143,
+     "rate": 0.01399
+    },
+    "GSM8371535": {
+     "both": 63,
+     "either": 1342,
+     "rate": 0.04694
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "PECAM1"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 8,
+     "either": 468,
+     "rate": 0.01709
+    },
+    "GSM8371535": {
+     "both": 43,
+     "either": 2002,
+     "rate": 0.02148
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 45,
+     "either": 7301,
+     "rate": 0.00616
+    },
+    "GSM8371535": {
+     "both": 266,
+     "either": 6790,
+     "rate": 0.03918
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 9,
+     "either": 811,
+     "rate": 0.0111
+    },
+    "GSM8371535": {
+     "both": 20,
+     "either": 1150,
+     "rate": 0.01739
+    }
+   }
+  },
+  {
+   "genes": [
+    "COL1A1",
+    "UMOD"
+   ],
+   "compartments": [
+    "Fibroblast",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 52,
+     "either": 8394,
+     "rate": 0.00619
+    },
+    "GSM8371535": {
+     "both": 395,
+     "either": 10222,
+     "rate": 0.03864
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "NPHS1"
+   ],
+   "compartments": [
+    "PT",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 252,
+     "either": 8557,
+     "rate": 0.02945
+    },
+    "GSM8371535": {
+     "both": 598,
+     "either": 4825,
+     "rate": 0.12394
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "PT",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 74,
+     "either": 8529,
+     "rate": 0.00868
+    },
+    "GSM8371535": {
+     "both": 216,
+     "either": 3598,
+     "rate": 0.06003
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "PECAM1"
+   ],
+   "compartments": [
+    "PT",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 361,
+     "either": 8573,
+     "rate": 0.04211
+    },
+    "GSM8371535": {
+     "both": 320,
+     "either": 4134,
+     "rate": 0.07741
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "PT",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 6246,
+     "either": 9558,
+     "rate": 0.65348
+    },
+    "GSM8371535": {
+     "both": 1407,
+     "either": 8058,
+     "rate": 0.17461
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "PT",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 658,
+     "either": 8620,
+     "rate": 0.07633
+    },
+    "GSM8371535": {
+     "both": 128,
+     "either": 3451,
+     "rate": 0.03709
+    }
+   }
+  },
+  {
+   "genes": [
+    "CUBN",
+    "UMOD"
+   ],
+   "compartments": [
+    "PT",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 7162,
+     "either": 9742,
+     "rate": 0.73517
+    },
+    "GSM8371535": {
+     "both": 2087,
+     "either": 10939,
+     "rate": 0.19079
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "MS4A1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "B cell"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 50,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 108,
+     "rate": 0.00926
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 123,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 3,
+     "either": 910,
+     "rate": 0.0033
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "PECAM1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 5,
+     "either": 449,
+     "rate": 0.01114
+    },
+    "GSM8371535": {
+     "both": 10,
+     "either": 1543,
+     "rate": 0.00648
+    }
+   }
+  },
+  {
+   "genes": [
+    "ITGAX",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "Myeloid",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 9,
+     "either": 789,
+     "rate": 0.01141
+    },
+    "GSM8371535": {
+     "both": 3,
+     "either": 675,
+     "rate": 0.00444
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "NPHS1"
+   ],
+   "compartments": [
+    "PT",
+    "Podocyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 225,
+     "either": 6953,
+     "rate": 0.03236
+    },
+    "GSM8371535": {
+     "both": 421,
+     "either": 4157,
+     "rate": 0.10127
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "PT",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 63,
+     "either": 6909,
+     "rate": 0.00912
+    },
+    "GSM8371535": {
+     "both": 133,
+     "either": 2836,
+     "rate": 0.0469
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "PECAM1"
+   ],
+   "compartments": [
+    "PT",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 298,
+     "either": 7005,
+     "rate": 0.04254
+    },
+    "GSM8371535": {
+     "both": 191,
+     "either": 3418,
+     "rate": 0.05588
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "PT",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 5055,
+     "either": 9118,
+     "rate": 0.5544
+    },
+    "GSM8371535": {
+     "both": 954,
+     "either": 7666,
+     "rate": 0.12445
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "PT",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 548,
+     "either": 7099,
+     "rate": 0.07719
+    },
+    "GSM8371535": {
+     "both": 96,
+     "either": 2638,
+     "rate": 0.03639
+    }
+   }
+  },
+  {
+   "genes": [
+    "LRP2",
+    "UMOD"
+   ],
+   "compartments": [
+    "PT",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 5787,
+     "either": 9486,
+     "rate": 0.61006
+    },
+    "GSM8371535": {
+     "both": 1445,
+     "either": 10736,
+     "rate": 0.13459
+    }
+   }
+  },
+  {
+   "genes": [
+    "MS4A1",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "B cell",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 0,
+     "either": 103,
+     "rate": 0.0
+    },
+    "GSM8371535": {
+     "both": 1,
+     "either": 835,
+     "rate": 0.0012
+    }
+   }
+  },
+  {
+   "genes": [
+    "NPHS1",
+    "PDGFRB"
+   ],
+   "compartments": [
+    "Podocyte",
+    "Mesangial/Pericyte"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 14,
+     "either": 368,
+     "rate": 0.03804
+    },
+    "GSM8371535": {
+     "both": 347,
+     "either": 2902,
+     "rate": 0.11957
+    }
+   }
+  },
+  {
+   "genes": [
+    "NPHS1",
+    "PECAM1"
+   ],
+   "compartments": [
+    "Podocyte",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 14,
+     "either": 699,
+     "rate": 0.02003
+    },
+    "GSM8371535": {
+     "both": 221,
+     "either": 3668,
+     "rate": 0.06025
+    }
+   }
+  },
+  {
+   "genes": [
+    "NPHS1",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "Podocyte",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 217,
+     "either": 7366,
+     "rate": 0.02946
+    },
+    "GSM8371535": {
+     "both": 1093,
+     "either": 7807,
+     "rate": 0.14
+    }
+   }
+  },
+  {
+   "genes": [
+    "NPHS1",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "Podocyte",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 36,
+     "either": 1021,
+     "rate": 0.03526
+    },
+    "GSM8371535": {
+     "both": 111,
+     "either": 2903,
+     "rate": 0.03824
+    }
+   }
+  },
+  {
+   "genes": [
+    "NPHS1",
+    "UMOD"
+   ],
+   "compartments": [
+    "Podocyte",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 244,
+     "either": 8439,
+     "rate": 0.02891
+    },
+    "GSM8371535": {
+     "both": 1662,
+     "either": 10799,
+     "rate": 0.1539
+    }
+   }
+  },
+  {
+   "genes": [
+    "PDGFRB",
+    "PECAM1"
+   ],
+   "compartments": [
+    "Mesangial/Pericyte",
+    "Endothelial"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 14,
+     "either": 493,
+     "rate": 0.0284
+    },
+    "GSM8371535": {
+     "both": 71,
+     "either": 2209,
+     "rate": 0.03214
+    }
+   }
+  },
+  {
+   "genes": [
+    "PDGFRB",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "Mesangial/Pericyte",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 57,
+     "either": 7320,
+     "rate": 0.00779
+    },
+    "GSM8371535": {
+     "both": 367,
+     "either": 6924,
+     "rate": 0.053
+    }
+   }
+  },
+  {
+   "genes": [
+    "PDGFRB",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "Mesangial/Pericyte",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 15,
+     "either": 836,
+     "rate": 0.01794
+    },
+    "GSM8371535": {
+     "both": 28,
+     "either": 1377,
+     "rate": 0.02033
+    }
+   }
+  },
+  {
+   "genes": [
+    "PDGFRB",
+    "UMOD"
+   ],
+   "compartments": [
+    "Mesangial/Pericyte",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 74,
+     "either": 8403,
+     "rate": 0.00881
+    },
+    "GSM8371535": {
+     "both": 545,
+     "either": 10307,
+     "rate": 0.05288
+    }
+   }
+  },
+  {
+   "genes": [
+    "PECAM1",
+    "SLC12A3"
+   ],
+   "compartments": [
+    "Endothelial",
+    "DCT"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 312,
+     "either": 7396,
+     "rate": 0.04218
+    },
+    "GSM8371535": {
+     "both": 641,
+     "either": 7290,
+     "rate": 0.08793
+    }
+   }
+  },
+  {
+   "genes": [
+    "PECAM1",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "Endothelial",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 62,
+     "either": 1120,
+     "rate": 0.05536
+    },
+    "GSM8371535": {
+     "both": 51,
+     "either": 1994,
+     "rate": 0.02558
+    }
+   }
+  },
+  {
+   "genes": [
+    "PECAM1",
+    "UMOD"
+   ],
+   "compartments": [
+    "Endothelial",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 369,
+     "either": 8439,
+     "rate": 0.04373
+    },
+    "GSM8371535": {
+     "both": 952,
+     "either": 10540,
+     "rate": 0.09032
+    }
+   }
+  },
+  {
+   "genes": [
+    "SLC12A3",
+    "SLC4A1"
+   ],
+   "compartments": [
+    "DCT",
+    "IC"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 577,
+     "either": 7475,
+     "rate": 0.07719
+    },
+    "GSM8371535": {
+     "both": 281,
+     "either": 6775,
+     "rate": 0.04148
+    }
+   }
+  },
+  {
+   "genes": [
+    "SLC12A3",
+    "UMOD"
+   ],
+   "compartments": [
+    "DCT",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 6151,
+     "either": 9527,
+     "rate": 0.64564
+    },
+    "GSM8371535": {
+     "both": 4554,
+     "either": 11949,
+     "rate": 0.38112
+    }
+   }
+  },
+  {
+   "genes": [
+    "SLC4A1",
+    "UMOD"
+   ],
+   "compartments": [
+    "IC",
+    "TAL"
+   ],
+   "per_donor": {
+    "GSM8371526": {
+     "both": 658,
+     "either": 8494,
+     "rate": 0.07747
+    },
+    "GSM8371535": {
+     "both": 410,
+     "either": 10207,
+     "rate": 0.04017
+    }
+   }
+  }
+ ]
+}
