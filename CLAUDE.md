@@ -7,7 +7,7 @@ Hackathon build for the Meta Global AI Developer Hackathon (submissions due 2026
 - **Vocabulary**: use the terms in `GLOSSARY.md` in code, tests, issues and UI copy.
 - **Decisions**: read the `docs/adr/` entries for the area you touch, and surface any conflict instead of overriding it.
 - **Facts** about the data, Meta models and partner platforms: `docs/research/`. They were checked live on Nov 2 and beat memory.
-- **Scope**: `docs/spec/` and the GitHub issues.
+- **Scope**: spec issue #1 and its sub-issues (`gh issue view <n>`; index in `docs/spec/tickets.md`). `docs/spec/` also holds the review trail.
 
 ## Guardrails
 

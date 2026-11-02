@@ -1,4 +1,6 @@
-# Spec: SpatialScout hackathon build (draft for validation, revision 2)
+# Spec: SpatialScout hackathon build (revision 2)
+
+> **Published Nov 2 2026 as [#1](https://github.com/chandrarup/spatialscout/issues/1); the issue is canonical for scope.** This file is the snapshot at publication; tickets are its sub-issues, indexed in `docs/spec/tickets.md`.
 
 > Spec for the Meta Global AI Developer Hackathon build (submissions due Nov 4 2026, 9:00 PM ET).
 >
