@@ -7,7 +7,8 @@ from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from ..agent import Investigation, Orchestrator, UnknownInvestigation
-from ..contracts import InvestigationSnapshot, StartInvestigationRequest
+from ..audit import verify_chain
+from ..contracts import ChainCheckResult, InvestigationSnapshot, StartInvestigationRequest
 
 router = APIRouter()
 
@@ -56,6 +57,12 @@ async def download_package(investigation: InvestigationDep) -> FileResponse:
     if not path.is_file():
         raise HTTPException(status_code=409, detail="the evidence package is not ready yet")
     return FileResponse(path, media_type="application/zip", filename=f"spatialscout-{investigation.investigation_id}.zip")
+
+
+@router.post("/audit-log/verify")
+async def verify_audit_log(request: Request) -> ChainCheckResult:
+    """Check the hash chain of an audit log sent as JSONL text, for example the one in an evidence package."""
+    return verify_chain((await request.body()).decode("utf-8", errors="replace"))
 
 
 @router.get("/investigations/{investigation_id}/events", response_class=EventSourceResponse)

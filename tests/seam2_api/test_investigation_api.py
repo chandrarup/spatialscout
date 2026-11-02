@@ -1,6 +1,8 @@
 """Seam 2: an investigation driven through the HTTP/SSE API on recorded model responses."""
 
+import io
 import json
+import zipfile
 
 from .conftest import RECORDED_QUESTION
 
@@ -113,3 +115,51 @@ def test_reconnecting_mid_execution_with_after_seq_delivers_exactly_the_missing_
 
     assert [event["seq"] for event in before_drop + after_reconnect] == [1, 2, 3, 4, 5, 6]
     assert [event["type"] for event in before_drop + after_reconnect] == FULL_SEQUENCE
+
+
+def run_to_package(client):
+    investigation_id = start(client)["investigation_id"]
+    approve(client, investigation_id)
+    read_events(client, investigation_id)
+    response = client.get(f"/api/investigations/{investigation_id}/package")
+    assert response.status_code == 200, response.text
+    return zipfile.ZipFile(io.BytesIO(response.content))
+
+
+def verify_chain(client, audit_log_jsonl):
+    response = client.post("/api/audit-log/verify", content=audit_log_jsonl, headers={"content-type": "text/plain"})
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def test_the_package_holds_the_claims_the_audit_log_and_a_manifest_with_the_head_hash(client):
+    package = run_to_package(client)
+
+    assert sorted(package.namelist()) == ["audit_log.jsonl", "claims.json", "manifest.json"]
+    manifest = json.loads(package.read("manifest.json"))
+    last_entry = json.loads(package.read("audit_log.jsonl").decode().splitlines()[-1])
+    assert manifest["audit_log"]["head_hash"] == last_entry["entry_hash"]
+    assert (manifest["run_mode"], manifest["review_state"]) == ("cached_tool_rerun", "work_in_progress")
+    assert [claim["finding"]["finding_kind"] for claim in json.loads(package.read("claims.json"))] == ["audit"]
+
+
+def test_the_exported_audit_log_passes_its_chain_check(client):
+    package = run_to_package(client)
+
+    result = verify_chain(client, package.read("audit_log.jsonl").decode())
+
+    assert result["ok"] is True
+    assert result["head_hash"] == json.loads(package.read("manifest.json"))["audit_log"]["head_hash"]
+
+
+def test_editing_any_entry_of_the_exported_audit_log_fails_the_chain_check_at_that_entry(client):
+    lines = run_to_package(client).read("audit_log.jsonl").decode().splitlines()
+
+    for index, line in enumerate(lines):
+        entry = json.loads(line)
+        entry["recorded_at"] = "2026-01-01T00:00:00+00:00"  # an edit, left un-rehashed
+        edited = [*lines[:index], json.dumps(entry), *lines[index + 1:]]
+
+        result = verify_chain(client, "\n".join(edited) + "\n")
+
+        assert (result["ok"], result["first_bad_seq"]) == (False, index + 1)
