@@ -131,6 +131,7 @@ def _dataset_info() -> dict:
         "title": "Synthetic kidney section (answers known by construction)",
         "description": "A hand-designed section for tests and the walking skeleton. Not real tissue; never cite it as a result.",
         "coordinate_units": "micrometre",
+        "label_rule_id": "synthetic-by-construction",
         "panel": PANEL,
         "sections": [{"section_id": SECTION_ID, "group": "Synthetic", "extent": EXTENT}],
         "capabilities": [

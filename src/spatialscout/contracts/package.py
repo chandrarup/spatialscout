@@ -1,0 +1,40 @@
+"""Evidence package contracts: the export of an investigation."""
+
+from datetime import datetime
+from typing import Literal
+
+from .audit_log import ChainCheckResult
+from .base import SCHEMA_VERSION, Contract
+from .dataset import DatasetManifest, FileChecksum
+from .model_call import ReplayInfo
+
+
+class PackageManifest(Contract):
+    """manifest.json inside the evidence package: what it contains and how it was produced."""
+
+    schema_version: str = SCHEMA_VERSION
+    package_id: str
+    investigation_id: str
+    created_at: datetime
+    mode: Literal["replay", "live"]
+    replay: ReplayInfo | None
+    question: str
+    dataset: DatasetManifest
+    plan_id: str | None
+    plan_hash: str | None
+    files: list[FileChecksum]
+    audit_log: ChainCheckResult
+    review_state: Literal["work_in_progress", "reviewed"]
+    claims: int
+    notes: list[str]
+
+
+class PackageInfo(Contract):
+    """What the UI needs to offer an evidence package for download."""
+
+    package_id: str
+    download_url: str
+    created_at: datetime
+    files: list[str]
+    audit_log: ChainCheckResult
+    review_state: Literal["work_in_progress", "reviewed"]

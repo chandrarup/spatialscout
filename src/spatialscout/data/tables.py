@@ -35,10 +35,12 @@ CELL_COLUMNS: dict[str, str] = {
 
 @dataclass(frozen=True)
 class SectionTables:
-    """One section's molecules and cells. Cell type labels are already assigned and frozen."""
+    """One section's molecules and cells. The cells' `cell_type` column holds the cell type labels that
+    the label rule `label_rule_id` assigned under the default condition; they are frozen."""
 
     section_id: str
     dataset_id: str
+    label_rule_id: str
     molecules: pd.DataFrame
     cells: pd.DataFrame
     structures: tuple[StructureMask, ...] = ()
@@ -47,6 +49,7 @@ class SectionTables:
 def make_section(
     section_id: str,
     dataset_id: str,
+    label_rule_id: str,
     molecules: pd.DataFrame | Iterable[Mapping[str, Any]],
     cells: pd.DataFrame | Iterable[Mapping[str, Any]],
     structures: Iterable[StructureMask] = (),
@@ -55,6 +58,7 @@ def make_section(
     return SectionTables(
         section_id=section_id,
         dataset_id=dataset_id,
+        label_rule_id=label_rule_id,
         molecules=_typed_table(molecules, MOLECULE_COLUMNS, "molecules"),
         cells=_typed_table(cells, CELL_COLUMNS, "cells"),
         structures=tuple(structures),

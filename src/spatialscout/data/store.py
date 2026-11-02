@@ -41,4 +41,11 @@ class DatasetStore:
         molecules = pd.read_csv(directory / "molecules.csv", dtype=text_columns)
         cells = pd.read_csv(directory / "cells.csv", dtype=text_columns)
         structures = [StructureMask.model_validate(s) for s in json.loads((directory / "structures.json").read_text())]
-        return make_section(section_id, info["dataset_id"], molecules=molecules, cells=cells, structures=structures)
+        return make_section(
+            section_id,
+            info["dataset_id"],
+            label_rule_id=info["label_rule_id"],
+            molecules=molecules,
+            cells=cells,
+            structures=structures,
+        )

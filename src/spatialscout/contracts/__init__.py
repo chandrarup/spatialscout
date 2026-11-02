@@ -1,19 +1,81 @@
 """SpatialScout data contracts. Pydantic models here are the single source of truth for every shape
-that crosses a module or the HTTP boundary; TypeScript types are generated from them."""
+that crosses a module or the HTTP boundary; TypeScript types are generated from them (see `schema.py`)."""
 
 from .assignment import AuditMetrics, SectionAudit
+from .audit_log import GENESIS_HASH, AuditEntry, AuditEntryKind, ChainCheckResult
+from .base import (
+    SCHEMA_VERSION,
+    ConditionName,
+    Contract,
+    Contrast,
+    EvidenceStatus,
+    FindingKind,
+    RunMode,
+    canonical_json,
+    content_id,
+    new_id,
+    sha256_hex,
+)
+from .claim import (
+    CLAIM_SCHEMA_VERSION,
+    CitedNumber,
+    Claim,
+    ClaimControls,
+    ClaimDraft,
+    FindingRef,
+    InjectedError,
+    InjectedErrorKind,
+    ReviewStatus,
+    VerificationStatus,
+)
+from .dataset import CapabilityCheck, CapabilityReport, DatasetManifest, FileChecksum, SectionInfo
+from .events import (
+    ClaimDraftedEvent,
+    ErrorEvent,
+    EventBase,
+    InvestigationEvent,
+    PackageReadyEvent,
+    PlanApprovedEvent,
+    PlanProposedEvent,
+    ToolFinishedEvent,
+    ToolStartedEvent,
+)
+from .finding import (
+    AuditConditionValue,
+    AuditResult,
+    AuditSectionValues,
+    ConditionEffect,
+    ContrastResult,
+    EvidenceRegion,
+    Finding,
+    LeaveOneSectionOut,
+    Population,
+    Region,
+    SectionLog2Value,
+)
+from .investigation import (
+    TERMINAL_STATUSES,
+    InvestigationSnapshot,
+    InvestigationState,
+    InvestigationStatus,
+    ModeInfo,
+    StartInvestigationRequest,
+)
+from .model_call import (
+    CacheInput,
+    ChatMessage,
+    ModelCallRecord,
+    ModelRequest,
+    ModelResponse,
+    Provider,
+    RecordedCall,
+    Recording,
+    ReplayInfo,
+    TokenUsage,
+)
+from .package import PackageInfo, PackageManifest
+from .plan import Budget, Plan, PlanProposal, PlanStep, ProposedStep
 from .region import StructureMask
-from .base import SCHEMA_VERSION, ConditionName, Contract, canonical_json, content_id, new_id, sha256_hex
+from .review import CheckResult, ReviewDecision, VerificationResult
 
-__all__ = [
-    "SCHEMA_VERSION",
-    "AuditMetrics",
-    "ConditionName",
-    "Contract",
-    "SectionAudit",
-    "StructureMask",
-    "canonical_json",
-    "content_id",
-    "new_id",
-    "sha256_hex",
-]
+__all__ = [name for name in dir() if not name.startswith("_")]

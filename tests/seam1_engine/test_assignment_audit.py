@@ -4,7 +4,7 @@ import pytest
 
 from spatialscout.contracts import ConditionName
 from spatialscout.data import make_section
-from spatialscout.engine import audit_section
+from spatialscout.engine import audit_population, audit_section
 
 DEFAULT = ConditionName.DEFAULT
 NUCLEUS_ONLY = ConditionName.NUCLEUS_ONLY
@@ -35,6 +35,7 @@ def podocyte_with_expansion_zone_molecule():
     return make_section(
         section_id="HAND-1",
         dataset_id="hand-built",
+        label_rule_id="hand-built",
         cells=[cell("c1", "Podocyte"), cell("c2", "PT"), cell("c3", "T cell")],
         molecules=[
             molecule("m1", "NPHS1", "c1", overlaps_nucleus=True),
@@ -82,3 +83,25 @@ def test_a_cell_type_without_molecules_has_no_retention_and_says_why(podocyte_wi
     t_cells = audit.metrics_for(NUCLEUS_ONLY, cell_type="T cell")
     assert (t_cells.default_molecules, t_cells.retention) == (0, None)
     assert t_cells.retention_missing_reason
+
+
+def test_a_population_cell_without_molecules_stays_in_the_share_expressing_denominator():
+    section = make_section(
+        section_id="HAND-2",
+        dataset_id="hand-built",
+        label_rule_id="hand-built",
+        cells=[cell("c1", "Podocyte"), cell("c4", "Podocyte"), cell("c2", "PT")],
+        molecules=[
+            molecule("m1", "NPHS1", "c1", overlaps_nucleus=True),
+            molecule("m3", "LRP2", "c1", overlaps_nucleus=False),
+            molecule("m4", "LRP2", "c2", overlaps_nucleus=True),
+        ],
+    )
+
+    result = audit_population([section], cell_type="Podocyte", genes=["LRP2"], conditions=[DEFAULT, NUCLEUS_ONLY])
+
+    by_condition = {value.condition: value for value in result.sections[0].conditions}
+    assert result.sections[0].cells_labelled == 2
+    # c1 has LRP2 only outside its nucleus; c4 has no molecules but is still a podocyte.
+    assert by_condition[DEFAULT].observed_value == 0.5
+    assert by_condition[NUCLEUS_ONLY].observed_value == 0.0

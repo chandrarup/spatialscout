@@ -8,7 +8,7 @@ import hashlib
 import json
 import secrets
 from enum import StrEnum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -48,3 +48,27 @@ class ConditionName(StrEnum):
     DISTANCE_CAP_1UM = "distance_cap_1um"
     DISTANCE_CAP_2UM = "distance_cap_2um"
     STRUCTURE_CONSTRAINED = "structure_constrained"
+
+
+class EvidenceStatus(StrEnum):
+    """An evidence label. It says what the evidence supports, never whether a finding is biologically true."""
+
+    STABLE = "stable"
+    SEGMENTATION_SENSITIVE = "segmentation_sensitive"
+    INSUFFICIENT_EVIDENCE = "insufficient_evidence"
+
+
+FindingKind = Literal["audit", "contrast"]
+
+RunMode = Literal["immutable_replay", "cached_tool_rerun", "live"]
+"""How an investigation gets its results:
+- immutable_replay: streams a recorded investigation's events verbatim, with their original timestamps;
+- cached_tool_rerun: re-runs the deterministic tools and takes model responses from storage;
+- live: fresh model calls (gated; arrives with ticket 03)."""
+
+
+class Contrast(Contract):
+    """One disease group compared with the control group, for example DKD vs Control."""
+
+    disease: str
+    control: str
