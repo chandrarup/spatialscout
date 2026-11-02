@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Literal
 
 from .audit_log import ChainCheckResult
-from .base import SCHEMA_VERSION, Contract
+from .base import SCHEMA_VERSION, Contract, RunMode
 from .dataset import DatasetManifest, FileChecksum
 from .model_call import ReplayInfo
 
@@ -16,7 +16,7 @@ class PackageManifest(Contract):
     package_id: str
     investigation_id: str
     created_at: datetime
-    mode: Literal["replay", "live"]
+    run_mode: RunMode
     replay: ReplayInfo | None
     question: str
     dataset: DatasetManifest

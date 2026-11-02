@@ -3,6 +3,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from ..agent import Investigation, Orchestrator, UnknownInvestigation
@@ -40,6 +41,21 @@ async def start_investigation(body: StartInvestigationRequest, orchestrator: Orc
 @router.get("/investigations/{investigation_id}")
 async def get_investigation(investigation: InvestigationDep) -> InvestigationSnapshot:
     return investigation.snapshot()
+
+
+@router.post("/investigations/{investigation_id}/approve")
+async def approve_plan(investigation: InvestigationDep, orchestrator: OrchestratorDep) -> InvestigationSnapshot:
+    """Approve the proposed plan. Idempotent: if the investigation is not awaiting approval, this returns its
+    current state and starts nothing."""
+    return orchestrator.approve(investigation.investigation_id).snapshot()
+
+
+@router.get("/investigations/{investigation_id}/package")
+async def download_package(investigation: InvestigationDep) -> FileResponse:
+    path = investigation.directory / "package.zip"
+    if not path.is_file():
+        raise HTTPException(status_code=409, detail="the evidence package is not ready yet")
+    return FileResponse(path, media_type="application/zip", filename=f"spatialscout-{investigation.investigation_id}.zip")
 
 
 @router.get("/investigations/{investigation_id}/events", response_class=EventSourceResponse)

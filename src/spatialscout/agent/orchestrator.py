@@ -7,27 +7,41 @@ without affecting it. Every state change is persisted before it is announced.
 """
 
 import asyncio
+import hashlib
+import time
 from collections.abc import Callable, Coroutine
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from ..contracts import (
+    AuditResult,
+    Claim,
+    ClaimDraft,
+    ClaimDraftedEvent,
     ErrorEvent,
+    FindingRef,
     InvestigationStatus,
+    PackageInfo,
+    PackageReadyEvent,
+    Plan,
     PlanApprovedEvent,
     PlanProposal,
     PlanProposedEvent,
     Recording,
     RunMode,
+    ToolFinishedEvent,
+    ToolStartedEvent,
     checksum,
+    new_id,
 )
 from ..data import DatasetStore
+from ..export import AUDIT_LOG_FILE, CLAIMS_FILE, MANIFEST_FILE, build_package
 from ..gateway import GatewayError, ModelGateway, RecordingLibrary, ReplaySource, StoredResponseMissing, normalise_question
 from .errors import InvestigationError, RunModeUnavailable
 from .investigation import Investigation
-from .prompts import plan_request
-from .tools import ToolRegistry
+from .prompts import claim_request, plan_request
+from .tools import Tool, ToolContext, ToolRegistry
 
 
 def utc_now() -> datetime:
@@ -76,6 +90,24 @@ class Orchestrator:
         if investigation_id not in self._investigations:
             self._investigations[investigation_id] = Investigation.load(self._root, investigation_id, self._clock)
         return self._investigations[investigation_id]
+
+    def approve(self, investigation_id: str) -> Investigation:
+        """Freeze the proposed plan and start executing it.
+
+        Idempotent: unless the investigation is awaiting approval, this returns it unchanged and starts nothing.
+        The status check and the move to `running` happen with no await between them, so two approvals that
+        arrive together cannot both start the plan.
+        """
+        investigation = self.get(investigation_id)
+        plan = investigation.plan()
+        if investigation.state.status != InvestigationStatus.AWAITING_APPROVAL or plan is None:
+            return investigation
+        plan_hash = checksum(plan)
+        investigation.update_state(status=InvestigationStatus.RUNNING, approved_plan_hash=plan_hash, approved_at_utc=self._clock())
+        investigation.audit_log.append("plan_approved", {"plan_id": plan.plan_id, "plan_hash": plan_hash})
+        investigation.emit(PlanApprovedEvent, plan_id=plan.plan_id, plan_hash=plan_hash)
+        self._spawn(investigation, self._execute(investigation, investigation.plan()))
+        return investigation
 
     async def shutdown(self) -> None:
         for task in list(self._tasks):
@@ -138,3 +170,94 @@ class Orchestrator:
         )
         investigation.audit_log.append("plan_proposed", {"plan": plan.model_dump(mode="json")})
         investigation.emit(PlanProposedEvent, status=InvestigationStatus.AWAITING_APPROVAL, plan=plan)
+
+    async def _execute(self, investigation: Investigation, plan: Plan) -> None:
+        """Run the frozen plan's tool steps, draft one claim per finding, then export the package."""
+        context = ToolContext(store=self._store)
+        findings: list[tuple[Tool, AuditResult]] = []
+        for step in plan.steps:
+            tool = self._registry.get(step.tool)
+            arguments = tool.arguments.model_validate(step.arguments)
+            investigation.emit(ToolStartedEvent, step_id=step.step_id, tool=tool.name, arguments=step.arguments)
+            started = time.perf_counter()
+            artifact = await asyncio.to_thread(tool.run, arguments, context)
+            artifact_id = _artifact_id(artifact)
+            artifacts_dir = investigation.directory / "artifacts"
+            artifacts_dir.mkdir(exist_ok=True)
+            (artifacts_dir / f"{artifact_id}.json").write_text(artifact.model_dump_json(indent=1), encoding="utf-8")
+            investigation.audit_log.append(
+                "tool_call",
+                {"step_id": step.step_id, "tool": tool.name, "tool_version": tool.version, "arguments": step.arguments,
+                 "artifact_id": artifact_id, "artifact_sha256": checksum(artifact),
+                 "duration_ms": round((time.perf_counter() - started) * 1000)},
+            )
+            investigation.emit(ToolFinishedEvent, step_id=step.step_id, tool=tool.name, artifact_id=artifact_id, summary=tool.summarize(artifact))
+            if isinstance(artifact, AuditResult):
+                findings.append((tool, artifact))
+        claims = []
+        for tool, finding in findings:
+            claim = await self._draft_claim(investigation, tool, finding)
+            investigation.audit_log.append("claim_drafted", {"claim": claim.model_dump(mode="json")})
+            investigation.emit(ClaimDraftedEvent, claim=claim)
+            claims.append(claim)
+        package = self._export(investigation, claims)
+        investigation.emit(PackageReadyEvent, status=InvestigationStatus.COMPLETE, package=package)
+
+    async def _draft_claim(self, investigation: Investigation, tool: Tool, finding: AuditResult) -> Claim:
+        """Draft a claim from stored model responses. Its evidence status is the finding's computed label,
+        never the model's; verification and review start pending and unreviewed."""
+        gateway = self._gateway(investigation, self._recordings.for_question(investigation.state.question))
+        request, inputs = claim_request(investigation.state.question, finding, tool.spec())
+        try:
+            draft, call = await gateway.complete_json("claim_draft", request, inputs, ClaimDraft)
+        except GatewayError as error:
+            if error.record is not None:
+                investigation.audit_log.append("model_call", error.record.model_dump(mode="json"))
+            raise
+        investigation.audit_log.append("model_call", call.model_dump(mode="json"))
+        return Claim(
+            claim_id=new_id("clm"),
+            investigation_id=investigation.investigation_id,
+            dataset_id=finding.dataset_id,
+            finding=FindingRef(finding_id=finding.finding_id, finding_kind=finding.finding_kind),
+            text=draft.text,
+            cited=draft.cited,
+            evidence_status=finding.label,
+        )
+
+    def _export(self, investigation: Investigation, claims: list[Claim]) -> PackageInfo:
+        """Write the evidence package, then log the export. The package's manifest anchors the audit log at
+        its head hash; the export entry that follows it stays in the server's log."""
+        state = investigation.state
+        manifest = build_package(
+            investigation.directory / "package.zip",
+            investigation_id=investigation.investigation_id,
+            question=state.question,
+            run_mode=state.run_mode,
+            replay=state.replay,
+            dataset=self._store.manifest(state.dataset_id),
+            plan=investigation.plan(),
+            claims=claims,
+            audit_log_text=investigation.audit_log.text(),
+            created_at=self._clock(),
+        )
+        investigation.audit_log.append(
+            "package_exported",
+            {"package_id": manifest.package_id, "audit_log_head_hash": manifest.audit_log.head_hash,
+             "package_sha256": hashlib.sha256((investigation.directory / "package.zip").read_bytes()).hexdigest()},
+        )
+        return PackageInfo(
+            package_id=manifest.package_id,
+            download_url=f"/api/investigations/{investigation.investigation_id}/package",
+            created_at=manifest.created_at,
+            files=[CLAIMS_FILE, AUDIT_LOG_FILE, MANIFEST_FILE],
+            audit_log=manifest.audit_log,
+            review_state=manifest.review_state,
+        )
+
+
+def _artifact_id(artifact: Any) -> str:
+    for field in ("finding_id", "artifact_id"):
+        if isinstance(getattr(artifact, field, None), str):
+            return getattr(artifact, field)
+    raise TypeError(f"a tool returned an artifact without an id: {type(artifact).__name__}")

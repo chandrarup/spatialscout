@@ -9,9 +9,12 @@ changing a prompt, a tool, a response schema or the synthetic section; the seam-
 
 from datetime import UTC, datetime
 
-from spatialscout.agent import DEFAULT_REGISTRY
-from spatialscout.agent.prompts import plan_request
+from spatialscout.agent import DEFAULT_REGISTRY, ToolContext
+from spatialscout.agent.prompts import claim_request, plan_request
 from spatialscout.contracts import (
+    AuditResult,
+    CitedNumber,
+    ClaimDraft,
     ConditionName,
     ModelResponse,
     PlanProposal,
@@ -38,6 +41,29 @@ def recorded(purpose, request, inputs, output) -> RecordedCall:
     )
 
 
+def draft_claim(finding: AuditResult) -> ClaimDraft:
+    """The hand-authored claim. Every number is filled in from the computed audit result (ADR-0001)."""
+    section = finding.sections[0]
+    by_condition = {value.condition: value for value in section.conditions}
+    default, strict = by_condition[ConditionName.DEFAULT], by_condition[ConditionName.NUCLEUS_ONLY]
+    where = f"sections[{section.section_id}]"
+    text = (
+        f"In synthetic section {section.section_id}, nucleus-only assignment keeps {strict.molecules} of the "
+        f"{default.molecules} {finding.genes[0]} molecules that the default condition counts toward the "
+        f"{section.cells_labelled} cells labelled {finding.population.cell_type} by construction "
+        f"(retention {strict.retention:.0%})."
+    )
+    return ClaimDraft(
+        text=text,
+        cited={
+            "cells_labelled": CitedNumber(value=section.cells_labelled, source=f"{where}.cells_labelled"),
+            "molecules_default": CitedNumber(value=default.molecules, source=f"{where}.conditions[default].molecules"),
+            "molecules_nucleus_only": CitedNumber(value=strict.molecules, source=f"{where}.conditions[nucleus_only].molecules"),
+            "retention_nucleus_only": CitedNumber(value=strict.retention, source=f"{where}.conditions[nucleus_only].retention"),
+        },
+    )
+
+
 def main() -> None:
     settings = Settings.from_env()
     store = DatasetStore(settings.fixtures_dir)
@@ -56,6 +82,10 @@ def main() -> None:
         ],
     )
     calls = [recorded("plan", request, inputs, proposal)]
+    tool = DEFAULT_REGISTRY.get("audit_population")
+    finding = tool.run(tool.arguments.model_validate(proposal.steps[0].arguments), ToolContext(store=store))
+    request, inputs = claim_request(QUESTION, finding, tool.spec())
+    calls.append(recorded("claim_draft", request, inputs, draft_claim(finding)))
     recording = Recording(
         info=ReplayInfo(
             recording_id=RECORDING_ID,
