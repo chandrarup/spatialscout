@@ -4,6 +4,8 @@ import io
 import json
 import zipfile
 
+import pytest
+
 from .conftest import RECORDED_QUESTION
 
 
@@ -163,3 +165,19 @@ def test_editing_any_entry_of_the_exported_audit_log_fails_the_chain_check_at_th
         result = verify_chain(client, "\n".join(edited) + "\n")
 
         assert (result["ok"], result["first_bad_seq"]) == (False, index + 1)
+
+
+@pytest.mark.parametrize("run_mode", ["live", "immutable_replay"])
+def test_run_modes_that_ticket_03_builds_are_refused_with_a_reason_and_call_no_model(client, run_mode):
+    response = client.post("/api/investigations", json={"question": RECORDED_QUESTION, "run_mode": run_mode})
+
+    events = read_events(client, response.json()["investigation_id"])
+
+    assert [(event["type"], event["code"]) for event in events] == [("error", "run_mode_unavailable")]
+
+
+def test_the_package_is_not_served_before_it_is_ready(client):
+    investigation_id = start(client)["investigation_id"]
+
+    assert client.get(f"/api/investigations/{investigation_id}/package").status_code == 409
+    assert client.get("/api/investigations/inv-000000000000").status_code == 404

@@ -69,7 +69,7 @@ def _summarize_audit_result(result: AuditResult) -> str:
             retention = "n/a" if value.retention is None else f"{value.retention:.0%}"
             parts.append(
                 f"{section.section_id}, {value.condition.value}: keeps {value.molecules} of {default.molecules} {gene} "
-                f"molecules in {section.cells_labelled} {result.population.cell_type} cells (retention {retention})"
+                f"molecules in the {section.cells_labelled} cells labelled {result.population.cell_type} (retention {retention})"
             )
     return "; ".join(parts) + f". Evidence label: {result.label.value.replace('_', ' ')}."
 
