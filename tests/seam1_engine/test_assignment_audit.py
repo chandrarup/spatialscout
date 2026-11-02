@@ -50,3 +50,35 @@ def test_nucleus_only_excludes_a_molecule_in_a_podocytes_expansion_zone(podocyte
     audit = audit_section(podocyte_with_expansion_zone_molecule, [DEFAULT, NUCLEUS_ONLY])
 
     assert audit.excluded_molecule_ids[NUCLEUS_ONLY] == ["m3"]
+
+
+def test_section_retention_counts_only_molecules_assigned_under_the_default_condition(podocyte_with_expansion_zone_molecule):
+    audit = audit_section(podocyte_with_expansion_zone_molecule, [DEFAULT, NUCLEUS_ONLY])
+
+    section = audit.metrics_for(NUCLEUS_ONLY)
+    # m1..m4 are assigned (m5 is not); nucleus-only keeps m1, m2 and m4.
+    assert (section.default_molecules, section.kept_molecules, section.excluded_molecules) == (4, 3, 1)
+    assert section.retention == pytest.approx(0.75)
+
+
+def test_retention_by_cell_type_and_by_gene_within_a_cell_type(podocyte_with_expansion_zone_molecule):
+    audit = audit_section(podocyte_with_expansion_zone_molecule, [DEFAULT, NUCLEUS_ONLY])
+
+    assert audit.metrics_for(NUCLEUS_ONLY, cell_type="Podocyte").retention == pytest.approx(2 / 3)
+    assert audit.metrics_for(NUCLEUS_ONLY, cell_type="Podocyte", gene="LRP2").retention == 0.0
+    assert audit.metrics_for(NUCLEUS_ONLY, cell_type="PT").retention == 1.0
+
+
+def test_the_default_condition_keeps_every_assigned_molecule(podocyte_with_expansion_zone_molecule):
+    audit = audit_section(podocyte_with_expansion_zone_molecule, [DEFAULT, NUCLEUS_ONLY])
+
+    assert audit.metrics_for(DEFAULT).retention == 1.0
+    assert audit.excluded_molecule_ids[DEFAULT] == []
+
+
+def test_a_cell_type_without_molecules_has_no_retention_and_says_why(podocyte_with_expansion_zone_molecule):
+    audit = audit_section(podocyte_with_expansion_zone_molecule, [DEFAULT, NUCLEUS_ONLY])
+
+    t_cells = audit.metrics_for(NUCLEUS_ONLY, cell_type="T cell")
+    assert (t_cells.default_molecules, t_cells.retention) == (0, None)
+    assert t_cells.retention_missing_reason

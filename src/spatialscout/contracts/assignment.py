@@ -34,3 +34,10 @@ class SectionAudit(Contract):
     conditions: list[ConditionName]
     metrics: list[AuditMetrics] = Field(default_factory=list)
     excluded_molecule_ids: dict[ConditionName, list[str]]
+
+    def metrics_for(self, condition: ConditionName, cell_type: str | None = None, gene: str | None = None) -> AuditMetrics:
+        """The metrics for one scope; leave cell_type and gene empty for the whole section."""
+        for row in self.metrics:
+            if (row.condition, row.cell_type, row.gene) == (condition, cell_type, gene):
+                return row
+        raise KeyError(f"no audit metrics for condition={condition}, cell_type={cell_type}, gene={gene}")
