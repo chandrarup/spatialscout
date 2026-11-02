@@ -24,3 +24,6 @@ build/
 .cache/
 .DS_Store
 *.log
+
+# Spike outputs (regenerable)
+spikes/out/
