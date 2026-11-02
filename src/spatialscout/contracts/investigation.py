@@ -63,8 +63,9 @@ class InvestigationSnapshot(Contract):
 
 
 class ModeInfo(Contract):
-    """How the server answers questions. Live mode arrives with ticket 03."""
+    """How the server answers questions. Live runs arrive with ticket 03."""
 
+    dataset_id: str
     default_run_mode: RunMode
     available_run_modes: list[RunMode]
     recordings: list[ReplayInfo]

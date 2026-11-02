@@ -76,7 +76,7 @@ from .model_call import (
 )
 from .package import PackageInfo, PackageManifest
 from .plan import Budget, Plan, PlanProposal, PlanStep, ProposedStep, ToolSpec
-from .region import StructureMask
+from .region import CellColumns, MoleculeColumns, RegionView, StructureMask
 from .review import CheckResult, ReviewDecision, VerificationResult
 
 __all__ = [name for name in dir() if not name.startswith("_")]

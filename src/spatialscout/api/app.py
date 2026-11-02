@@ -16,9 +16,11 @@ from .routes import router
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
+    store = DatasetStore(settings.fixtures_dir)
+    recordings = RecordingLibrary(settings.recordings_dir)
     orchestrator = Orchestrator(
-        store=DatasetStore(settings.fixtures_dir),
-        recordings=RecordingLibrary(settings.recordings_dir),
+        store=store,
+        recordings=recordings,
         registry=DEFAULT_REGISTRY,
         investigations_dir=settings.investigations_dir,
         dataset_id=settings.dataset_id,
@@ -31,6 +33,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="SpatialScout", lifespan=lifespan)
     app.state.orchestrator = orchestrator
+    app.state.store = store
+    app.state.recordings = recordings
     app.state.settings = settings
     app.include_router(router, prefix="/api")
     if settings.web_dist is not None and (settings.web_dist / "index.html").is_file():

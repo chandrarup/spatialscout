@@ -8,7 +8,19 @@ from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from ..agent import Investigation, Orchestrator, UnknownInvestigation
 from ..audit import verify_chain
-from ..contracts import ChainCheckResult, InvestigationSnapshot, StartInvestigationRequest
+from ..contracts import (
+    ChainCheckResult,
+    ConditionName,
+    DatasetManifest,
+    InvestigationSnapshot,
+    ModeInfo,
+    RegionView,
+    StartInvestigationRequest,
+)
+from ..data import DatasetStore, UnknownDataset, UnknownSection
+from ..engine import IMPLEMENTED_CONDITIONS, build_region_view
+from ..gateway import RecordingLibrary
+from ..settings import Settings
 
 router = APIRouter()
 
@@ -28,9 +40,48 @@ OrchestratorDep = Annotated[Orchestrator, Depends(_orchestrator)]
 InvestigationDep = Annotated[Investigation, Depends(_investigation)]
 
 
+def _store(request: Request) -> DatasetStore:
+    return request.app.state.store
+
+
+StoreDep = Annotated[DatasetStore, Depends(_store)]
+
+
 @router.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@router.get("/mode")
+async def mode(request: Request) -> ModeInfo:
+    """How questions are answered now, and the recordings a cached tool rerun can play."""
+    settings: Settings = request.app.state.settings
+    recordings: RecordingLibrary = request.app.state.recordings
+    return ModeInfo(
+        dataset_id=settings.dataset_id,
+        default_run_mode=settings.default_run_mode,
+        available_run_modes=["cached_tool_rerun"],
+        recordings=recordings.infos(),
+    )
+
+
+@router.get("/datasets/{dataset_id}")
+async def dataset_manifest(dataset_id: str, store: StoreDep) -> DatasetManifest:
+    try:
+        return store.manifest(dataset_id)
+    except UnknownDataset:
+        raise HTTPException(status_code=404, detail=f"no dataset {dataset_id}") from None
+
+
+@router.get("/sections/{section_id}/region-view")
+async def region_view(section_id: str, store: StoreDep) -> RegionView:
+    """The whole section as compact columns, with inclusion bits for every implemented condition."""
+    try:
+        section = store.load_section(section_id)
+    except UnknownSection:
+        raise HTTPException(status_code=404, detail=f"no section {section_id}") from None
+    conditions = [c for c in ConditionName if c in IMPLEMENTED_CONDITIONS]
+    return build_region_view(section, conditions, synthetic=store.manifest(section.dataset_id).synthetic)
 
 
 @router.post("/investigations", status_code=201)
