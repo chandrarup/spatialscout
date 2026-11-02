@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Dark, high-contrast scientific workspace. Data colours live in src/palette.ts (validated, dark surface). */
+@theme {
+  --color-surface: #111214;
+  --color-panel: #181a1d;
+  --color-raised: #202328;
+  --color-line: #2e3238;
+  --color-ink: #f0efec;
+  --color-ink-2: #c3c2b7;
+  --color-ink-3: #8e8d86;
+  --color-accent: #3987e5;
+  --color-run-mode: #f0b429;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
