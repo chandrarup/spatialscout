@@ -1,4 +1,6 @@
-# Spec: SpatialScout hackathon build (draft for validation, revision 2)
+# Spec: SpatialScout hackathon build (revision 2)
+
+> **Published Nov 2 2026 as [#1](https://github.com/chandrarup/spatialscout/issues/1); the issue is canonical for scope.** This file is the snapshot at publication; tickets are its sub-issues, indexed in `docs/spec/tickets.md`.
 
 > Spec for the Meta Global AI Developer Hackathon build (submissions due Nov 4 2026, 9:00 PM ET).
 >
@@ -280,19 +282,26 @@ Write once, frozen before the primary run, and record them in every result. They
   - *Primary* conditions are default, nucleus-only, and distance caps of 1 and 2 µm (non-nuclear molecules within the cap are kept).
   - The *exploratory* condition is structure-constrained, built from SAM 3.1 outlines. It is reported beside the primary conditions and never enters a label (ADR-0006).
 - **Fixed populations.** Cells are labelled once under the default condition, and every condition is computed over the same cells. A cell with no retained molecules is non-expressing and stays in the denominator.
-- **Gate precedence.** The gates apply in this order:
-  1. **Population gate:** at least 20 cells of the population in every section. If it fails, the result is insufficient evidence.
-  2. **Molecule gate, per condition:** at least 10 of the result's molecules in the population in every section. A condition that fails is invalid for that result.
-  3. **Validity:** the default condition plus at least one stricter primary condition must be valid. If not, the result is insufficient evidence.
+- **Gate precedence.** A section passes the *population gate* with at least 20 cells of the population, and the *molecule gate* with at least 10 of the result's molecules in that population. The gates apply in this order.
+  - **Contrast results**, where every section is a replicate:
+    1. Every section of both groups must pass the population gate. If any fails, the result is insufficient evidence.
+    2. A condition is valid only if every section passes the molecule gate under it.
+    3. The default condition plus at least one stricter primary condition must be valid. If not, the result is insufficient evidence.
+  - **Audit results**, which ask how one population behaves, not how groups differ:
+    1. A section is eligible when it passes the population gate and the molecule gate under the default condition.
+    2. At least 3 sections must be eligible. If fewer are, the result is insufficient evidence.
+    3. Every condition is computed over the same eligible sections, drawn from all 22 sections with a breakdown by group. The eligible sections are listed in the result.
+
+    Stricter conditions are not molecule-gated, because what they retain is the measurement and the thinning expectation already accounts for low counts.
 - **Near-zero band.** A value within ±0.1 (log2 units) has no direction. A reversal needs two valid conditions with opposite non-zero directions.
 - **Contrast labels.**
   - **Stable:** at least two valid primary conditions, no reversal, and an effect range of at most 0.5 log2. Leaving out any one section must never produce an opposite non-zero direction in any valid condition.
   - **Segmentation-sensitive:** a reversal or a range above 0.5, with the default effect stable under leave-one-section-out.
   - **Insufficient evidence:** anything else.
-- **Audit labels.** Use the home-matched expectation *E* and the observed value *O* under each valid stricter primary condition.
-  - **Segmentation-sensitive:** in at least one such condition, *O* < *E* × 2^−0.5 (an excess log2 drop above 0.5), and this holds under leave-one-section-out.
-  - **Stable:** every such condition has *O* ≥ *E* × 2^−0.5, and this holds under leave-one-section-out.
-  - **Insufficient evidence:** anything else, including a gene with no home cell type.
+- **Audit labels.** Use the home-matched expectation *E* and the observed value *O*, pooled over the eligible sections, under each stricter primary condition.
+  - **Segmentation-sensitive:** in at least one such condition, *O* < *E* × 2^−0.5 (an excess log2 drop above 0.5), and this holds when any one eligible section is left out.
+  - **Stable:** every such condition has *O* ≥ *E* × 2^−0.5, and this holds when any one eligible section is left out.
+  - **Insufficient evidence:** anything else, including fewer than 3 eligible sections or a gene with no home cell type.
 - **Thinning expectations (closed form).** For cell *c* with *k* default molecules of gene *g*:
   - **Retention probabilities:**
     - *cell-matched:* p = 1 − (1 − r_c)^k, where r_c is the cell's retention

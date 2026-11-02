@@ -1,6 +1,6 @@
 # Review response: traceability (Nov 2 2026)
 
-How spec and ticket revision 2 answer the reviewer's audit (`reviews/plan-review.md`) and the agent directive (`reviews/agent-directive-winning-upgrades.md`). The directive's Section 4 is adopted; the right-hand column lists where it was corrected to stay within ADR-0001–0007.
+How spec and ticket revision 2 (published as issue #1 and sub-issues #2–#16) answer the reviewer's audit (`reviews/plan-review.md`) and the agent directive (`reviews/agent-directive-winning-upgrades.md`). The directive's Section 4 is adopted; the right-hand column lists where it was corrected to stay within ADR-0001–0007.
 
 | Source | Requirement | Adopted | Correction |
 | --- | --- | --- | --- |
