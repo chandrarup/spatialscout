@@ -16,6 +16,42 @@ Hackathon build for the Meta Global AI Developer Hackathon (submissions due 2026
 - Tests live at the two agreed seams: the analysis engine's public operations, on hand-built molecule tables with known answers; and the HTTP/SSE API, through FastAPI's test client with recorded model responses.
 - In a git worktree, `.env` and `data/raw/` exist only in the main checkout at `/Users/chandrarupdaka/Documents/Personal/Projects/Meta-Hackathon`. Read them from there.
 
+## Commands
+
+Run from the repo root, after `make install` (uv and npm, from the lockfiles).
+
+| Command | Does |
+| --- | --- |
+| `make serve` | Builds the web app, then serves it and the API at http://127.0.0.1:8000 (`uv run spatialscout serve`). |
+| `make dev` | API with Python reload, plus the Vite dev server with hot reload at http://localhost:5173 (proxies `/api`). |
+| `make test` | `uv run pytest`: `tests/seam1_engine` and `tests/seam2_api`, with outbound network blocked. |
+| `make typecheck` | `npm --prefix web run typecheck`, against the generated contract types. |
+| `make types` | `npm --prefix web run gen:types`: regenerates `web/src/contracts/` from the Pydantic contracts. |
+| `make build` | Typechecks and builds the web app into `web/dist`. |
+| `make fixtures` | Rebuilds the synthetic section, then the stored model responses that depend on it. |
+
+Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
+
+- After changing a contract, run `make types` and commit `web/src/contracts/`.
+- Stored model responses are keyed by a hash of each request plus the tool version and artifact checksum it was built from. Changing a prompt (`agent/prompts.py`), a tool, a contract inside a request, or the synthetic section makes seam-2 tests fail with `replay_miss`. Run `make fixtures` and commit `fixtures/`.
+- Each investigation persists in `data/investigations/<id>/` (`state.json`, `events.jsonl`, `audit_log.jsonl`, `artifacts/`, `package.zip`), independent of HTTP. `SPATIALSCOUT_ROOT`, `SPATIALSCOUT_INVESTIGATIONS_DIR`, `SPATIALSCOUT_FIXTURES_DIR`, `SPATIALSCOUT_RECORDINGS_DIR` and `SPATIALSCOUT_WEB_DIST` override the paths.
+
+## Layout
+
+- `src/spatialscout/`, one package:
+  - `contracts/`: Pydantic models, the single source of truth; `schema.py` exports the JSON Schema behind the TypeScript types
+  - `data/`: dataset store (the synthetic fixture now; GSE286184 in ticket 02)
+  - `engine/`: deterministic science: assignment conditions, `audit_population`, `audit_section`, the region view
+  - `gateway/`: model gateway; stored responses only (`ReplaySource`) until ticket 03 adds live and immutable-replay sources
+  - `agent/`: orchestrator, persisted investigation, tool registry, prompts
+  - `audit/`: hash-linked audit log and `verify_chain`; `export/`: evidence package; `verify/`: claim verification (ticket 10)
+  - `api/`: FastAPI routes under `/api`, and the built web app at `/`; `cli.py`: `spatialscout serve`
+- `tests/seam1_engine/` and `tests/seam2_api/`: the two agreed seams.
+- `web/`: React, Vite, Tailwind and deck.gl; one component per panel in `src/components/`; `src/contracts/` is generated, never hand-edited.
+- `fixtures/synthetic/`: section SYN-01, built by `scripts/build_synthetic_section.py`, whose docstring states the answers known by construction.
+- `fixtures/recordings/<id>/recording.json`: stored model responses, built by `scripts/build_skeleton_recording.py` and marked `hand_authored`.
+- `artifacts/`: small committed derived outputs. `data/`: git-ignored raw data and local investigations.
+
 ## Gotchas
 
 - Every Meta, Baseten and Fireworks model here is a reasoning model. Send a generous `max_tokens` (2,000+) and `reasoning_effort: "low"`, or content comes back empty with `finish_reason: "length"`.
