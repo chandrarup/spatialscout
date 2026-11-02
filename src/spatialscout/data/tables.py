@@ -10,6 +10,8 @@ from typing import Any
 
 import pandas as pd
 
+from ..contracts import StructureMask
+
 MOLECULE_COLUMNS: dict[str, str] = {
     "molecule_id": "string",
     "gene": "string",
@@ -39,6 +41,7 @@ class SectionTables:
     dataset_id: str
     molecules: pd.DataFrame
     cells: pd.DataFrame
+    structures: tuple[StructureMask, ...] = ()
 
 
 def make_section(
@@ -46,6 +49,7 @@ def make_section(
     dataset_id: str,
     molecules: pd.DataFrame | Iterable[Mapping[str, Any]],
     cells: pd.DataFrame | Iterable[Mapping[str, Any]],
+    structures: Iterable[StructureMask] = (),
 ) -> SectionTables:
     """Build a section from records or data frames, checking every required column is present."""
     return SectionTables(
@@ -53,6 +57,7 @@ def make_section(
         dataset_id=dataset_id,
         molecules=_typed_table(molecules, MOLECULE_COLUMNS, "molecules"),
         cells=_typed_table(cells, CELL_COLUMNS, "cells"),
+        structures=tuple(structures),
     )
 
 
