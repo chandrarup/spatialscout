@@ -1,5 +1,7 @@
 // Typed client for the SpatialScout HTTP/SSE API. Types come from the generated contracts.
 import type {
+  AuditIndex,
+  AuditResult,
   CapabilityReport,
   DatasetManifest,
   LabelRuleSet,
@@ -37,6 +39,12 @@ export const api = {
       `/api/sections/${encodeURIComponent(sectionId)}/region-view/packed` +
         (labelRuleId ? `?label_rule_id=${encodeURIComponent(labelRuleId)}` : ""),
     ).then(json<PackedRegionView>),
+  auditResults: (datasetId: string) =>
+    fetch(`/api/datasets/${encodeURIComponent(datasetId)}/audit-results`).then(json<AuditIndex>),
+  auditResult: (datasetId: string, findingId: string) =>
+    fetch(`/api/datasets/${encodeURIComponent(datasetId)}/audit-results/${encodeURIComponent(findingId)}`).then(json<AuditResult>),
+  auditFigureUrl: (datasetId: string, findingId: string) =>
+    `/api/datasets/${encodeURIComponent(datasetId)}/audit-results/${encodeURIComponent(findingId)}/figure.png`,
   investigation: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}`).then(json<InvestigationSnapshot>),
   start: (body: StartInvestigationRequest) =>

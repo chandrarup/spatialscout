@@ -16,6 +16,8 @@ export const CELL_TYPE_SLOTS: readonly string[] = ["#d55181", "#9085e9", "#00830
 export const OTHER_MOLECULE = "#6b6f76";
 export const OTHER_CELL = "#8e8d86";
 export const STRUCTURE_OUTLINE = "#4dd0e1"; // cyan
+export const EXCLUDED_MOLECULE = "#f5c518"; // yellow, reserved for excluded molecules
+export const EVIDENCE_REGION = "#ffffff";
 export const MAX_HIGHLIGHTED = 3;
 
 /** Highlighted categories keep their slot while highlighted: colour follows the entity, never its rank. */

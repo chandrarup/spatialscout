@@ -1,6 +1,7 @@
 // Viewer controls: which section to open (grouped by dataset and group), which frozen label rule colours the
 // nuclei, and which genes' molecules are drawn.
-import type { DatasetManifest } from "../contracts/generated";
+import type { ConditionName, DatasetManifest } from "../contracts/generated";
+import { CONDITION_NAMES } from "./Viewer";
 
 export const ALL_GENES = "__all__";
 export const COLOURED_GENES = "__coloured__";
@@ -15,6 +16,13 @@ interface Props {
   genes: string[];
   geneFilter: string;
   onGeneFilter: (filter: string) => void;
+  /** Conditions the section view carries; the compared one splits the viewer against the default condition. */
+  conditions: string[];
+  compare: ConditionName | null;
+  onCompare: (condition: ConditionName | null) => void;
+  /** Genes a finding locked the filter to; null when unlocked. */
+  lockedGenes: string[] | null;
+  onUnlock: () => void;
 }
 
 const SELECT = "min-w-0 rounded border border-line bg-raised px-2 py-1 text-xs text-ink focus:border-accent focus:outline-none";
@@ -53,6 +61,34 @@ export function ViewerControls(props: Props) {
         </label>
       )}
       <label className="flex flex-col gap-1 text-ink-3">
+        Compare with default
+        <select
+          className={SELECT}
+          value={props.compare ?? ""}
+          onChange={(e) => props.onCompare(e.target.value ? (e.target.value as ConditionName) : null)}
+        >
+          <option value="">No split</option>
+          {props.conditions
+            .filter((c) => c !== "default")
+            .map((c) => (
+              <option key={c} value={c}>
+                {CONDITION_NAMES[c] ?? c}
+              </option>
+            ))}
+        </select>
+      </label>
+      {props.lockedGenes ? (
+        <div className="flex flex-col gap-1 text-ink-3">
+          Gene filter
+          <span className="flex items-center gap-2 rounded border border-accent/60 bg-raised px-2 py-1 text-ink">
+            Locked to the finding: {props.lockedGenes.join(", ")}
+            <button type="button" className="text-accent underline" onClick={props.onUnlock}>
+              unlock
+            </button>
+          </span>
+        </div>
+      ) : (
+      <label className="flex flex-col gap-1 text-ink-3">
         Gene filter
         <select className={SELECT} value={props.geneFilter} onChange={(e) => props.onGeneFilter(e.target.value)}>
           <option value={ALL_GENES}>All {props.genes.length} genes</option>
@@ -64,6 +100,7 @@ export function ViewerControls(props: Props) {
           ))}
         </select>
       </label>
+      )}
     </div>
   );
 }

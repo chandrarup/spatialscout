@@ -2,16 +2,22 @@
 // and structure outlines, in section micrometres. Drag to pan, scroll or pinch to zoom.
 //
 // A whole section (hundreds of thousands to a few million molecules) is drawn from typed arrays as deck.gl
-// binary attributes. A highlight or filter change rebuilds two flat buffers in one pass: grey background
-// molecules underneath, coloured ones on top. No per-molecule objects are created and nothing is sorted.
+// binary attributes. A highlight or filter change rebuilds flat buffers in one pass: grey background molecules
+// underneath, coloured ones on top. No per-molecule objects are created and nothing is sorted.
+//
+// With a compared condition the viewer splits: the default condition on the left of a draggable divider and the
+// compared condition on the right, both showing the same tissue at the same scale. The right side draws the
+// molecules that condition excludes in yellow. `flyTo` animates over about 800 ms into a region.
 import { OrthographicView, type PickingInfo } from "@deck.gl/core";
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import DeckGL from "@deck.gl/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { StructureMask } from "../contracts/generated";
+import type { ConditionName, Region, StructureMask } from "../contracts/generated";
 import { type SectionArrays, includedUnder } from "../packed";
 import {
   CELL_TYPE_SLOTS,
+  EVIDENCE_REGION,
+  EXCLUDED_MOLECULE,
   GENE_SLOTS,
   type Highlight,
   OTHER_CELL,
@@ -20,12 +26,26 @@ import {
   rgbOf,
 } from "../palette";
 
+export const CONDITION_NAMES: Record<string, string> = {
+  default: "default",
+  nucleus_only: "nucleus-only",
+  distance_cap_1um: "1 µm cap",
+  distance_cap_2um: "2 µm cap",
+  structure_constrained: "structure-constrained (exploratory)",
+};
+
 interface Props {
   section: SectionArrays;
   genes: Highlight;
   cellTypes: Highlight;
   /** Genes whose molecules are drawn; null draws every gene. */
   visibleGenes: ReadonlySet<string> | null;
+  /** The condition shown right of the divider against the default condition; null shows one view. */
+  compare: ConditionName | null;
+  /** Fly into this region when `key` changes. */
+  flyTo: { region: Region; key: number } | null;
+  /** An evidence region to outline. */
+  evidenceRegion: Region | null;
 }
 
 /** Molecules of one layer: positions, optional per-molecule colours, and each point's molecule index. */
@@ -36,30 +56,100 @@ interface MoleculeBuffer {
   index: Uint32Array;
 }
 
-const VIEW = new OrthographicView({ id: "section", flipY: true });
-const BACKGROUND_ALPHA = 150;
+interface Camera {
+  target: [number, number];
+  zoom: number;
+}
 
-export function Viewer({ section, genes, cellTypes, visibleGenes }: Props) {
+const BACKGROUND_ALPHA = 150;
+const FLY_MS = 800;
+
+export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo, evidenceRegion }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const size = useSize(container);
   const view = section.view;
+  const [camera, setCamera] = useState<Camera | null>(null);
+  const [split, setSplit] = useState(0.5);
+  const zoomRange = useRef<{ min: number; max: number }>({ min: -10, max: 10 });
 
-  const initialViewState = useMemo(() => {
+  // Fit the whole section once the container has a size, and again whenever another section opens (not when the
+  // same section reloads under another label rule, so a fly-to survives it).
+  useEffect(() => {
+    if (!size) return;
     const { x0, y0, x1, y1 } = view.region;
-    const width = Math.max(x1 - x0, 1);
-    const height = Math.max(y1 - y0, 1);
-    const scale = size ? Math.min(size.width / width, size.height / height) * 0.9 : 1;
+    const scale = Math.min(size.width / Math.max(x1 - x0, 1), size.height / Math.max(y1 - y0, 1)) * 0.9;
     const fit = Math.log2(scale);
-    // From a little wider than the whole section down to single molecules (2^8 = 256x the fitted scale).
-    return { target: [(x0 + x1) / 2, (y0 + y1) / 2, 0] as [number, number, number], zoom: fit, minZoom: fit - 2, maxZoom: fit + 8 };
-  }, [view, size !== null]); // fit once the container has a size; afterwards the user pans and zooms
+    zoomRange.current = { min: fit - 2, max: fit + 8 };
+    setCamera({ target: [(x0 + x1) / 2, (y0 + y1) / 2], zoom: fit });
+  }, [view.section_id, size !== null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fly into a region: ease the shared camera over FLY_MS so both halves of the split stay aligned throughout.
+  const cameraRef = useRef(camera);
+  cameraRef.current = camera;
+  useEffect(() => {
+    if (!flyTo || !size || flyTo.region.section_id !== view.section_id) return;
+    const start = cameraRef.current;
+    if (!start) return;
+    const { x0, y0, x1, y1 } = flyTo.region;
+    const span = Math.max(x1 - x0, y1 - y0, 1);
+    const end: Camera = {
+      target: [(x0 + x1) / 2, (y0 + y1) / 2],
+      zoom: Math.min(Math.log2(Math.min(size.width, size.height) / (span * 2)), zoomRange.current.max),
+    };
+    const began = performance.now();
+    let frame = 0;
+    const step = (now: number) => {
+      const t = Math.min((now - began) / FLY_MS, 1);
+      const e = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+      setCamera({
+        target: [start.target[0] + (end.target[0] - start.target[0]) * e, start.target[1] + (end.target[1] - start.target[1]) * e],
+        zoom: start.zoom + (end.zoom - start.zoom) * e,
+      });
+      if (t < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [flyTo?.key, view.section_id, size !== null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { background, highlighted } = useMemo(() => moleculeBuffers(section, genes, visibleGenes), [section, genes, visibleGenes]);
+  const excluded = useMemo(
+    () => (compare ? excludedBuffer(section, compare, visibleGenes) : buffer(0, false)),
+    [section, compare, visibleGenes],
+  );
   const cellColours = useMemo(() => cellRingColours(section, cellTypes), [section, cellTypes]);
 
-  const layers = [
+  const width = size?.width ?? 1;
+  const splitX = compare ? Math.round(width * split) : width;
+  const views = compare
+    ? [
+        new OrthographicView({ id: "left", x: 0, width: splitX, flipY: true, controller: { dragRotate: false } }),
+        new OrthographicView({ id: "right", x: splitX, width: width - splitX, flipY: true, controller: { dragRotate: false } }),
+      ]
+    : [new OrthographicView({ id: "left", flipY: true, controller: { dragRotate: false } })];
+
+  // Each view's own target, so a world point lands on the same screen pixel in both halves.
+  const viewState = camera
+    ? Object.fromEntries(
+        views.map((v) => {
+          const x = v.id === "right" ? splitX : 0;
+          const w = v.id === "right" ? width - splitX : splitX;
+          const shift = (x + w / 2 - width / 2) / 2 ** camera.zoom;
+          return [v.id, { target: [camera.target[0] + shift, camera.target[1], 0] as [number, number, number], zoom: camera.zoom, minZoom: zoomRange.current.min, maxZoom: zoomRange.current.max }];
+        }),
+      )
+    : undefined;
+
+  const onViewStateChange = ({ viewId, viewState: next }: { viewId: string; viewState: { target: number[]; zoom: number } }) => {
+    const x = viewId === "right" ? splitX : 0;
+    const w = viewId === "right" ? width - splitX : splitX;
+    const zoom = Math.min(Math.max(next.zoom, zoomRange.current.min), zoomRange.current.max);
+    const shift = (x + w / 2 - width / 2) / 2 ** zoom;
+    setCamera({ target: [(next.target[0] ?? 0) - shift, next.target[1] ?? 0], zoom });
+  };
+
+  const sharedLayers = (side: string) => [
     new PathLayer<StructureMask>({
-      id: "structures",
+      id: `${side}-structures`,
       data: view.structures,
       getPath: (s) => [...s.outline, s.outline[0] ?? [0, 0]].map((point): [number, number] => [point[0] ?? 0, point[1] ?? 0]),
       getColor: [...rgbOf(STRUCTURE_OUTLINE), 230],
@@ -68,7 +158,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes }: Props) {
       pickable: true,
     }),
     new ScatterplotLayer({
-      id: "nuclei",
+      id: `${side}-nuclei`,
       data: {
         length: section.cellCount,
         attributes: {
@@ -85,7 +175,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes }: Props) {
       pickable: true,
     }),
     new ScatterplotLayer({
-      id: "molecules-background",
+      id: `${side}-molecules-background`,
       data: { length: background.length, attributes: { getPosition: { value: background.positions, size: 2 } } },
       getFillColor: [...rgbOf(OTHER_MOLECULE), BACKGROUND_ALPHA],
       getRadius: 0.45,
@@ -94,7 +184,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes }: Props) {
       pickable: true,
     }),
     new ScatterplotLayer({
-      id: "molecules-highlighted",
+      id: `${side}-molecules-highlighted`,
       data: {
         length: highlighted.length,
         attributes: {
@@ -107,19 +197,87 @@ export function Viewer({ section, genes, cellTypes, visibleGenes }: Props) {
       radiusMinPixels: 1.75,
       pickable: true,
     }),
+    ...(evidenceRegion && evidenceRegion.section_id === view.section_id
+      ? [
+          new PathLayer<Region>({
+            id: `${side}-evidence-region`,
+            data: [evidenceRegion],
+            getPath: (r) => [[r.x0, r.y0], [r.x1, r.y0], [r.x1, r.y1], [r.x0, r.y1], [r.x0, r.y0]],
+            getColor: [...rgbOf(EVIDENCE_REGION), 220],
+            getWidth: 1.5,
+            widthUnits: "pixels",
+          }),
+        ]
+      : []),
+  ];
+
+  const layers = [
+    ...sharedLayers("left"),
+    ...(compare
+      ? [
+          ...sharedLayers("right"),
+          new ScatterplotLayer({
+            id: "right-molecules-excluded",
+            data: { length: excluded.length, attributes: { getPosition: { value: excluded.positions, size: 2 } } },
+            getFillColor: [...rgbOf(EXCLUDED_MOLECULE), 255],
+            getRadius: 0.55,
+            radiusUnits: "common",
+            radiusMinPixels: 2,
+            pickable: true,
+          }),
+        ]
+      : []),
   ];
 
   return (
     <div ref={container} className="relative h-full w-full overflow-hidden rounded-lg border border-line bg-surface">
-      {size && (
+      {size && viewState && (
         <DeckGL
           key={view.section_id}
-          views={VIEW}
-          initialViewState={initialViewState}
-          controller={{ dragRotate: false }}
+          views={views}
+          viewState={viewState}
+          onViewStateChange={onViewStateChange as never}
           layers={layers}
-          getTooltip={(info) => tooltip(info, section, background, highlighted)}
+          layerFilter={({ layer, viewport }) => layer.id.startsWith(`${viewport.id}-`)}
+          getTooltip={(info) => tooltip(info, section, background, highlighted, excluded, compare)}
         />
+      )}
+      {compare && size && (
+        <>
+          <div
+            role="slider"
+            aria-label="Split between the default condition and the compared condition"
+            aria-valuemin={10}
+            aria-valuemax={90}
+            aria-valuenow={Math.round(split * 100)}
+            tabIndex={0}
+            className="absolute top-0 z-10 h-full w-3 -translate-x-1/2 cursor-ew-resize"
+            style={{ left: splitX }}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft") setSplit((s) => Math.max(0.1, s - 0.05));
+              if (e.key === "ArrowRight") setSplit((s) => Math.min(0.9, s + 0.05));
+            }}
+            onPointerDown={(e) => {
+              const box = container.current?.getBoundingClientRect();
+              if (!box) return;
+              (e.target as HTMLElement).setPointerCapture(e.pointerId);
+              const move = (event: PointerEvent) => setSplit(Math.min(0.9, Math.max(0.1, (event.clientX - box.left) / box.width)));
+              const up = () => {
+                window.removeEventListener("pointermove", move);
+                window.removeEventListener("pointerup", up);
+              };
+              window.addEventListener("pointermove", move);
+              window.addEventListener("pointerup", up);
+            }}
+          >
+            <div className="mx-auto h-full w-0.5 bg-ink-2/80" />
+          </div>
+          <div className="pointer-events-none absolute left-3 top-2 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">default</div>
+          <div className="pointer-events-none absolute right-3 top-2 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">
+            {CONDITION_NAMES[compare] ?? compare} · <span style={{ color: EXCLUDED_MOLECULE }}>●</span>{" "}
+            {excluded.length.toLocaleString()} excluded molecules shown
+          </div>
+        </>
       )}
       <div className="pointer-events-none absolute bottom-2 left-3 text-xs text-ink-3">
         {view.section_name ? `${view.section_name} (${view.section_id})` : view.section_id} ·{" "}
@@ -171,6 +329,30 @@ function moleculeBuffers(
   return { background, highlighted };
 }
 
+/** Molecules the default condition counts toward a cell and `condition` does not, among the visible genes. */
+function excludedBuffer(section: SectionArrays, condition: ConditionName, visibleGenes: ReadonlySet<string> | null): MoleculeBuffer {
+  const bits = section.view.molecules.condition_bits as Record<string, number | undefined>;
+  const defaultBit = bits.default;
+  const conditionBit = bits[condition];
+  if (defaultBit === undefined || conditionBit === undefined) return buffer(0, false);
+  const visible = section.view.genes.map((gene) => visibleGenes === null || visibleGenes.has(gene));
+  const isExcluded = (i: number) => {
+    const value = section.inclusionBits[i] ?? 0;
+    return ((value >> defaultBit) & 1) === 1 && ((value >> conditionBit) & 1) === 0 && (visible[section.geneIndex[i] ?? 0] ?? false);
+  };
+  let count = 0;
+  for (let i = 0; i < section.moleculeCount; i++) if (isExcluded(i)) count++;
+  const out = buffer(count, false);
+  let n = 0;
+  for (let i = 0; i < section.moleculeCount; i++) {
+    if (!isExcluded(i)) continue;
+    out.positions[2 * n] = section.positions[2 * i] ?? 0;
+    out.positions[2 * n + 1] = section.positions[2 * i + 1] ?? 0;
+    out.index[n++] = i;
+  }
+  return out;
+}
+
 function buffer(length: number, coloured: boolean): MoleculeBuffer {
   return {
     length,
@@ -190,27 +372,37 @@ function cellRingColours(section: SectionArrays, cellTypes: Highlight): Uint8Arr
   return colours;
 }
 
-function tooltip(info: PickingInfo, section: SectionArrays, background: MoleculeBuffer, highlighted: MoleculeBuffer): { text: string } | null {
+function tooltip(
+  info: PickingInfo,
+  section: SectionArrays,
+  background: MoleculeBuffer,
+  highlighted: MoleculeBuffer,
+  excluded: MoleculeBuffer,
+  compare: ConditionName | null,
+): { text: string } | null {
   if (info.index < 0) return null;
   const view = section.view;
-  const layer = info.layer?.id;
-  if (layer === "molecules-background" || layer === "molecules-highlighted") {
-    const i = (layer === "molecules-highlighted" ? highlighted : background).index[info.index];
+  const layer = (info.layer?.id ?? "").replace(/^(left|right)-/, "");
+  if (layer.startsWith("molecules-")) {
+    const source = layer === "molecules-highlighted" ? highlighted : layer === "molecules-excluded" ? excluded : background;
+    const i = source.index[info.index];
     if (i === undefined) return null;
     const gene = view.genes[section.geneIndex[i] ?? 0] ?? "?";
     const cell = section.cellIndex[i] ?? -1;
     if (cell < 0) return { text: `${gene} molecule, unassigned` };
     const cellType = view.cell_types[section.cellTypeIndex[cell] ?? 0] ?? "?";
-    const nuclear = includedUnder(section, i, "nucleus_only");
-    const nucleus = nuclear === null ? "" : nuclear ? "\nover the nucleus" : "\noutside the nucleus: nucleus-only excludes it";
-    return { text: `${gene} molecule\ncounted toward ${view.cells.cell_id[cell] ?? "?"} (${cellType})${nucleus}` };
+    const condition = compare ?? "nucleus_only";
+    const kept = includedUnder(section, i, condition);
+    const name = CONDITION_NAMES[condition] ?? condition;
+    const status = kept === null ? "" : kept ? `\nkept under ${name}` : `\nexcluded under ${name}`;
+    return { text: `${gene} molecule\ncounted toward ${view.cells.cell_id[cell] ?? "?"} (${cellType}) by default${status}` };
   }
   if (layer === "nuclei") {
     const cellType = view.cell_types[section.cellTypeIndex[info.index] ?? 0] ?? "?";
     return { text: `${view.cells.cell_id[info.index] ?? "?"}: ${cellType}\nnucleus drawn as a circle (approximation)` };
   }
   const structure = info.object as StructureMask | undefined;
-  return structure ? { text: `${structure.kind} outline (${structure.source})` } : null;
+  return structure?.kind ? { text: `${structure.kind} outline (${structure.source})` } : null;
 }
 
 function useSize(ref: React.RefObject<HTMLDivElement | null>): { width: number; height: number } | null {
