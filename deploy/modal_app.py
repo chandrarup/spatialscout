@@ -25,6 +25,8 @@ web_image = (
     .uv_sync(str(REPO), frozen=True, extra_options="--no-dev")  # third-party deps, exactly as uv.lock pins them
     .env(
         {
+            # configs/ (the frozen marker pairs) and artifacts/ (manifest, label rules, audit results) sit under it.
+            "SPATIALSCOUT_ROOT": "/root",
             "SPATIALSCOUT_FIXTURES_DIR": "/root/fixtures",
             "SPATIALSCOUT_RECORDINGS_DIR": "/root/fixtures/recordings",
             "SPATIALSCOUT_WEB_DIST": "/root/web-dist",
@@ -33,9 +35,12 @@ web_image = (
             "SPATIALSCOUT_STREAM_WINDOW_SECONDS": "110",
         }
     )
-    # Only the package, the fixtures and the built web app are shipped: never the repo root, so `.env` cannot be.
+    # Only the package, fixtures, configs, committed artifacts and the built web app are shipped: never the repo
+    # root, so `.env` cannot be.
     .add_local_python_source("spatialscout")
     .add_local_dir(REPO / "fixtures", "/root/fixtures")
+    .add_local_dir(REPO / "configs", "/root/configs")
+    .add_local_dir(REPO / "artifacts", "/root/artifacts")
     .add_local_dir(REPO / "web" / "dist", "/root/web-dist")
 )
 

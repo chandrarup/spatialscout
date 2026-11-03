@@ -46,6 +46,8 @@ interface Props {
   flyTo: { region: Region; key: number } | null;
   /** An evidence region to outline. */
   evidenceRegion: Region | null;
+  /** With a focused finding, only molecules of this population's cells are drawn as excluded. */
+  excludedCellType: string | null;
 }
 
 /** Molecules of one layer: positions, optional per-molecule colours, and each point's molecule index. */
@@ -64,7 +66,7 @@ interface Camera {
 const BACKGROUND_ALPHA = 150;
 const FLY_MS = 800;
 
-export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo, evidenceRegion }: Props) {
+export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo, evidenceRegion, excludedCellType }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const size = useSize(container);
   const view = section.view;
@@ -113,8 +115,8 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
 
   const { background, highlighted } = useMemo(() => moleculeBuffers(section, genes, visibleGenes), [section, genes, visibleGenes]);
   const excluded = useMemo(
-    () => (compare ? excludedBuffer(section, compare, visibleGenes) : buffer(0, false)),
-    [section, compare, visibleGenes],
+    () => (compare ? excludedBuffer(section, compare, visibleGenes, excludedCellType) : buffer(0, false)),
+    [section, compare, visibleGenes, excludedCellType],
   );
   const cellColours = useMemo(() => cellRingColours(section, cellTypes), [section, cellTypes]);
 
@@ -276,6 +278,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
           <div className="pointer-events-none absolute right-3 top-2 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">
             {CONDITION_NAMES[compare] ?? compare} · <span style={{ color: EXCLUDED_MOLECULE }}>●</span>{" "}
             {excluded.length.toLocaleString()} excluded molecules shown
+            {excludedCellType ? ` (in ${excludedCellType} cells)` : ""}
           </div>
         </>
       )}
@@ -330,15 +333,22 @@ function moleculeBuffers(
 }
 
 /** Molecules the default condition counts toward a cell and `condition` does not, among the visible genes. */
-function excludedBuffer(section: SectionArrays, condition: ConditionName, visibleGenes: ReadonlySet<string> | null): MoleculeBuffer {
+function excludedBuffer(
+  section: SectionArrays,
+  condition: ConditionName,
+  visibleGenes: ReadonlySet<string> | null,
+  cellType: string | null,
+): MoleculeBuffer {
   const bits = section.view.molecules.condition_bits as Record<string, number | undefined>;
   const defaultBit = bits.default;
   const conditionBit = bits[condition];
   if (defaultBit === undefined || conditionBit === undefined) return buffer(0, false);
   const visible = section.view.genes.map((gene) => visibleGenes === null || visibleGenes.has(gene));
+  const typeIndex = cellType === null ? -1 : section.view.cell_types.indexOf(cellType);
   const isExcluded = (i: number) => {
     const value = section.inclusionBits[i] ?? 0;
-    return ((value >> defaultBit) & 1) === 1 && ((value >> conditionBit) & 1) === 0 && (visible[section.geneIndex[i] ?? 0] ?? false);
+    if (((value >> defaultBit) & 1) !== 1 || ((value >> conditionBit) & 1) !== 0 || !(visible[section.geneIndex[i] ?? 0] ?? false)) return false;
+    return typeIndex < 0 || section.cellTypeIndex[section.cellIndex[i] ?? 0] === typeIndex;
   };
   let count = 0;
   for (let i = 0; i < section.moleculeCount; i++) if (isExcluded(i)) count++;

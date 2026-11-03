@@ -145,6 +145,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus }: Props) {
             compare={compare}
             flyTo={focused ? { region: focused.region, key: focused.key } : null}
             evidenceRegion={focused?.region ?? null}
+            excludedCellType={focused && lockedGenes ? focused.cellType : null}
           />
         ) : (
           <div className="flex h-full items-center justify-center rounded-lg border border-line text-sm text-ink-3">
