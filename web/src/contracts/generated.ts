@@ -96,6 +96,14 @@ export interface AuditConditionValue {
   missing_reasons: {
     [k: string]: string;
   };
+  /**
+   * Cells of the population that meet a presence measure under the condition (the observed value's numerator); null for the co-expression score.
+   */
+  cells_expressing: number | null;
+  /**
+   * Co-expression score only: the marker pairs averaged.
+   */
+  pairs_scored: number | null;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -153,12 +161,11 @@ export interface AuditResult {
   dataset_id: string;
   population: Population;
   /**
-   * One gene, or a gene pair for co-expression.
+   * One gene, a gene set (presence of any), or every gene of the scored marker pairs.
    *
    * @minItems 1
-   * @maxItems 2
    */
-  genes: [string] | [string, string];
+  genes: [string, ...string[]];
   measure: "share_expressing" | "gene_set_share_expressing" | "co_expression_score";
   sections: AuditSectionValues[];
   /**
@@ -171,6 +178,18 @@ export interface AuditResult {
   label: EvidenceStatus;
   label_reason: string;
   source_artifact_ids: string[];
+  /**
+   * Co-expression score only: the marker pairs it averages.
+   */
+  gene_pairs: string[][];
+  marker_pairs: MarkerPairsSource | null;
+  pooled: PooledConditionValue[];
+  leave_one_section_out: LeaveOneSectionOutVerdict[];
+  eligible_by_group: {
+    [k: string]: number;
+  };
+  sections_left_out: LeftOutSection[];
+  rules: AuditRules | null;
 }
 /**
  * The cells a result is about: a cell type under a frozen label rule, fixed under the default condition.
@@ -185,6 +204,8 @@ export interface Population {
 /**
  * One section of an audit result. `cells_labelled` is the fixed population count: cells carrying the
  * label under the default condition. A cell without retained molecules stays in every denominator.
+ * `cells_with_retained_molecule` (per condition) counts population cells that keep at least one molecule of any
+ * gene, reported separately from the fixed denominator.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "AuditSectionValues".
@@ -193,9 +214,13 @@ export interface AuditSectionValues {
   section_id: string;
   cells_labelled: number;
   conditions: AuditConditionValue[];
+  group: string | null;
+  eligible: boolean | null;
+  ineligible_reason: string | null;
 }
 /**
  * A region ranked by the result's ranking rule as showing the molecules behind it (rank 1 is first).
+ * `score` is the ranking count: the result's molecules in the population excluded under `condition`.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "EvidenceRegion".
@@ -204,6 +229,12 @@ export interface EvidenceRegion {
   rank: number;
   region: Region;
   score: number | null;
+  condition: ConditionName | null;
+  excluded_molecules: number | null;
+  /**
+   * The result's molecules in the population in the window under the default condition.
+   */
+  default_molecules: number | null;
 }
 /**
  * A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.
@@ -217,6 +248,92 @@ export interface Region {
   y0: number;
   x1: number;
   y1: number;
+}
+/**
+ * The frozen exclusive-marker-pair artifact a result used, with the checksum of its file bytes.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "MarkerPairsSource".
+ */
+export interface MarkerPairsSource {
+  path: string;
+  sha256: string;
+  frozen_on: string | null;
+  source_dataset: string | null;
+  source_url: string | null;
+  pair_count: number;
+}
+/**
+ * One condition pooled over the eligible sections, by the result's pooling rule (ratio of sums).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PooledConditionValue".
+ */
+export interface PooledConditionValue {
+  condition: ConditionName;
+  cells: number;
+  molecules: number;
+  default_molecules: number;
+  retention: number | null;
+  observed_value: number | null;
+  expectation_cell_matched: number | null;
+  expectation_home_matched: number | null;
+  excess_drop_cell_matched: number | null;
+  excess_drop_home_matched: number | null;
+  /**
+   * Observed below the home-matched expectation times 2^-0.5 (an excess log2 drop above 0.5).
+   */
+  below_home_threshold: boolean | null;
+  missing_reasons: {
+    [k: string]: string;
+  };
+}
+/**
+ * The audit verdict with one eligible section left out: which stricter conditions fall below the threshold.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LeaveOneSectionOutVerdict".
+ */
+export interface LeaveOneSectionOutVerdict {
+  left_out_section_id: string;
+  conditions_below_threshold: ConditionName[];
+  /**
+   * stable or segmentation_sensitive; null when an expectation is missing.
+   */
+  verdict: EvidenceStatus | null;
+}
+/**
+ * A section of the dataset the result does not count, with the reason (for example a duplicate).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LeftOutSection".
+ */
+export interface LeftOutSection {
+  section_id: string;
+  reason: string;
+}
+/**
+ * The frozen analysis rules a result was computed under, recorded with it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "AuditRules".
+ */
+export interface AuditRules {
+  population_gate_min_cells: number;
+  molecule_gate_min_molecules: number;
+  min_eligible_sections: number;
+  excess_log2_drop_threshold: number;
+  home_label_rule_id: string;
+  /**
+   * Each gene's home cell type from the full-panel marker map; null when it has none.
+   */
+  home_cell_types: {
+    [k: string]: string | null;
+  };
+  result_molecules_rule: string;
+  pooling_rule: string;
+  label_rule: string;
+  expectation_rule: string;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -880,6 +997,27 @@ export interface LabelRule {
   min_molecules: number;
 }
 /**
+ * The measure under one label rule.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabelRuleArm".
+ */
+export interface LabelRuleArm {
+  label_rule_id: string;
+  finding_id: string;
+  /**
+   * Cells of the population summed over every counted section.
+   */
+  cells_labelled: number;
+  cells_labelled_by_section: {
+    [k: string]: number;
+  };
+  eligible_section_ids: string[];
+  pooled: PooledConditionValue[];
+  label: EvidenceStatus;
+  label_reason: string;
+}
+/**
  * The frozen label rules of a dataset, the gene scales they use, and per-section label counts.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -902,6 +1040,35 @@ export interface LabelRuleSet {
   };
   notes: string[];
   citation: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabelSensitivityCheck".
+ */
+export interface LabelSensitivityCheck {
+  schema_version: string;
+  control_kind: "label_sensitivity";
+  control_id: string;
+  dataset_id: string;
+  cell_type: string;
+  genes: string[];
+  measure: string;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  arms: [LabelRuleArm, LabelRuleArm];
+  /**
+   * Cells labelled with the population under both rules.
+   */
+  cells_in_both: number;
+  cells_only_first: number;
+  cells_only_second: number;
+  /**
+   * Both rules give the same evidence label.
+   */
+  same_label: boolean;
+  summary: string;
 }
 /**
  * How the server answers questions. Live runs arrive with ticket 03.
@@ -1120,6 +1287,34 @@ export interface ProposedStep {
     [k: string]: unknown;
   };
   rationale: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "RandomThinningControl".
+ */
+export interface RandomThinningControl {
+  schema_version: string;
+  control_kind: "random_thinning";
+  control_id: string;
+  finding_id: string;
+  dataset_id: string;
+  label_rule_id: string;
+  cell_type: string;
+  genes: string[];
+  measure: string;
+  eligible_section_ids: string[];
+  pooled: PooledConditionValue[];
+  /**
+   * Every section's values; only eligible ones are pooled.
+   */
+  sections: AuditSectionValues[];
+  /**
+   * The frozen audit threshold the verdict uses.
+   */
+  threshold: string;
+  conditions_below_threshold: ConditionName[];
+  label: EvidenceStatus;
+  label_reason: string;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema

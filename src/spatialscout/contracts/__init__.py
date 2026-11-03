@@ -56,16 +56,22 @@ from .events import (
 from .finding import (
     AuditConditionValue,
     AuditResult,
+    AuditRules,
     AuditSectionValues,
     ConditionEffect,
     ContrastResult,
     EvidenceRegion,
     Finding,
     LeaveOneSectionOut,
+    LeaveOneSectionOutVerdict,
+    LeftOutSection,
+    MarkerPairsSource,
+    PooledConditionValue,
     Population,
     Region,
     SectionLog2Value,
 )
+from .controls import LabelRuleArm, LabelSensitivityCheck, RandomThinningControl
 from .investigation import (
     TERMINAL_STATUSES,
     InvestigationSnapshot,

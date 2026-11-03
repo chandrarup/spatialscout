@@ -117,6 +117,30 @@
             "type": "string"
           },
           "type": "object"
+        },
+        "cells_expressing": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Cells of the population that meet a presence measure under the condition (the observed value's numerator); null for the co-expression score."
+        },
+        "pairs_scored": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Co-expression score only: the marker pairs averaged."
         }
       },
       "required": [
@@ -132,7 +156,9 @@
         "excess_drop_home_matched",
         "neighbour_proximity_share_excluded",
         "neighbour_proximity_share_retained",
-        "missing_reasons"
+        "missing_reasons",
+        "cells_expressing",
+        "pairs_scored"
       ],
       "title": "AuditConditionValue",
       "type": "object"
@@ -288,11 +314,10 @@
           "$ref": "#/definitions/Population"
         },
         "genes": {
-          "description": "One gene, or a gene pair for co-expression.",
+          "description": "One gene, a gene set (presence of any), or every gene of the scored marker pairs.",
           "items": {
             "type": "string"
           },
-          "maxItems": 2,
           "minItems": 1,
           "type": "array"
         },
@@ -351,6 +376,62 @@
             "type": "string"
           },
           "type": "array"
+        },
+        "gene_pairs": {
+          "description": "Co-expression score only: the marker pairs it averages.",
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "marker_pairs": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MarkerPairsSource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pooled": {
+          "items": {
+            "$ref": "#/definitions/PooledConditionValue"
+          },
+          "type": "array"
+        },
+        "leave_one_section_out": {
+          "items": {
+            "$ref": "#/definitions/LeaveOneSectionOutVerdict"
+          },
+          "type": "array"
+        },
+        "eligible_by_group": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "rules": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AuditRules"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -368,14 +449,82 @@
         "ranking_rule",
         "label",
         "label_reason",
-        "source_artifact_ids"
+        "source_artifact_ids",
+        "gene_pairs",
+        "marker_pairs",
+        "pooled",
+        "leave_one_section_out",
+        "eligible_by_group",
+        "sections_left_out",
+        "rules"
       ],
       "title": "AuditResult",
       "type": "object"
     },
+    "AuditRules": {
+      "additionalProperties": false,
+      "description": "The frozen analysis rules a result was computed under, recorded with it.",
+      "properties": {
+        "population_gate_min_cells": {
+          "type": "integer"
+        },
+        "molecule_gate_min_molecules": {
+          "type": "integer"
+        },
+        "min_eligible_sections": {
+          "type": "integer"
+        },
+        "excess_log2_drop_threshold": {
+          "type": "number"
+        },
+        "home_label_rule_id": {
+          "type": "string"
+        },
+        "home_cell_types": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Each gene's home cell type from the full-panel marker map; null when it has none.",
+          "type": "object"
+        },
+        "result_molecules_rule": {
+          "type": "string"
+        },
+        "pooling_rule": {
+          "type": "string"
+        },
+        "label_rule": {
+          "type": "string"
+        },
+        "expectation_rule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "population_gate_min_cells",
+        "molecule_gate_min_molecules",
+        "min_eligible_sections",
+        "excess_log2_drop_threshold",
+        "home_label_rule_id",
+        "home_cell_types",
+        "result_molecules_rule",
+        "pooling_rule",
+        "label_rule",
+        "expectation_rule"
+      ],
+      "title": "AuditRules",
+      "type": "object"
+    },
     "AuditSectionValues": {
       "additionalProperties": false,
-      "description": "One section of an audit result. `cells_labelled` is the fixed population count: cells carrying the\nlabel under the default condition. A cell without retained molecules stays in every denominator.",
+      "description": "One section of an audit result. `cells_labelled` is the fixed population count: cells carrying the\nlabel under the default condition. A cell without retained molecules stays in every denominator.\n`cells_with_retained_molecule` (per condition) counts population cells that keep at least one molecule of any\ngene, reported separately from the fixed denominator.",
       "properties": {
         "section_id": {
           "type": "string"
@@ -388,12 +537,48 @@
             "$ref": "#/definitions/AuditConditionValue"
           },
           "type": "array"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "eligible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ineligible_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
         "section_id",
         "cells_labelled",
-        "conditions"
+        "conditions",
+        "group",
+        "eligible",
+        "ineligible_reason"
       ],
       "title": "AuditSectionValues",
       "type": "object"
@@ -1274,7 +1459,7 @@
     },
     "EvidenceRegion": {
       "additionalProperties": false,
-      "description": "A region ranked by the result's ranking rule as showing the molecules behind it (rank 1 is first).",
+      "description": "A region ranked by the result's ranking rule as showing the molecules behind it (rank 1 is first).\n`score` is the ranking count: the result's molecules in the population excluded under `condition`.",
       "properties": {
         "rank": {
           "minimum": 1,
@@ -1293,12 +1478,49 @@
             }
           ],
           "default": null
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ConditionName"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "excluded_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "default_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The result's molecules in the population in the window under the default condition."
         }
       },
       "required": [
         "rank",
         "region",
-        "score"
+        "score",
+        "condition",
+        "excluded_molecules",
+        "default_molecules"
       ],
       "title": "EvidenceRegion",
       "type": "object"
@@ -1775,6 +1997,58 @@
       "title": "LabelRule",
       "type": "object"
     },
+    "LabelRuleArm": {
+      "additionalProperties": false,
+      "description": "The measure under one label rule.",
+      "properties": {
+        "label_rule_id": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "cells_labelled": {
+          "description": "Cells of the population summed over every counted section.",
+          "type": "integer"
+        },
+        "cells_labelled_by_section": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "eligible_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pooled": {
+          "items": {
+            "$ref": "#/definitions/PooledConditionValue"
+          },
+          "type": "array"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "label_rule_id",
+        "finding_id",
+        "cells_labelled",
+        "cells_labelled_by_section",
+        "eligible_section_ids",
+        "pooled",
+        "label",
+        "label_reason"
+      ],
+      "title": "LabelRuleArm",
+      "type": "object"
+    },
     "LabelRuleSet": {
       "additionalProperties": false,
       "description": "The frozen label rules of a dataset, the gene scales they use, and per-section label counts.",
@@ -1838,6 +2112,80 @@
       "title": "LabelRuleSet",
       "type": "object"
     },
+    "LabelSensitivityCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "control_kind": {
+          "const": "label_sensitivity",
+          "default": "label_sensitivity",
+          "type": "string"
+        },
+        "control_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "measure": {
+          "type": "string"
+        },
+        "arms": {
+          "items": {
+            "$ref": "#/definitions/LabelRuleArm"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "cells_in_both": {
+          "description": "Cells labelled with the population under both rules.",
+          "type": "integer"
+        },
+        "cells_only_first": {
+          "type": "integer"
+        },
+        "cells_only_second": {
+          "type": "integer"
+        },
+        "same_label": {
+          "description": "Both rules give the same evidence label.",
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "control_kind",
+        "control_id",
+        "dataset_id",
+        "cell_type",
+        "genes",
+        "measure",
+        "arms",
+        "cells_in_both",
+        "cells_only_first",
+        "cells_only_second",
+        "same_label",
+        "summary"
+      ],
+      "title": "LabelSensitivityCheck",
+      "type": "object"
+    },
     "LeaveOneSectionOut": {
       "additionalProperties": false,
       "description": "The effect recomputed without one section, and whether its direction survives.",
@@ -1876,6 +2224,115 @@
         "direction_kept"
       ],
       "title": "LeaveOneSectionOut",
+      "type": "object"
+    },
+    "LeaveOneSectionOutVerdict": {
+      "additionalProperties": false,
+      "description": "The audit verdict with one eligible section left out: which stricter conditions fall below the threshold.",
+      "properties": {
+        "left_out_section_id": {
+          "type": "string"
+        },
+        "conditions_below_threshold": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/EvidenceStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "stable or segmentation_sensitive; null when an expectation is missing."
+        }
+      },
+      "required": [
+        "left_out_section_id",
+        "conditions_below_threshold",
+        "verdict"
+      ],
+      "title": "LeaveOneSectionOutVerdict",
+      "type": "object"
+    },
+    "LeftOutSection": {
+      "additionalProperties": false,
+      "description": "A section of the dataset the result does not count, with the reason (for example a duplicate).",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "section_id",
+        "reason"
+      ],
+      "title": "LeftOutSection",
+      "type": "object"
+    },
+    "MarkerPairsSource": {
+      "additionalProperties": false,
+      "description": "The frozen exclusive-marker-pair artifact a result used, with the checksum of its file bytes.",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "frozen_on": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pair_count": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "frozen_on",
+        "source_dataset",
+        "source_url",
+        "pair_count"
+      ],
+      "title": "MarkerPairsSource",
       "type": "object"
     },
     "ModeInfo": {
@@ -2794,6 +3251,118 @@
       "title": "PlanStep",
       "type": "object"
     },
+    "PooledConditionValue": {
+      "additionalProperties": false,
+      "description": "One condition pooled over the eligible sections, by the result's pooling rule (ratio of sums).",
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "cells": {
+          "type": "integer"
+        },
+        "molecules": {
+          "type": "integer"
+        },
+        "default_molecules": {
+          "type": "integer"
+        },
+        "retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectation_cell_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectation_home_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excess_drop_cell_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excess_drop_home_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "below_home_threshold": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Observed below the home-matched expectation times 2^-0.5 (an excess log2 drop above 0.5)."
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "condition",
+        "cells",
+        "molecules",
+        "default_molecules",
+        "retention",
+        "observed_value",
+        "expectation_cell_matched",
+        "expectation_home_matched",
+        "excess_drop_cell_matched",
+        "excess_drop_home_matched",
+        "below_home_threshold",
+        "missing_reasons"
+      ],
+      "title": "PooledConditionValue",
+      "type": "object"
+    },
     "Population": {
       "additionalProperties": false,
       "description": "The cells a result is about: a cell type under a frozen label rule, fixed under the default condition.",
@@ -2832,6 +3401,99 @@
         "rationale"
       ],
       "title": "ProposedStep",
+      "type": "object"
+    },
+    "RandomThinningControl": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "control_kind": {
+          "const": "random_thinning",
+          "default": "random_thinning",
+          "type": "string"
+        },
+        "control_id": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "measure": {
+          "type": "string"
+        },
+        "eligible_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pooled": {
+          "items": {
+            "$ref": "#/definitions/PooledConditionValue"
+          },
+          "type": "array"
+        },
+        "sections": {
+          "description": "Every section's values; only eligible ones are pooled.",
+          "items": {
+            "$ref": "#/definitions/AuditSectionValues"
+          },
+          "type": "array"
+        },
+        "threshold": {
+          "description": "The frozen audit threshold the verdict uses.",
+          "type": "string"
+        },
+        "conditions_below_threshold": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "control_kind",
+        "control_id",
+        "finding_id",
+        "dataset_id",
+        "label_rule_id",
+        "cell_type",
+        "genes",
+        "measure",
+        "eligible_section_ids",
+        "pooled",
+        "sections",
+        "threshold",
+        "conditions_below_threshold",
+        "label",
+        "label_reason"
+      ],
+      "title": "RandomThinningControl",
       "type": "object"
     },
     "RecordedCall": {
