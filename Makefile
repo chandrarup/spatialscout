@@ -1,5 +1,5 @@
 # One-command workflows. Each target is a thin wrapper; the underlying commands are listed in CLAUDE.md.
-.PHONY: install types test typecheck build serve api web dev fixtures
+.PHONY: install types test typecheck build serve api web dev fixtures data
 
 # The API's port; for example `make dev PORT=8010` when 8000 is taken.
 PORT ?= 8000
@@ -31,6 +31,9 @@ web:  ## the web dev server alone on :5173 with hot reload (needs `make api` for
 
 dev:  ## the API (reloading) and the web dev server (hot reload, :5173) together; Ctrl-C stops both
 	@trap 'kill 0' EXIT; uv run spatialscout serve --reload --port $(PORT) & SPATIALSCOUT_API_PORT=$(PORT) npm --prefix web run dev
+
+data:  ## download any missing GSE286184 file, then validate and label all 22 sections (idempotent; raw data stays in data/)
+	uv run spatialscout ingest
 
 fixtures:  ## regenerate the synthetic section, then the stored model responses that depend on it
 	uv run python scripts/build_synthetic_section.py

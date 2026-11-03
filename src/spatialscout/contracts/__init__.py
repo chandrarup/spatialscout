@@ -32,6 +32,8 @@ from .claim import (
 from .dataset import (
     CapabilityCheck,
     CapabilityReport,
+    ContrastEligibility,
+    DatasetFilters,
     DatasetManifest,
     FileChecksum,
     LabelCounts,

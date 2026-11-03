@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from .base import SCHEMA_VERSION, Contract
+from .base import SCHEMA_VERSION, Contract, Contrast
 
 
 class CapabilityCheck(Contract):
@@ -15,12 +15,34 @@ class CapabilityCheck(Contract):
     reason: str
 
 
+class ContrastEligibility(Contract):
+    """Whether one contrast's groups support statistical inference. In this release every contrast is
+    descriptive only, because GEO does not map sections to donors (ADR-0007). Donors are never inferred from
+    expression."""
+
+    groups: Contrast
+    disease_section_ids: list[str]
+    control_section_ids: list[str]
+    disease_donors_published: int = Field(description="Donors in the disease group, from the paper's published counts.")
+    control_donors_published: int = Field(description="Donors in the control group, from the paper's published counts.")
+    donor_distinctness: Literal["repeat_donor_in_group", "conditionally_donor_distinct_unconfirmed"]
+    donor_distinctness_statement: str
+    inference_eligibility: Literal["descriptive_only"] = "descriptive_only"
+    inference_reason: str
+    excluded_section_ids: list[str] = Field(
+        default_factory=list, description="Sections of either group left out of the contrast, each named with its reason in inference_reason."
+    )
+
+
 class CapabilityReport(Contract):
     """For a dataset, which analyses are supported, unavailable or descriptive only, each with its reason."""
 
     schema_version: str = SCHEMA_VERSION
     dataset_id: str
     checks: list[CapabilityCheck]
+    contrasts: list[ContrastEligibility] = Field(
+        default_factory=list, description="The inference eligibility of every contrast the dataset allows."
+    )
 
     def supports(self, capability: str) -> bool:
         return any(c.capability == capability and c.status == "supported" for c in self.checks)
@@ -41,10 +63,11 @@ class SectionValidation(Contract):
         description="Kept molecules assigned to a cell id missing from the cells table; kept, counted as unassigned."
     )
     cells_read: int
-    malformed_cells: int = Field(description="No id, or a non-finite centroid or area.")
+    malformed_cells: int = Field(description="No id, or a non-finite centroid or cell area.")
     duplicate_cells: int = Field(description="A repeated cell id; the first record is kept.")
     cells_kept: int
     cells_without_molecules: int = Field(description="Kept cells with no kept molecule; they stay in every denominator.")
+    cells_without_nucleus: int = Field(default=0, description="Kept cells with no detected nucleus (empty nucleus_area).")
 
 
 class LabelRule(Contract):
@@ -93,6 +116,22 @@ class SectionInfo(Contract):
     section_id: str
     group: str
     extent: list[float] = Field(description="Bounding box in micrometres: x0, y0, x1, y1.")
+    name: str | None = Field(default=None, description="The section's name in its source, for example x2.")
+    molecules: int | None = Field(default=None, description="Molecules in the validated table.")
+    cells: int | None = Field(default=None, description="Cells in the validated table.")
+    validation: SectionValidation | None = None
+    content_sha256: str | None = Field(default=None, description="sha256 of the decompressed raw molecule and cell files.")
+    duplicate_of: str | None = Field(
+        default=None, description="An earlier section whose raw files hold identical content; analyses count only the earlier one."
+    )
+
+
+class DatasetFilters(Contract):
+    """The quality and panel filters every validated molecule passed."""
+
+    min_qv: float
+    panel_genes_only: bool
+    description: str
 
 
 class DatasetManifest(Contract):
@@ -110,3 +149,6 @@ class DatasetManifest(Contract):
     sections: list[SectionInfo]
     files: list[FileChecksum]
     donor_caveat: str | None = None
+    filters: DatasetFilters | None = None
+    label_rule_ids: list[str] = Field(default_factory=list, description="Frozen label rules; the first is the default.")
+    citation: str | None = None

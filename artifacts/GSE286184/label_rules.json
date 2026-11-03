@@ -1,0 +1,1136 @@
+{
+ "schema_version": "1.0",
+ "dataset_id": "GSE286184",
+ "rules": [
+  {
+   "label_rule_id": "full-panel-v1",
+   "description": "Each cell type scores its best marker's default count divided by the gene scale. Fewer than 5 default molecules: 'Low quality'. Otherwise the top score's cell type if it reaches 0.5, else 'Unlabelled'. Ties go to the cell type listed first.",
+   "markers": {
+    "Podocyte": [
+     "NPHS1"
+    ],
+    "PEC": [
+     "ALDH1A2"
+    ],
+    "PT": [
+     "LRP2",
+     "CUBN"
+    ],
+    "TAL": [
+     "UMOD"
+    ],
+    "DCT": [
+     "SLC12A3"
+    ],
+    "PC": [
+     "AQP2"
+    ],
+    "IC": [
+     "SLC4A1"
+    ],
+    "Endothelial": [
+     "PECAM1"
+    ],
+    "Mesangial/Pericyte": [
+     "PDGFRB"
+    ],
+    "Fibroblast": [
+     "COL1A1"
+    ],
+    "T cell": [
+     "CD3D",
+     "CD8A"
+    ],
+    "B cell": [
+     "MS4A1"
+    ],
+    "Myeloid": [
+     "CD68",
+     "ITGAX"
+    ]
+   },
+   "ignored_genes": [],
+   "score_threshold": 0.5,
+   "min_molecules": 5
+  },
+  {
+   "label_rule_id": "nphs1-anchored-v1",
+   "description": "Podocyte membership ignores LRP2 and CUBN entirely: a cell is a podocyte when, counting only its other molecules, it has at least 5 and NPHS1 is its top-scoring marker at 0.5 or more. Other cells keep their full-panel label; a full-panel podocyte that fails this test is 'Unlabelled'. It can admit proximal-tubule cells carrying stray NPHS1.",
+   "markers": {
+    "Podocyte": [
+     "NPHS1"
+    ],
+    "PEC": [
+     "ALDH1A2"
+    ],
+    "PT": [],
+    "TAL": [
+     "UMOD"
+    ],
+    "DCT": [
+     "SLC12A3"
+    ],
+    "PC": [
+     "AQP2"
+    ],
+    "IC": [
+     "SLC4A1"
+    ],
+    "Endothelial": [
+     "PECAM1"
+    ],
+    "Mesangial/Pericyte": [
+     "PDGFRB"
+    ],
+    "Fibroblast": [
+     "COL1A1"
+    ],
+    "T cell": [
+     "CD3D",
+     "CD8A"
+    ],
+    "B cell": [
+     "MS4A1"
+    ],
+    "Myeloid": [
+     "CD68",
+     "ITGAX"
+    ]
+   },
+   "ignored_genes": [
+    "LRP2",
+    "CUBN"
+   ],
+   "score_threshold": 0.5,
+   "min_molecules": 5
+  }
+ ],
+ "default_label_rule_id": "full-panel-v1",
+ "gene_scales": {
+  "ALDH1A2": 1.147210743801653,
+  "AQP2": 6.262702017534594,
+  "C3": 1.7310443490701002,
+  "CALCR": 1.1074983410749835,
+  "CD38": 1.0564142194744977,
+  "CD3D": 1.0555891238670694,
+  "CD4": 1.0748528174936922,
+  "CD68": 1.141602634467618,
+  "CD8A": 1.0613165013525698,
+  "CLCN5": 1.3103325837377204,
+  "COL1A1": 1.1448445171849426,
+  "CUBN": 2.6685822306238185,
+  "DHFR": 1.0740514075887393,
+  "ETS1": 1.1533700137551581,
+  "FCGR3A": 1.0347266881028938,
+  "FKBP5": 1.6362792268084747,
+  "FN1": 1.6265292981326465,
+  "FOLR1": 1.179462724527102,
+  "HLA-DRA": 1.4418533056261065,
+  "IL10RA": 1.1071792260692463,
+  "IL18": 1.399448275862069,
+  "ISG20": 1.020353982300885,
+  "ITGAX": 1.1845915201654602,
+  "JUN": 2.014250309789343,
+  "KLF9": 1.5461874829188302,
+  "LAMC2": 1.1899918633034987,
+  "LRP2": 1.9794840544383505,
+  "MKI67": 1.1077348066298343,
+  "MS4A1": 1.0350047303689687,
+  "NPHS1": 1.5540875309661437,
+  "PARL": 1.1142315644383185,
+  "PDGFRB": 1.2752577319587628,
+  "PECAM1": 1.4267214150347443,
+  "POSTN": 1.7601033834586466,
+  "PTH2R": 1.029585798816568,
+  "PTPRC": 1.1128916527146615,
+  "RHEX": 1.1927881885292448,
+  "SELENOT": 1.1485527809307605,
+  "SLC12A3": 6.594235486508586,
+  "SLC4A1": 2.5860696517412936,
+  "SREBF1": 1.1296943231441048,
+  "STAT1": 1.241001799640072,
+  "TGFB1": 1.0987768289868451,
+  "TNFAIP1": 1.0840313428803026,
+  "TNFAIP2": 1.6829984402238738,
+  "TNFSF10": 1.2298850574712643,
+  "UMOD": 8.423372044794691,
+  "VCAM1": 1.5051224170862998,
+  "ZBTB16": 1.3256654617154124,
+  "ZFP36": 2.6724391722227034
+ },
+ "gene_scale_sections": [
+  "GSM8720409",
+  "GSM8720410",
+  "GSM8720414"
+ ],
+ "sections": {
+  "GSM8720409": {
+   "cells": 15786,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 55,
+     "DCT": 825,
+     "Endothelial": 1028,
+     "Fibroblast": 145,
+     "IC": 289,
+     "Low quality": 3640,
+     "Mesangial/Pericyte": 540,
+     "Myeloid": 385,
+     "PC": 1294,
+     "PEC": 302,
+     "PT": 3559,
+     "Podocyte": 136,
+     "T cell": 147,
+     "TAL": 2340,
+     "Unlabelled": 1101
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 55,
+     "DCT": 825,
+     "Endothelial": 1028,
+     "Fibroblast": 145,
+     "IC": 289,
+     "Low quality": 3640,
+     "Mesangial/Pericyte": 540,
+     "Myeloid": 385,
+     "PC": 1294,
+     "PEC": 302,
+     "PT": 3531,
+     "Podocyte": 164,
+     "T cell": 147,
+     "TAL": 2340,
+     "Unlabelled": 1101
+    }
+   },
+   "differing_cells": 28,
+   "differing": {
+    "PT -> Podocyte": 28
+   }
+  },
+  "GSM8720410": {
+   "cells": 17935,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 218,
+     "DCT": 1175,
+     "Endothelial": 950,
+     "Fibroblast": 352,
+     "IC": 463,
+     "Low quality": 4899,
+     "Mesangial/Pericyte": 584,
+     "Myeloid": 753,
+     "PC": 1086,
+     "PEC": 379,
+     "PT": 3115,
+     "Podocyte": 209,
+     "T cell": 417,
+     "TAL": 1575,
+     "Unlabelled": 1760
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 218,
+     "DCT": 1175,
+     "Endothelial": 950,
+     "Fibroblast": 352,
+     "IC": 463,
+     "Low quality": 4899,
+     "Mesangial/Pericyte": 584,
+     "Myeloid": 753,
+     "PC": 1086,
+     "PEC": 379,
+     "PT": 3066,
+     "Podocyte": 254,
+     "T cell": 417,
+     "TAL": 1575,
+     "Unlabelled": 1764
+    }
+   },
+   "differing_cells": 53,
+   "differing": {
+    "PT -> Podocyte": 49,
+    "Podocyte -> Unlabelled": 4
+   }
+  },
+  "GSM8720411": {
+   "cells": 34621,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 159,
+     "DCT": 1044,
+     "Endothelial": 2250,
+     "Fibroblast": 782,
+     "IC": 513,
+     "Low quality": 17157,
+     "Mesangial/Pericyte": 942,
+     "Myeloid": 972,
+     "PC": 1119,
+     "PEC": 358,
+     "PT": 2957,
+     "Podocyte": 126,
+     "T cell": 364,
+     "TAL": 4228,
+     "Unlabelled": 1650
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 159,
+     "DCT": 1044,
+     "Endothelial": 2250,
+     "Fibroblast": 782,
+     "IC": 513,
+     "Low quality": 17157,
+     "Mesangial/Pericyte": 942,
+     "Myeloid": 972,
+     "PC": 1119,
+     "PEC": 358,
+     "PT": 2942,
+     "Podocyte": 138,
+     "T cell": 364,
+     "TAL": 4228,
+     "Unlabelled": 1653
+    }
+   },
+   "differing_cells": 18,
+   "differing": {
+    "PT -> Podocyte": 15,
+    "Podocyte -> Unlabelled": 3
+   }
+  },
+  "GSM8720412": {
+   "cells": 13519,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 164,
+     "DCT": 952,
+     "Endothelial": 403,
+     "Fibroblast": 297,
+     "IC": 275,
+     "Low quality": 7284,
+     "Mesangial/Pericyte": 252,
+     "Myeloid": 397,
+     "PC": 305,
+     "PEC": 143,
+     "PT": 1819,
+     "Podocyte": 56,
+     "T cell": 179,
+     "TAL": 351,
+     "Unlabelled": 642
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 164,
+     "DCT": 952,
+     "Endothelial": 403,
+     "Fibroblast": 297,
+     "IC": 275,
+     "Low quality": 7284,
+     "Mesangial/Pericyte": 252,
+     "Myeloid": 397,
+     "PC": 305,
+     "PEC": 143,
+     "PT": 1797,
+     "Podocyte": 77,
+     "T cell": 179,
+     "TAL": 351,
+     "Unlabelled": 643
+    }
+   },
+   "differing_cells": 23,
+   "differing": {
+    "PT -> Podocyte": 22,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720413": {
+   "cells": 20472,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 286,
+     "DCT": 183,
+     "Endothelial": 2023,
+     "Fibroblast": 2034,
+     "IC": 165,
+     "Low quality": 6495,
+     "Mesangial/Pericyte": 1164,
+     "Myeloid": 2095,
+     "PC": 412,
+     "PEC": 678,
+     "PT": 2195,
+     "Podocyte": 45,
+     "T cell": 520,
+     "TAL": 234,
+     "Unlabelled": 1943
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 286,
+     "DCT": 183,
+     "Endothelial": 2023,
+     "Fibroblast": 2034,
+     "IC": 165,
+     "Low quality": 6495,
+     "Mesangial/Pericyte": 1164,
+     "Myeloid": 2095,
+     "PC": 412,
+     "PEC": 678,
+     "PT": 2180,
+     "Podocyte": 60,
+     "T cell": 520,
+     "TAL": 234,
+     "Unlabelled": 1943
+    }
+   },
+   "differing_cells": 15,
+   "differing": {
+    "PT -> Podocyte": 15
+   }
+  },
+  "GSM8720414": {
+   "cells": 52225,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 72,
+     "DCT": 71,
+     "Endothelial": 531,
+     "Fibroblast": 699,
+     "IC": 418,
+     "Low quality": 37860,
+     "Mesangial/Pericyte": 513,
+     "Myeloid": 916,
+     "PC": 1233,
+     "PEC": 296,
+     "PT": 1865,
+     "Podocyte": 37,
+     "T cell": 286,
+     "TAL": 4666,
+     "Unlabelled": 2762
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 72,
+     "DCT": 71,
+     "Endothelial": 531,
+     "Fibroblast": 699,
+     "IC": 418,
+     "Low quality": 37860,
+     "Mesangial/Pericyte": 513,
+     "Myeloid": 916,
+     "PC": 1233,
+     "PEC": 296,
+     "PT": 1861,
+     "Podocyte": 39,
+     "T cell": 286,
+     "TAL": 4666,
+     "Unlabelled": 2764
+    }
+   },
+   "differing_cells": 6,
+   "differing": {
+    "PT -> Podocyte": 4,
+    "Podocyte -> Unlabelled": 2
+   }
+  },
+  "GSM8720415": {
+   "cells": 27155,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 46,
+     "DCT": 102,
+     "Endothelial": 514,
+     "Fibroblast": 180,
+     "IC": 179,
+     "Low quality": 17473,
+     "Mesangial/Pericyte": 264,
+     "Myeloid": 350,
+     "PC": 1128,
+     "PEC": 190,
+     "PT": 673,
+     "Podocyte": 37,
+     "T cell": 173,
+     "TAL": 2539,
+     "Unlabelled": 3307
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 46,
+     "DCT": 102,
+     "Endothelial": 514,
+     "Fibroblast": 180,
+     "IC": 179,
+     "Low quality": 17473,
+     "Mesangial/Pericyte": 264,
+     "Myeloid": 350,
+     "PC": 1128,
+     "PEC": 190,
+     "PT": 670,
+     "Podocyte": 40,
+     "T cell": 173,
+     "TAL": 2539,
+     "Unlabelled": 3307
+    }
+   },
+   "differing_cells": 3,
+   "differing": {
+    "PT -> Podocyte": 3
+   }
+  },
+  "GSM8720416": {
+   "cells": 13907,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 24,
+     "DCT": 23,
+     "Endothelial": 153,
+     "Fibroblast": 277,
+     "IC": 24,
+     "Low quality": 11497,
+     "Mesangial/Pericyte": 202,
+     "Myeloid": 213,
+     "PC": 98,
+     "PEC": 64,
+     "PT": 442,
+     "Podocyte": 37,
+     "T cell": 62,
+     "TAL": 198,
+     "Unlabelled": 593
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 24,
+     "DCT": 23,
+     "Endothelial": 153,
+     "Fibroblast": 277,
+     "IC": 24,
+     "Low quality": 11497,
+     "Mesangial/Pericyte": 202,
+     "Myeloid": 213,
+     "PC": 98,
+     "PEC": 64,
+     "PT": 440,
+     "Podocyte": 38,
+     "T cell": 62,
+     "TAL": 198,
+     "Unlabelled": 594
+    }
+   },
+   "differing_cells": 3,
+   "differing": {
+    "PT -> Podocyte": 2,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720417": {
+   "cells": 61683,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 201,
+     "DCT": 1030,
+     "Endothelial": 1227,
+     "Fibroblast": 846,
+     "IC": 1117,
+     "Low quality": 36413,
+     "Mesangial/Pericyte": 949,
+     "Myeloid": 913,
+     "PC": 2895,
+     "PEC": 818,
+     "PT": 5085,
+     "Podocyte": 125,
+     "T cell": 450,
+     "TAL": 6920,
+     "Unlabelled": 2694
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 201,
+     "DCT": 1030,
+     "Endothelial": 1227,
+     "Fibroblast": 846,
+     "IC": 1117,
+     "Low quality": 36413,
+     "Mesangial/Pericyte": 949,
+     "Myeloid": 913,
+     "PC": 2895,
+     "PEC": 818,
+     "PT": 5061,
+     "Podocyte": 145,
+     "T cell": 450,
+     "TAL": 6920,
+     "Unlabelled": 2698
+    }
+   },
+   "differing_cells": 28,
+   "differing": {
+    "PT -> Podocyte": 24,
+    "Podocyte -> Unlabelled": 4
+   }
+  },
+  "GSM8720418": {
+   "cells": 38973,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 69,
+     "DCT": 1329,
+     "Endothelial": 3826,
+     "Fibroblast": 2421,
+     "IC": 1723,
+     "Low quality": 8552,
+     "Mesangial/Pericyte": 2317,
+     "Myeloid": 1867,
+     "PC": 1644,
+     "PEC": 644,
+     "PT": 9954,
+     "Podocyte": 622,
+     "T cell": 284,
+     "TAL": 2182,
+     "Unlabelled": 1539
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 69,
+     "DCT": 1329,
+     "Endothelial": 3826,
+     "Fibroblast": 2421,
+     "IC": 1723,
+     "Low quality": 8552,
+     "Mesangial/Pericyte": 2317,
+     "Myeloid": 1867,
+     "PC": 1644,
+     "PEC": 644,
+     "PT": 9851,
+     "Podocyte": 724,
+     "T cell": 284,
+     "TAL": 2182,
+     "Unlabelled": 1540
+    }
+   },
+   "differing_cells": 104,
+   "differing": {
+    "PT -> Podocyte": 103,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720419": {
+   "cells": 38973,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 69,
+     "DCT": 1329,
+     "Endothelial": 3826,
+     "Fibroblast": 2421,
+     "IC": 1723,
+     "Low quality": 8552,
+     "Mesangial/Pericyte": 2317,
+     "Myeloid": 1867,
+     "PC": 1644,
+     "PEC": 644,
+     "PT": 9954,
+     "Podocyte": 622,
+     "T cell": 284,
+     "TAL": 2182,
+     "Unlabelled": 1539
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 69,
+     "DCT": 1329,
+     "Endothelial": 3826,
+     "Fibroblast": 2421,
+     "IC": 1723,
+     "Low quality": 8552,
+     "Mesangial/Pericyte": 2317,
+     "Myeloid": 1867,
+     "PC": 1644,
+     "PEC": 644,
+     "PT": 9851,
+     "Podocyte": 724,
+     "T cell": 284,
+     "TAL": 2182,
+     "Unlabelled": 1540
+    }
+   },
+   "differing_cells": 104,
+   "differing": {
+    "PT -> Podocyte": 103,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720420": {
+   "cells": 72994,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 1899,
+     "DCT": 1032,
+     "Endothelial": 10190,
+     "Fibroblast": 6438,
+     "IC": 741,
+     "Low quality": 8037,
+     "Mesangial/Pericyte": 5646,
+     "Myeloid": 10913,
+     "PC": 2546,
+     "PEC": 2272,
+     "PT": 10351,
+     "Podocyte": 335,
+     "T cell": 4047,
+     "TAL": 4659,
+     "Unlabelled": 3888
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 1899,
+     "DCT": 1032,
+     "Endothelial": 10190,
+     "Fibroblast": 6438,
+     "IC": 741,
+     "Low quality": 8037,
+     "Mesangial/Pericyte": 5646,
+     "Myeloid": 10913,
+     "PC": 2546,
+     "PEC": 2272,
+     "PT": 10235,
+     "Podocyte": 449,
+     "T cell": 4047,
+     "TAL": 4659,
+     "Unlabelled": 3890
+    }
+   },
+   "differing_cells": 118,
+   "differing": {
+    "PT -> Podocyte": 116,
+    "Podocyte -> Unlabelled": 2
+   }
+  },
+  "GSM8720421": {
+   "cells": 44801,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 386,
+     "DCT": 1969,
+     "Endothelial": 4888,
+     "Fibroblast": 7092,
+     "IC": 1980,
+     "Low quality": 8593,
+     "Mesangial/Pericyte": 2880,
+     "Myeloid": 4089,
+     "PC": 1505,
+     "PEC": 1116,
+     "PT": 5058,
+     "Podocyte": 988,
+     "T cell": 1263,
+     "TAL": 678,
+     "Unlabelled": 2316
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 386,
+     "DCT": 1969,
+     "Endothelial": 4888,
+     "Fibroblast": 7092,
+     "IC": 1980,
+     "Low quality": 8593,
+     "Mesangial/Pericyte": 2880,
+     "Myeloid": 4089,
+     "PC": 1505,
+     "PEC": 1116,
+     "PT": 4960,
+     "Podocyte": 1082,
+     "T cell": 1263,
+     "TAL": 678,
+     "Unlabelled": 2320
+    }
+   },
+   "differing_cells": 102,
+   "differing": {
+    "PT -> Podocyte": 98,
+    "Podocyte -> Unlabelled": 4
+   }
+  },
+  "GSM8720422": {
+   "cells": 61589,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 171,
+     "DCT": 1046,
+     "Endothelial": 6765,
+     "Fibroblast": 2553,
+     "IC": 1820,
+     "Low quality": 5192,
+     "Mesangial/Pericyte": 3220,
+     "Myeloid": 2062,
+     "PC": 5739,
+     "PEC": 1736,
+     "PT": 7432,
+     "Podocyte": 703,
+     "T cell": 675,
+     "TAL": 20031,
+     "Unlabelled": 2444
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 171,
+     "DCT": 1046,
+     "Endothelial": 6765,
+     "Fibroblast": 2553,
+     "IC": 1820,
+     "Low quality": 5192,
+     "Mesangial/Pericyte": 3220,
+     "Myeloid": 2062,
+     "PC": 5739,
+     "PEC": 1736,
+     "PT": 7328,
+     "Podocyte": 806,
+     "T cell": 675,
+     "TAL": 20031,
+     "Unlabelled": 2445
+    }
+   },
+   "differing_cells": 105,
+   "differing": {
+    "PT -> Podocyte": 104,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720423": {
+   "cells": 61598,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 130,
+     "DCT": 1197,
+     "Endothelial": 7139,
+     "Fibroblast": 4301,
+     "IC": 2037,
+     "Low quality": 2789,
+     "Mesangial/Pericyte": 2981,
+     "Myeloid": 3489,
+     "PC": 3772,
+     "PEC": 1479,
+     "PT": 15647,
+     "Podocyte": 344,
+     "T cell": 609,
+     "TAL": 14102,
+     "Unlabelled": 1582
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 130,
+     "DCT": 1197,
+     "Endothelial": 7139,
+     "Fibroblast": 4301,
+     "IC": 2037,
+     "Low quality": 2789,
+     "Mesangial/Pericyte": 2981,
+     "Myeloid": 3489,
+     "PC": 3772,
+     "PEC": 1479,
+     "PT": 15442,
+     "Podocyte": 549,
+     "T cell": 609,
+     "TAL": 14102,
+     "Unlabelled": 1582
+    }
+   },
+   "differing_cells": 205,
+   "differing": {
+    "PT -> Podocyte": 205
+   }
+  },
+  "GSM8720424": {
+   "cells": 20202,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 20,
+     "DCT": 628,
+     "Endothelial": 2557,
+     "Fibroblast": 1905,
+     "IC": 1120,
+     "Low quality": 1532,
+     "Mesangial/Pericyte": 1353,
+     "Myeloid": 1569,
+     "PC": 465,
+     "PEC": 650,
+     "PT": 6064,
+     "Podocyte": 509,
+     "T cell": 174,
+     "TAL": 967,
+     "Unlabelled": 689
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 20,
+     "DCT": 628,
+     "Endothelial": 2557,
+     "Fibroblast": 1905,
+     "IC": 1120,
+     "Low quality": 1532,
+     "Mesangial/Pericyte": 1353,
+     "Myeloid": 1569,
+     "PC": 465,
+     "PEC": 650,
+     "PT": 6006,
+     "Podocyte": 567,
+     "T cell": 174,
+     "TAL": 967,
+     "Unlabelled": 689
+    }
+   },
+   "differing_cells": 58,
+   "differing": {
+    "PT -> Podocyte": 58
+   }
+  },
+  "GSM8720425": {
+   "cells": 52176,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 14,
+     "DCT": 2503,
+     "Endothelial": 4872,
+     "Fibroblast": 1560,
+     "IC": 1404,
+     "Low quality": 4197,
+     "Mesangial/Pericyte": 2475,
+     "Myeloid": 1685,
+     "PC": 2539,
+     "PEC": 575,
+     "PT": 17311,
+     "Podocyte": 702,
+     "T cell": 139,
+     "TAL": 11316,
+     "Unlabelled": 884
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 14,
+     "DCT": 2503,
+     "Endothelial": 4872,
+     "Fibroblast": 1560,
+     "IC": 1404,
+     "Low quality": 4197,
+     "Mesangial/Pericyte": 2475,
+     "Myeloid": 1685,
+     "PC": 2539,
+     "PEC": 575,
+     "PT": 16933,
+     "Podocyte": 1079,
+     "T cell": 139,
+     "TAL": 11316,
+     "Unlabelled": 885
+    }
+   },
+   "differing_cells": 379,
+   "differing": {
+    "PT -> Podocyte": 378,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720426": {
+   "cells": 11798,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 26,
+     "DCT": 296,
+     "Endothelial": 988,
+     "Fibroblast": 410,
+     "IC": 234,
+     "Low quality": 2514,
+     "Mesangial/Pericyte": 482,
+     "Myeloid": 540,
+     "PC": 651,
+     "PEC": 170,
+     "PT": 2576,
+     "Podocyte": 21,
+     "T cell": 142,
+     "TAL": 2105,
+     "Unlabelled": 643
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 26,
+     "DCT": 296,
+     "Endothelial": 988,
+     "Fibroblast": 410,
+     "IC": 234,
+     "Low quality": 2514,
+     "Mesangial/Pericyte": 482,
+     "Myeloid": 540,
+     "PC": 651,
+     "PEC": 170,
+     "PT": 2554,
+     "Podocyte": 42,
+     "T cell": 142,
+     "TAL": 2105,
+     "Unlabelled": 644
+    }
+   },
+   "differing_cells": 23,
+   "differing": {
+    "PT -> Podocyte": 22,
+    "Podocyte -> Unlabelled": 1
+   }
+  },
+  "GSM8720427": {
+   "cells": 42263,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 134,
+     "DCT": 1786,
+     "Endothelial": 3968,
+     "Fibroblast": 1923,
+     "IC": 1121,
+     "Low quality": 9568,
+     "Mesangial/Pericyte": 2089,
+     "Myeloid": 1032,
+     "PC": 2319,
+     "PEC": 990,
+     "PT": 7756,
+     "Podocyte": 665,
+     "T cell": 269,
+     "TAL": 6676,
+     "Unlabelled": 1967
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 134,
+     "DCT": 1786,
+     "Endothelial": 3968,
+     "Fibroblast": 1923,
+     "IC": 1121,
+     "Low quality": 9568,
+     "Mesangial/Pericyte": 2089,
+     "Myeloid": 1032,
+     "PC": 2319,
+     "PEC": 990,
+     "PT": 7607,
+     "Podocyte": 803,
+     "T cell": 269,
+     "TAL": 6676,
+     "Unlabelled": 1978
+    }
+   },
+   "differing_cells": 160,
+   "differing": {
+    "PT -> Podocyte": 149,
+    "Podocyte -> Unlabelled": 11
+   }
+  },
+  "GSM8720428": {
+   "cells": 19967,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 73,
+     "DCT": 413,
+     "Endothelial": 1701,
+     "Fibroblast": 848,
+     "IC": 589,
+     "Low quality": 3679,
+     "Mesangial/Pericyte": 827,
+     "Myeloid": 598,
+     "PC": 930,
+     "PEC": 395,
+     "PT": 3608,
+     "Podocyte": 85,
+     "T cell": 158,
+     "TAL": 5157,
+     "Unlabelled": 906
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 73,
+     "DCT": 413,
+     "Endothelial": 1701,
+     "Fibroblast": 848,
+     "IC": 589,
+     "Low quality": 3679,
+     "Mesangial/Pericyte": 827,
+     "Myeloid": 598,
+     "PC": 930,
+     "PEC": 395,
+     "PT": 3552,
+     "Podocyte": 141,
+     "T cell": 158,
+     "TAL": 5157,
+     "Unlabelled": 906
+    }
+   },
+   "differing_cells": 56,
+   "differing": {
+    "PT -> Podocyte": 56
+   }
+  },
+  "GSM8720429": {
+   "cells": 49095,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 197,
+     "DCT": 1710,
+     "Endothelial": 6687,
+     "Fibroblast": 2899,
+     "IC": 1594,
+     "Low quality": 4353,
+     "Mesangial/Pericyte": 2893,
+     "Myeloid": 3055,
+     "PC": 3115,
+     "PEC": 1518,
+     "PT": 8401,
+     "Podocyte": 412,
+     "T cell": 793,
+     "TAL": 9578,
+     "Unlabelled": 1890
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 197,
+     "DCT": 1710,
+     "Endothelial": 6687,
+     "Fibroblast": 2899,
+     "IC": 1594,
+     "Low quality": 4353,
+     "Mesangial/Pericyte": 2893,
+     "Myeloid": 3055,
+     "PC": 3115,
+     "PEC": 1518,
+     "PT": 8226,
+     "Podocyte": 584,
+     "T cell": 793,
+     "TAL": 9578,
+     "Unlabelled": 1893
+    }
+   },
+   "differing_cells": 178,
+   "differing": {
+    "PT -> Podocyte": 175,
+    "Podocyte -> Unlabelled": 3
+   }
+  },
+  "GSM8720430": {
+   "cells": 20340,
+   "cell_types": {
+    "full-panel-v1": {
+     "B cell": 49,
+     "DCT": 893,
+     "Endothelial": 2305,
+     "Fibroblast": 1587,
+     "IC": 485,
+     "Low quality": 2066,
+     "Mesangial/Pericyte": 1167,
+     "Myeloid": 1518,
+     "PC": 773,
+     "PEC": 325,
+     "PT": 6069,
+     "Podocyte": 153,
+     "T cell": 220,
+     "TAL": 2123,
+     "Unlabelled": 607
+    },
+    "nphs1-anchored-v1": {
+     "B cell": 49,
+     "DCT": 893,
+     "Endothelial": 2305,
+     "Fibroblast": 1587,
+     "IC": 485,
+     "Low quality": 2066,
+     "Mesangial/Pericyte": 1167,
+     "Myeloid": 1518,
+     "PC": 773,
+     "PEC": 325,
+     "PT": 5998,
+     "Podocyte": 223,
+     "T cell": 220,
+     "TAL": 2123,
+     "Unlabelled": 608
+    }
+   },
+   "differing_cells": 72,
+   "differing": {
+    "PT -> Podocyte": 71,
+    "Podocyte -> Unlabelled": 1
+   }
+  }
+ },
+ "notes": [
+  "Labels are assigned once from default-condition counts and frozen for every assignment condition.",
+  "Gene scales pool every (section, cell) pair of the control sections that expresses the gene; the spike grouped by cell id alone, which merges cells whose ids repeat across sections.",
+  "Cells with no validated molecules are labelled 'Low quality' and stay in every denominator."
+ ],
+ "citation": "Xenium in situ data from NCBI GEO series GSE286184 (22 human kidney sections: Control, DKD, IgAN, MCD, MN), https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE286184; associated paper https://pmc.ncbi.nlm.nih.gov/articles/PMC13586693/. Cell type labels are SpatialScout's own marker-rule labels, not the authors' annotation, which was not deposited."
+}

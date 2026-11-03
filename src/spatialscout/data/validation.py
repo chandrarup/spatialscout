@@ -94,8 +94,10 @@ def validate_section(transcripts: pd.DataFrame, cells: pd.DataFrame, panel: Iter
 
 def _validate_cells(cells: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
     raw = cells.loc[:, list(RAW_CELL_COLUMNS)].reset_index(drop=True)
-    numbers = raw[["x_centroid", "y_centroid", "nucleus_area", "cell_area"]].apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float)
+    numbers = raw[["x_centroid", "y_centroid", "cell_area"]].apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float)
     malformed = ~np.isfinite(numbers).all(axis=1) | raw["cell_id"].isna().to_numpy()
+    # Xenium leaves nucleus_area empty for a cell with no detected nucleus: a real cell, kept and counted.
+    nucleus_area = pd.to_numeric(raw["nucleus_area"], errors="coerce")
     ids = raw["cell_id"].astype("string").where(~malformed)
     duplicate = ~malformed & ids.duplicated(keep="first").to_numpy()
     kept = raw[~malformed & ~duplicate]
@@ -103,10 +105,11 @@ def _validate_cells(cells: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
         "cell_id": kept["cell_id"].astype("string"),
         "x": kept["x_centroid"].astype("float64"),
         "y": kept["y_centroid"].astype("float64"),
-        "nucleus_area": kept["nucleus_area"].astype("float64"),
+        "nucleus_area": nucleus_area[~malformed & ~duplicate].astype("float64"),
         "cell_area": kept["cell_area"].astype("float64"),
     }).reset_index(drop=True)
-    counts = {"cells_read": len(raw), "malformed_cells": int(malformed.sum()), "duplicate_cells": int(duplicate.sum()), "cells_kept": len(table)}
+    counts = {"cells_read": len(raw), "malformed_cells": int(malformed.sum()), "duplicate_cells": int(duplicate.sum()), "cells_kept": len(table),
+              "cells_without_nucleus": int(table["nucleus_area"].isna().sum())}
     return table, counts
 
 

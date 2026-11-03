@@ -36,7 +36,7 @@ RAW_TRANSCRIPTS = pd.DataFrame([
     transcript(8, None),                                 # malformed: no gene
     transcript(1, "UMOD"),                               # duplicate transcript id
 ])
-RAW_CELLS = pd.DataFrame([cell("c1"), cell("c2"), cell("c3", x=math.inf), cell("c1", x=5.0)])
+RAW_CELLS = pd.DataFrame([cell("c1"), cell("c2"), cell("c4", nucleus_area=math.nan), cell("c3", x=math.inf), cell("c1", x=5.0)])
 
 
 @pytest.fixture(scope="module")
@@ -61,12 +61,12 @@ def test_an_unmatched_molecule_is_counted_and_kept_as_unassigned(validated):
     assert molecules.loc["1", "cell_id"] == "c1"
 
 
-def test_malformed_and_duplicate_cells_are_counted_and_cells_without_molecules_kept(validated):
+def test_malformed_and_duplicate_cells_are_counted_and_cells_without_molecules_or_a_nucleus_kept(validated):
     counts = validated.validation
 
-    assert (counts.cells_read, counts.malformed_cells, counts.duplicate_cells, counts.cells_kept) == (4, 1, 1, 2)
-    assert counts.cells_without_molecules == 1
-    assert sorted(validated.cells["cell_id"]) == ["c1", "c2"]
+    assert (counts.cells_read, counts.malformed_cells, counts.duplicate_cells, counts.cells_kept) == (5, 1, 1, 3)
+    assert (counts.cells_without_molecules, counts.cells_without_nucleus) == (2, 1)
+    assert sorted(validated.cells["cell_id"]) == ["c1", "c2", "c4"]
 
 
 def test_the_validated_tables_use_glossary_columns(validated):
