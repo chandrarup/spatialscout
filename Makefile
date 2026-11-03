@@ -1,5 +1,5 @@
 # One-command workflows. Each target is a thin wrapper; the underlying commands are listed in CLAUDE.md.
-.PHONY: install types test typecheck build serve api web dev fixtures
+.PHONY: install types test typecheck build serve api web dev fixtures smoke
 
 # The API's port; for example `make dev PORT=8010` when 8000 is taken.
 PORT ?= 8000
@@ -36,3 +36,6 @@ fixtures:  ## regenerate the synthetic section, the stored model responses that 
 	uv run python scripts/build_synthetic_section.py
 	uv run python scripts/build_skeleton_recording.py
 	uv run python scripts/record_replay_investigation.py
+
+smoke:  ## replay the provider smoke check offline; `uv run spatialscout smoke --run-mode live` re-records it (cents)
+	uv run spatialscout smoke

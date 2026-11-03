@@ -28,12 +28,14 @@ Run from the repo root, after `make install` (uv and npm, from the lockfiles).
 | `make typecheck` | `npm --prefix web run typecheck`, against the generated contract types. |
 | `make types` | `npm --prefix web run gen:types`: regenerates `web/src/contracts/` from the Pydantic contracts. |
 | `make build` | Typechecks and builds the web app into `web/dist`. |
-| `make fixtures` | Rebuilds the synthetic section, then the stored model responses that depend on it. |
+| `make fixtures` | Rebuilds the synthetic section, the stored model responses that depend on it, and the recorded investigation that immutable replay plays. |
+| `make smoke` | `uv run spatialscout smoke`: replays the provider smoke check from `fixtures/smoke/` with no network. `--run-mode live` makes one tiny call per provider and model (cents, under the daily budget) and re-records it. |
 
 Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
 
 - After changing a contract, run `make types` and commit `web/src/contracts/`.
 - Stored model responses are keyed by a hash of each request plus the tool version and artifact checksum it was built from. Changing a prompt (`agent/prompts.py`), a tool, a contract inside a request, or the synthetic section makes seam-2 tests fail with `replay_miss`. Run `make fixtures` and commit `fixtures/`.
+- Live runs need `SPATIALSCOUT_LIVE_PASSCODE` (sent by clients in the `X-Live-Passcode` header) and `SPATIALSCOUT_DAILY_BUDGET_USD`; spend is reserved under a `flock` in `SPATIALSCOUT_SPEND_DIR` (default `data/spend/`). Provider keys come from the environment or `SPATIALSCOUT_ENV_FILE` (default `.env`). `SPATIALSCOUT_DEFAULT_RUN_MODE` sets the mode the web app asks for.
 - Each investigation persists in `data/investigations/<id>/` (`state.json`, `events.jsonl`, `audit_log.jsonl`, `artifacts/`, `package.zip`), independent of HTTP. `SPATIALSCOUT_ROOT`, `SPATIALSCOUT_INVESTIGATIONS_DIR`, `SPATIALSCOUT_FIXTURES_DIR`, `SPATIALSCOUT_RECORDINGS_DIR` and `SPATIALSCOUT_WEB_DIST` override the paths.
 
 ## Layout
@@ -42,14 +44,15 @@ Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
   - `contracts/`: Pydantic models, the single source of truth; `schema.py` exports the JSON Schema behind the TypeScript types
   - `data/`: dataset store (the synthetic fixture now; GSE286184 in ticket 02)
   - `engine/`: deterministic science: assignment conditions, `audit_population`, `audit_section`, the region view
-  - `gateway/`: model gateway; stored responses only (`ReplaySource`) until ticket 03 adds live and immutable-replay sources
+  - `gateway/`: model gateway: stored responses (`ReplaySource`), live calls (`LiveSource`: Meta, Baseten failing over to Fireworks, SAM 3.1, Muse Voice Transcribe), the live gate and file-locked budget, validation with one repair, per-call telemetry
   - `agent/`: orchestrator, persisted investigation, tool registry, prompts
   - `audit/`: hash-linked audit log and `verify_chain`; `export/`: evidence package; `verify/`: claim verification (ticket 10)
   - `api/`: FastAPI routes under `/api`, and the built web app at `/`; `cli.py`: `spatialscout serve`
 - `tests/seam1_engine/` and `tests/seam2_api/`: the two agreed seams.
 - `web/`: React, Vite, Tailwind and deck.gl; one component per panel in `src/components/`; `src/contracts/` is generated, never hand-edited.
 - `fixtures/synthetic/`: section SYN-01, built by `scripts/build_synthetic_section.py`, whose docstring states the answers known by construction.
-- `fixtures/recordings/<id>/recording.json`: stored model responses, built by `scripts/build_skeleton_recording.py` and marked `hand_authored`.
+- `fixtures/recordings/<id>/recording.json`: stored model responses, built by `scripts/build_skeleton_recording.py` and marked `hand_authored`; `<id>/investigation/` is the recorded investigation immutable replay streams verbatim (`scripts/record_replay_investigation.py`).
+- `fixtures/smoke/`: the provider smoke check's image, WAV and live-recorded responses.
 - `artifacts/`: small committed derived outputs. `data/`: git-ignored raw data and local investigations.
 
 ## Gotchas

@@ -1,5 +1,6 @@
 """Stored model responses: recordings on disk and the source that serves them without any network call."""
 
+import json
 from pathlib import Path
 
 from ..contracts import ModelRequest, ModelResponse, RecordedCall, Recording, ReplayInfo
@@ -82,8 +83,6 @@ class RecordingLibrary:
 
 
 def _recorded_id(directory: Path) -> str | None:
-    import json
-
     return json.loads((directory / "state.json").read_text(encoding="utf-8")).get("investigation_id")
 
 
@@ -95,6 +94,10 @@ class RecordingWriter:
         self._path = Path(path)
         self._info = info
         self._calls: dict[str, RecordedCall] = {}
+        if self._path.is_file():  # a run resumed after a restart keeps the responses it already recorded
+            existing = Recording.model_validate_json(self._path.read_text(encoding="utf-8"))
+            self._info = existing.info
+            self._calls = {call.cache_key: call for call in existing.calls}
 
     def add(self, call: RecordedCall) -> None:
         self._calls[call.cache_key] = call
