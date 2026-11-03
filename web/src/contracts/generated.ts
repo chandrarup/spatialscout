@@ -131,6 +131,96 @@ export interface AuditEntry {
   entry_hash: string;
 }
 /**
+ * The committed audit results of a dataset, with the inputs they were computed from.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "AuditIndex".
+ */
+export interface AuditIndex {
+  schema_version: string;
+  dataset_id: string;
+  generated_by: string;
+  sections_counted: string[];
+  sections_left_out: LeftOutSection[];
+  /**
+   * sha256 of each input artifact, by path.
+   */
+  input_sha256: {
+    [k: string]: string;
+  };
+  entries: AuditIndexEntry[];
+}
+/**
+ * A section of the dataset the result does not count, with the reason (for example a duplicate).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LeftOutSection".
+ */
+export interface LeftOutSection {
+  section_id: string;
+  reason: string;
+}
+/**
+ * One committed audit result, as the findings table lists it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "AuditIndexEntry".
+ */
+export interface AuditIndexEntry {
+  slug: string;
+  title: string;
+  finding_id: string;
+  finding_path: string;
+  label: EvidenceStatus;
+  label_rule_id: string;
+  cell_type: string;
+  genes: string[];
+  measure: string;
+  eligible_sections: number;
+  figure: CompositeFigure | null;
+  random_thinning_control_id: string | null;
+  random_thinning_control_path: string | null;
+  label_sensitivity_control_id: string | null;
+  label_sensitivity_control_path: string | null;
+}
+/**
+ * An audit result's two-panel figure: A, per-section observed values against both expectations across
+ * conditions; B, a 300 x 300 µm crop around its top-ranked evidence region.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "CompositeFigure".
+ */
+export interface CompositeFigure {
+  schema_version: string;
+  figure_id: string;
+  finding_id: string;
+  /**
+   * PNG path relative to the dataset's artifact directory.
+   */
+  path: string;
+  sha256: string;
+  /**
+   * Panel B's crop; null when the result has no evidence region.
+   */
+  crop: Region | null;
+  evidence_rank: number | null;
+  panel_a: string;
+  panel_b: string;
+}
+/**
+ * A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "Region".
+ */
+export interface Region {
+  section_id: string;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+/**
  * Retention and excluded molecules for one scope of a section under one assignment condition.
  *
  * A scope is the whole section (cell_type and gene are null), one cell type (gene is null), or one gene
@@ -242,19 +332,6 @@ export interface EvidenceRegion {
   default_molecules: number | null;
 }
 /**
- * A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "Region".
- */
-export interface Region {
-  section_id: string;
-  x0: number;
-  y0: number;
-  x1: number;
-  y1: number;
-}
-/**
  * The frozen exclusive-marker-pair artifact a result used, with the checksum of its file bytes.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -306,16 +383,6 @@ export interface LeaveOneSectionOutVerdict {
    * stable or segmentation_sensitive; null when an expectation is missing.
    */
   verdict: EvidenceStatus | null;
-}
-/**
- * A section of the dataset the result does not count, with the reason (for example a duplicate).
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "LeftOutSection".
- */
-export interface LeftOutSection {
-  section_id: string;
-  reason: string;
 }
 /**
  * The frozen analysis rules a result was computed under, recorded with it.

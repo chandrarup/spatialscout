@@ -56,9 +56,12 @@ from .events import (
 )
 from .finding import (
     AuditConditionValue,
+    AuditIndex,
+    AuditIndexEntry,
     AuditResult,
     AuditRules,
     AuditSectionValues,
+    CompositeFigure,
     ConditionEffect,
     ContrastResult,
     EvidenceRegion,

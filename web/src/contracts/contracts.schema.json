@@ -217,6 +217,171 @@
       "title": "AuditEntry",
       "type": "object"
     },
+    "AuditIndex": {
+      "additionalProperties": false,
+      "description": "The committed audit results of a dataset, with the inputs they were computed from.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "generated_by": {
+          "type": "string"
+        },
+        "sections_counted": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "input_sha256": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "sha256 of each input artifact, by path.",
+          "type": "object"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/definitions/AuditIndexEntry"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "generated_by",
+        "sections_counted",
+        "sections_left_out",
+        "input_sha256",
+        "entries"
+      ],
+      "title": "AuditIndex",
+      "type": "object"
+    },
+    "AuditIndexEntry": {
+      "additionalProperties": false,
+      "description": "One committed audit result, as the findings table lists it.",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "finding_path": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "measure": {
+          "type": "string"
+        },
+        "eligible_sections": {
+          "type": "integer"
+        },
+        "figure": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CompositeFigure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "random_thinning_control_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "random_thinning_control_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_sensitivity_control_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_sensitivity_control_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "finding_id",
+        "finding_path",
+        "label",
+        "label_rule_id",
+        "cell_type",
+        "genes",
+        "measure",
+        "eligible_sections",
+        "figure",
+        "random_thinning_control_id",
+        "random_thinning_control_path",
+        "label_sensitivity_control_id",
+        "label_sensitivity_control_path"
+      ],
+      "title": "AuditIndexEntry",
+      "type": "object"
+    },
     "AuditMetrics": {
       "additionalProperties": false,
       "description": "Retention and excluded molecules for one scope of a section under one assignment condition.\n\nA scope is the whole section (cell_type and gene are null), one cell type (gene is null), or one gene\nwithin one cell type. Retention is the share of default-condition molecules the condition keeps; it is\nnull, with a reason, when the scope has no default-condition molecules.",
@@ -1038,6 +1203,70 @@
         "claim"
       ],
       "title": "ClaimDraftedEvent",
+      "type": "object"
+    },
+    "CompositeFigure": {
+      "additionalProperties": false,
+      "description": "An audit result's two-panel figure: A, per-section observed values against both expectations across\nconditions; B, a 300 x 300 \u00b5m crop around its top-ranked evidence region.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "figure_id": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "path": {
+          "description": "PNG path relative to the dataset's artifact directory.",
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "crop": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Panel B's crop; null when the result has no evidence region."
+        },
+        "evidence_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "panel_a": {
+          "type": "string"
+        },
+        "panel_b": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "figure_id",
+        "finding_id",
+        "path",
+        "sha256",
+        "crop",
+        "evidence_rank",
+        "panel_a",
+        "panel_b"
+      ],
+      "title": "CompositeFigure",
       "type": "object"
     },
     "ConditionEffect": {

@@ -28,9 +28,12 @@ def main(argv: list[str] | None = None) -> int:
     smoke.add_argument("--env-file", type=Path, default=None, help="a .env file with the provider keys, when they are not in the environment")
     ingest = commands.add_parser("ingest", help="download missing GSE286184 files, then validate and label all 22 sections")
     ingest.add_argument("--no-download", action="store_true", help="fail on a missing raw file instead of fetching it")
+    commands.add_parser("audit", help="compute the demo's GSE286184 audit results into artifacts/GSE286184/audit/ (needs ingest)")
     args = parser.parse_args(argv)
     if args.command == "ingest":
         return _ingest(download=not args.no_download)
+    if args.command == "audit":
+        return _audit()
     if args.command == "serve":
         uvicorn.run(
             "spatialscout.api:create_app",
@@ -105,3 +108,17 @@ def _ingest(download: bool) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def _audit() -> int:
+    """Audit results, controls and composite figures for the demo, written to artifacts/GSE286184/audit/."""
+    from .data import DatasetStore
+    from .engine.batch import run_batch
+    from .settings import Settings, _repo_root
+
+    settings = Settings.from_env()
+    assert settings.artifacts_dir
+    store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
+    index = run_batch(store, settings.artifacts_dir / "GSE286184" / "audit", _repo_root())
+    print(f"wrote {len(index.entries)} audit results to {settings.artifacts_dir / 'GSE286184' / 'audit'}")
+    return 0

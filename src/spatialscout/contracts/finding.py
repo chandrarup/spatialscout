@@ -184,6 +184,53 @@ class AuditResult(Contract):
     )
 
 
+class CompositeFigure(Contract):
+    """An audit result's two-panel figure: A, per-section observed values against both expectations across
+    conditions; B, a 300 x 300 µm crop around its top-ranked evidence region."""
+
+    schema_version: str = SCHEMA_VERSION
+    figure_id: str
+    finding_id: str
+    path: str = Field(description="PNG path relative to the dataset's artifact directory.")
+    sha256: str
+    crop: Region | None = Field(description="Panel B's crop; null when the result has no evidence region.")
+    evidence_rank: int | None = None
+    panel_a: str
+    panel_b: str
+
+
+class AuditIndexEntry(Contract):
+    """One committed audit result, as the findings table lists it."""
+
+    slug: str
+    title: str
+    finding_id: str
+    finding_path: str
+    label: EvidenceStatus
+    label_rule_id: str
+    cell_type: str
+    genes: list[str]
+    measure: str
+    eligible_sections: int
+    figure: CompositeFigure | None = None
+    random_thinning_control_id: str | None = None
+    random_thinning_control_path: str | None = None
+    label_sensitivity_control_id: str | None = None
+    label_sensitivity_control_path: str | None = None
+
+
+class AuditIndex(Contract):
+    """The committed audit results of a dataset, with the inputs they were computed from."""
+
+    schema_version: str = SCHEMA_VERSION
+    dataset_id: str
+    generated_by: str
+    sections_counted: list[str]
+    sections_left_out: list[LeftOutSection]
+    input_sha256: dict[str, str] = Field(description="sha256 of each input artifact, by path.")
+    entries: list[AuditIndexEntry]
+
+
 class GateStatus(Contract):
     """Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged."""
 

@@ -15,6 +15,7 @@ from ..agent import utc_now
 from ..gateway import LIST_PRICES, ApiKeys, PriceBook, RecordingLibrary
 from ..gateway.gate import LiveGate
 from ..settings import Settings
+from .audit_routes import router as audit_router
 from .routes import router
 
 
@@ -63,6 +64,7 @@ def create_app(
     app.state.settings = settings
     app.state.live_gate = live_gate
     app.include_router(router, prefix="/api")
+    app.include_router(audit_router, prefix="/api")
     if settings.web_dist is not None and (settings.web_dist / "index.html").is_file():
         app.mount("/", StaticFiles(directory=settings.web_dist, html=True), name="web")
     else:
