@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 import httpx2 as httpx
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -27,7 +28,7 @@ def create_app(
     """The app. Tests pass `model_transport` (recorded provider responses), fake `prices` and fake `api_keys`;
     deployed, keys come from the environment (or `SPATIALSCOUT_ENV_FILE`) and never leave the backend."""
     settings = settings or Settings.from_env()
-    store = DatasetStore(settings.fixtures_dir)
+    store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
     recordings = RecordingLibrary(settings.recordings_dir)
     live = settings.live
     live_gate = LiveGate(
@@ -54,6 +55,8 @@ def create_app(
         await orchestrator.shutdown()
 
     app = FastAPI(title="SpatialScout", lifespan=lifespan)
+    # A packed whole-section region view is several MB; gzip halves it. SSE streams are never compressed.
+    app.add_middleware(GZipMiddleware, minimum_size=4096)
     app.state.orchestrator = orchestrator
     app.state.store = store
     app.state.recordings = recordings

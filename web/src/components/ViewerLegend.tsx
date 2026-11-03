@@ -12,7 +12,7 @@ import {
 } from "../palette";
 
 interface Props {
-  view: RegionView;
+  view: Pick<RegionView, "genes" | "cell_types" | "label_rule_id" | "structures" | "notes">;
   genes: Highlight;
   cellTypes: Highlight;
   onToggleGene: (gene: string) => void;

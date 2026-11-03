@@ -1,0 +1,148 @@
+{
+ "schema_version": "1.0",
+ "dataset_id": "GSE286184",
+ "checks": [
+  {
+   "capability": "coordinate_inspection",
+   "status": "supported",
+   "reason": "Every molecule and cell centroid has a position in micrometres; the viewer opens any section whole."
+  },
+  {
+   "capability": "assignment_audit",
+   "status": "supported",
+   "reason": "Molecules carry cell_id, overlaps_nucleus and nucleus_distance, so default, nucleus-only and distance-cap conditions come from molecule flags (ADR-0002)."
+  },
+  {
+   "capability": "disease_contrast",
+   "status": "supported",
+   "reason": "Descriptive only: per-section values and effects for DKD, IgAN, MCD and MN against Control, with no p-values or confidence intervals, because GEO's 22 samples hold 21 distinct sections from 19 published donors with no published mapping (ADR-0007). See each contrast's inference eligibility."
+  },
+  {
+   "capability": "cell_boundaries",
+   "status": "unavailable",
+   "reason": "No cell or nucleus boundary polygons were deposited; the viewer draws nuclei as circles from nucleus area, an approximation."
+  },
+  {
+   "capability": "images",
+   "status": "unavailable",
+   "reason": "No morphology (DAPI) or H&E images were deposited, so structure outlines must come from an image rendered from the data itself."
+  },
+  {
+   "capability": "deposited_cell_type_labels",
+   "status": "unavailable",
+   "reason": "The authors annotated cells in Seurat but did not deposit labels; SpatialScout labels cells with its own frozen marker rules."
+  },
+  {
+   "capability": "donor_mapping",
+   "status": "unavailable",
+   "reason": "GEO lists 22 samples; the paper reports 19 donors (Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say which sections share a donor; DKD, MCD and MN each hold one repeat-donor section, and samples with identical files are listed under distinct_sections. Sections are not independent donors, and donors are never inferred from expression."
+  },
+  {
+   "capability": "distinct_sections",
+   "status": "supported",
+   "reason": "21 distinct sections among 22 GEO samples, found by comparing checksums of the decompressed raw files: GSM8720419 (x11) holds the same content as GSM8720418 (x10). Every analysis counts each pair once; the copy stays listed in the manifest as a duplicate."
+  }
+ ],
+ "contrasts": [
+  {
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "disease_section_ids": [
+    "GSM8720411",
+    "GSM8720412",
+    "GSM8720413",
+    "GSM8720415",
+    "GSM8720416",
+    "GSM8720417"
+   ],
+   "control_section_ids": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414"
+   ],
+   "disease_donors_published": 5,
+   "control_donors_published": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "donor_distinctness_statement": "6 sections from 5 donors: one donor contributes two sections, and GEO does not say which",
+   "inference_eligibility": "descriptive_only",
+   "inference_reason": "Descriptive only: GEO does not map sections to donors, so sections cannot be treated as independent replicates and no p-value or confidence interval is reported (ADR-0007).",
+   "excluded_section_ids": []
+  },
+  {
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "disease_section_ids": [
+    "GSM8720418",
+    "GSM8720420",
+    "GSM8720421"
+   ],
+   "control_section_ids": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414"
+   ],
+   "disease_donors_published": 4,
+   "control_donors_published": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "donor_distinctness_statement": "not shown donor-distinct: GEO's 4 IgAN samples hold 3 distinct sections against 4 published IgAN donors, so the published counts no longer reconcile with the deposit",
+   "inference_eligibility": "descriptive_only",
+   "inference_reason": "Descriptive only: GEO does not map sections to donors, so sections cannot be treated as independent replicates and no p-value or confidence interval is reported (ADR-0007). GSM8720419 is left out: its raw files hold the same content as GSM8720418, so counting both would count one section twice.",
+   "excluded_section_ids": [
+    "GSM8720419"
+   ]
+  },
+  {
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "disease_section_ids": [
+    "GSM8720422",
+    "GSM8720423",
+    "GSM8720424",
+    "GSM8720425"
+   ],
+   "control_section_ids": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414"
+   ],
+   "disease_donors_published": 3,
+   "control_donors_published": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "donor_distinctness_statement": "4 sections from 3 donors: one donor contributes two sections, and GEO does not say which",
+   "inference_eligibility": "descriptive_only",
+   "inference_reason": "Descriptive only: GEO does not map sections to donors, so sections cannot be treated as independent replicates and no p-value or confidence interval is reported (ADR-0007).",
+   "excluded_section_ids": []
+  },
+  {
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "disease_section_ids": [
+    "GSM8720426",
+    "GSM8720427",
+    "GSM8720428",
+    "GSM8720429",
+    "GSM8720430"
+   ],
+   "control_section_ids": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414"
+   ],
+   "disease_donors_published": 4,
+   "control_donors_published": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "donor_distinctness_statement": "5 sections from 4 donors: one donor contributes two sections, and GEO does not say which",
+   "inference_eligibility": "descriptive_only",
+   "inference_reason": "Descriptive only: GEO does not map sections to donors, so sections cannot be treated as independent replicates and no p-value or confidence interval is reported (ADR-0007).",
+   "excluded_section_ids": []
+  }
+ ]
+}

@@ -6,3 +6,7 @@ GSE286184 has 22 sections from 19 donors and GEO does not map sections to donors
 
 - The independent recompute can reproduce every cited number, since no fitted model is involved.
 - The capability report records IgAN vs Control as "conditionally donor-distinct by published counts, unconfirmed"; inferential contrasts move to the roadmap pending donor metadata.
+
+## Amendment (Nov 2): duplicate section
+
+GEO sections x10 (GSM8720418) and x11 (GSM8720419), both IgAN, have identical decompressed molecule tables. The dataset store lists x11 as `duplicate_of: GSM8720418` and counts 21 distinct sections. IgAN then has 3 distinct sections against the paper's 4 IgAN donors, so the counts no longer reconcile and IgAN vs Control is no longer "conditionally donor-distinct": its inference eligibility reason is `counts_do_not_reconcile`. Every contrast stays descriptive only.

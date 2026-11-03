@@ -30,6 +30,7 @@ Run from the repo root, after `make install` (uv and npm, from the lockfiles).
 | `make build` | Typechecks and builds the web app into `web/dist`. |
 | `make fixtures` | Rebuilds the synthetic section, the stored model responses that depend on it, and the recorded investigation that immutable replay plays. |
 | `make smoke` | `uv run spatialscout smoke`: replays the provider smoke check from `fixtures/smoke/` with no network. `--run-mode live` makes one tiny call per provider and model (cents, under the daily budget) and re-records it. |
+| `make data` | `uv run spatialscout ingest`: downloads any missing GSE286184 file, validates and labels all 22 sections, and rewrites `artifacts/GSE286184/`. Idempotent. |
 | `make deploy` | Builds the web app and deploys (or redeploys) it with the API on Modal: `deploy/modal_app.py`. |
 | `make modal-batch` | Runs `deploy/modal_batch.py` on Modal over all 22 sections with `.map()`; logs runtime and cost to `artifacts/modal_batch_gse286184.json`. |
 | `make modal-secret` | Creates or replaces the Modal Secret `spatialscout-env` from the provider keys in `.env`. |
@@ -47,12 +48,13 @@ Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
 - Stored model responses are keyed by a hash of each request plus the tool version and artifact checksum it was built from. Changing a prompt (`agent/prompts.py`), a tool, a contract inside a request, or the synthetic section makes seam-2 tests fail with `replay_miss`. Run `make fixtures` and commit `fixtures/`.
 - Live runs need `SPATIALSCOUT_LIVE_PASSCODE` (sent by clients in the `X-Live-Passcode` header) and `SPATIALSCOUT_DAILY_BUDGET_USD`; spend is reserved under a `flock` in `SPATIALSCOUT_SPEND_DIR` (default `data/spend/`). Provider keys come from the environment or `SPATIALSCOUT_ENV_FILE` (default `.env`). `SPATIALSCOUT_DEFAULT_RUN_MODE` sets the mode the web app asks for.
 - Each investigation persists in `data/investigations/<id>/` (`state.json`, `events.jsonl`, `audit_log.jsonl`, `artifacts/`, `package.zip`), independent of HTTP. `SPATIALSCOUT_ROOT`, `SPATIALSCOUT_INVESTIGATIONS_DIR`, `SPATIALSCOUT_FIXTURES_DIR`, `SPATIALSCOUT_RECORDINGS_DIR` and `SPATIALSCOUT_WEB_DIST` override the paths.
+- GSE286184 paths: `SPATIALSCOUT_RAW_DIR` (raw GEO files, default `data/raw/GSE286184`), `SPATIALSCOUT_PROCESSED_DIR` (validated tables, default `data/processed/GSE286184`) and `SPATIALSCOUT_ARTIFACTS_DIR` (default `artifacts`). In a worktree, set `SPATIALSCOUT_RAW_DIR` to the main checkout's `data/raw/GSE286184` before `make data`.
 
 ## Layout
 
 - `src/spatialscout/`, one package:
   - `contracts/`: Pydantic models, the single source of truth; `schema.py` exports the JSON Schema behind the TypeScript types
-  - `data/`: dataset store (the synthetic fixture now; GSE286184 in ticket 02)
+  - `data/`: dataset store: the synthetic fixture and GSE286184 (`gse286184.py` ingest, `validation.py`, the frozen `label_rules.py`)
   - `engine/`: deterministic science: assignment conditions, `audit_population`, `audit_section`, the region view
   - `gateway/`: model gateway: stored responses (`ReplaySource`), live calls (`LiveSource`: Meta, Baseten failing over to Fireworks, SAM 3.1, Muse Voice Transcribe), the live gate and file-locked budget, validation with one repair, per-call telemetry
   - `agent/`: orchestrator, persisted investigation, tool registry, prompts
@@ -63,12 +65,13 @@ Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
 - `fixtures/synthetic/`: section SYN-01, built by `scripts/build_synthetic_section.py`, whose docstring states the answers known by construction.
 - `fixtures/recordings/<id>/recording.json`: stored model responses, built by `scripts/build_skeleton_recording.py` and marked `hand_authored`; `<id>/investigation/` is the recorded investigation immutable replay streams verbatim (`scripts/record_replay_investigation.py`).
 - `fixtures/smoke/`: the provider smoke check's image, WAV and live-recorded responses.
-- `artifacts/`: small committed derived outputs. `data/`: git-ignored raw data and local investigations.
+- `artifacts/`: small committed derived outputs; `artifacts/GSE286184/` holds the manifest, capability report and label rules with per-section counts. `data/`: git-ignored raw data and local investigations.
 
 ## Gotchas
 
 - Every Meta, Baseten and Fireworks model here is a reasoning model. Send a generous `max_tokens` (2,000+) and `reasoning_effort: "low"`, or content comes back empty with `finish_reason: "length"`.
 - GEO `*_transcripts.parquet.gz` files are gzip-wrapped parquet. Decompress before reading.
+- GSM8720419 (x11) holds the same content as GSM8720418 (x10): 21 distinct sections. The manifest marks it `duplicate_of`; count the pair once.
 - SAM 3.1 masks are box-local crops: global pixel = box origin + mask pixel. Concept prompts find nothing on RNA-rendered images, so use box prompts (ADR-0005).
 - Muse Voice Transcribe accepts only WAV (mono 16-bit PCM, 16 or 24 kHz).
 - Modal cuts web requests at 150 seconds.

@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-podocyte-lrp2",
-  "recorded_at": "2026-11-03T04:31:50Z",
+  "recorded_at": "2026-11-03T04:50:06Z",
   "origin": "hand_authored",
   "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
   "note": "Hand-authored model responses for the walking skeleton (ticket 01); no model was called."
@@ -10,7 +10,7 @@
  "calls": [
   {
    "purpose": "plan",
-   "cache_key": "341ecffe7ff1eb0b1623710e8a546cb45d0ab33b238128f2850072e8339fec9c",
+   "cache_key": "49988af235e93ae44989784513f42f5a99f6ec96ef0aeef024f2cd488e19e6a5",
    "request": {
     "provider": "meta",
     "model": "muse-wonder-1.0",
@@ -21,7 +21,7 @@
      },
      {
       "role": "user",
-      "content": "{\"capability_report\":{\"checks\":[{\"capability\":\"coordinate_inspection\",\"reason\":\"Molecule and cell positions are given in micrometres.\",\"status\":\"supported\"},{\"capability\":\"assignment_audit\",\"reason\":\"Molecules carry cell_id and overlaps_nucleus, so default and nucleus-only conditions can be compared.\",\"status\":\"supported\"},{\"capability\":\"structure_outlines\",\"reason\":\"One glomerulus outline is drawn by construction (not by SAM 3.1).\",\"status\":\"supported\"},{\"capability\":\"disease_contrast\",\"reason\":\"One synthetic section with no disease or control group, so no finding can be estimated.\",\"status\":\"unavailable\"},{\"capability\":\"cell_boundaries\",\"reason\":\"No cell or nucleus boundaries; the viewer draws nuclei as circles from nucleus area, an approximation.\",\"status\":\"unavailable\"}],\"dataset_id\":\"synthetic\",\"schema_version\":\"1.0\"},\"question\":\"Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene; gene sets and pairs arrive with ticket 05.\",\"items\":{\"type\":\"string\"},\"maxItems\":1,\"minItems\":1,\"title\":\"Genes\",\"type\":\"array\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"genes\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one gene's presence in one cell population across assignment conditions, per section: molecules kept, retention against the default condition, share of cells expressing, and nuclear-overlap share.\",\"name\":\"audit_population\",\"version\":\"1\"}]}"
+      "content": "{\"capability_report\":{\"checks\":[{\"capability\":\"coordinate_inspection\",\"reason\":\"Molecule and cell positions are given in micrometres.\",\"status\":\"supported\"},{\"capability\":\"assignment_audit\",\"reason\":\"Molecules carry cell_id and overlaps_nucleus, so default and nucleus-only conditions can be compared.\",\"status\":\"supported\"},{\"capability\":\"structure_outlines\",\"reason\":\"One glomerulus outline is drawn by construction (not by SAM 3.1).\",\"status\":\"supported\"},{\"capability\":\"disease_contrast\",\"reason\":\"One synthetic section with no disease or control group, so no finding can be estimated.\",\"status\":\"unavailable\"},{\"capability\":\"cell_boundaries\",\"reason\":\"No cell or nucleus boundaries; the viewer draws nuclei as circles from nucleus area, an approximation.\",\"status\":\"unavailable\"}],\"contrasts\":[],\"dataset_id\":\"synthetic\",\"schema_version\":\"1.0\"},\"question\":\"Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene; gene sets and pairs arrive with ticket 05.\",\"items\":{\"type\":\"string\"},\"maxItems\":1,\"minItems\":1,\"title\":\"Genes\",\"type\":\"array\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"genes\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one gene's presence in one cell population across assignment conditions, per section: molecules kept, retention against the default condition, share of cells expressing, and nuclear-overlap share.\",\"name\":\"audit_population\",\"version\":\"1\"}]}"
      }
     ],
     "response_schema": {
@@ -141,7 +141,7 @@
     {
      "name": "capability_report",
      "version": "1.0",
-     "sha256": "a89b70528d649f6d90aae42d12bfca4df5f95623c3f7e26e5364d33828944e48"
+     "sha256": "a904167708b8667f57ed39bd826d59aca35d257993e04c7d9b57e78fd68e18da"
     },
     {
      "name": "tool:audit_population",

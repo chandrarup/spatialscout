@@ -1,6 +1,7 @@
 """Command line.
 
 - `spatialscout serve` runs the API, which also serves the built web app from web/dist.
+- `spatialscout ingest` downloads any missing GSE286184 file and builds the validated tables and artifacts.
 - `spatialscout smoke` makes one tiny call per provider, model and endpoint. `--run-mode live` calls the
   providers under the daily budget and records the responses; `--run-mode cached_tool_rerun` (the default)
   replays the recording without any network call and prints the same results.
@@ -25,7 +26,11 @@ def main(argv: list[str] | None = None) -> int:
     smoke.add_argument("--run-mode", choices=["live", "cached_tool_rerun"], default="cached_tool_rerun")
     smoke.add_argument("--dir", type=Path, default=None, help="where the smoke image, audio and recording live (default fixtures/smoke)")
     smoke.add_argument("--env-file", type=Path, default=None, help="a .env file with the provider keys, when they are not in the environment")
+    ingest = commands.add_parser("ingest", help="download missing GSE286184 files, then validate and label all 22 sections")
+    ingest.add_argument("--no-download", action="store_true", help="fail on a missing raw file instead of fetching it")
     args = parser.parse_args(argv)
+    if args.command == "ingest":
+        return _ingest(download=not args.no_download)
     if args.command == "serve":
         uvicorn.run(
             "spatialscout.api:create_app",
@@ -81,6 +86,20 @@ async def _smoke(run_mode: str, smoke_dir: Path | None, env_file: Path | None) -
         print(result.line())
     if run_mode == "live":
         print(f"recorded {len(results)} responses in {recording_path}; spent ${sum(r.cost_usd or 0 for r in results):.4f}")
+    return 0
+
+
+def _ingest(download: bool) -> int:
+    """Raw files go to SPATIALSCOUT_RAW_DIR, validated tables to SPATIALSCOUT_PROCESSED_DIR (both git-ignored),
+    and the manifest, capability report and label rules to artifacts/GSE286184/."""
+    from .data.gse286184 import Paths, download_missing, ingest
+    from .settings import Settings
+
+    settings = Settings.from_env()
+    assert settings.raw_dir and settings.processed_dir and settings.artifacts_dir
+    if download:
+        print(f"{download_missing(settings.raw_dir)} raw files downloaded into {settings.raw_dir}")
+    ingest(Paths(settings.raw_dir, settings.processed_dir, settings.artifacts_dir / "GSE286184"))
     return 0
 
 
