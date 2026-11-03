@@ -26,6 +26,27 @@ class CapabilityReport(Contract):
         return any(c.capability == capability and c.status == "supported" for c in self.checks)
 
 
+class SectionValidation(Contract):
+    """What validation did to one section's raw records. Nothing is dropped silently: every molecule read is
+    kept or counted under exactly one reason, in this order: malformed, duplicate, below quality, not in panel."""
+
+    molecules_read: int
+    malformed_molecules: int = Field(description="No gene, a non-finite position, quality or nucleus distance, or a nucleus flag other than 0 or 1.")
+    duplicate_molecules: int = Field(description="A repeated transcript id; the first record is kept.")
+    below_quality: int = Field(description="Quality score under the dataset's threshold.")
+    not_in_panel: int = Field(description="A control probe or codeword, not a panel gene.")
+    molecules_kept: int
+    unassigned_molecules: int = Field(description="Kept molecules the instrument assigned to no cell.")
+    unmatched_molecules: int = Field(
+        description="Kept molecules assigned to a cell id missing from the cells table; kept, counted as unassigned."
+    )
+    cells_read: int
+    malformed_cells: int = Field(description="No id, or a non-finite centroid or area.")
+    duplicate_cells: int = Field(description="A repeated cell id; the first record is kept.")
+    cells_kept: int
+    cells_without_molecules: int = Field(description="Kept cells with no kept molecule; they stay in every denominator.")
+
+
 class FileChecksum(Contract):
     path: str
     sha256: str

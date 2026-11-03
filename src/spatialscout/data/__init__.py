@@ -5,11 +5,15 @@ Ticket 01 serves the committed synthetic section only; ticket 02 adds the GSE286
 
 from .store import DatasetStore, UnknownDataset, UnknownSection
 from .tables import CELL_COLUMNS, MOLECULE_COLUMNS, SectionTables, make_section
+from .validation import MalformedSection, ValidatedSection, validate_section
 
 __all__ = [
     "CELL_COLUMNS",
     "MOLECULE_COLUMNS",
     "DatasetStore",
+    "MalformedSection",
+    "ValidatedSection",
+    "validate_section",
     "SectionTables",
     "UnknownDataset",
     "UnknownSection",
