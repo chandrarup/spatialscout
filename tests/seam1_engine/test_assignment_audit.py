@@ -132,3 +132,26 @@ def test_fewer_than_three_eligible_sections_give_insufficient_evidence():
     result = audit_population(sections, cell_type="Podocyte", genes=["LRP2"], conditions=[DEFAULT, NUCLEUS_ONLY])
 
     assert (result.eligible_section_ids, result.label) == (["S1", "S2"], EvidenceStatus.INSUFFICIENT_EVIDENCE)
+
+
+def test_distance_caps_keep_non_nuclear_molecules_within_the_cap_only():
+    """m1 is nuclear; m2..m4 sit 0.5, 1.5 and 3 µm from the nucleus. m5 has no nucleus distance (its cell has no
+    detected nucleus), so it is never within a cap."""
+    section = make_section(
+        section_id="HAND-CAP",
+        dataset_id="hand-built",
+        label_rule_id="hand-built",
+        cells=[cell("c1", "PT")],
+        molecules=[
+            molecule("m1", "LRP2", "c1", overlaps_nucleus=True),
+            {**molecule("m2", "LRP2", "c1", overlaps_nucleus=False), "nucleus_distance": 0.5},
+            {**molecule("m3", "LRP2", "c1", overlaps_nucleus=False), "nucleus_distance": 1.5},
+            {**molecule("m4", "LRP2", "c1", overlaps_nucleus=False), "nucleus_distance": 3.0},
+            {**molecule("m5", "LRP2", "c1", overlaps_nucleus=False), "nucleus_distance": float("nan")},
+        ],
+    )
+
+    audit = audit_section(section, [DEFAULT, ConditionName.DISTANCE_CAP_1UM, ConditionName.DISTANCE_CAP_2UM])
+
+    assert audit.excluded_molecule_ids[ConditionName.DISTANCE_CAP_1UM] == ["m3", "m4", "m5"]
+    assert audit.excluded_molecule_ids[ConditionName.DISTANCE_CAP_2UM] == ["m4", "m5"]

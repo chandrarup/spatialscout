@@ -27,10 +27,32 @@ def _nucleus_only(section: SectionTables) -> np.ndarray:
     return _default(section) & section.molecules["overlaps_nucleus"].to_numpy(dtype=bool)
 
 
+def _distance_cap(cap_um: float) -> Callable[[SectionTables], np.ndarray]:
+    """Nuclear molecules plus non-nuclear ones within `cap_um` of the nucleus. A molecule without a nucleus
+    distance (its cell has no detected nucleus) is never within a cap, so the cap excludes it."""
+
+    def rule(section: SectionTables) -> np.ndarray:
+        distance = section.molecules["nucleus_distance"].to_numpy(dtype=float)
+        with np.errstate(invalid="ignore"):
+            near = distance <= cap_um
+        return _nucleus_only(section) | (_default(section) & near)
+
+    return rule
+
+
 _RULES: dict[ConditionName, Callable[[SectionTables], np.ndarray]] = {
     ConditionName.DEFAULT: _default,
     ConditionName.NUCLEUS_ONLY: _nucleus_only,
+    ConditionName.DISTANCE_CAP_1UM: _distance_cap(1.0),
+    ConditionName.DISTANCE_CAP_2UM: _distance_cap(2.0),
 }
+
+PRIMARY_CONDITIONS: tuple[ConditionName, ...] = (
+    ConditionName.DEFAULT,
+    ConditionName.NUCLEUS_ONLY,
+    ConditionName.DISTANCE_CAP_1UM,
+    ConditionName.DISTANCE_CAP_2UM,
+)
 
 IMPLEMENTED_CONDITIONS: tuple[ConditionName, ...] = tuple(_RULES)
 
