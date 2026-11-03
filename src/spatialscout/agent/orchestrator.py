@@ -104,7 +104,8 @@ class Orchestrator:
             if self._live_gate is None:
                 raise RunModeUnavailable("Live runs are not enabled on this server.")
             self._live_gate.admit(passcode)
-        recording = self._recordings.for_question(question)
+        # Only a cached tool rerun plays a recording's stored responses; a live run makes its own and is labelled live.
+        recording = self._recordings.for_question(question) if run_mode == "cached_tool_rerun" else None
         investigation = Investigation.create(
             self._root, question, run_mode, self._dataset_id, recording.info if recording else None, self._clock
         )

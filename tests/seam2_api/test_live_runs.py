@@ -65,10 +65,15 @@ def test_a_live_run_streams_to_a_package_and_its_audit_log_marks_every_response_
     providers = FakeProviders()
     with TestClient(live_app(tmp_path, providers)) as client:
         investigation_id, events = run_live(client)
+        snapshot = client.get(f"/api/investigations/{investigation_id}").json()
         package = zipfile.ZipFile(io.BytesIO(client.get(f"/api/investigations/{investigation_id}/package").content))
 
     assert [event["type"] for event in events] == FULL_SEQUENCE
     audit = [json.loads(line) for line in package.read("audit_log.jsonl").decode().splitlines()]
+    # a live run of a recorded question is still live: it carries no recording's replay label
+    assert (snapshot["run_mode"], snapshot["replay"]) == ("live", None)
+    assert json.loads(package.read("manifest.json"))["replay"] is None
+    assert audit[0]["kind"] == "investigation_started" and audit[0]["payload"]["recording_id"] is None
     calls = [entry["payload"] for entry in audit if entry["kind"] == "model_call"]
     assert [(c["purpose"], c["source"], c["run_mode"]) for c in calls] == [("plan", "live", "live"), ("claim_draft", "live", "live")]
     assert [(c["provider"], c["model"]) for c in calls] == [("meta", "muse-wonder-1.0"), ("baseten", "meta-models/muse-spark-open")]

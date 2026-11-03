@@ -52,10 +52,10 @@ class RecordingLibrary:
         paths = sorted(Path(recordings_dir).glob("*/recording.json"))
         self._recordings = [Recording.model_validate_json(p.read_text(encoding="utf-8")) for p in paths]
         self._investigation_dirs: dict[str, Path] = {}
-        for path in paths:
+        for path, recording in zip(paths, self._recordings, strict=True):
             directory = path.parent / RECORDED_INVESTIGATION_DIR
             if (directory / "state.json").is_file():
-                self._investigation_dirs[path.parent.name] = directory
+                self._investigation_dirs[recording.info.recording_id] = directory
 
     def infos(self) -> list[ReplayInfo]:
         return [r.info for r in self._recordings]

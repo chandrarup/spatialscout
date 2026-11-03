@@ -72,6 +72,7 @@ Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
 - SAM 3.1 masks are box-local crops: global pixel = box origin + mask pixel. Concept prompts find nothing on RNA-rendered images, so use box prompts (ADR-0005).
 - Muse Voice Transcribe accepts only WAV (mono 16-bit PCM, 16 or 24 kHz).
 - Modal cuts web requests at 150 seconds.
+- `make fixtures` cannot rebuild `fixtures/smoke/recording.json`: it holds live responses. A change to `ModelRequest` or the cache key makes it raise `StaleRecording`; re-record with `uv run spatialscout smoke --run-mode live --env-file <main checkout>/.env` (cents, needs `SPATIALSCOUT_DAILY_BUDGET_USD`).
 
 ## Agent skills
 

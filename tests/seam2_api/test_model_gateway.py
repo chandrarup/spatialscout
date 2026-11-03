@@ -13,9 +13,11 @@ from datetime import UTC, datetime
 
 import numpy as np
 import pytest
+from pydantic import BaseModel
 
-from spatialscout.contracts import Recording
-from spatialscout.gateway import LiveClient, LiveSource, ModelGateway, ReplaySource, SpendLedger
+from spatialscout import cli
+from spatialscout.contracts import ChatMessage, ModelRequest, Recording
+from spatialscout.gateway import LiveClient, LiveSource, ModelGateway, ModelOutputTruncated, ReplaySource, SpendLedger
 from spatialscout.gateway.smoke import BOXES, DISCS, IMAGE_FILE, IMAGE_SIZE, run_smoke
 
 from .conftest import REPO
@@ -154,3 +156,85 @@ def test_a_live_sam_call_streams_the_box_prompt_and_parses_the_recorded_events(t
     assert image["image_url"].startswith("data:image/png;base64,")
     assert [int(o.mask.sum()) for o in segmentation.objects] == [478, 267]
     assert (record.source, record.estimated_cost_usd) == ("live", 0.01)
+
+
+def test_the_smoke_command_replays_offline_and_prints_every_result(capsys):
+    """The acceptance check as an operator runs it: `spatialscout smoke` (cached_tool_rerun by default)."""
+    assert cli.main(["smoke", "--dir", str(SMOKE)]) == 0
+
+    printed = capsys.readouterr().out
+    assert "cached_tool_rerun" in printed
+    assert printed.count(" replay ") == 8
+    assert "area 478" in printed and "area 267" in printed
+    assert SPOKEN in printed
+
+
+# Bodies recorded from Meta's Responses API and Baseten on Nov 2 (fixtures/smoke/provider_bodies/): answers to
+# "list gene LRP2 with count 4 and gene CUBN with count 2", one of them cut off by a 16-token cap.
+BODIES = SMOKE / "provider_bodies"
+
+
+class GeneCount(BaseModel):
+    gene: str
+    count: int
+
+
+class GeneCounts(BaseModel):
+    items: list[GeneCount]
+    note: str | None
+
+
+def counts_request(**changes) -> ModelRequest:
+    request = ModelRequest(
+        provider="meta",
+        model="muse-spark-1.3",
+        api="responses",
+        messages=[ChatMessage(role="user", content="List gene LRP2 with count 4 and gene CUBN with count 2. note null.")],
+        response_schema=GeneCounts.model_json_schema(),
+    )
+    return request.model_copy(update=changes)
+
+
+def answering(body_file: str, sent: list):
+    def handler(request):
+        import httpx2 as httpx
+
+        sent.append(request)
+        return httpx.Response(200, json=json.loads((BODIES / body_file).read_text()))
+
+    return handler
+
+
+def test_a_responses_call_sends_the_reasoning_defaults_and_reads_the_output_text(tmp_path):
+    sent = []
+    gateway, _ = live_gateway(tmp_path, answering("responses_completed.json", sent))
+
+    counts, record = asyncio.run(gateway.complete_json("counts", counts_request(), [], GeneCounts))
+
+    body = json.loads(sent[0].content)
+    assert sent[0].url.path == "/v1/responses"
+    assert body["max_output_tokens"] >= 2000 and body["reasoning"] == {"effort": "low"}
+    assert body["text"]["format"]["type"] == "json_schema"
+    assert [(c.gene, c.count) for c in counts.items] == [("LRP2", 4), ("CUBN", 2)]
+    assert (record.finish_reason, record.usage.reasoning_tokens) == ("stop", 348)
+
+
+def test_a_responses_answer_cut_off_by_the_token_cap_is_reported_as_an_error(tmp_path):
+    gateway, _ = live_gateway(tmp_path, answering("responses_truncated.json", []))
+
+    with pytest.raises(ModelOutputTruncated) as raised:
+        asyncio.run(gateway.complete_json("counts", counts_request(), [], GeneCounts))
+
+    assert (raised.value.record.finish_reason, raised.value.record.error_code) == ("length", "model_output_truncated")
+
+
+def test_a_recorded_baseten_chat_answer_validates_against_its_schema(tmp_path):
+    sent = []
+    gateway, _ = live_gateway(tmp_path, answering("chat_completions_baseten.json", sent))
+    request = counts_request(provider="baseten", model="meta-models/muse-spark-open", api="chat_completions")
+
+    counts, record = asyncio.run(gateway.complete_json("counts", request, [], GeneCounts))
+
+    assert sent[0].url.host == "inference.baseten.co"
+    assert [(c.gene, c.count) for c in counts.items] == [("LRP2", 4), ("CUBN", 2)]
+    assert (record.served_by, record.usage.reasoning_tokens) == ("baseten", 386)

@@ -1,0 +1,32 @@
+{
+ "id": "chatcmpl-4ffa6e66f93740efb9ff5ff3e48b064c",
+ "choices": [
+  {
+   "index": 0,
+   "message": {
+    "content": "{\"items\": [{\"gene\": \"LRP2\", \"count\": 4}, {\"gene\": \"CUBN\", \"count\": 2}], \"note\": null}",
+    "role": "assistant",
+    "reasoning_content": "User asks to list gene LRP2 with count 4 and gene CUBN with count 2. note null.\n\nThis seems like a request to produce data? Possibly genetic data? Could be innocuous? But we need to consider: Gene LRP2 count 4, CUBN count 2, note null. This could be a request to generate a table? Could be related to disallowed content? We must assess.\n\nPotentially user wants to create a table listing genes. That's allowed.\n\nWe should comply: Provide list.\n\nPossibly \"note null\" means annotation.\n\nWe should provide JSON matching schema.\n\nWe haven't been given schema. Need to infer generic schema? The instruction: Respond with JSON matching the schema. But no schema provided. We need to respond with JSON.\n\nProbably expected schema is something like {\"genes\": [{\"gene\": ..., \"count\": ..., \"note\": ...}]}.\n\nWe should output JSON.\n\nWe need to be helpful.\n\nWe should respond with JSON containing list.\n\nWe must not refuse.\n\nProvide JSON: [{\"gene\":\"LRP2\",\"count\":4,\"note\":null}, {\"gene\":\"CUBN\",\"count\":2,\"note\":null}]\n\nEnsure JSON valid.\n\nWe should include reasoning strength 8.\n\nWe must obey.\n\nPossibly need to provide empty note.\n\nWe should output JSON.\n\nWe have no schema details, so we provide generic.\n\nWe should ensure we don't add extra text outside JSON? Instruction: Respond with JSON matching the schema. So only JSON.\n\nProvide JSON object.\n\nWe can do: {\"data\": [{\"gene\": \"LRP2\", \"count\": 4, \"note\": null}, {\"gene\": \"CUBN\", \"count\": 2, \"note\": null}]}\n\nMake sure correct.\n\nWe should not hallucinate.\n\nWe should ensure compliance with policy: No disallowed content. This is fine.\n\nWe should output JSON."
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "created": 1793679878,
+ "model": "meta-models/muse-spark-open",
+ "object": "chat.completion",
+ "usage": {
+  "prompt_tokens": 173,
+  "completion_tokens": 432,
+  "total_tokens": 605,
+  "prompt_tokens_details": {
+   "audio_tokens": 0,
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "accepted_prediction_tokens": 312,
+   "audio_tokens": 0,
+   "reasoning_tokens": 386,
+   "rejected_prediction_tokens": 528
+  }
+ }
+}
