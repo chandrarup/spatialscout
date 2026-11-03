@@ -22,7 +22,7 @@ from ..contracts import (
     StartInvestigationRequest,
 )
 from ..data import DatasetStore, SectionNotIngested, SectionTables, UnknownDataset, UnknownLabelRule, UnknownSection
-from ..engine import IMPLEMENTED_CONDITIONS, build_packed_region_view, build_region_view
+from ..engine import build_packed_region_view, build_region_view, conditions_for
 from ..gateway import LiveRunRefused, RecordingLibrary
 from ..gateway.gate import LiveGate
 from ..settings import Settings
@@ -127,10 +127,11 @@ def _section(store: DatasetStore, section_id: str, label_rule_id: str | None) ->
 
 @router.get("/sections/{section_id}/region-view")
 async def region_view(section_id: str, store: StoreDep, label_rule_id: str | None = None) -> RegionView:
-    """The whole section as JSON lists, with inclusion flags for every implemented condition. For a whole real
-    section prefer the packed view."""
+    """The whole section as JSON lists, with inclusion flags for every condition the section can compute (the
+    exploratory structure-constrained condition only when it has structure masks). For a whole real section prefer
+    the packed view."""
     section = _section(store, section_id, label_rule_id)
-    conditions = [c for c in ConditionName if c in IMPLEMENTED_CONDITIONS]
+    conditions = conditions_for(section)
     return build_region_view(section, conditions, synthetic=store.manifest(section.dataset_id).synthetic)
 
 
@@ -140,7 +141,7 @@ def packed_region_view(section_id: str, store: StoreDep, label_rule_id: str | No
     condition. A plain `def`, so packing a large section runs in the thread pool, off the event loop."""
     section = _section(store, section_id, label_rule_id)
     info = store.section_info(section_id)
-    conditions = [c for c in ConditionName if c in IMPLEMENTED_CONDITIONS]
+    conditions = conditions_for(section)
     return build_packed_region_view(
         section, conditions, synthetic=store.manifest(section.dataset_id).synthetic, section_name=info.name, group=info.group
     )

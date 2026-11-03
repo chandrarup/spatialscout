@@ -46,7 +46,7 @@ from ..contracts import (
     content_id,
 )
 from ..data import SectionTables, make_section
-from .conditions import PRIMARY_CONDITIONS, inclusion_mask
+from .conditions import EXPLORATORY_CONDITIONS, PRIMARY_CONDITIONS, inclusion_mask
 from .markers import HOME_CELL_TYPES, MarkerPairs, load_marker_pairs
 
 POPULATION_GATE_MIN_CELLS = 20
@@ -187,6 +187,7 @@ def restrict_to_roi(section: SectionTables, roi: Region) -> SectionTables:
         section.label_rule_id,
         molecules=section.molecules[keep],
         cells=section.cells[inside],
+        structures=section.structures,
     )
 
 
@@ -643,7 +644,16 @@ def audit_population(
         sections = [restrict_to_roi(matching[0], roi)]
 
     groups = dict(section_groups or {})
+    # The exploratory condition is computed apart and kept in `exploratory_sections`, so it can never reach the
+    # label, the pooled values or the evidence regions (ADR-0006). Sections without structure masks have none.
+    exploratory = [c for c in conditions if c in EXPLORATORY_CONDITIONS]
+    conditions = [c for c in conditions if c not in EXPLORATORY_CONDITIONS]
     audits = [_audit_one(s, cell_type, genes, measure, pairs, conditions, groups.get(s.section_id)) for s in sections]
+    exploratory_sections = []
+    if exploratory:
+        for s in (s for s in sections if s.structures):
+            values = _audit_one(s, cell_type, genes, measure, pairs, [ConditionName.DEFAULT, *exploratory], groups.get(s.section_id)).values
+            exploratory_sections.append(values.model_copy(update={"conditions": [v for v in values.conditions if v.condition in exploratory]}))
     eligible = [a for a in audits if a.eligible]
     stricter = [c for c in conditions if c in PRIMARY_CONDITIONS and c != ConditionName.DEFAULT]
     result_genes = [g for g in genes if measure != "co_expression_score" or HOME_CELL_TYPES.get(g) != cell_type]
@@ -662,6 +672,7 @@ def audit_population(
         genes=genes,
         measure=measure,
         sections=[a.values for a in audits],
+        exploratory_sections=exploratory_sections,
         eligible_section_ids=[a.values.section_id for a in eligible],
         evidence_regions=_evidence_regions(eligible or audits, ranking_condition) if ranking_condition else [],
         ranking_rule=ranking_rule(ranking_condition) if ranking_condition else None,
