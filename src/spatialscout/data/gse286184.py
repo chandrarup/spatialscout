@@ -123,7 +123,8 @@ def capability_report(duplicates: dict[str, str] | None = None) -> CapabilityRep
             status="supported",
             reason=(
                 "Descriptive only: per-section values and effects for DKD, IgAN, MCD and MN against Control, with no "
-                "p-values or confidence intervals, because 22 sections come from 19 donors with no published mapping "
+                "p-values or confidence intervals, because GEO's 22 samples hold "
+                f"{len(SECTIONS) - len(duplicates)} distinct sections from 19 published donors with no published mapping "
                 "(ADR-0007). See each contrast's inference eligibility."
             ),
         ),

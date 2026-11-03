@@ -15,7 +15,7 @@
   {
    "capability": "disease_contrast",
    "status": "supported",
-   "reason": "Descriptive only: per-section values and effects for DKD, IgAN, MCD and MN against Control, with no p-values or confidence intervals, because 22 sections come from 19 donors with no published mapping (ADR-0007). See each contrast's inference eligibility."
+   "reason": "Descriptive only: per-section values and effects for DKD, IgAN, MCD and MN against Control, with no p-values or confidence intervals, because GEO's 22 samples hold 21 distinct sections from 19 published donors with no published mapping (ADR-0007). See each contrast's inference eligibility."
   },
   {
    "capability": "cell_boundaries",
