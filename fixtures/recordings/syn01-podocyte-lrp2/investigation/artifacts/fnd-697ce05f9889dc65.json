@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "finding_kind": "audit",
- "finding_id": "fnd-c3a31982f22bf088",
+ "finding_id": "fnd-697ce05f9889dc65",
  "dataset_id": "synthetic",
  "population": {
   "label_rule_id": "synthetic-by-construction",
@@ -56,7 +56,7 @@
      "pairs_scored": null
     }
    ],
-   "group": null,
+   "group": "Synthetic",
    "eligible": false,
    "ineligible_reason": "3 cells labelled Podocyte; the population gate needs 20"
   }

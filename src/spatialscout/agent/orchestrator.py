@@ -329,7 +329,7 @@ class Orchestrator:
 
 
 def _artifact_id(artifact: Any) -> str:
-    for field in ("finding_id", "artifact_id"):
+    for field in ("control_id", "finding_id", "artifact_id"):
         if isinstance(getattr(artifact, field, None), str):
             return getattr(artifact, field)
     raise TypeError(f"a tool returned an artifact without an id: {type(artifact).__name__}")
