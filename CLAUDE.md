@@ -66,6 +66,7 @@ Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
 - `fixtures/synthetic/`: section SYN-01, built by `scripts/build_synthetic_section.py`, whose docstring states the answers known by construction.
 - `fixtures/recordings/<id>/recording.json`: stored model responses, built by `scripts/build_skeleton_recording.py` and marked `hand_authored`; `<id>/investigation/` is the recorded investigation immutable replay streams verbatim (`scripts/record_replay_investigation.py`).
 - `fixtures/smoke/`: the provider smoke check's image, WAV and live-recorded responses.
+- `fixtures/voice/`: the sample spoken question and its transcription, recorded live per dataset panel by `scripts/record_voice_sample.py`.
 - `artifacts/`: small committed derived outputs; `artifacts/GSE286184/` holds the manifest, capability report and label rules with per-section counts. `data/`: git-ignored raw data and local investigations.
 
 ## Gotchas

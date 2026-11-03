@@ -2955,6 +2955,13 @@
             "asr_transcribe"
           ],
           "type": "string"
+        },
+        "keywords": {
+          "description": "Muse Voice Transcribe: terms to bias recognition toward, such as panel gene names. Left out of the cache key when empty, so requests stored before this field existed keep their keys.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "required": [
@@ -2964,7 +2971,8 @@
         "response_schema",
         "max_tokens",
         "reasoning_effort",
-        "api"
+        "api",
+        "keywords"
       ],
       "title": "ModelRequest",
       "type": "object"
@@ -4797,6 +4805,60 @@
         "arguments"
       ],
       "title": "ToolStartedEvent",
+      "type": "object"
+    },
+    "Transcription": {
+      "additionalProperties": false,
+      "description": "What Muse Voice Transcribe heard. Nothing runs on it until the researcher confirms the edited text.",
+      "properties": {
+        "transcript": {
+          "type": "string"
+        },
+        "run_mode": {
+          "description": "`cached_tool_rerun` serves a stored response; `live` made a fresh call.",
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "live",
+            "replay",
+            "cache"
+          ],
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "keywords": {
+          "description": "The panel genes recognition was biased toward.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "audio_duration_ms": {
+          "description": "The clip's length, read from its WAV header.",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "transcript",
+        "run_mode",
+        "source",
+        "model",
+        "keywords",
+        "audio_duration_ms",
+        "latency_ms"
+      ],
+      "title": "Transcription",
       "type": "object"
     },
     "VerificationResult": {

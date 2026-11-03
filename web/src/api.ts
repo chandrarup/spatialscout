@@ -11,6 +11,7 @@ import type {
   ModeInfo,
   RegionView,
   StartInvestigationRequest,
+  Transcription,
 } from "./contracts/generated";
 
 async function json<T>(response: Response): Promise<T> {
@@ -53,6 +54,26 @@ export const api = {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     }).then(json<InvestigationSnapshot>),
+  /** Transcribe a spoken question. Errors carry the server's message, which says to type instead. */
+  transcribe: async (wav: Blob): Promise<Transcription> => {
+    let response: Response;
+    try {
+      response = await fetch("/api/voice/transcribe", { method: "POST", headers: { "content-type": "audio/wav" }, body: wav });
+    } catch {
+      throw new Error("The server could not be reached to transcribe the recording. Type your question instead.");
+    }
+    if (response.ok) return (await response.json()) as Transcription;
+    const detail = await response
+      .json()
+      .then((body: { detail?: { message?: string } }) => body.detail?.message)
+      .catch(() => undefined);
+    throw new Error(detail ?? `Transcription failed (HTTP ${response.status}). Type your question instead.`);
+  },
+  sampleClip: () =>
+    fetch("/api/voice/sample.wav").then((response) => {
+      if (!response.ok) throw new Error("This server has no recorded clip.");
+      return response.blob();
+    }),
   approve: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}/approve`, { method: "POST" }).then(json<InvestigationSnapshot>),
 

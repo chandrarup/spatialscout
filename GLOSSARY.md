@@ -166,6 +166,10 @@ _Avoid_: query, prompt
 For a dataset, which analyses are supported, unavailable or descriptive only, each with its reason.
 _Avoid_: data check, validation report
 
+**Transcript**:
+The editable text of a spoken question, which the researcher confirms before anything runs. Never used for RNA molecules.
+_Avoid_: caption, dictation
+
 **Plan**:
 The ordered tool steps proposed for a question, limited to what the capability report supports; frozen once approved.
 _Avoid_: DAG, workflow, pipeline

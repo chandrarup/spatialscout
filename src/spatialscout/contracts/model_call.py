@@ -30,6 +30,11 @@ class ModelRequest(Contract):
     max_tokens: int = Field(default=4000, ge=2000, description="Every model here reasons before answering; a small cap returns empty content.")
     reasoning_effort: Literal["low", "medium", "high"] = "low"
     api: ModelApi = "chat_completions"
+    keywords: list[str] = Field(
+        default_factory=list,
+        description="Muse Voice Transcribe: terms to bias recognition toward, such as panel gene names. Left out of the "
+        "cache key when empty, so requests stored before this field existed keep their keys.",
+    )
 
 
 class TokenUsage(Contract):

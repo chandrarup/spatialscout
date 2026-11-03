@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-podocyte-lrp2",
-  "recorded_at": "2026-11-03T15:19:12Z",
+  "recorded_at": "2026-11-03T15:28:16Z",
   "origin": "hand_authored",
   "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
   "note": "Hand-authored model responses for the walking skeleton (ticket 01); no model was called."
@@ -135,7 +135,8 @@
     },
     "max_tokens": 4000,
     "reasoning_effort": "low",
-    "api": "chat_completions"
+    "api": "chat_completions",
+    "keywords": []
    },
    "inputs": [
     {
@@ -242,7 +243,8 @@
     },
     "max_tokens": 4000,
     "reasoning_effort": "low",
-    "api": "chat_completions"
+    "api": "chat_completions",
+    "keywords": []
    },
    "inputs": [
     {

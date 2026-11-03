@@ -60,7 +60,10 @@ def cache_key(request: ModelRequest, inputs: Sequence[CacheInput]) -> str:
     """The content address of a model call: the full request (provider, model, messages, response schema,
     endpoint) plus the version and checksum of every computed input it was built from, including any image
     or audio sent with it."""
-    payload = {"request": request.model_dump(mode="json"), "inputs": [i.model_dump(mode="json") for i in inputs]}
+    dumped = request.model_dump(mode="json")
+    if not dumped.get("keywords"):
+        dumped.pop("keywords", None)
+    payload = {"request": dumped, "inputs": [i.model_dump(mode="json") for i in inputs]}
     return sha256_hex(canonical_json(payload))
 
 
@@ -118,13 +121,15 @@ class ModelGateway:
         response, record = await self._call(purpose, request, [*inputs, media_input("image/png", png)], png)
         return await parse_segmentation(response.events or [], width, height), record
 
-    async def transcribe(self, purpose: str, wav: bytes) -> tuple[str, ModelCallRecord]:
-        """Muse Voice Transcribe on a WAV file (mono 16-bit PCM at 16 or 24 kHz). Returns the transcript."""
+    async def transcribe(self, purpose: str, wav: bytes, keywords: Sequence[str] = ()) -> tuple[str, ModelCallRecord]:
+        """Muse Voice Transcribe on a WAV file (mono 16-bit PCM at 16 or 24 kHz), biased toward `keywords` (sorted
+        and de-duplicated, so the cache key does not depend on their order). Returns the transcript."""
         request = ModelRequest(
             provider="meta",
             model=TRANSCRIBE_MODEL,
             api="asr_transcribe",
             messages=[ChatMessage(role="user", content="Transcribe the attached WAV audio.")],
+            keywords=sorted(set(keywords)),
         )
         response, record = await self._call(purpose, request, [media_input("audio/wav", wav)], wav)
         return response.content, record

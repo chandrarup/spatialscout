@@ -1,21 +1,21 @@
 {
   "schema_version": "1.0",
-  "investigation_id": "inv-7472d791631e",
+  "investigation_id": "inv-1628403ec4e2",
   "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
   "run_mode": "cached_tool_rerun",
   "status": "complete",
   "dataset_id": "synthetic",
   "replay": {
     "recording_id": "syn01-podocyte-lrp2",
-    "recorded_at": "2026-11-03T15:19:12Z",
+    "recorded_at": "2026-11-03T15:28:16Z",
     "origin": "hand_authored",
     "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
     "note": "Hand-authored model responses for the walking skeleton (ticket 01); no model was called."
   },
-  "approved_plan_hash": "f7da4e6a1e8eccb07ee906ceec9e4eb294fb1be0b653cf8a64a3b480e945a2bb",
-  "created_at_utc": "2026-11-03T15:19:12.867720Z",
-  "updated_at_utc": "2026-11-03T15:19:12.933489Z",
-  "approved_at_utc": "2026-11-03T15:19:12.920414Z",
-  "finished_at_utc": "2026-11-03T15:19:12.933489Z",
+  "approved_plan_hash": "60c594d388fa11fc11cd81e8653b5d5019218a08df292d9f8a40a9be50520145",
+  "created_at_utc": "2026-11-03T15:28:16.557133Z",
+  "updated_at_utc": "2026-11-03T15:28:16.622424Z",
+  "approved_at_utc": "2026-11-03T15:28:16.609624Z",
+  "finished_at_utc": "2026-11-03T15:28:16.622424Z",
   "last_seq": 8
 }
