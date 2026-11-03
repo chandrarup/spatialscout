@@ -30,8 +30,18 @@ Run from the repo root, after `make install` (uv and npm, from the lockfiles).
 | `make build` | Typechecks and builds the web app into `web/dist`. |
 | `make fixtures` | Rebuilds the synthetic section, then the stored model responses that depend on it. |
 | `make data` | `uv run spatialscout ingest`: downloads any missing GSE286184 file, validates and labels all 22 sections, and rewrites `artifacts/GSE286184/`. Idempotent. |
+| `make deploy` | Builds the web app and deploys (or redeploys) it with the API on Modal: `deploy/modal_app.py`. |
+| `make modal-batch` | Runs `deploy/modal_batch.py` on Modal over all 22 sections with `.map()`; logs runtime and cost to `artifacts/modal_batch_gse286184.json`. |
+| `make modal-secret` | Creates or replaces the Modal Secret `spatialscout-env` from the provider keys in `.env`. |
 
 Add `PORT=8010` to `serve`, `api` or `dev` when 8000 is taken.
+
+### Deployment
+
+- Public URL: https://chandrarupdaka--spatialscout.us-east.modal.run (Modal app `spatialscout`). Run mode is `cached_tool_rerun` until ticket 03's immutable replay lands; live runs are refused.
+- The Modal targets read `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` from `.env`. In a worktree, add `ENV_FILE=<main checkout>/.env`. The app's secrets come only from the Modal Secret `spatialscout-env`; nothing from `.env` enters the image.
+- One warm web container (`max_containers=1`) owns investigation state; `data/investigations/` is the Modal Volume `spatialscout-investigations`, which survives redeploys. Raw GEO files fetched by the batch job sit in the Volume `spatialscout-raw`.
+- Each SSE connection ends after `SPATIALSCOUT_STREAM_WINDOW_SECONDS` (110 s by default), and the web client reconnects with `after_seq`, so streams outlast Modal's 150-second request limit.
 
 - After changing a contract, run `make types` and commit `web/src/contracts/`.
 - Stored model responses are keyed by a hash of each request plus the tool version and artifact checksum it was built from. Changing a prompt (`agent/prompts.py`), a tool, a contract inside a request, or the synthetic section makes seam-2 tests fail with `replay_miss`. Run `make fixtures` and commit `fixtures/`.
