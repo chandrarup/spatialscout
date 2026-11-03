@@ -26,6 +26,9 @@ from ..settings import Settings
 
 router = APIRouter()
 
+# How long a browser EventSource waits before reconnecting after the server ends a stream window.
+RECONNECT_DELAY_MS = 500
+
 
 def _orchestrator(request: Request) -> Orchestrator:
     return request.app.state.orchestrator
@@ -139,14 +142,17 @@ async def verify_audit_log(request: Request) -> ChainCheckResult:
 
 @router.get("/investigations/{investigation_id}/events", response_class=EventSourceResponse)
 async def stream_events(
+    request: Request,
     investigation: InvestigationDep,
     after_seq: int = 0,
     last_event_id: Annotated[str | None, Header()] = None,
 ):
-    """Stream every event with `seq > after_seq` over SSE, then new ones until the investigation finishes.
-    Each event is sent exactly as written to events.jsonl, so an immutable replay is verbatim.
-    A browser EventSource reconnects with the Last-Event-ID header, which counts as `after_seq`."""
+    """Stream every event with `seq > after_seq` over SSE, then new ones until the investigation finishes or the
+    stream window closes, whichever comes first. The client then reconnects with `after_seq` (or a browser
+    EventSource with the Last-Event-ID header, which counts as `after_seq`) and misses nothing. Each event is sent
+    exactly as written to events.jsonl, so an immutable replay is verbatim."""
+    settings: Settings = request.app.state.settings
     if last_event_id and last_event_id.isdigit():
         after_seq = max(after_seq, int(last_event_id))
-    async for event, line in investigation.events_after(after_seq):
-        yield ServerSentEvent(raw_data=line, id=str(event.seq))
+    async for event, line in investigation.events_after(after_seq, settings.stream_window_seconds):
+        yield ServerSentEvent(raw_data=line, id=str(event.seq), retry=RECONNECT_DELAY_MS)

@@ -1,0 +1,788 @@
+{
+  "dataset": "GSE286184",
+  "sections": 22,
+  "sections_with_identical_cells_tables": [
+    [
+      "GSM8720418 (x10)",
+      "GSM8720419 (x11)"
+    ]
+  ],
+  "molecules": 23940259,
+  "cells": 792072,
+  "wall_seconds": 13.7,
+  "container_seconds": 60.15,
+  "estimated_cost_usd": 0.000921,
+  "cost_basis": "container seconds x (1.0 core x $1.31e-05/core/s + 1.0 GiB x $2.22e-06/GiB/s), Modal list prices 2026-11-02; excludes image builds and the minimum billing per container",
+  "per_section": [
+    {
+      "section": "GSM8720409",
+      "section_name": "x1",
+      "files": [
+        {
+          "name": "GSM8720409_kidney_xenium_1_barcodes.tsv.gz",
+          "bytes": 75182,
+          "sha256": "c1287e14e705225940e0427bbadd37b731d3b3e63419d9de9789af60cee01e4b"
+        },
+        {
+          "name": "GSM8720409_kidney_xenium_1_cells.csv.gz",
+          "bytes": 871713,
+          "sha256": "6e2647f9be216d1ab70efed5b852519106a56da1b6210089b0b9488ca0d02666"
+        },
+        {
+          "name": "GSM8720409_kidney_xenium_1_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "abcf7670cc02124fd928b5f1af82679aea9b4e56227d32ea818b8139f54ddc2f"
+        },
+        {
+          "name": "GSM8720409_kidney_xenium_1_matrix.mtx.gz",
+          "bytes": 441721,
+          "sha256": "73019cfcfdd9ce2920a255d7b36923c8c4ce1b7a8758dccf48d6834a25dae73f"
+        },
+        {
+          "name": "GSM8720409_kidney_xenium_1_transcripts.parquet.gz",
+          "bytes": 5746120,
+          "sha256": "da6e397c0547b056ec27baba7f36a00dbee07aa44909d6d0720ac35712e0b411"
+        }
+      ],
+      "molecules": 339855,
+      "cells": 15786,
+      "bytes_downloaded": 0,
+      "seconds": 0.84
+    },
+    {
+      "section": "GSM8720410",
+      "section_name": "x2",
+      "files": [
+        {
+          "name": "GSM8720410_kidney_xenium_2_barcodes.tsv.gz",
+          "bytes": 84888,
+          "sha256": "3666d50382ee4432f1133cee433946016b7ed68696b827ceef22972dceda97ce"
+        },
+        {
+          "name": "GSM8720410_kidney_xenium_2_cells.csv.gz",
+          "bytes": 996648,
+          "sha256": "c33b4fac9c3ca55334b08065e4a74e8cb020db594be08c314d6c062798ad4e35"
+        },
+        {
+          "name": "GSM8720410_kidney_xenium_2_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "2bf877825cedbe942ba3f508527b068a14a0111fedf77510365e64784ff308ed"
+        },
+        {
+          "name": "GSM8720410_kidney_xenium_2_matrix.mtx.gz",
+          "bytes": 507212,
+          "sha256": "ca125671c1dc46b41a2c58f9e063e5bc565a7bd555376b2b098bf0358b1eb6be"
+        },
+        {
+          "name": "GSM8720410_kidney_xenium_2_transcripts.parquet.gz",
+          "bytes": 5439678,
+          "sha256": "1233e068bb246d5f8489f0276f1387521f97d01e588fa77b0b108c3883e57cc2"
+        }
+      ],
+      "molecules": 313158,
+      "cells": 17935,
+      "bytes_downloaded": 0,
+      "seconds": 3.75
+    },
+    {
+      "section": "GSM8720411",
+      "section_name": "x3",
+      "files": [
+        {
+          "name": "GSM8720411_kidney_xenium_3_barcodes.tsv.gz",
+          "bytes": 159585,
+          "sha256": "be66e7e82535e1c876262a38efb92f78ad1b75ad41cf1abda614cd301c0d7509"
+        },
+        {
+          "name": "GSM8720411_kidney_xenium_3_cells.csv.gz",
+          "bytes": 1889536,
+          "sha256": "d1005e6361c169ec975ce7fa2dceef6b2e54256ea048408dc5fb906bcb30de5f"
+        },
+        {
+          "name": "GSM8720411_kidney_xenium_3_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "3ec118fb762380548e59b4e976e257c048fa8af45ab0e25f1c84b71373a47d63"
+        },
+        {
+          "name": "GSM8720411_kidney_xenium_3_matrix.mtx.gz",
+          "bytes": 535879,
+          "sha256": "3465df816a5eb291f11e9da0c23e1a157e847cae092aec6b11e5e1775284ef6d"
+        },
+        {
+          "name": "GSM8720411_kidney_xenium_3_transcripts.parquet.gz",
+          "bytes": 6704750,
+          "sha256": "e4bdb038a6ab7dd3b4d9ec72d887363ca195fd4fc74c6fe7197498fb42041f5e"
+        }
+      ],
+      "molecules": 380086,
+      "cells": 34621,
+      "bytes_downloaded": 0,
+      "seconds": 3.81
+    },
+    {
+      "section": "GSM8720412",
+      "section_name": "x4",
+      "files": [
+        {
+          "name": "GSM8720412_kidney_xenium_4_barcodes.tsv.gz",
+          "bytes": 64736,
+          "sha256": "48240fa9a81d547d7f8967e52ebcdfc706f78fbf49cb0e945eb41f3d104f28f7"
+        },
+        {
+          "name": "GSM8720412_kidney_xenium_4_cells.csv.gz",
+          "bytes": 743618,
+          "sha256": "3e1ef4874264410454d1355ad02ec1ce65c92f1923ac2ee7971c0f923cb05d8d"
+        },
+        {
+          "name": "GSM8720412_kidney_xenium_4_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "2f8a534ae24b5446ad610755b907014ee2306ff99eb837329f1a473836947278"
+        },
+        {
+          "name": "GSM8720412_kidney_xenium_4_matrix.mtx.gz",
+          "bytes": 214733,
+          "sha256": "a6326c18c6f109f0a4fbf69352299054810fa8bb790407b8fe0dccb6da3e2295"
+        },
+        {
+          "name": "GSM8720412_kidney_xenium_4_transcripts.parquet.gz",
+          "bytes": 2117800,
+          "sha256": "bf65590ce2d5e0ad2fb35c6cfd8ead4b7fc6827913fb9462f46af8fd62dd6f01"
+        }
+      ],
+      "molecules": 116635,
+      "cells": 13519,
+      "bytes_downloaded": 0,
+      "seconds": 1.26
+    },
+    {
+      "section": "GSM8720413",
+      "section_name": "x5",
+      "files": [
+        {
+          "name": "GSM8720413_kidney_xenium_5_barcodes.tsv.gz",
+          "bytes": 96558,
+          "sha256": "fced146b47863e9829fcda3325263c83d8baba7874cba3c0a07db5f486104776"
+        },
+        {
+          "name": "GSM8720413_kidney_xenium_5_cells.csv.gz",
+          "bytes": 1139654,
+          "sha256": "6f6ecbff5c5b9d2b5e2450ab2dc2e454bb697ed79474635d7534e5fb73f96240"
+        },
+        {
+          "name": "GSM8720413_kidney_xenium_5_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "8b24cdd1ff665af2a3266f4fd7b6f82c9ddfb9dc4fe089536d947a7b56889365"
+        },
+        {
+          "name": "GSM8720413_kidney_xenium_5_matrix.mtx.gz",
+          "bytes": 572225,
+          "sha256": "ff5d58477bfe2d97577bcc60c8a5dbc01613ced9d9164aea803d1a7207aaa636"
+        },
+        {
+          "name": "GSM8720413_kidney_xenium_5_transcripts.parquet.gz",
+          "bytes": 5810255,
+          "sha256": "380bc1237514b83f336f92c878ae7a65967bfbdb3af8ec5d65e9503acdfca13e"
+        }
+      ],
+      "molecules": 325661,
+      "cells": 20472,
+      "bytes_downloaded": 0,
+      "seconds": 1.32
+    },
+    {
+      "section": "GSM8720414",
+      "section_name": "x6",
+      "files": [
+        {
+          "name": "GSM8720414_kidney_xenium_6_barcodes.tsv.gz",
+          "bytes": 235372,
+          "sha256": "be948bfc1d7513eb876fab074f8e02f0751007cd722ea9b1d86c1c5196c53e3f"
+        },
+        {
+          "name": "GSM8720414_kidney_xenium_6_cells.csv.gz",
+          "bytes": 2757987,
+          "sha256": "c4394e2c629e486425b4fc9f9e49d8af1b3ff6d9a149e4d09222992d7a5c4e2b"
+        },
+        {
+          "name": "GSM8720414_kidney_xenium_6_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "9e2351e286233a050b0fffb536327db4496c52fa3709dab085dc6782049f9c6a"
+        },
+        {
+          "name": "GSM8720414_kidney_xenium_6_matrix.mtx.gz",
+          "bytes": 509277,
+          "sha256": "dbacfa001b8c939a0341d13ed6d692ac516604a61e7e810082af6feac03fbbe0"
+        },
+        {
+          "name": "GSM8720414_kidney_xenium_6_transcripts.parquet.gz",
+          "bytes": 5158800,
+          "sha256": "664e0919b3d40da873da86a584677edfd90f7f9228746faf9a4df6da63faaf97"
+        }
+      ],
+      "molecules": 283484,
+      "cells": 52225,
+      "bytes_downloaded": 0,
+      "seconds": 3.76
+    },
+    {
+      "section": "GSM8720415",
+      "section_name": "x7",
+      "files": [
+        {
+          "name": "GSM8720415_kidney_xenium_7_barcodes.tsv.gz",
+          "bytes": 126498,
+          "sha256": "f76872894b609662f242afaf6db2d0217f6b15d9458b5bf0bb6e9f98f4a703f4"
+        },
+        {
+          "name": "GSM8720415_kidney_xenium_7_cells.csv.gz",
+          "bytes": 1464442,
+          "sha256": "5fcbcbfedc74e8e049a42859033db48f0f7b93d07983f5513dd9f8a27f63a743"
+        },
+        {
+          "name": "GSM8720415_kidney_xenium_7_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "24f8e3b2b00510b72780bb31dbb78470f6591f7c210e68656a26f704beba08c3"
+        },
+        {
+          "name": "GSM8720415_kidney_xenium_7_matrix.mtx.gz",
+          "bytes": 331134,
+          "sha256": "96e8f88f76c7013541f0ae928ccf321fe5d3837925b88c3e2baf369d30c08b09"
+        },
+        {
+          "name": "GSM8720415_kidney_xenium_7_transcripts.parquet.gz",
+          "bytes": 3681010,
+          "sha256": "ad183bcbd5c94f8774a13669232efca350886df0f44bbb66e0353e3652567ee0"
+        }
+      ],
+      "molecules": 203244,
+      "cells": 27155,
+      "bytes_downloaded": 0,
+      "seconds": 3.5
+    },
+    {
+      "section": "GSM8720416",
+      "section_name": "x8",
+      "files": [
+        {
+          "name": "GSM8720416_kidney_xenium_8_barcodes.tsv.gz",
+          "bytes": 66622,
+          "sha256": "2b501a064abce59808f20adbc1b4fcfd83542d9171c0a163be68f2280d198e54"
+        },
+        {
+          "name": "GSM8720416_kidney_xenium_8_cells.csv.gz",
+          "bytes": 745647,
+          "sha256": "6ff3d6eb28e052c2c659b6da77e5820dad463a69e23959eb6f02b43ef4bec25d"
+        },
+        {
+          "name": "GSM8720416_kidney_xenium_8_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "1e0914264d4a6131213be6ce9cbb7366b597f2bb355c27227addbc36bab7c44e"
+        },
+        {
+          "name": "GSM8720416_kidney_xenium_8_matrix.mtx.gz",
+          "bytes": 117859,
+          "sha256": "1783c7adce7a9684d7d663e35b2e38a7817d31cd4b61e147bdd5baff7a00cc2c"
+        },
+        {
+          "name": "GSM8720416_kidney_xenium_8_transcripts.parquet.gz",
+          "bytes": 1152612,
+          "sha256": "dd59cdb73dec317f2ace6d134679ef39c0b20dd3385b071d3783620d281e83bd"
+        }
+      ],
+      "molecules": 58501,
+      "cells": 13907,
+      "bytes_downloaded": 0,
+      "seconds": 3.0
+    },
+    {
+      "section": "GSM8720417",
+      "section_name": "x9",
+      "files": [
+        {
+          "name": "GSM8720417_kidney_xenium_9_barcodes.tsv.gz",
+          "bytes": 275742,
+          "sha256": "31d0671d62955391f300e0f02d987813e560936b1b91f8b52c9ae98c799adcbb"
+        },
+        {
+          "name": "GSM8720417_kidney_xenium_9_cells.csv.gz",
+          "bytes": 3317595,
+          "sha256": "4a5575ce59f6d40a546ca6266205421e092041b9ece52f2567575e7b682062d9"
+        },
+        {
+          "name": "GSM8720417_kidney_xenium_9_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "276c672505a14cb8e05daf5507a4717514bd8409ee558900c6b181ab7405cc22"
+        },
+        {
+          "name": "GSM8720417_kidney_xenium_9_matrix.mtx.gz",
+          "bytes": 782519,
+          "sha256": "99c8b6020e13102159603355818c4fe30cd8392d7033c381eafaa9bec0d789d5"
+        },
+        {
+          "name": "GSM8720417_kidney_xenium_9_transcripts.parquet.gz",
+          "bytes": 8864635,
+          "sha256": "b9d1eb9feb392ab21e61413c159f4fbae4c2306bc019f3cf555b6c2c105a0dcb"
+        }
+      ],
+      "molecules": 494049,
+      "cells": 61683,
+      "bytes_downloaded": 0,
+      "seconds": 3.37
+    },
+    {
+      "section": "GSM8720418",
+      "section_name": "x10",
+      "files": [
+        {
+          "name": "GSM8720418_kidney_xenium_10_barcodes.tsv.gz",
+          "bytes": 178664,
+          "sha256": "3b217aafaadf15f47ea0134b36c8242c4a16a40fa7fad5c305ce2dd46cd85bb0"
+        },
+        {
+          "name": "GSM8720418_kidney_xenium_10_cells.csv.gz",
+          "bytes": 2268438,
+          "sha256": "b0e050da449c1a58b489d58c57ed7699db5866593e27e8229dd4b19a8663a9db"
+        },
+        {
+          "name": "GSM8720418_kidney_xenium_10_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "92b94b5a420e1a6186856d1b61e031d3a794c605d83f999f0d31591ac57b7d6d"
+        },
+        {
+          "name": "GSM8720418_kidney_xenium_10_matrix.mtx.gz",
+          "bytes": 1084500,
+          "sha256": "9f6cb052aec593719c284c9d7ce15b5cfbc961fdbfc4a2b5152526be6907cef7"
+        },
+        {
+          "name": "GSM8720418_kidney_xenium_10_transcripts.parquet.gz",
+          "bytes": 9224761,
+          "sha256": "00770081fc799a45b6e9506ccf704aa42a573d90608b5243c41801ce9087240f"
+        }
+      ],
+      "molecules": 874869,
+      "cells": 38973,
+      "bytes_downloaded": 0,
+      "seconds": 1.05
+    },
+    {
+      "section": "GSM8720419",
+      "section_name": "x11",
+      "files": [
+        {
+          "name": "GSM8720419_kidney_xenium_11_barcodes.tsv.gz",
+          "bytes": 178664,
+          "sha256": "3b217aafaadf15f47ea0134b36c8242c4a16a40fa7fad5c305ce2dd46cd85bb0"
+        },
+        {
+          "name": "GSM8720419_kidney_xenium_11_cells.csv.gz",
+          "bytes": 2268438,
+          "sha256": "b0e050da449c1a58b489d58c57ed7699db5866593e27e8229dd4b19a8663a9db"
+        },
+        {
+          "name": "GSM8720419_kidney_xenium_11_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "92b94b5a420e1a6186856d1b61e031d3a794c605d83f999f0d31591ac57b7d6d"
+        },
+        {
+          "name": "GSM8720419_kidney_xenium_11_matrix.mtx.gz",
+          "bytes": 1084500,
+          "sha256": "9f6cb052aec593719c284c9d7ce15b5cfbc961fdbfc4a2b5152526be6907cef7"
+        },
+        {
+          "name": "GSM8720419_kidney_xenium_11_transcripts.parquet.gz",
+          "bytes": 9224761,
+          "sha256": "df4d9252e52d5f4e11344c9dfb0cd9a505fd3fb3b94b7bd1bc30e47f3bbd780b"
+        }
+      ],
+      "molecules": 874869,
+      "cells": 38973,
+      "bytes_downloaded": 0,
+      "seconds": 1.02
+    },
+    {
+      "section": "GSM8720420",
+      "section_name": "x12",
+      "files": [
+        {
+          "name": "GSM8720420_kidney_xenium_12_barcodes.tsv.gz",
+          "bytes": 323225,
+          "sha256": "b1e0011d3506fd07e13af0374a5641b81c57e4e484395e7467e4e60bd0cfaaf4"
+        },
+        {
+          "name": "GSM8720420_kidney_xenium_12_cells.csv.gz",
+          "bytes": 4124553,
+          "sha256": "03b10ade3cc7e6f76333015a9997322b8b95e2224f04d367306c668692c719d3"
+        },
+        {
+          "name": "GSM8720420_kidney_xenium_12_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "8660d1898633f235fb9645296304350687b7e1a6f40e48f0560eb2dba2387b42"
+        },
+        {
+          "name": "GSM8720420_kidney_xenium_12_matrix.mtx.gz",
+          "bytes": 3141400,
+          "sha256": "12eb8089a1116a3e5a4171748c3bff85842a5df02d17d8d49f4bdcc1b8102870"
+        },
+        {
+          "name": "GSM8720420_kidney_xenium_12_transcripts.parquet.gz",
+          "bytes": 27422295,
+          "sha256": "d46d2818cfecf52123abb400b5fcd714a55a962a82b02cfbd0e57318a4130a9d"
+        }
+      ],
+      "molecules": 2643559,
+      "cells": 72994,
+      "bytes_downloaded": 0,
+      "seconds": 3.77
+    },
+    {
+      "section": "GSM8720421",
+      "section_name": "x13",
+      "files": [
+        {
+          "name": "GSM8720421_kidney_xenium_13_barcodes.tsv.gz",
+          "bytes": 203505,
+          "sha256": "78071f47f9918ecf504551a2f4b3ed83f67d1fbfe031c0554dc3f5c4620e3c5c"
+        },
+        {
+          "name": "GSM8720421_kidney_xenium_13_cells.csv.gz",
+          "bytes": 2530021,
+          "sha256": "d57a6951be6116ad9f40df8491c76bc4dab5b8c4f6737be5e84f0a642b692864"
+        },
+        {
+          "name": "GSM8720421_kidney_xenium_13_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "4da1c7092cc7ac7f65c9beb184dfeaeec5193e49e51dc78232e3c2948d3c62b8"
+        },
+        {
+          "name": "GSM8720421_kidney_xenium_13_matrix.mtx.gz",
+          "bytes": 1579907,
+          "sha256": "2f309c3cc5172d3abe6de916fbb287e63f4376e0147b5fe63a6cc18d8b336617"
+        },
+        {
+          "name": "GSM8720421_kidney_xenium_13_transcripts.parquet.gz",
+          "bytes": 12577513,
+          "sha256": "21a63f23416e7d855a09ed6bf6f005fed14d592f90fca66e566d221b2b5d26fd"
+        }
+      ],
+      "molecules": 1195161,
+      "cells": 44801,
+      "bytes_downloaded": 0,
+      "seconds": 1.8
+    },
+    {
+      "section": "GSM8720422",
+      "section_name": "x14",
+      "files": [
+        {
+          "name": "GSM8720422_kidney_xenium_14_barcodes.tsv.gz",
+          "bytes": 275491,
+          "sha256": "d38537c37866472dff189e796046e00de15905b867eadbe64014aebd1189a9ea"
+        },
+        {
+          "name": "GSM8720422_kidney_xenium_14_cells.csv.gz",
+          "bytes": 3610109,
+          "sha256": "54948bf634a2b7ffd223206b4781a51ac5a5414dade79b399fe87ed2726087c6"
+        },
+        {
+          "name": "GSM8720422_kidney_xenium_14_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "dd23a62c0358599c3791eda5b9afee9ceb36ecd8efa712f940e326ad5f9a547a"
+        },
+        {
+          "name": "GSM8720422_kidney_xenium_14_matrix.mtx.gz",
+          "bytes": 2361508,
+          "sha256": "20bc5e42e1cc9edf01327461e1e8c2d01f700a61c5483c8e6d63fa2a3d11fb42"
+        },
+        {
+          "name": "GSM8720422_kidney_xenium_14_transcripts.parquet.gz",
+          "bytes": 34225000,
+          "sha256": "63095e471995db5fa94e46090e348fe697e36696363843667fc12efa1aa1131e"
+        }
+      ],
+      "molecules": 3468861,
+      "cells": 61589,
+      "bytes_downloaded": 0,
+      "seconds": 3.67
+    },
+    {
+      "section": "GSM8720423",
+      "section_name": "x15",
+      "files": [
+        {
+          "name": "GSM8720423_kidney_xenium_15_barcodes.tsv.gz",
+          "bytes": 275521,
+          "sha256": "4021d745676a7561665bcb1927dcb5f4eb177e16799883f3b5dd6e1b5da27048"
+        },
+        {
+          "name": "GSM8720423_kidney_xenium_15_cells.csv.gz",
+          "bytes": 3570547,
+          "sha256": "7fd9076f4c691d8ad38a926d99bb51c9b4f1b92ed9c358ff3066f00122b8d3a0"
+        },
+        {
+          "name": "GSM8720423_kidney_xenium_15_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "19532eb49b5e118f6911a428df7299eebe9e903a373481ba30ca453ba8c4b1d0"
+        },
+        {
+          "name": "GSM8720423_kidney_xenium_15_matrix.mtx.gz",
+          "bytes": 3105544,
+          "sha256": "3c2255cfa4cffb4497e7f334bbe8fb1bad7af39ea06409ec282fd14a925b57d6"
+        },
+        {
+          "name": "GSM8720423_kidney_xenium_15_transcripts.parquet.gz",
+          "bytes": 39517014,
+          "sha256": "0cb2f43d7d319701160f18f5f018921979bacf06bd6ec2a2df047e0dfcfe486f"
+        }
+      ],
+      "molecules": 3928353,
+      "cells": 61598,
+      "bytes_downloaded": 0,
+      "seconds": 2.23
+    },
+    {
+      "section": "GSM8720424",
+      "section_name": "x16",
+      "files": [
+        {
+          "name": "GSM8720424_kidney_xenium_16_barcodes.tsv.gz",
+          "bytes": 95573,
+          "sha256": "521938cbd921880de170077d8f06502ec30a956e9b28c5dc19a61c7c41363be7"
+        },
+        {
+          "name": "GSM8720424_kidney_xenium_16_cells.csv.gz",
+          "bytes": 1186941,
+          "sha256": "9f934d727adcce0bf6ce54eb7248ae7e5661ed69440c0e96d693124f7ea42873"
+        },
+        {
+          "name": "GSM8720424_kidney_xenium_16_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "a959bfa4c2d3752f1ebb9042e69536563958417907550ff9ddb78d6a8991a2b8"
+        },
+        {
+          "name": "GSM8720424_kidney_xenium_16_matrix.mtx.gz",
+          "bytes": 980797,
+          "sha256": "cc13e5b24efcb3622097ca09eef0baa1a54df2604a02bd7704056332a446ada5"
+        },
+        {
+          "name": "GSM8720424_kidney_xenium_16_transcripts.parquet.gz",
+          "bytes": 9378282,
+          "sha256": "5470b6afdfd0d2db2981b763032dc263bb6595d31f0a1629210cff033a017896"
+        }
+      ],
+      "molecules": 909425,
+      "cells": 20202,
+      "bytes_downloaded": 0,
+      "seconds": 1.47
+    },
+    {
+      "section": "GSM8720425",
+      "section_name": "x17",
+      "files": [
+        {
+          "name": "GSM8720425_kidney_xenium_17_barcodes.tsv.gz",
+          "bytes": 235279,
+          "sha256": "b06747aee830b6d22bb90ae228deb5f047a396aee6c1eca8af8b6d03e0c0b5fd"
+        },
+        {
+          "name": "GSM8720425_kidney_xenium_17_cells.csv.gz",
+          "bytes": 3001138,
+          "sha256": "eff25ebb73f8a4943e3cca85e2b1091fc1c653f416a60e526e03834145c15349"
+        },
+        {
+          "name": "GSM8720425_kidney_xenium_17_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "fff148b826c1b61a08f6019ec633c0966fcb5b3a8d15b938b791d61c9cf1fdfe"
+        },
+        {
+          "name": "GSM8720425_kidney_xenium_17_matrix.mtx.gz",
+          "bytes": 2009018,
+          "sha256": "d0a77bab2d86314bacadb043cd6cd04835b2d12e5a647f5904f9b1d278105930"
+        },
+        {
+          "name": "GSM8720425_kidney_xenium_17_transcripts.parquet.gz",
+          "bytes": 25218328,
+          "sha256": "24ca6cfdb6718a7a3370c8bb6a68c5fd6a6fc518332a98b272389f73bdefc97b"
+        }
+      ],
+      "molecules": 2524207,
+      "cells": 52176,
+      "bytes_downloaded": 0,
+      "seconds": 1.51
+    },
+    {
+      "section": "GSM8720426",
+      "section_name": "x18",
+      "files": [
+        {
+          "name": "GSM8720426_kidney_xenium_18_barcodes.tsv.gz",
+          "bytes": 56760,
+          "sha256": "1a8c4270ac57f727168e50c7b22944cadd3138d19649c8d0e5e8c1fac6ce0023"
+        },
+        {
+          "name": "GSM8720426_kidney_xenium_18_cells.csv.gz",
+          "bytes": 712060,
+          "sha256": "f8fef513fa72cde28faec4a1b468468f15b985275f988f0f216fbef0fa146c2a"
+        },
+        {
+          "name": "GSM8720426_kidney_xenium_18_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "09e65005c9ef45f504cac51446b26012ba4c9914aea34046fd145ed168597db3"
+        },
+        {
+          "name": "GSM8720426_kidney_xenium_18_matrix.mtx.gz",
+          "bytes": 309153,
+          "sha256": "cd6c37fab60f4b585f857c199a4b3045908ec5aa04aaaa800f86a2b8e1df62b1"
+        },
+        {
+          "name": "GSM8720426_kidney_xenium_18_transcripts.parquet.gz",
+          "bytes": 3768776,
+          "sha256": "e053c8d91ca48cac3a12194d08b70090f9eb53d115653dfda36ca9f4fb5e28b1"
+        }
+      ],
+      "molecules": 368070,
+      "cells": 11798,
+      "bytes_downloaded": 0,
+      "seconds": 0.92
+    },
+    {
+      "section": "GSM8720427",
+      "section_name": "x19",
+      "files": [
+        {
+          "name": "GSM8720427_kidney_xenium_19_barcodes.tsv.gz",
+          "bytes": 192693,
+          "sha256": "4e2f33bdb0ec70c62bd8e228697b40dcc0a92332c1cb289af21990fd65ea2076"
+        },
+        {
+          "name": "GSM8720427_kidney_xenium_19_cells.csv.gz",
+          "bytes": 2408001,
+          "sha256": "3a06d0c8b6d484060f70e1d4c7daf795c8b72ce28d969a9e5522caa4d5fe0880"
+        },
+        {
+          "name": "GSM8720427_kidney_xenium_19_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "d97bb4553a9a9696b059870fed2b62fe7131c22d0bcfc4d8bcacda998dce54a3"
+        },
+        {
+          "name": "GSM8720427_kidney_xenium_19_matrix.mtx.gz",
+          "bytes": 1047566,
+          "sha256": "ec3bf512e74b67ef62c8eae97599f227bad9d392e24a669745e06c1bac04029d"
+        },
+        {
+          "name": "GSM8720427_kidney_xenium_19_transcripts.parquet.gz",
+          "bytes": 11742288,
+          "sha256": "74f32ea20ebc81ea552c5125f1afd48efb51f4c5b220e6448029bb6817ef95aa"
+        }
+      ],
+      "molecules": 1141522,
+      "cells": 42263,
+      "bytes_downloaded": 0,
+      "seconds": 1.45
+    },
+    {
+      "section": "GSM8720428",
+      "section_name": "x20",
+      "files": [
+        {
+          "name": "GSM8720428_kidney_xenium_20_barcodes.tsv.gz",
+          "bytes": 94289,
+          "sha256": "b8f27c06336e726409c7c7d8e56cdf936bf14c2c4ef38f018c49eb46222809ea"
+        },
+        {
+          "name": "GSM8720428_kidney_xenium_20_cells.csv.gz",
+          "bytes": 1143856,
+          "sha256": "19922b2c3bc6fafe88df3c725a9ab109865e5feedf8b94484f3c52f55dea7934"
+        },
+        {
+          "name": "GSM8720428_kidney_xenium_20_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "ec44072a9ff62e7c7bc3dd26a1a66aeaa46631c1d943ca60d294514e89d28c07"
+        },
+        {
+          "name": "GSM8720428_kidney_xenium_20_matrix.mtx.gz",
+          "bytes": 503144,
+          "sha256": "196a9a26bfc530d62ec2b989f188886baf38f163920e5154645bb9ca58e20fd5"
+        },
+        {
+          "name": "GSM8720428_kidney_xenium_20_transcripts.parquet.gz",
+          "bytes": 6717386,
+          "sha256": "011b2126fe72b21c5f0656a6089017348db7fc492e34452093daac8f30ac1613"
+        }
+      ],
+      "molecules": 657116,
+      "cells": 19967,
+      "bytes_downloaded": 0,
+      "seconds": 7.47
+    },
+    {
+      "section": "GSM8720429",
+      "section_name": "x21",
+      "files": [
+        {
+          "name": "GSM8720429_kidney_xenium_21_barcodes.tsv.gz",
+          "bytes": 222320,
+          "sha256": "835b0813ca2f3da7414a4c98b88bc28cd777096faac7ba6adc98aef4bc3ede0c"
+        },
+        {
+          "name": "GSM8720429_kidney_xenium_21_cells.csv.gz",
+          "bytes": 2823752,
+          "sha256": "c848339c4de7c2b5fbc11e0b1bebb3d1b01e31df527aa8c4069019a76e6d246a"
+        },
+        {
+          "name": "GSM8720429_kidney_xenium_21_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "9352a86af15903663c98a2babdc61ce6b612cbb8fca2d128c071fb8162d486e3"
+        },
+        {
+          "name": "GSM8720429_kidney_xenium_21_matrix.mtx.gz",
+          "bytes": 2035029,
+          "sha256": "153b06d895810977e36df8b74684a5bdfef0962c61708011de4c1d44ebf36fd6"
+        },
+        {
+          "name": "GSM8720429_kidney_xenium_21_transcripts.parquet.gz",
+          "bytes": 20776572,
+          "sha256": "cdf5995a851b898087c2572b0d3a770fc4d28c02361116db3a3868e51ae98ab3"
+        }
+      ],
+      "molecules": 2019706,
+      "cells": 49095,
+      "bytes_downloaded": 0,
+      "seconds": 7.77
+    },
+    {
+      "section": "GSM8720430",
+      "section_name": "x22",
+      "files": [
+        {
+          "name": "GSM8720430_kidney_xenium_22_barcodes.tsv.gz",
+          "bytes": 96051,
+          "sha256": "b666a6f758045a4d2e891a97e9ecfd2e3f1f6f54c87fce4afbf1b16a194a0d1f"
+        },
+        {
+          "name": "GSM8720430_kidney_xenium_22_cells.csv.gz",
+          "bytes": 1164984,
+          "sha256": "135e42c2058d0d8da0d8eeb2355253896d85e3d6f7fcabdaad162a01940147dd"
+        },
+        {
+          "name": "GSM8720430_kidney_xenium_22_features.tsv.gz",
+          "bytes": 3333,
+          "sha256": "e101bf7b53717771624c0d0b108533b1b8ab3ecb18676255ab49662b68708ae6"
+        },
+        {
+          "name": "GSM8720430_kidney_xenium_22_matrix.mtx.gz",
+          "bytes": 834144,
+          "sha256": "0d871aff6ab83c9cd9d26a7b07cb584b58502bf1a989b59691eeb9ab149494e3"
+        },
+        {
+          "name": "GSM8720430_kidney_xenium_22_transcripts.parquet.gz",
+          "bytes": 8510866,
+          "sha256": "0cae97a937634fab445c11563eabd8a90f34b184585c9dd7cbba2ae40ca4fdb1"
+        }
+      ],
+      "molecules": 819868,
+      "cells": 20340,
+      "bytes_downloaded": 0,
+      "seconds": 1.41
+    }
+  ]
+}

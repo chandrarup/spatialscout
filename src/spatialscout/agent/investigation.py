@@ -146,9 +146,12 @@ class Investigation:
         temporary.write_text(self.state.model_dump_json(indent=2), encoding="utf-8")
         os.replace(temporary, self.directory / "state.json")
 
-    async def events_after(self, after_seq: int) -> AsyncIterator[tuple[Any, str]]:
+    async def events_after(self, after_seq: int, window_seconds: float | None = None) -> AsyncIterator[tuple[Any, str]]:
         """Every event with `seq > after_seq` and its line as written to events.jsonl, in order, waiting for new
-        ones until the investigation finishes."""
+        ones until the investigation finishes or, given `window_seconds`, until that window closes. Events already
+        recorded are always delivered first."""
+        loop = asyncio.get_running_loop()
+        deadline = None if window_seconds is None else loop.time() + window_seconds
         position = max(after_seq, 0)  # the event at index i has seq i + 1
         while True:
             changed = self._changed
@@ -157,7 +160,16 @@ class Investigation:
                 position += 1
             if self.finished:
                 return
-            await changed.wait()
+            if deadline is None:
+                await changed.wait()
+                continue
+            remaining = deadline - loop.time()
+            if remaining <= 0:
+                return
+            try:
+                await asyncio.wait_for(changed.wait(), remaining)
+            except TimeoutError:
+                return
 
     def plan(self) -> Plan | None:
         plan = None
