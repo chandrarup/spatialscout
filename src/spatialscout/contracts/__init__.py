@@ -101,5 +101,6 @@ from .region import (
     StructureMask,
 )
 from .review import CheckResult, ReviewDecision, VerificationResult
+from .voice import Transcription
 
 __all__ = [name for name in dir() if not name.startswith("_")]

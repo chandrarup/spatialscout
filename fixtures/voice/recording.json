@@ -1,0 +1,141 @@
+{
+ "schema_version": "1.0",
+ "info": {
+  "recording_id": "voice-sample",
+  "recorded_at": "2026-11-03T15:15:39Z",
+  "origin": "live",
+  "question": "Does podocyte LRP2 survive nucleus only assignment?",
+  "note": "The sample spoken question, recorded live by scripts/record_voice_sample.py with each dataset's panel as keywords."
+ },
+ "calls": [
+  {
+   "purpose": "question",
+   "cache_key": "3a62e65b5ca8d8e6d542574cd550a25738878623fad14b73d02f64cf7d16184b",
+   "request": {
+    "provider": "meta",
+    "model": "muse-voice-transcribe-1.0",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Transcribe the attached WAV audio."
+     }
+    ],
+    "response_schema": null,
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "asr_transcribe",
+    "keywords": [
+     "ALDH1A2",
+     "AQP2",
+     "C3",
+     "CALCR",
+     "CD38",
+     "CD3D",
+     "CD4",
+     "CD68",
+     "CD8A",
+     "CLCN5",
+     "COL1A1",
+     "CUBN",
+     "DHFR",
+     "ETS1",
+     "FCGR3A",
+     "FKBP5",
+     "FN1",
+     "FOLR1",
+     "HLA-DRA",
+     "IL10RA",
+     "IL18",
+     "ISG20",
+     "ITGAX",
+     "JUN",
+     "KLF9",
+     "LAMC2",
+     "LRP2",
+     "MKI67",
+     "MS4A1",
+     "NPHS1",
+     "PARL",
+     "PDGFRB",
+     "PECAM1",
+     "POSTN",
+     "PTH2R",
+     "PTPRC",
+     "RHEX",
+     "SELENOT",
+     "SLC12A3",
+     "SLC4A1",
+     "SREBF1",
+     "STAT1",
+     "TGFB1",
+     "TNFAIP1",
+     "TNFAIP2",
+     "TNFSF10",
+     "UMOD",
+     "VCAM1",
+     "ZBTB16",
+     "ZFP36"
+    ]
+   },
+   "inputs": [
+    {
+     "name": "audio/wav",
+     "version": "bytes",
+     "sha256": "bfbb70b35cae8fe3ae77759efd33e65ec320cbaabc49ee3b9557a6ed9834ae5f"
+    }
+   ],
+   "response": {
+    "content": "does podocyte LRP2 survive nucleus only assignment?.",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": 4400
+   },
+   "latency_ms": 1826
+  },
+  {
+   "purpose": "question",
+   "cache_key": "aab034cad3e852041a794fc25bb76fa5117d5ee39706f840b765b600da3e86bf",
+   "request": {
+    "provider": "meta",
+    "model": "muse-voice-transcribe-1.0",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Transcribe the attached WAV audio."
+     }
+    ],
+    "response_schema": null,
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "asr_transcribe",
+    "keywords": [
+     "CD3D",
+     "CUBN",
+     "LRP2",
+     "NPHS1",
+     "PDGFRB",
+     "PECAM1",
+     "UMOD"
+    ]
+   },
+   "inputs": [
+    {
+     "name": "audio/wav",
+     "version": "bytes",
+     "sha256": "bfbb70b35cae8fe3ae77759efd33e65ec320cbaabc49ee3b9557a6ed9834ae5f"
+    }
+   ],
+   "response": {
+    "content": "Does podocyte LRP2 survive nucleus only assignment?",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": 4400
+   },
+   "latency_ms": 1232
+  }
+ ]
+}

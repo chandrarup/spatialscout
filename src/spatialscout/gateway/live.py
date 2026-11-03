@@ -98,7 +98,7 @@ class LiveClient:
                 return await self._sam(base, model, request, media, headers, provider)
             if request.api == "asr_transcribe":
                 files = {
-                    "request": (None, json.dumps(asr_request(model)), "application/json"),
+                    "request": (None, json.dumps(asr_request(model, request.keywords)), "application/json"),
                     "audio": ("question.wav", media or b"", "audio/wav"),
                 }
                 http_response = await self._http.post(
@@ -164,8 +164,11 @@ def sam_body(request: ModelRequest, model: str, png: bytes) -> dict[str, Any]:
     return {"model": model, "stream": True, "input": [{"type": "message", "role": "user", "content": content}]}
 
 
-def asr_request(model: str) -> dict[str, str]:
-    return {"model": model, "audioEncoding": "WAV", "mode": ASR_MODES.get(model, "PUSH_TO_TALK")}
+def asr_request(model: str, keywords: list[str] | None = None) -> dict[str, Any]:
+    body: dict[str, Any] = {"model": model, "audioEncoding": "WAV", "mode": ASR_MODES.get(model, "PUSH_TO_TALK")}
+    if keywords:
+        body["keywords"] = keywords
+    return body
 
 
 def parse_chat(body: dict[str, Any]) -> ModelResponse:
