@@ -1,0 +1,147 @@
+{
+ "schema_version": "1.0",
+ "finding_kind": "audit",
+ "finding_id": "fnd-c3a31982f22bf088",
+ "dataset_id": "synthetic",
+ "population": {
+  "label_rule_id": "synthetic-by-construction",
+  "cell_type": "Podocyte"
+ },
+ "genes": [
+  "LRP2"
+ ],
+ "measure": "share_expressing",
+ "sections": [
+  {
+   "section_id": "SYN-01",
+   "cells_labelled": 3,
+   "conditions": [
+    {
+     "condition": "default",
+     "molecules": 4,
+     "retention": 1.0,
+     "observed_value": 0.3333333333333333,
+     "nuclear_overlap_share": 0.0,
+     "cells_with_retained_molecule": 3,
+     "expectation_cell_matched": 0.3333333333333333,
+     "expectation_home_matched": 0.3333333333333333,
+     "excess_drop_cell_matched": 0.0,
+     "excess_drop_home_matched": 0.0,
+     "neighbour_proximity_share_excluded": null,
+     "neighbour_proximity_share_retained": 0.0,
+     "missing_reasons": {
+      "neighbour_proximity_share_excluded": "no molecules of the result are excluded under this condition"
+     },
+     "cells_expressing": 1,
+     "pairs_scored": null
+    },
+    {
+     "condition": "nucleus_only",
+     "molecules": 0,
+     "retention": 0.0,
+     "observed_value": 0.0,
+     "nuclear_overlap_share": null,
+     "cells_with_retained_molecule": 3,
+     "expectation_cell_matched": 0.33203125,
+     "expectation_home_matched": 0.33148919700384766,
+     "excess_drop_cell_matched": 0.33203125,
+     "excess_drop_home_matched": 0.33148919700384766,
+     "neighbour_proximity_share_excluded": 0.0,
+     "neighbour_proximity_share_retained": null,
+     "missing_reasons": {
+      "neighbour_proximity_share_retained": "no molecules of the result are kept under this condition",
+      "nuclear_overlap_share": "no molecules kept under this condition"
+     },
+     "cells_expressing": 0,
+     "pairs_scored": null
+    }
+   ],
+   "group": null,
+   "eligible": false,
+   "ineligible_reason": "3 cells labelled Podocyte; the population gate needs 20"
+  }
+ ],
+ "eligible_section_ids": [],
+ "exploratory_sections": [],
+ "evidence_regions": [
+  {
+   "rank": 1,
+   "region": {
+    "section_id": "SYN-01",
+    "x0": 0.0,
+    "y0": 0.0,
+    "x1": 150.0,
+    "y1": 150.0
+   },
+   "score": 4.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 4,
+   "default_molecules": 4
+  }
+ ],
+ "ranking_rule": "150 x 150 µm windows on a grid anchored at (0, 0) in section coordinates, ranked by the result's molecules in the population excluded under nucleus_only; ties go to more default-condition molecules in the window, then section id, y0 and x0. Eligible sections only (every section when none is eligible); the top 10 windows with at least one excluded molecule are kept.",
+ "label": "insufficient_evidence",
+ "label_reason": "0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.",
+ "source_artifact_ids": [],
+ "gene_pairs": [],
+ "marker_pairs": {
+  "path": "configs/exclusive_marker_pairs.json",
+  "sha256": "e4360ff35f6a7fae620a9c5578db9d20146f869ee010fde54896a24cc8c711a6",
+  "frozen_on": "2026-11-02",
+  "source_dataset": "GSE271188",
+  "source_url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE271188",
+  "pair_count": 40
+ },
+ "pooled": [
+  {
+   "condition": "default",
+   "cells": 0,
+   "molecules": 0,
+   "default_molecules": 0,
+   "retention": null,
+   "observed_value": null,
+   "expectation_cell_matched": null,
+   "expectation_home_matched": null,
+   "excess_drop_cell_matched": null,
+   "excess_drop_home_matched": null,
+   "below_home_threshold": null,
+   "missing_reasons": {
+    "observed_value": "no eligible sections"
+   }
+  },
+  {
+   "condition": "nucleus_only",
+   "cells": 0,
+   "molecules": 0,
+   "default_molecules": 0,
+   "retention": null,
+   "observed_value": null,
+   "expectation_cell_matched": null,
+   "expectation_home_matched": null,
+   "excess_drop_cell_matched": null,
+   "excess_drop_home_matched": null,
+   "below_home_threshold": null,
+   "missing_reasons": {
+    "observed_value": "no eligible sections"
+   }
+  }
+ ],
+ "leave_one_section_out": [],
+ "eligible_by_group": {},
+ "sections_left_out": [],
+ "rules": {
+  "population_gate_min_cells": 20,
+  "molecule_gate_min_molecules": 10,
+  "min_eligible_sections": 3,
+  "excess_log2_drop_threshold": 0.5,
+  "home_label_rule_id": "synthetic-by-construction",
+  "home_cell_types": {
+   "LRP2": "PT"
+  },
+  "result_molecules_rule": "Molecules of the result's genes assigned to population cells under the default condition.",
+  "pooling_rule": "Ratio of sums over the eligible sections: observed = cells meeting the measure / cells of the population, expectation = sum of per-cell survival probabilities / cells; for the co-expression score, per pair the summed 'both' over the summed 'either' (and the same for the expectation's terms), averaged over the pairs any pooled population cell expresses under the default condition.",
+  "label_rule": "Under each stricter primary condition, compare the pooled observed value O with the pooled home-matched expectation E. Segmentation-sensitive: one condition has O < E x 2^-0.5 in the full pool and with each eligible section left out. Stable: no condition does, in the full pool or any leave-one-out. Otherwise, fewer than 3 eligible sections, or a gene with no home cell type: insufficient evidence.",
+  "expectation_rule": "Closed form. Cell-matched p = 1 - (1 - r_c)^k with r_c the cell's retention over all its genes; home-matched p = 1 - (1 - rho)^k with rho the gene's retention in its home cell type, in that section, under the condition. Share: mean p; gene set: mean of 1 - prod(1 - p_g); pair: sum p_g p_h / sum (p_g + p_h - p_g p_h)."
+ },
+ "roi": null
+}

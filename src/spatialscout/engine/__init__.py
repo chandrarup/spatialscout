@@ -1,17 +1,37 @@
 """Analysis engine: every deterministic science operation behind the agent's tools."""
 
 from .audit import audit_section
-from .conditions import IMPLEMENTED_CONDITIONS, ConditionUnavailable, inclusion_mask
-from .population import POPULATION_GATE_MIN_CELLS, audit_population
+from .conditions import IMPLEMENTED_CONDITIONS, PRIMARY_CONDITIONS, ConditionUnavailable, inclusion_mask
+from .controls import label_sensitivity_check, random_thinning_control
+from .markers import HOME_CELL_TYPES, MarkerPairs, home_cell_type, load_marker_pairs
+from .population import (
+    MOLECULE_GATE_MIN_MOLECULES,
+    MIN_ELIGIBLE_SECTIONS,
+    POPULATION_GATE_MIN_CELLS,
+    audit_population,
+    gate_status,
+    restrict_to_roi,
+)
 from .region import build_packed_region_view, build_region_view
 
 __all__ = [
+    "HOME_CELL_TYPES",
     "IMPLEMENTED_CONDITIONS",
+    "MIN_ELIGIBLE_SECTIONS",
+    "MOLECULE_GATE_MIN_MOLECULES",
     "POPULATION_GATE_MIN_CELLS",
+    "PRIMARY_CONDITIONS",
     "ConditionUnavailable",
+    "MarkerPairs",
     "audit_population",
     "audit_section",
     "build_packed_region_view",
     "build_region_view",
+    "gate_status",
+    "home_cell_type",
     "inclusion_mask",
+    "label_sensitivity_check",
+    "load_marker_pairs",
+    "random_thinning_control",
+    "restrict_to_roi",
 ]

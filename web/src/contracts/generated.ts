@@ -191,6 +191,10 @@ export interface AuditResult {
   };
   sections_left_out: LeftOutSection[];
   rules: AuditRules | null;
+  /**
+   * The box the result is scoped to (a cell is inside when its centroid is, and brings all its molecules); null for a whole-section result.
+   */
+  roi: Region | null;
 }
 /**
  * The cells a result is about: a cell type under a frozen label rule, fixed under the default condition.
@@ -768,6 +772,31 @@ export interface EventBase {
   recorded_at_utc: string;
 }
 /**
+ * Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "GateStatus".
+ */
+export interface GateStatus {
+  section_id: string;
+  roi: Region | null;
+  cell_type: string;
+  genes: string[];
+  /**
+   * Cells of the population whose centroid lies in the box.
+   */
+  cells: number;
+  /**
+   * Default-condition molecules of the genes assigned to those cells.
+   */
+  molecules: number;
+  population_gate_min_cells: number;
+  molecule_gate_min_molecules: number;
+  passes_population_gate: boolean;
+  passes_molecule_gate: boolean;
+  status: string;
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "PlanProposedEvent".
  */
@@ -1128,6 +1157,7 @@ export interface LabelSensitivityCheck {
    */
   same_label: boolean;
   summary: string;
+  roi: Region | null;
 }
 /**
  * How the server answers questions. Live runs arrive with ticket 03.
@@ -1362,6 +1392,7 @@ export interface RandomThinningControl {
   conditions_below_threshold: ConditionName[];
   label: EvidenceStatus;
   label_reason: string;
+  roi: Region | null;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema

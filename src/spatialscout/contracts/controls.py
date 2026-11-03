@@ -12,7 +12,7 @@ from typing import Literal
 from pydantic import Field
 
 from .base import SCHEMA_VERSION, ConditionName, Contract, EvidenceStatus
-from .finding import AuditSectionValues, PooledConditionValue
+from .finding import AuditSectionValues, PooledConditionValue, Region
 
 
 class RandomThinningControl(Contract):
@@ -32,6 +32,7 @@ class RandomThinningControl(Contract):
     conditions_below_threshold: list[ConditionName]
     label: EvidenceStatus
     label_reason: str
+    roi: Region | None = None
 
 
 class LabelRuleArm(Contract):
@@ -61,3 +62,4 @@ class LabelSensitivityCheck(Contract):
     cells_only_second: int
     same_label: bool = Field(description="Both rules give the same evidence label.")
     summary: str
+    roi: Region | None = None

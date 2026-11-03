@@ -74,7 +74,8 @@ def test_auditing_podocyte_lrp2_finds_all_four_molecules_outside_the_nucleus(pod
     assert (default.molecules, default.retention, default.nuclear_overlap_share) == (4, 1.0, 0.0)
     assert default.observed_value == pytest.approx(1 / 3)  # only C03 of the 3 podocytes has LRP2
     assert (nucleus_only.molecules, nucleus_only.retention, nucleus_only.observed_value) == (0, 0.0, 0.0)
-    assert nucleus_only.cells_with_retained_molecule == 0
+    # Every podocyte keeps its 15 nuclear molecules, so all 3 still have a retained molecule of some gene.
+    assert nucleus_only.cells_with_retained_molecule == 3
 
 
 def test_the_one_synthetic_section_is_not_eligible_so_the_result_is_insufficient_evidence(podocyte_lrp2):
@@ -84,8 +85,10 @@ def test_the_one_synthetic_section_is_not_eligible_so_the_result_is_insufficient
     assert podocyte_lrp2.population.label_rule_id == "synthetic-by-construction"
 
 
-def test_values_the_skeleton_does_not_compute_stay_null_with_a_reason(podocyte_lrp2):
+def test_the_home_matched_expectation_uses_lrp2_retention_in_pt_cells(podocyte_lrp2):
+    """Each PT cell has 8 nuclear and 3 expansion-zone LRP2 molecules, so LRP2's home-matched retention under
+    nucleus-only is 32/44 = 8/11. C03 carries 4 LRP2 molecules: p = 1 - (3/11)^4, over 3 podocytes."""
     nucleus_only = podocyte_lrp2.sections[0].conditions[1]
 
-    assert nucleus_only.expectation_home_matched is None
-    assert nucleus_only.missing_reasons["expectation_home_matched"]
+    assert nucleus_only.expectation_home_matched == pytest.approx((1 - (3 / 11) ** 4) / 3)
+    assert nucleus_only.excess_drop_home_matched == pytest.approx((1 - (3 / 11) ** 4) / 3)

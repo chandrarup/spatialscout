@@ -177,6 +177,27 @@ class AuditResult(Contract):
     eligible_by_group: dict[str, int] = Field(default_factory=dict)
     sections_left_out: list[LeftOutSection] = Field(default_factory=list)
     rules: AuditRules | None = None
+    roi: Region | None = Field(
+        default=None,
+        description="The box the result is scoped to (a cell is inside when its centroid is, and brings all its "
+        "molecules); null for a whole-section result.",
+    )
+
+
+class GateStatus(Contract):
+    """Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged."""
+
+    section_id: str
+    roi: Region | None
+    cell_type: str
+    genes: list[str]
+    cells: int = Field(description="Cells of the population whose centroid lies in the box.")
+    molecules: int = Field(description="Default-condition molecules of the genes assigned to those cells.")
+    population_gate_min_cells: int
+    molecule_gate_min_molecules: int
+    passes_population_gate: bool
+    passes_molecule_gate: bool
+    status: str
 
 
 class SectionLog2Value(Contract):

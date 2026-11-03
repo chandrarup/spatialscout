@@ -63,6 +63,7 @@ from .finding import (
     ContrastResult,
     EvidenceRegion,
     Finding,
+    GateStatus,
     LeaveOneSectionOut,
     LeaveOneSectionOutVerdict,
     LeftOutSection,

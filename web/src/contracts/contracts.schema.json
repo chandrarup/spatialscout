@@ -432,6 +432,18 @@
             }
           ],
           "default": null
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The box the result is scoped to (a cell is inside when its centroid is, and brings all its molecules); null for a whole-section result."
         }
       },
       "required": [
@@ -456,7 +468,8 @@
         "leave_one_section_out",
         "eligible_by_group",
         "sections_left_out",
-        "rules"
+        "rules",
+        "roi"
       ],
       "title": "AuditResult",
       "type": "object"
@@ -1604,6 +1617,72 @@
       "title": "FindingRef",
       "type": "object"
     },
+    "GateStatus": {
+      "additionalProperties": false,
+      "description": "Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cells": {
+          "description": "Cells of the population whose centroid lies in the box.",
+          "type": "integer"
+        },
+        "molecules": {
+          "description": "Default-condition molecules of the genes assigned to those cells.",
+          "type": "integer"
+        },
+        "population_gate_min_cells": {
+          "type": "integer"
+        },
+        "molecule_gate_min_molecules": {
+          "type": "integer"
+        },
+        "passes_population_gate": {
+          "type": "boolean"
+        },
+        "passes_molecule_gate": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "section_id",
+        "roi",
+        "cell_type",
+        "genes",
+        "cells",
+        "molecules",
+        "population_gate_min_cells",
+        "molecule_gate_min_molecules",
+        "passes_population_gate",
+        "passes_molecule_gate",
+        "status"
+      ],
+      "title": "GateStatus",
+      "type": "object"
+    },
     "InjectedError": {
       "additionalProperties": false,
       "description": "Whether this claim is a deliberately altered copy used to test verification. Always shown when true.",
@@ -2174,6 +2253,17 @@
         },
         "summary": {
           "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -2189,7 +2279,8 @@
         "cells_only_first",
         "cells_only_second",
         "same_label",
-        "summary"
+        "summary",
+        "roi"
       ],
       "title": "LabelSensitivityCheck",
       "type": "object"
@@ -3641,6 +3732,17 @@
         },
         "label_reason": {
           "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -3659,7 +3761,8 @@
         "threshold",
         "conditions_below_threshold",
         "label",
-        "label_reason"
+        "label_reason",
+        "roi"
       ],
       "title": "RandomThinningControl",
       "type": "object"
