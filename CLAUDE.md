@@ -28,6 +28,7 @@ Run from the repo root, after `make install` (uv and npm, from the lockfiles).
 | `make typecheck` | `npm --prefix web run typecheck`, against the generated contract types. |
 | `make types` | `npm --prefix web run gen:types`: regenerates `web/src/contracts/` from the Pydantic contracts. |
 | `make build` | Typechecks and builds the web app into `web/dist`. |
+| `make audit` | After `make data`: recomputes the GSE286184 audit results, controls and composite figures into `artifacts/GSE286184/audit/`. Commit them. |
 | `make fixtures` | Rebuilds the synthetic section, the stored model responses that depend on it, and the recorded investigation that immutable replay plays. |
 | `make smoke` | `uv run spatialscout smoke`: replays the provider smoke check from `fixtures/smoke/` with no network. `--run-mode live` makes one tiny call per provider and model (cents, under the daily budget) and re-records it. |
 | `make data` | `uv run spatialscout ingest`: downloads any missing GSE286184 file, validates and labels all 22 sections, and rewrites `artifacts/GSE286184/`. Idempotent. |
