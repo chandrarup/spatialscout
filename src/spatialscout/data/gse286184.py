@@ -63,9 +63,10 @@ GROUP_OF_SECTION: dict[int, str] = {
 DONORS_PUBLISHED = {CONTROL: 3, "DKD": 5, "IgAN": 4, "MCD": 3, "MN": 4}
 """Patients per group from the paper (19 in all); GEO gives no section-to-donor mapping."""
 DONOR_CAVEAT = (
-    "22 sections come from 19 donors (paper: Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say which "
-    "sections share a donor; DKD, MCD and MN each hold one repeat-donor section. Sections are not independent "
-    "donors, and donors are never inferred from expression."
+    "GEO lists 22 samples; the paper reports 19 donors (Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say "
+    "which sections share a donor; DKD, MCD and MN each hold one repeat-donor section, and samples with identical "
+    "files are listed under distinct_sections. Sections are not independent donors, and donors are never inferred "
+    "from expression."
 )
 
 
@@ -146,15 +147,36 @@ def capability_report(duplicates: dict[str, str] | None = None) -> CapabilityRep
             status="unavailable",
             reason=DONOR_CAVEAT,
         ),
+        _distinct_sections(duplicates),
     ]
     return CapabilityReport(dataset_id=DATASET_ID, checks=checks, contrasts=[_contrast(g, duplicates) for g in ("DKD", "IgAN", "MCD", "MN")])
+
+
+def _distinct_sections(duplicates: dict[str, str]) -> CapabilityCheck:
+    distinct = len(SECTIONS) - len(duplicates)
+    pairs = "; ".join(f"{dup} ({SECTION_BY_ID[dup].name}) holds the same content as {orig} ({SECTION_BY_ID[orig].name})" for dup, orig in duplicates.items())
+    return CapabilityCheck(
+        capability="distinct_sections",
+        status="supported",
+        reason=(
+            f"{distinct} distinct sections among {len(SECTIONS)} GEO samples, found by comparing checksums of the decompressed raw files"
+            + (f": {pairs}. Every analysis counts each pair once; the copy stays listed in the manifest as a duplicate." if pairs else ".")
+        ),
+    )
 
 
 def _contrast(disease: str, duplicates: dict[str, str]) -> ContrastEligibility:
     disease_ids = [s.section_id for s in SECTIONS if s.group == disease]
     excluded = [sid for sid in disease_ids + CONTROL_SECTION_IDS if sid in duplicates]
+    distinct = len(disease_ids) - sum(sid in duplicates for sid in disease_ids)
     donors = DONORS_PUBLISHED[disease]
-    if donors == len(disease_ids):
+    if distinct < len(disease_ids) and distinct < donors:
+        distinctness, statement = (
+            "counts_do_not_reconcile",
+            f"not shown donor-distinct: GEO's {len(disease_ids)} {disease} samples hold {distinct} distinct sections against "
+            f"{donors} published {disease} patients, so the published counts no longer reconcile with the deposit",
+        )
+    elif donors == len(disease_ids):
         distinctness, statement = (
             "conditionally_donor_distinct_unconfirmed",
             "conditionally donor-distinct by published counts, unconfirmed",
@@ -288,7 +310,8 @@ def ingest(paths: Paths, log: Callable[[str], None] = print) -> None:
         dataset_id=DATASET_ID,
         title="GSE286184: Xenium in situ profiling of human glomerular disease",
         description=(
-            "22 Xenium sections of human kidney (Control 3, DKD 6, IgAN 4, MCD 4, MN 5) with a 50-gene panel; "
+            "22 GEO Xenium samples of human kidney (Control 3, DKD 6, IgAN 4, MCD 4, MN 5; two IgAN samples hold identical content, "
+            "see sections[].duplicate_of) with a 50-gene panel; "
             "molecule tables carry cell_id, overlaps_nucleus and nucleus_distance. No boundaries, images or labels."
         ),
         synthetic=False,

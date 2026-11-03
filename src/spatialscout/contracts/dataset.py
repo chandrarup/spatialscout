@@ -25,7 +25,7 @@ class ContrastEligibility(Contract):
     control_section_ids: list[str]
     disease_donors_published: int = Field(description="Donors in the disease group, from the paper's published counts.")
     control_donors_published: int = Field(description="Donors in the control group, from the paper's published counts.")
-    donor_distinctness: Literal["repeat_donor_in_group", "conditionally_donor_distinct_unconfirmed"]
+    donor_distinctness: Literal["repeat_donor_in_group", "conditionally_donor_distinct_unconfirmed", "counts_do_not_reconcile"]
     donor_distinctness_statement: str
     inference_eligibility: Literal["descriptive_only"] = "descriptive_only"
     inference_reason: str

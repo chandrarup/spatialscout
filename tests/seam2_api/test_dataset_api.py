@@ -69,15 +69,26 @@ def test_the_capability_report_states_what_is_supported_unavailable_and_descript
     report = client.get("/api/datasets/GSE286184/capability-report").json()
 
     status = {c["capability"]: c["status"] for c in report["checks"]}
-    assert {k for k, v in status.items() if v == "supported"} == {"coordinate_inspection", "assignment_audit", "disease_contrast"}
+    assert {k for k, v in status.items() if v == "supported"} == {"coordinate_inspection", "assignment_audit", "disease_contrast", "distinct_sections"}
     assert {k for k, v in status.items() if v == "unavailable"} == {"cell_boundaries", "images", "deposited_cell_type_labels", "donor_mapping"}
     contrasts = {c["groups"]["disease"]: c for c in report["contrasts"]}
     assert set(contrasts) == {"DKD", "IgAN", "MCD", "MN"}
     assert {c["inference_eligibility"] for c in contrasts.values()} == {"descriptive_only"}
-    assert contrasts["IgAN"]["donor_distinctness_statement"] == "conditionally donor-distinct by published counts, unconfirmed"
     assert {d for d, c in contrasts.items() if c["donor_distinctness"] == "repeat_donor_in_group"} == {"DKD", "MCD", "MN"}
-    assert contrasts["IgAN"]["excluded_section_ids"] == ["GSM8720419"]
-    assert "GSM8720419" not in contrasts["IgAN"]["disease_section_ids"]
+    # x10 and x11 are byte-identical deposits: IgAN has 3 distinct sections against 4 published patients, so the
+    # published counts no longer show it donor-distinct.
+    igan = contrasts["IgAN"]
+    assert igan["donor_distinctness"] == "counts_do_not_reconcile"
+    assert "conditionally donor-distinct" not in igan["donor_distinctness_statement"]
+    assert (igan["excluded_section_ids"], len(igan["disease_section_ids"]), igan["disease_donors_published"]) == (["GSM8720419"], 3, 4)
+    assert "GSM8720419" in igan["inference_reason"]
+
+
+def test_the_capability_report_counts_21_distinct_sections_and_names_the_duplicate(client):
+    checks = {c["capability"]: c for c in client.get("/api/datasets/GSE286184/capability-report").json()["checks"]}
+
+    assert "21 distinct sections" in checks["distinct_sections"]["reason"]
+    assert "GSM8720419" in checks["distinct_sections"]["reason"] and "GSM8720418" in checks["distinct_sections"]["reason"]
 
 
 def test_the_label_rules_are_frozen_with_counts_under_each_rule(client):

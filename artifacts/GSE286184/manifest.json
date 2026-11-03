@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "dataset_id": "GSE286184",
  "title": "GSE286184: Xenium in situ profiling of human glomerular disease",
- "description": "22 Xenium sections of human kidney (Control 3, DKD 6, IgAN 4, MCD 4, MN 5) with a 50-gene panel; molecule tables carry cell_id, overlaps_nucleus and nucleus_distance. No boundaries, images or labels.",
+ "description": "22 GEO Xenium samples of human kidney (Control 3, DKD 6, IgAN 4, MCD 4, MN 5; two IgAN samples hold identical content, see sections[].duplicate_of) with a 50-gene panel; molecule tables carry cell_id, overlaps_nucleus and nucleus_distance. No boundaries, images or labels.",
  "synthetic": false,
  "source_urls": [
   "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE286184",
@@ -1144,7 +1144,7 @@
    "bytes": 3333
   }
  ],
- "donor_caveat": "22 sections come from 19 donors (paper: Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say which sections share a donor; DKD, MCD and MN each hold one repeat-donor section. Sections are not independent donors, and donors are never inferred from expression.",
+ "donor_caveat": "GEO lists 22 samples; the paper reports 19 donors (Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say which sections share a donor; DKD, MCD and MN each hold one repeat-donor section, and samples with identical files are listed under distinct_sections. Sections are not independent donors, and donors are never inferred from expression.",
  "filters": {
   "min_qv": 20.0,
   "panel_genes_only": true,

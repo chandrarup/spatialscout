@@ -283,7 +283,7 @@ export interface ContrastEligibility {
    * Donors in the control group, from the paper's published counts.
    */
   control_donors_published: number;
-  donor_distinctness: "repeat_donor_in_group" | "conditionally_donor_distinct_unconfirmed";
+  donor_distinctness: "repeat_donor_in_group" | "conditionally_donor_distinct_unconfirmed" | "counts_do_not_reconcile";
   donor_distinctness_statement: string;
   inference_eligibility: "descriptive_only";
   inference_reason: string;

@@ -939,7 +939,8 @@
         "donor_distinctness": {
           "enum": [
             "repeat_donor_in_group",
-            "conditionally_donor_distinct_unconfirmed"
+            "conditionally_donor_distinct_unconfirmed",
+            "counts_do_not_reconcile"
           ],
           "type": "string"
         },
