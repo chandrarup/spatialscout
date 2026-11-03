@@ -46,4 +46,4 @@ modal-secret:  ## create or replace the Modal Secret spatialscout-env from the p
 	ENV_FILE=$(ENV_FILE) deploy/modal.sh secret
 
 modal-batch:  ## fan the per-section batch job out over all 22 sections on Modal; logs runtime and cost
-	ENV_FILE=$(ENV_FILE) deploy/modal.sh run deploy/modal_app.py::batch --output artifacts/modal_batch_gse286184.json
+	ENV_FILE=$(ENV_FILE) deploy/modal.sh run deploy/modal_batch.py::batch --output artifacts/modal_batch_gse286184.json
