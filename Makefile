@@ -32,6 +32,7 @@ web:  ## the web dev server alone on :5173 with hot reload (needs `make api` for
 dev:  ## the API (reloading) and the web dev server (hot reload, :5173) together; Ctrl-C stops both
 	@trap 'kill 0' EXIT; uv run spatialscout serve --reload --port $(PORT) & SPATIALSCOUT_API_PORT=$(PORT) npm --prefix web run dev
 
-fixtures:  ## regenerate the synthetic section, then the stored model responses that depend on it
+fixtures:  ## regenerate the synthetic section, the stored model responses that depend on it, and the recorded investigation
 	uv run python scripts/build_synthetic_section.py
 	uv run python scripts/build_skeleton_recording.py
+	uv run python scripts/record_replay_investigation.py
