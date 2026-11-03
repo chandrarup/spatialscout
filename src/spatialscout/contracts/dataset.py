@@ -47,6 +47,42 @@ class SectionValidation(Contract):
     cells_without_molecules: int = Field(description="Kept cells with no kept molecule; they stay in every denominator.")
 
 
+class LabelRule(Contract):
+    """A frozen, named rule that assigns cell type labels from marker counts under the default condition."""
+
+    label_rule_id: str
+    description: str
+    markers: dict[str, list[str]] = Field(description="Marker genes per cell type, in tie-break order.")
+    ignored_genes: list[str] = Field(description="Genes the rule never reads when it decides membership.")
+    score_threshold: float = Field(description="A cell's top marker score (count / gene scale) must reach this.")
+    min_molecules: int = Field(description="A cell with fewer default molecules is labelled 'Low quality'.")
+
+
+class LabelCounts(Contract):
+    """One section's cells counted by cell type label under each rule, and the cells whose label differs."""
+
+    cells: int
+    cell_types: dict[str, dict[str, int]] = Field(description="Per label rule id, cells per cell type label.")
+    differing_cells: int
+    differing: dict[str, int] = Field(description="Cells per 'first-rule label -> second-rule label' change.")
+
+
+class LabelRuleSet(Contract):
+    """The frozen label rules of a dataset, the gene scales they use, and per-section label counts."""
+
+    schema_version: str = SCHEMA_VERSION
+    dataset_id: str
+    rules: list[LabelRule]
+    default_label_rule_id: str
+    gene_scales: dict[str, float] = Field(
+        description="Mean default molecules of each gene per expressing cell, pooled over the scale sections."
+    )
+    gene_scale_sections: list[str]
+    sections: dict[str, LabelCounts]
+    notes: list[str]
+    citation: str
+
+
 class FileChecksum(Contract):
     path: str
     sha256: str

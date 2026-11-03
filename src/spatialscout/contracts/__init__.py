@@ -29,7 +29,17 @@ from .claim import (
     ReviewStatus,
     VerificationStatus,
 )
-from .dataset import CapabilityCheck, CapabilityReport, DatasetManifest, FileChecksum, SectionInfo, SectionValidation
+from .dataset import (
+    CapabilityCheck,
+    CapabilityReport,
+    DatasetManifest,
+    FileChecksum,
+    LabelCounts,
+    LabelRule,
+    LabelRuleSet,
+    SectionInfo,
+    SectionValidation,
+)
 from .events import (
     ClaimDraftedEvent,
     ErrorEvent,
