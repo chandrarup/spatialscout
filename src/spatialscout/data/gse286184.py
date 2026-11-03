@@ -61,7 +61,7 @@ GROUP_OF_SECTION: dict[int, str] = {
     **{n: "MN" for n in (18, 19, 20, 21, 22)},
 }
 DONORS_PUBLISHED = {CONTROL: 3, "DKD": 5, "IgAN": 4, "MCD": 3, "MN": 4}
-"""Patients per group from the paper (19 in all); GEO gives no section-to-donor mapping."""
+"""Donors per group from the paper (19 in all); GEO gives no section-to-donor mapping."""
 DONOR_CAVEAT = (
     "GEO lists 22 samples; the paper reports 19 donors (Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say "
     "which sections share a donor; DKD, MCD and MN each hold one repeat-donor section, and samples with identical "
@@ -175,7 +175,7 @@ def _contrast(disease: str, duplicates: dict[str, str]) -> ContrastEligibility:
         distinctness, statement = (
             "counts_do_not_reconcile",
             f"not shown donor-distinct: GEO's {len(disease_ids)} {disease} samples hold {distinct} distinct sections against "
-            f"{donors} published {disease} patients, so the published counts no longer reconcile with the deposit",
+            f"{donors} published {disease} donors, so the published counts no longer reconcile with the deposit",
         )
     elif donors == len(disease_ids):
         distinctness, statement = (

@@ -59,6 +59,11 @@ class DatasetStore:
     def sections(self, dataset_id: str) -> list[SectionInfo]:
         return self.manifest(dataset_id).sections
 
+    def distinct_sections(self, dataset_id: str) -> list[SectionInfo]:
+        """The sections to count in any cross-section analysis: a section whose raw content duplicates an earlier
+        one (`duplicate_of`) is left out, so each distinct section counts once."""
+        return [s for s in self.sections(dataset_id) if s.duplicate_of is None]
+
     def dataset_of(self, section_id: str) -> str:
         for dataset_id in self.dataset_ids():
             if any(s.section_id == section_id for s in self.sections(dataset_id)):

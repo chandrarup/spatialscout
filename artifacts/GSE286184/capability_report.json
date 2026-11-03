@@ -88,7 +88,7 @@
    "disease_donors_published": 4,
    "control_donors_published": 3,
    "donor_distinctness": "counts_do_not_reconcile",
-   "donor_distinctness_statement": "not shown donor-distinct: GEO's 4 IgAN samples hold 3 distinct sections against 4 published IgAN patients, so the published counts no longer reconcile with the deposit",
+   "donor_distinctness_statement": "not shown donor-distinct: GEO's 4 IgAN samples hold 3 distinct sections against 4 published IgAN donors, so the published counts no longer reconcile with the deposit",
    "inference_eligibility": "descriptive_only",
    "inference_reason": "Descriptive only: GEO does not map sections to donors, so sections cannot be treated as independent replicates and no p-value or confidence interval is reported (ADR-0007). GSM8720419 is left out: its raw files hold the same content as GSM8720418, so counting both would count one section twice.",
    "excluded_section_ids": [
