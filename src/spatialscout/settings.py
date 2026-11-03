@@ -21,6 +21,9 @@ class Settings:
     web_dist: Path | None
     dataset_id: str = "synthetic"
     default_run_mode: RunMode = "cached_tool_rerun"
+    # Each SSE connection ends after this many seconds and the client reconnects with `after_seq`, so a host that
+    # cuts long requests (Modal, at 150 s) never cuts a stream mid-event.
+    stream_window_seconds: float = 110.0
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -31,4 +34,5 @@ class Settings:
             recordings_dir=Path(env("SPATIALSCOUT_RECORDINGS_DIR", str(root / "fixtures" / "recordings"))),
             investigations_dir=Path(env("SPATIALSCOUT_INVESTIGATIONS_DIR", str(root / "data" / "investigations"))),
             web_dist=Path(env("SPATIALSCOUT_WEB_DIST", str(root / "web" / "dist"))),
+            stream_window_seconds=float(env("SPATIALSCOUT_STREAM_WINDOW_SECONDS", "110")),
         )
