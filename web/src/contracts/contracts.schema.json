@@ -477,12 +477,20 @@
             "$ref": "#/definitions/CapabilityCheck"
           },
           "type": "array"
+        },
+        "contrasts": {
+          "description": "The inference eligibility of every contrast the dataset allows.",
+          "items": {
+            "$ref": "#/definitions/ContrastEligibility"
+          },
+          "type": "array"
         }
       },
       "required": [
         "schema_version",
         "dataset_id",
-        "checks"
+        "checks",
+        "contrasts"
       ],
       "title": "CapabilityReport",
       "type": "object"
@@ -901,6 +909,74 @@
       "title": "Contrast",
       "type": "object"
     },
+    "ContrastEligibility": {
+      "additionalProperties": false,
+      "description": "Whether one contrast's groups support statistical inference. In this release every contrast is\ndescriptive only, because GEO does not map sections to donors (ADR-0007). Donors are never inferred from\nexpression.",
+      "properties": {
+        "groups": {
+          "$ref": "#/definitions/Contrast"
+        },
+        "disease_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "control_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "disease_donors_published": {
+          "description": "Donors in the disease group, from the paper's published counts.",
+          "type": "integer"
+        },
+        "control_donors_published": {
+          "description": "Donors in the control group, from the paper's published counts.",
+          "type": "integer"
+        },
+        "donor_distinctness": {
+          "enum": [
+            "repeat_donor_in_group",
+            "conditionally_donor_distinct_unconfirmed"
+          ],
+          "type": "string"
+        },
+        "donor_distinctness_statement": {
+          "type": "string"
+        },
+        "inference_eligibility": {
+          "const": "descriptive_only",
+          "default": "descriptive_only",
+          "type": "string"
+        },
+        "inference_reason": {
+          "type": "string"
+        },
+        "excluded_section_ids": {
+          "description": "Sections of either group left out of the contrast, each named with its reason in inference_reason.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "groups",
+        "disease_section_ids",
+        "control_section_ids",
+        "disease_donors_published",
+        "control_donors_published",
+        "donor_distinctness",
+        "donor_distinctness_statement",
+        "inference_eligibility",
+        "inference_reason",
+        "excluded_section_ids"
+      ],
+      "title": "ContrastEligibility",
+      "type": "object"
+    },
     "ContrastResult": {
       "additionalProperties": false,
       "properties": {
@@ -994,6 +1070,28 @@
       "title": "ContrastResult",
       "type": "object"
     },
+    "DatasetFilters": {
+      "additionalProperties": false,
+      "description": "The quality and panel filters every validated molecule passed.",
+      "properties": {
+        "min_qv": {
+          "type": "number"
+        },
+        "panel_genes_only": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "min_qv",
+        "panel_genes_only",
+        "description"
+      ],
+      "title": "DatasetFilters",
+      "type": "object"
+    },
     "DatasetManifest": {
       "additionalProperties": false,
       "description": "Provenance of a dataset: where it came from, its files, panel and sections.",
@@ -1061,6 +1159,35 @@
             }
           ],
           "default": null
+        },
+        "filters": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DatasetFilters"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_rule_ids": {
+          "description": "Frozen label rules; the first is the default.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "citation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -1075,7 +1202,10 @@
         "panel",
         "sections",
         "files",
-        "donor_caveat"
+        "donor_caveat",
+        "filters",
+        "label_rule_ids",
+        "citation"
       ],
       "title": "DatasetManifest",
       "type": "object"
@@ -1559,6 +1689,153 @@
       ],
       "title": "InvestigationStatus",
       "type": "string"
+    },
+    "LabelCounts": {
+      "additionalProperties": false,
+      "description": "One section's cells counted by cell type label under each rule, and the cells whose label differs.",
+      "properties": {
+        "cells": {
+          "type": "integer"
+        },
+        "cell_types": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "description": "Per label rule id, cells per cell type label.",
+          "type": "object"
+        },
+        "differing_cells": {
+          "type": "integer"
+        },
+        "differing": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Cells per 'first-rule label -> second-rule label' change.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "cells",
+        "cell_types",
+        "differing_cells",
+        "differing"
+      ],
+      "title": "LabelCounts",
+      "type": "object"
+    },
+    "LabelRule": {
+      "additionalProperties": false,
+      "description": "A frozen, named rule that assigns cell type labels from marker counts under the default condition.",
+      "properties": {
+        "label_rule_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "markers": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": "Marker genes per cell type, in tie-break order.",
+          "type": "object"
+        },
+        "ignored_genes": {
+          "description": "Genes the rule never reads when it decides membership.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "score_threshold": {
+          "description": "A cell's top marker score (count / gene scale) must reach this.",
+          "type": "number"
+        },
+        "min_molecules": {
+          "description": "A cell with fewer default molecules is labelled 'Low quality'.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label_rule_id",
+        "description",
+        "markers",
+        "ignored_genes",
+        "score_threshold",
+        "min_molecules"
+      ],
+      "title": "LabelRule",
+      "type": "object"
+    },
+    "LabelRuleSet": {
+      "additionalProperties": false,
+      "description": "The frozen label rules of a dataset, the gene scales they use, and per-section label counts.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/definitions/LabelRule"
+          },
+          "type": "array"
+        },
+        "default_label_rule_id": {
+          "type": "string"
+        },
+        "gene_scales": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "Mean default molecules of each gene per expressing cell, pooled over the scale sections.",
+          "type": "object"
+        },
+        "gene_scale_sections": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections": {
+          "additionalProperties": {
+            "$ref": "#/definitions/LabelCounts"
+          },
+          "type": "object"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "citation": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "rules",
+        "default_label_rule_id",
+        "gene_scales",
+        "gene_scale_sections",
+        "sections",
+        "notes",
+        "citation"
+      ],
+      "title": "LabelRuleSet",
+      "type": "object"
     },
     "LeaveOneSectionOut": {
       "additionalProperties": false,
@@ -2057,6 +2334,210 @@
         "package"
       ],
       "title": "PackageReadyEvent",
+      "type": "object"
+    },
+    "PackedCellColumns": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "cell_id": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "x": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "y": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "nucleus_radius": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "cell_type_index": {
+          "$ref": "#/definitions/PackedColumn"
+        }
+      },
+      "required": [
+        "count",
+        "cell_id",
+        "x",
+        "y",
+        "nucleus_radius",
+        "cell_type_index"
+      ],
+      "title": "PackedCellColumns",
+      "type": "object"
+    },
+    "PackedColumn": {
+      "additionalProperties": false,
+      "description": "One column as a base64 string of little-endian values, decoded straight into a typed array.",
+      "properties": {
+        "dtype": {
+          "enum": [
+            "float32",
+            "uint8",
+            "int32"
+          ],
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dtype",
+        "data"
+      ],
+      "title": "PackedColumn",
+      "type": "object"
+    },
+    "PackedMoleculeColumns": {
+      "additionalProperties": false,
+      "description": "Every molecule of the view, one typed column each.",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "x": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "y": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "gene_index": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "cell_index": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "inclusion_bits": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "condition_bits": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "count",
+        "x",
+        "y",
+        "gene_index",
+        "cell_index",
+        "inclusion_bits",
+        "condition_bits"
+      ],
+      "title": "PackedMoleculeColumns",
+      "type": "object"
+    },
+    "PackedRegionView": {
+      "additionalProperties": false,
+      "description": "A region view in typed columns, compact enough to ship and draw a whole section of several hundred\nthousand molecules at once.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "base64-little-endian-v1",
+          "default": "base64-little-endian-v1",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "section_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cell_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "molecules": {
+          "$ref": "#/definitions/PackedMoleculeColumns"
+        },
+        "cells": {
+          "$ref": "#/definitions/PackedCellColumns"
+        },
+        "structures": {
+          "items": {
+            "$ref": "#/definitions/StructureMask"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "encoding",
+        "dataset_id",
+        "section_id",
+        "section_name",
+        "group",
+        "synthetic",
+        "region",
+        "label_rule_id",
+        "genes",
+        "cell_types",
+        "molecules",
+        "cells",
+        "structures",
+        "notes"
+      ],
+      "title": "PackedRegionView",
       "type": "object"
     },
     "Plan": {
@@ -2704,12 +3185,89 @@
             "type": "number"
           },
           "type": "array"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The section's name in its source, for example x2."
+        },
+        "molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Molecules in the validated table."
+        },
+        "cells": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Cells in the validated table."
+        },
+        "validation": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SectionValidation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "content_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "sha256 of the decompressed raw molecule and cell files."
+        },
+        "duplicate_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An earlier section whose raw files hold identical content; analyses count only the earlier one."
         }
       },
       "required": [
         "section_id",
         "group",
-        "extent"
+        "extent",
+        "name",
+        "molecules",
+        "cells",
+        "validation",
+        "content_sha256",
+        "duplicate_of"
       ],
       "title": "SectionInfo",
       "type": "object"
@@ -2769,6 +3327,83 @@
         "missing_reason"
       ],
       "title": "SectionLog2Value",
+      "type": "object"
+    },
+    "SectionValidation": {
+      "additionalProperties": false,
+      "description": "What validation did to one section's raw records. Nothing is dropped silently: every molecule read is\nkept or counted under exactly one reason, in this order: malformed, duplicate, below quality, not in panel.",
+      "properties": {
+        "molecules_read": {
+          "type": "integer"
+        },
+        "malformed_molecules": {
+          "description": "No gene, a non-finite position, quality or nucleus distance, or a nucleus flag other than 0 or 1.",
+          "type": "integer"
+        },
+        "duplicate_molecules": {
+          "description": "A repeated transcript id; the first record is kept.",
+          "type": "integer"
+        },
+        "below_quality": {
+          "description": "Quality score under the dataset's threshold.",
+          "type": "integer"
+        },
+        "not_in_panel": {
+          "description": "A control probe or codeword, not a panel gene.",
+          "type": "integer"
+        },
+        "molecules_kept": {
+          "type": "integer"
+        },
+        "unassigned_molecules": {
+          "description": "Kept molecules the instrument assigned to no cell.",
+          "type": "integer"
+        },
+        "unmatched_molecules": {
+          "description": "Kept molecules assigned to a cell id missing from the cells table; kept, counted as unassigned.",
+          "type": "integer"
+        },
+        "cells_read": {
+          "type": "integer"
+        },
+        "malformed_cells": {
+          "description": "No id, or a non-finite centroid or cell area.",
+          "type": "integer"
+        },
+        "duplicate_cells": {
+          "description": "A repeated cell id; the first record is kept.",
+          "type": "integer"
+        },
+        "cells_kept": {
+          "type": "integer"
+        },
+        "cells_without_molecules": {
+          "description": "Kept cells with no kept molecule; they stay in every denominator.",
+          "type": "integer"
+        },
+        "cells_without_nucleus": {
+          "default": 0,
+          "description": "Kept cells with no detected nucleus (empty nucleus_area).",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "molecules_read",
+        "malformed_molecules",
+        "duplicate_molecules",
+        "below_quality",
+        "not_in_panel",
+        "molecules_kept",
+        "unassigned_molecules",
+        "unmatched_molecules",
+        "cells_read",
+        "malformed_cells",
+        "duplicate_cells",
+        "cells_kept",
+        "cells_without_molecules",
+        "cells_without_nucleus"
+      ],
+      "title": "SectionValidation",
       "type": "object"
     },
     "StartInvestigationRequest": {

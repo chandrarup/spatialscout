@@ -258,6 +258,49 @@ export interface CapabilityReport {
   schema_version: string;
   dataset_id: string;
   checks: CapabilityCheck[];
+  /**
+   * The inference eligibility of every contrast the dataset allows.
+   */
+  contrasts: ContrastEligibility[];
+}
+/**
+ * Whether one contrast's groups support statistical inference. In this release every contrast is
+ * descriptive only, because GEO does not map sections to donors (ADR-0007). Donors are never inferred from
+ * expression.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ContrastEligibility".
+ */
+export interface ContrastEligibility {
+  groups: Contrast;
+  disease_section_ids: string[];
+  control_section_ids: string[];
+  /**
+   * Donors in the disease group, from the paper's published counts.
+   */
+  disease_donors_published: number;
+  /**
+   * Donors in the control group, from the paper's published counts.
+   */
+  control_donors_published: number;
+  donor_distinctness: "repeat_donor_in_group" | "conditionally_donor_distinct_unconfirmed";
+  donor_distinctness_statement: string;
+  inference_eligibility: "descriptive_only";
+  inference_reason: string;
+  /**
+   * Sections of either group left out of the contrast, each named with its reason in inference_reason.
+   */
+  excluded_section_ids: string[];
+}
+/**
+ * One disease group compared with the control group, for example DKD vs Control.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "Contrast".
+ */
+export interface Contrast {
+  disease: string;
+  control: string;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -403,16 +446,6 @@ export interface ConditionEffect {
   missing_reason: string | null;
 }
 /**
- * One disease group compared with the control group, for example DKD vs Control.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "Contrast".
- */
-export interface Contrast {
-  disease: string;
-  control: string;
-}
-/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "ContrastResult".
  */
@@ -461,6 +494,17 @@ export interface LeaveOneSectionOut {
   direction_kept: boolean | null;
 }
 /**
+ * The quality and panel filters every validated molecule passed.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DatasetFilters".
+ */
+export interface DatasetFilters {
+  min_qv: number;
+  panel_genes_only: boolean;
+  description: string;
+}
+/**
  * Provenance of a dataset: where it came from, its files, panel and sections.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -479,6 +523,12 @@ export interface DatasetManifest {
   sections: SectionInfo[];
   files: FileChecksum[];
   donor_caveat: string | null;
+  filters: DatasetFilters | null;
+  /**
+   * Frozen label rules; the first is the default.
+   */
+  label_rule_ids: string[];
+  citation: string | null;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -491,6 +541,80 @@ export interface SectionInfo {
    * Bounding box in micrometres: x0, y0, x1, y1.
    */
   extent: number[];
+  /**
+   * The section's name in its source, for example x2.
+   */
+  name: string | null;
+  /**
+   * Molecules in the validated table.
+   */
+  molecules: number | null;
+  /**
+   * Cells in the validated table.
+   */
+  cells: number | null;
+  validation: SectionValidation | null;
+  /**
+   * sha256 of the decompressed raw molecule and cell files.
+   */
+  content_sha256: string | null;
+  /**
+   * An earlier section whose raw files hold identical content; analyses count only the earlier one.
+   */
+  duplicate_of: string | null;
+}
+/**
+ * What validation did to one section's raw records. Nothing is dropped silently: every molecule read is
+ * kept or counted under exactly one reason, in this order: malformed, duplicate, below quality, not in panel.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "SectionValidation".
+ */
+export interface SectionValidation {
+  molecules_read: number;
+  /**
+   * No gene, a non-finite position, quality or nucleus distance, or a nucleus flag other than 0 or 1.
+   */
+  malformed_molecules: number;
+  /**
+   * A repeated transcript id; the first record is kept.
+   */
+  duplicate_molecules: number;
+  /**
+   * Quality score under the dataset's threshold.
+   */
+  below_quality: number;
+  /**
+   * A control probe or codeword, not a panel gene.
+   */
+  not_in_panel: number;
+  molecules_kept: number;
+  /**
+   * Kept molecules the instrument assigned to no cell.
+   */
+  unassigned_molecules: number;
+  /**
+   * Kept molecules assigned to a cell id missing from the cells table; kept, counted as unassigned.
+   */
+  unmatched_molecules: number;
+  cells_read: number;
+  /**
+   * No id, or a non-finite centroid or cell area.
+   */
+  malformed_cells: number;
+  /**
+   * A repeated cell id; the first record is kept.
+   */
+  duplicate_cells: number;
+  cells_kept: number;
+  /**
+   * Kept cells with no kept molecule; they stay in every denominator.
+   */
+  cells_without_molecules: number;
+  /**
+   * Kept cells with no detected nucleus (empty nucleus_area).
+   */
+  cells_without_nucleus: number;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -704,6 +828,82 @@ export interface InvestigationState {
   last_seq: number;
 }
 /**
+ * One section's cells counted by cell type label under each rule, and the cells whose label differs.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabelCounts".
+ */
+export interface LabelCounts {
+  cells: number;
+  /**
+   * Per label rule id, cells per cell type label.
+   */
+  cell_types: {
+    [k: string]: {
+      [k: string]: number;
+    };
+  };
+  differing_cells: number;
+  /**
+   * Cells per 'first-rule label -> second-rule label' change.
+   */
+  differing: {
+    [k: string]: number;
+  };
+}
+/**
+ * A frozen, named rule that assigns cell type labels from marker counts under the default condition.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabelRule".
+ */
+export interface LabelRule {
+  label_rule_id: string;
+  description: string;
+  /**
+   * Marker genes per cell type, in tie-break order.
+   */
+  markers: {
+    [k: string]: string[];
+  };
+  /**
+   * Genes the rule never reads when it decides membership.
+   */
+  ignored_genes: string[];
+  /**
+   * A cell's top marker score (count / gene scale) must reach this.
+   */
+  score_threshold: number;
+  /**
+   * A cell with fewer default molecules is labelled 'Low quality'.
+   */
+  min_molecules: number;
+}
+/**
+ * The frozen label rules of a dataset, the gene scales they use, and per-section label counts.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabelRuleSet".
+ */
+export interface LabelRuleSet {
+  schema_version: string;
+  dataset_id: string;
+  rules: LabelRule[];
+  default_label_rule_id: string;
+  /**
+   * Mean default molecules of each gene per expressing cell, pooled over the scale sections.
+   */
+  gene_scales: {
+    [k: string]: number;
+  };
+  gene_scale_sections: string[];
+  sections: {
+    [k: string]: LabelCounts;
+  };
+  notes: string[];
+  citation: string;
+}
+/**
  * How the server answers questions. Live runs arrive with ticket 03.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -818,6 +1018,86 @@ export interface PackageManifest {
   notes: string[];
 }
 /**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PackedCellColumns".
+ */
+export interface PackedCellColumns {
+  count: number;
+  cell_id: string[];
+  x: PackedColumn;
+  y: PackedColumn;
+  nucleus_radius: PackedColumn;
+  cell_type_index: PackedColumn;
+}
+/**
+ * One column as a base64 string of little-endian values, decoded straight into a typed array.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PackedColumn".
+ */
+export interface PackedColumn {
+  dtype: "float32" | "uint8" | "int32";
+  data: string;
+}
+/**
+ * Every molecule of the view, one typed column each.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PackedMoleculeColumns".
+ */
+export interface PackedMoleculeColumns {
+  count: number;
+  x: PackedColumn;
+  y: PackedColumn;
+  gene_index: PackedColumn;
+  cell_index: PackedColumn;
+  inclusion_bits: PackedColumn;
+  condition_bits: {
+    [k: string]: number;
+  };
+}
+/**
+ * A region view in typed columns, compact enough to ship and draw a whole section of several hundred
+ * thousand molecules at once.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PackedRegionView".
+ */
+export interface PackedRegionView {
+  schema_version: string;
+  encoding: "base64-little-endian-v1";
+  dataset_id: string;
+  section_id: string;
+  section_name: string | null;
+  group: string | null;
+  synthetic: boolean;
+  region: Region;
+  label_rule_id: string;
+  genes: string[];
+  cell_types: string[];
+  molecules: PackedMoleculeColumns;
+  cells: PackedCellColumns;
+  structures: StructureMask[];
+  notes: string[];
+}
+/**
+ * The outline of one structure in section coordinates (micrometres), as a closed polygon.
+ *
+ * `source` says where the outline came from: drawn by construction in a synthetic fixture, or proposed
+ * by SAM 3.1 from a box prompt (ADR-0005), which the UI must label as a proposal.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "StructureMask".
+ */
+export interface StructureMask {
+  schema_version: string;
+  structure_id: string;
+  section_id: string;
+  kind: "glomerulus";
+  outline: number[][];
+  source: "synthetic" | "sam-3.1";
+}
+/**
  * The planner model's structured output, before it is checked against the tool registry.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -883,23 +1163,6 @@ export interface RegionView {
   cells: CellColumns;
   structures: StructureMask[];
   notes: string[];
-}
-/**
- * The outline of one structure in section coordinates (micrometres), as a closed polygon.
- *
- * `source` says where the outline came from: drawn by construction in a synthetic fixture, or proposed
- * by SAM 3.1 from a box prompt (ADR-0005), which the UI must label as a proposal.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "StructureMask".
- */
-export interface StructureMask {
-  schema_version: string;
-  structure_id: string;
-  section_id: string;
-  kind: "glomerulus";
-  outline: number[][];
-  source: "synthetic" | "sam-3.1";
 }
 /**
  * The researcher's decision on one claim version; voice decisions need confirmation.

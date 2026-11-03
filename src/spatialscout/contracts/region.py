@@ -58,3 +58,56 @@ class RegionView(Contract):
     cells: CellColumns
     structures: list[StructureMask]
     notes: list[str]
+
+
+class PackedColumn(Contract):
+    """One column as a base64 string of little-endian values, decoded straight into a typed array."""
+
+    dtype: Literal["float32", "uint8", "int32"]
+    data: str
+
+
+class PackedMoleculeColumns(Contract):
+    """Every molecule of the view, one typed column each."""
+
+    count: int
+    x: PackedColumn = Field(description="float32 micrometres.")
+    y: PackedColumn = Field(description="float32 micrometres.")
+    gene_index: PackedColumn = Field(description="uint8 index into PackedRegionView.genes.")
+    cell_index: PackedColumn = Field(description="int32 index into the cell columns; -1 for an unassigned molecule.")
+    inclusion_bits: PackedColumn = Field(
+        description="uint8 per molecule: bit condition_bits[c] is set when the molecule counts toward its cell under c."
+    )
+    condition_bits: dict[ConditionName, int]
+
+
+class PackedCellColumns(Contract):
+    count: int
+    cell_id: list[str]
+    x: PackedColumn = Field(description="float32 centroid, micrometres.")
+    y: PackedColumn = Field(description="float32 centroid, micrometres.")
+    nucleus_radius: PackedColumn = Field(
+        description="float32 radius of a circle with the nucleus's area (an approximation); 0 for a cell with no detected nucleus."
+    )
+    cell_type_index: PackedColumn = Field(description="uint8 index into PackedRegionView.cell_types.")
+
+
+class PackedRegionView(Contract):
+    """A region view in typed columns, compact enough to ship and draw a whole section of several hundred
+    thousand molecules at once."""
+
+    schema_version: str = SCHEMA_VERSION
+    encoding: Literal["base64-little-endian-v1"] = "base64-little-endian-v1"
+    dataset_id: str
+    section_id: str
+    section_name: str | None = None
+    group: str | None = None
+    synthetic: bool
+    region: Region
+    label_rule_id: str
+    genes: list[str]
+    cell_types: list[str]
+    molecules: PackedMoleculeColumns
+    cells: PackedCellColumns
+    structures: list[StructureMask]
+    notes: list[str]

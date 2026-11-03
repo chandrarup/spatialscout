@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -16,7 +17,7 @@ from .routes import router
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
-    store = DatasetStore(settings.fixtures_dir)
+    store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
     recordings = RecordingLibrary(settings.recordings_dir)
     orchestrator = Orchestrator(
         store=store,
@@ -32,6 +33,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         await orchestrator.shutdown()
 
     app = FastAPI(title="SpatialScout", lifespan=lifespan)
+    # A packed whole-section region view is several MB; gzip halves it. SSE streams are never compressed.
+    app.add_middleware(GZipMiddleware, minimum_size=4096)
     app.state.orchestrator = orchestrator
     app.state.store = store
     app.state.recordings = recordings
