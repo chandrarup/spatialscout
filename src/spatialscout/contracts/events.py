@@ -10,6 +10,7 @@ from pydantic import Field
 
 from .base import Contract
 from .claim import Claim
+from .model_call import ModelCallRecord
 from .package import PackageInfo
 from .plan import Plan
 
@@ -59,6 +60,14 @@ class PackageReadyEvent(EventBase):
     package: PackageInfo
 
 
+class ModelCallEvent(EventBase):
+    """Telemetry for one model call: provider, model, purpose, latency, tokens, estimated cost, whether the
+    response was live or stored, and the run mode. Never carries keys or prompt text."""
+
+    type: Literal["model_call"] = "model_call"
+    call: ModelCallRecord
+
+
 class ErrorEvent(EventBase):
     type: Literal["error"] = "error"
     code: str
@@ -72,6 +81,7 @@ InvestigationEvent = Annotated[
     | ToolFinishedEvent
     | ClaimDraftedEvent
     | PackageReadyEvent
+    | ModelCallEvent
     | ErrorEvent,
     Field(discriminator="type"),
 ]

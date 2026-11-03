@@ -1,0 +1,88 @@
+{
+ "schema_version": "1.0",
+ "finding_kind": "audit",
+ "finding_id": "fnd-f8aa751cac52501f",
+ "dataset_id": "synthetic",
+ "population": {
+  "label_rule_id": "synthetic-by-construction",
+  "cell_type": "Podocyte"
+ },
+ "genes": [
+  "LRP2"
+ ],
+ "measure": "share_expressing",
+ "sections": [
+  {
+   "section_id": "SYN-01",
+   "cells_labelled": 3,
+   "conditions": [
+    {
+     "condition": "default",
+     "molecules": 4,
+     "retention": 1.0,
+     "observed_value": 0.3333333333333333,
+     "nuclear_overlap_share": 0.0,
+     "cells_with_retained_molecule": 1,
+     "expectation_cell_matched": null,
+     "expectation_home_matched": null,
+     "excess_drop_cell_matched": null,
+     "excess_drop_home_matched": null,
+     "neighbour_proximity_share_excluded": null,
+     "neighbour_proximity_share_retained": null,
+     "missing_reasons": {
+      "expectation_cell_matched": "the random-thinning control is not computed yet (ticket 05)",
+      "expectation_home_matched": "the random-thinning control is not computed yet (ticket 05)",
+      "excess_drop_cell_matched": "needs the cell-matched random-thinning expectation (ticket 05)",
+      "excess_drop_home_matched": "needs the home-matched random-thinning expectation (ticket 05)",
+      "neighbour_proximity_share_excluded": "the neighbour-proximity share is not computed yet (ticket 05)",
+      "neighbour_proximity_share_retained": "the neighbour-proximity share is not computed yet (ticket 05)"
+     },
+     "cells_expressing": null,
+     "pairs_scored": null
+    },
+    {
+     "condition": "nucleus_only",
+     "molecules": 0,
+     "retention": 0.0,
+     "observed_value": 0.0,
+     "nuclear_overlap_share": null,
+     "cells_with_retained_molecule": 0,
+     "expectation_cell_matched": null,
+     "expectation_home_matched": null,
+     "excess_drop_cell_matched": null,
+     "excess_drop_home_matched": null,
+     "neighbour_proximity_share_excluded": null,
+     "neighbour_proximity_share_retained": null,
+     "missing_reasons": {
+      "expectation_cell_matched": "the random-thinning control is not computed yet (ticket 05)",
+      "expectation_home_matched": "the random-thinning control is not computed yet (ticket 05)",
+      "excess_drop_cell_matched": "needs the cell-matched random-thinning expectation (ticket 05)",
+      "excess_drop_home_matched": "needs the home-matched random-thinning expectation (ticket 05)",
+      "neighbour_proximity_share_excluded": "the neighbour-proximity share is not computed yet (ticket 05)",
+      "neighbour_proximity_share_retained": "the neighbour-proximity share is not computed yet (ticket 05)",
+      "nuclear_overlap_share": "no molecules kept under this condition"
+     },
+     "cells_expressing": null,
+     "pairs_scored": null
+    }
+   ],
+   "group": null,
+   "eligible": null,
+   "ineligible_reason": null
+  }
+ ],
+ "eligible_section_ids": [],
+ "exploratory_sections": [],
+ "evidence_regions": [],
+ "ranking_rule": null,
+ "label": "insufficient_evidence",
+ "label_reason": "0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 LRP2 molecules in them under the default condition.",
+ "source_artifact_ids": [],
+ "gene_pairs": [],
+ "marker_pairs": null,
+ "pooled": [],
+ "leave_one_section_out": [],
+ "eligible_by_group": {},
+ "sections_left_out": [],
+ "rules": null
+}

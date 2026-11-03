@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-podocyte-lrp2",
-  "recorded_at": "2026-11-03T04:52:52Z",
+  "recorded_at": "2026-11-03T04:53:03Z",
   "origin": "hand_authored",
   "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
   "note": "Hand-authored model responses for the walking skeleton (ticket 01); no model was called."
@@ -10,7 +10,7 @@
  "calls": [
   {
    "purpose": "plan",
-   "cache_key": "70f4fe84586188b0dd966d287feeb16ac283a1e610f192d32d8ab7103d24d1e0",
+   "cache_key": "49988af235e93ae44989784513f42f5a99f6ec96ef0aeef024f2cd488e19e6a5",
    "request": {
     "provider": "meta",
     "model": "muse-wonder-1.0",
@@ -134,7 +134,8 @@
      "type": "object"
     },
     "max_tokens": 4000,
-    "reasoning_effort": "low"
+    "reasoning_effort": "low",
+    "api": "chat_completions"
    },
    "inputs": [
     {
@@ -151,13 +152,16 @@
    "response": {
     "content": "{\"summary\":\"Audit LRP2 in cells labelled Podocyte in synthetic section SYN-01 under the default and nucleus-only conditions.\",\"contrast\":null,\"cell_types\":[\"Podocyte\"],\"conditions\":[\"default\",\"nucleus_only\"],\"steps\":[{\"tool\":\"audit_population\",\"arguments\":{\"section_ids\":[\"SYN-01\"],\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"conditions\":[\"default\",\"nucleus_only\"]},\"rationale\":\"The capability report supports an assignment audit, and nucleus-only is the stricter condition the question names.\"}]}",
     "finish_reason": "stop",
-    "usage": null
+    "usage": null,
+    "served_by": null,
+    "events": null,
+    "audio_duration_ms": null
    },
    "latency_ms": null
   },
   {
    "purpose": "claim_draft",
-   "cache_key": "eaf82466b6404d28f183d1ce46ec8611f1567969bee4b57c90eb9775ab1f9d05",
+   "cache_key": "e705e80ad56341874b7d2100464ea746d42218b936bd5b36f2033102aeb20062",
    "request": {
     "provider": "baseten",
     "model": "meta-models/muse-spark-open",
@@ -227,7 +231,8 @@
      "type": "object"
     },
     "max_tokens": 4000,
-    "reasoning_effort": "low"
+    "reasoning_effort": "low",
+    "api": "chat_completions"
    },
    "inputs": [
     {
@@ -239,7 +244,10 @@
    "response": {
     "content": "{\"text\":\"In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).\",\"cited\":{\"cells_labelled\":{\"value\":3,\"source\":\"sections[SYN-01].cells_labelled\"},\"molecules_default\":{\"value\":4,\"source\":\"sections[SYN-01].conditions[default].molecules\"},\"molecules_nucleus_only\":{\"value\":0,\"source\":\"sections[SYN-01].conditions[nucleus_only].molecules\"},\"retention_nucleus_only\":{\"value\":0.0,\"source\":\"sections[SYN-01].conditions[nucleus_only].retention\"}}}",
     "finish_reason": "stop",
-    "usage": null
+    "usage": null,
+    "served_by": null,
+    "events": null,
+    "audio_duration_ms": null
    },
    "latency_ms": null
   }

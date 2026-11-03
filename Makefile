@@ -1,5 +1,5 @@
 # One-command workflows. Each target is a thin wrapper; the underlying commands are listed in CLAUDE.md.
-.PHONY: install types test typecheck build serve api web dev fixtures data deploy modal-secret modal-batch
+.PHONY: install types test typecheck build serve api web dev fixtures smoke data deploy modal-secret modal-batch
 
 # The API's port; for example `make dev PORT=8010` when 8000 is taken.
 PORT ?= 8000
@@ -35,9 +35,13 @@ dev:  ## the API (reloading) and the web dev server (hot reload, :5173) together
 data:  ## download any missing GSE286184 file, then validate and label all 22 sections (idempotent; raw data stays in data/)
 	uv run spatialscout ingest
 
-fixtures:  ## regenerate the synthetic section, then the stored model responses that depend on it
+fixtures:  ## regenerate the synthetic section, the stored model responses that depend on it, and the recorded investigation
 	uv run python scripts/build_synthetic_section.py
 	uv run python scripts/build_skeleton_recording.py
+	uv run python scripts/record_replay_investigation.py
+
+smoke:  ## replay the provider smoke check offline; `uv run spatialscout smoke --run-mode live` re-records it (cents)
+	uv run spatialscout smoke
 
 # Modal (deploy/modal_app.py). The Modal token is read from $(ENV_FILE); in a worktree, point it at the main checkout.
 ENV_FILE ?= .env

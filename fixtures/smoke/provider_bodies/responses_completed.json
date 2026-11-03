@@ -1,0 +1,108 @@
+{
+ "top_logprobs": 0,
+ "temperature": 1.0,
+ "top_p": 1.0,
+ "service_tier": "auto",
+ "model": "muse-spark-1.3",
+ "reasoning": {
+  "effort": "low"
+ },
+ "background": false,
+ "text": {
+  "format": {
+   "type": "json_schema",
+   "name": "response",
+   "schema": {
+    "required": [
+     "items",
+     "note"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/$defs/Item"
+      },
+      "type": "array"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "$defs": {
+     "Item": {
+      "additionalProperties": false,
+      "properties": {
+       "count": {
+        "type": "integer"
+       },
+       "gene": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "gene",
+       "count"
+      ],
+      "type": "object"
+     }
+    },
+    "type": "object"
+   }
+  }
+ },
+ "tools": [],
+ "tool_choice": "auto",
+ "truncation": "disabled",
+ "id": "resp_6ae96249b4caf94919af4cff",
+ "object": "response",
+ "status": "completed",
+ "created_at": 1793679945.0,
+ "completed_at": 1793679945.0,
+ "error": null,
+ "incomplete_details": null,
+ "output": [
+  {
+   "type": "reasoning",
+   "id": "rs_6ae96249b4caf94919af4cff:rs_eef75ba7-9acd-4bdc-ab53-b65798ddfe5b",
+   "summary": [],
+   "status": "completed"
+  },
+  {
+   "type": "message",
+   "id": "msg_5f3fbe75-72c6-4b10-a702-145598686144",
+   "role": "assistant",
+   "content": [
+    {
+     "type": "output_text",
+     "text": "{\"items\": [{\"count\": 4, \"gene\": \"LRP2\"}, {\"count\": 2, \"gene\": \"CUBN\"}], \"note\": null}",
+     "annotations": [],
+     "logprobs": []
+    }
+   ],
+   "status": "completed"
+  }
+ ],
+ "instructions": null,
+ "usage": {
+  "input_tokens": 132,
+  "input_tokens_details": {
+   "cached_tokens": 0
+  },
+  "output_tokens": 393,
+  "output_tokens_details": {
+   "reasoning_tokens": 348
+  },
+  "total_tokens": 525
+ },
+ "parallel_tool_calls": true,
+ "store": true,
+ "max_output_tokens": 2000
+}

@@ -58,6 +58,7 @@ export type InvestigationEvent =
   | ToolFinishedEvent
   | ClaimDraftedEvent
   | PackageReadyEvent
+  | ModelCallEvent
   | ErrorEvent;
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -882,6 +883,63 @@ export interface PackageInfo {
   review_state: "work_in_progress" | "reviewed";
 }
 /**
+ * Telemetry for one model call: provider, model, purpose, latency, tokens, estimated cost, whether the
+ * response was live or stored, and the run mode. Never carries keys or prompt text.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ModelCallEvent".
+ */
+export interface ModelCallEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "model_call";
+  call: ModelCallRecord;
+}
+/**
+ * One model call as the audit log records it and the telemetry pills show it, including whether its
+ * response was live (`source: live`) or stored (`source: replay`).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ModelCallRecord".
+ */
+export interface ModelCallRecord {
+  call_id: string;
+  purpose: string;
+  provider: "meta" | "baseten" | "fireworks";
+  model: string;
+  cache_key: string;
+  source: "live" | "replay" | "cache";
+  recording_id: string | null;
+  started_at: string;
+  latency_ms: number;
+  finish_reason: string;
+  usage: TokenUsage | null;
+  /**
+   * Spend charged to the live budget; null for stored responses.
+   */
+  estimated_cost_usd: number | null;
+  run_mode: ("immutable_replay" | "cached_tool_rerun" | "live") | null;
+  /**
+   * The provider that answered; differs from `provider` after failover.
+   */
+  served_by: ("meta" | "baseten" | "fireworks") | null;
+  failover_from: ("meta" | "baseten" | "fireworks") | null;
+  /**
+   * Set when the call produced no usable response.
+   */
+  error_code: string | null;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "TokenUsage".
+ */
+export interface TokenUsage {
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
+  reasoning_tokens: number | null;
+}
+/**
  * The current state of one investigation, including every event emitted so far.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -904,6 +962,7 @@ export interface InvestigationSnapshot {
     | ToolFinishedEvent
     | ClaimDraftedEvent
     | PackageReadyEvent
+    | ModelCallEvent
     | ErrorEvent
   )[];
 }
@@ -1083,35 +1142,6 @@ export interface ModeInfo {
   recordings: ReplayInfo[];
 }
 /**
- * One model call as the audit log records it, including whether its response was live or replayed.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "ModelCallRecord".
- */
-export interface ModelCallRecord {
-  call_id: string;
-  purpose: string;
-  provider: "meta" | "baseten" | "fireworks";
-  model: string;
-  cache_key: string;
-  source: "live" | "replay" | "cache";
-  recording_id: string | null;
-  started_at: string;
-  latency_ms: number;
-  finish_reason: string;
-  usage: TokenUsage | null;
-  estimated_cost_usd: number | null;
-}
-/**
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "TokenUsage".
- */
-export interface TokenUsage {
-  prompt_tokens: number | null;
-  completion_tokens: number | null;
-  reasoning_tokens: number | null;
-}
-/**
  * Everything sent to a provider. Its content hash keys the cache and the replay (ADR-0003),
  * so it must never contain ids, timestamps or other run-specific values.
  *
@@ -1125,10 +1155,17 @@ export interface ModelRequest {
   response_schema: {
     [k: string]: unknown;
   } | null;
+  /**
+   * Every model here reasons before answering; a small cap returns empty content.
+   */
   max_tokens: number;
   reasoning_effort: "low" | "medium" | "high";
+  api: "chat_completions" | "responses" | "sam_segmentation" | "asr_transcribe";
 }
 /**
+ * What a provider returned. `finish_reason` is "length" when the token cap cut the answer short, on either
+ * endpoint. `served_by` names the provider that answered when it differs from the requested one (failover).
+ *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "ModelResponse".
  */
@@ -1136,6 +1173,16 @@ export interface ModelResponse {
   content: string;
   finish_reason: string;
   usage: TokenUsage | null;
+  served_by: ("meta" | "baseten" | "fireworks") | null;
+  /**
+   * SAM 3.1: the streamed response events, kept so a stored response is parsed exactly as a live one.
+   */
+  events:
+    | {
+        [k: string]: unknown;
+      }[]
+    | null;
+  audio_duration_ms: number | null;
 }
 /**
  * One entry per molecule, column by column, so a whole section ships compactly.

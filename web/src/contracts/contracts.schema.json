@@ -1649,6 +1649,7 @@
         "mapping": {
           "claim_drafted": "#/definitions/ClaimDraftedEvent",
           "error": "#/definitions/ErrorEvent",
+          "model_call": "#/definitions/ModelCallEvent",
           "package_ready": "#/definitions/PackageReadyEvent",
           "plan_approved": "#/definitions/PlanApprovedEvent",
           "plan_proposed": "#/definitions/PlanProposedEvent",
@@ -1675,6 +1676,9 @@
         },
         {
           "$ref": "#/definitions/PackageReadyEvent"
+        },
+        {
+          "$ref": "#/definitions/ModelCallEvent"
         },
         {
           "$ref": "#/definitions/ErrorEvent"
@@ -1748,6 +1752,7 @@
               "mapping": {
                 "claim_drafted": "#/definitions/ClaimDraftedEvent",
                 "error": "#/definitions/ErrorEvent",
+                "model_call": "#/definitions/ModelCallEvent",
                 "package_ready": "#/definitions/PackageReadyEvent",
                 "plan_approved": "#/definitions/PlanApprovedEvent",
                 "plan_proposed": "#/definitions/PlanProposedEvent",
@@ -1774,6 +1779,9 @@
               },
               {
                 "$ref": "#/definitions/PackageReadyEvent"
+              },
+              {
+                "$ref": "#/definitions/ModelCallEvent"
               },
               {
                 "$ref": "#/definitions/ErrorEvent"
@@ -2377,9 +2385,43 @@
       "title": "ModeInfo",
       "type": "object"
     },
+    "ModelCallEvent": {
+      "additionalProperties": false,
+      "description": "Telemetry for one model call: provider, model, purpose, latency, tokens, estimated cost, whether the\nresponse was live or stored, and the run mode. Never carries keys or prompt text.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "model_call",
+          "default": "model_call",
+          "type": "string"
+        },
+        "call": {
+          "$ref": "#/definitions/ModelCallRecord"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "call"
+      ],
+      "title": "ModelCallEvent",
+      "type": "object"
+    },
     "ModelCallRecord": {
       "additionalProperties": false,
-      "description": "One model call as the audit log records it, including whether its response was live or replayed.",
+      "description": "One model call as the audit log records it and the telemetry pills show it, including whether its\nresponse was live (`source: live`) or stored (`source: replay`).",
       "properties": {
         "call_id": {
           "type": "string"
@@ -2450,7 +2492,69 @@
               "type": "null"
             }
           ],
+          "default": null,
+          "description": "Spend charged to the live budget; null for stored responses."
+        },
+        "run_mode": {
+          "anyOf": [
+            {
+              "enum": [
+                "immutable_replay",
+                "cached_tool_rerun",
+                "live"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "default": null
+        },
+        "served_by": {
+          "anyOf": [
+            {
+              "enum": [
+                "meta",
+                "baseten",
+                "fireworks"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The provider that answered; differs from `provider` after failover."
+        },
+        "failover_from": {
+          "anyOf": [
+            {
+              "enum": [
+                "meta",
+                "baseten",
+                "fireworks"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when the call produced no usable response."
         }
       },
       "required": [
@@ -2465,7 +2569,11 @@
         "latency_ms",
         "finish_reason",
         "usage",
-        "estimated_cost_usd"
+        "estimated_cost_usd",
+        "run_mode",
+        "served_by",
+        "failover_from",
+        "error_code"
       ],
       "title": "ModelCallRecord",
       "type": "object"
@@ -2505,6 +2613,8 @@
         },
         "max_tokens": {
           "default": 4000,
+          "description": "Every model here reasons before answering; a small cap returns empty content.",
+          "minimum": 2000,
           "type": "integer"
         },
         "reasoning_effort": {
@@ -2515,6 +2625,16 @@
             "high"
           ],
           "type": "string"
+        },
+        "api": {
+          "default": "chat_completions",
+          "enum": [
+            "chat_completions",
+            "responses",
+            "sam_segmentation",
+            "asr_transcribe"
+          ],
+          "type": "string"
         }
       },
       "required": [
@@ -2523,13 +2643,15 @@
         "messages",
         "response_schema",
         "max_tokens",
-        "reasoning_effort"
+        "reasoning_effort",
+        "api"
       ],
       "title": "ModelRequest",
       "type": "object"
     },
     "ModelResponse": {
       "additionalProperties": false,
+      "description": "What a provider returned. `finish_reason` is \"length\" when the token cap cut the answer short, on either\nendpoint. `served_by` names the provider that answered when it differs from the requested one (failover).",
       "properties": {
         "content": {
           "type": "string"
@@ -2547,12 +2669,58 @@
             }
           ],
           "default": null
+        },
+        "served_by": {
+          "anyOf": [
+            {
+              "enum": [
+                "meta",
+                "baseten",
+                "fireworks"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "events": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1: the streamed response events, kept so a stored response is parsed exactly as a live one."
+        },
+        "audio_duration_ms": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
         "content",
         "finish_reason",
-        "usage"
+        "usage",
+        "served_by",
+        "events",
+        "audio_duration_ms"
       ],
       "title": "ModelResponse",
       "type": "object"
