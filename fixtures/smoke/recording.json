@@ -1,0 +1,782 @@
+{
+ "schema_version": "1.0",
+ "info": {
+  "recording_id": "provider-smoke",
+  "recorded_at": "2026-11-03T04:40:46Z",
+  "origin": "live",
+  "question": "Provider smoke check: one tiny call per provider, model and endpoint.",
+  "note": "Recorded by `spatialscout smoke --run-mode live`."
+ },
+ "calls": [
+  {
+   "purpose": "smoke:chat_completions",
+   "cache_key": "7a5a0635195162b2e52ceb3cf3de8c188af639d2b39a5a617546c97ba3ea8828",
+   "request": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Write one cautious sentence saying that nucleus-only assignment keeps 3 of the 4 LRP2 molecules counted toward podocytes under the default condition. In `cited`, give 3 as `kept` with source `conditions[nucleus_only].molecules` and 4 as `total` with source `conditions[default].molecules`. Respond with JSON that matches the response schema."
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions"
+   },
+   "inputs": [],
+   "response": {
+    "content": "{\"cited\": {\"kept\": {\"source\": \"conditions[nucleus_only].molecules\", \"value\": 3}, \"total\": {\"source\": \"conditions[default].molecules\", \"value\": 4}}, \"text\": \"Nucleus-only assignment appears to keep 3 of the 4 LRP2 molecules counted toward podocytes under the default condition.\"}",
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 88,
+     "completion_tokens": 942,
+     "reasoning_tokens": 854
+    },
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": 7223
+  },
+  {
+   "purpose": "smoke:responses",
+   "cache_key": "5b70bdef2e0313dd09b7d4adc49e61a4874657f24d7183105381d49138690b66",
+   "request": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Write one cautious sentence saying that nucleus-only assignment keeps 3 of the 4 LRP2 molecules counted toward podocytes under the default condition. In `cited`, give 3 as `kept` with source `conditions[nucleus_only].molecules` and 4 as `total` with source `conditions[default].molecules`. Respond with JSON that matches the response schema."
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "responses"
+   },
+   "inputs": [],
+   "response": {
+    "content": "{\"cited\": {\"kept\":  {\"source\": \"conditions[nucleus_only].molecules\", \"value\": 3}, \"total\":  {\"source\": \"conditions[default].molecules\", \"value\": 4}}, \"text\": \"Nucleus-only assignment appears to keep 3 of the 4 LRP2 molecules counted toward podocytes under the default condition.\"}",
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 88,
+     "completion_tokens": 695,
+     "reasoning_tokens": 605
+    },
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": 5000
+  },
+  {
+   "purpose": "smoke:chat_completions",
+   "cache_key": "8aeedce59c04a0fe35ef862bfca0013db9483ad57393b3f9b765a1566d31c184",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Write one cautious sentence saying that nucleus-only assignment keeps 3 of the 4 LRP2 molecules counted toward podocytes under the default condition. In `cited`, give 3 as `kept` with source `conditions[nucleus_only].molecules` and 4 as `total` with source `conditions[default].molecules`. Respond with JSON that matches the response schema."
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions"
+   },
+   "inputs": [],
+   "response": {
+    "content": "{\"cited\": {\"kept\": {\"source\": \"conditions[nucleus_only].molecules\", \"value\": 3}, \"total\": {\"source\": \"conditions[default].molecules\", \"value\": 4}}, \"text\": \"Nucleus-only assignment appears to retain 3 of the 4 LRP2 molecules counted toward podocytes under the default condition.\"}",
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 88,
+     "completion_tokens": 879,
+     "reasoning_tokens": 791
+    },
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": 7994
+  },
+  {
+   "purpose": "smoke:responses",
+   "cache_key": "f408f95eb9514dfcd0aea28e3de6f4303d07c77c4770324266ceb89d3550e7d2",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Write one cautious sentence saying that nucleus-only assignment keeps 3 of the 4 LRP2 molecules counted toward podocytes under the default condition. In `cited`, give 3 as `kept` with source `conditions[nucleus_only].molecules` and 4 as `total` with source `conditions[default].molecules`. Respond with JSON that matches the response schema."
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "responses"
+   },
+   "inputs": [],
+   "response": {
+    "content": "{\"cited\":{\"kept\":{\"source\":\"conditions[nucleus_only].molecules\",\"value\":3},\"total\":{\"source\":\"conditions[default].molecules\",\"value\":4}},\"text\":\"Nucleus-only assignment appears to keep 3 of the 4 LRP2 molecules counted toward podocytes under the default condition.\"}",
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 88,
+     "completion_tokens": 602,
+     "reasoning_tokens": 525
+    },
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": 5888
+  },
+  {
+   "purpose": "smoke:chat_completions",
+   "cache_key": "45c2cb4fc2230c2b4ede0953f991d009e5d2684ace64243318e578b212233520",
+   "request": {
+    "provider": "baseten",
+    "model": "meta-models/muse-spark-open",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Write one cautious sentence saying that nucleus-only assignment keeps 3 of the 4 LRP2 molecules counted toward podocytes under the default condition. In `cited`, give 3 as `kept` with source `conditions[nucleus_only].molecules` and 4 as `total` with source `conditions[default].molecules`. Respond with JSON that matches the response schema."
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions"
+   },
+   "inputs": [],
+   "response": {
+    "content": "{\"text\": \"Under the default condition, nucleus-only assignment appears to retain 3 of the 4 LRP2 molecules counted toward podocytes, suggesting that most podocyte-associated signal is nucleus-proximal.\", \"cited\": {\"kept\": {\"value\": 3, \"source\": \"conditions[nucleus_only].molecules\"}, \"total\": {\"value\": 4, \"source\": \"conditions[default].molecules\"}}}",
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 225,
+     "completion_tokens": 513,
+     "reasoning_tokens": 411
+    },
+    "served_by": "baseten",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": 2478
+  },
+  {
+   "purpose": "smoke:chat_completions",
+   "cache_key": "7a4dbab5bb889b3e85dc91be34cd00a5efb02aa08ba37f32d3dd7fc8c9c7fc04",
+   "request": {
+    "provider": "fireworks",
+    "model": "accounts/fireworks/models/muse-spark-open",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Write one cautious sentence saying that nucleus-only assignment keeps 3 of the 4 LRP2 molecules counted toward podocytes under the default condition. In `cited`, give 3 as `kept` with source `conditions[nucleus_only].molecules` and 4 as `total` with source `conditions[default].molecules`. Respond with JSON that matches the response schema."
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions"
+   },
+   "inputs": [],
+   "response": {
+    "content": "{\"cited\":{\"kept\":{\"value\":3,\"source\":\"conditions[nucleus_only].molecules\"},\"total\":{\"value\":4,\"source\":\"conditions[default].molecules\"}},\"text\":\"Under the tested conditions, nucleus-only assignment appears to retain approximately 3 of the 4 LRP2 molecules counted toward podocytes with the default assignment, suggesting general consistency between methods.\"}",
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 224,
+     "completion_tokens": 570,
+     "reasoning_tokens": 482
+    },
+    "served_by": "fireworks",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": 23676
+  },
+  {
+   "purpose": "smoke:sam",
+   "cache_key": "7bbc1d2c86087e4434dfd197fedf8c44c515c8497097a85f3a8d5e829f9b0aeb",
+   "request": {
+    "provider": "meta",
+    "model": "sam-3.1",
+    "messages": [
+     {
+      "role": "user",
+      "content": "<0f>1<|box;x1=16;y1=16;x2=44;y2=44;w=96;h=64|>,2<|box;x1=59;y1=23;x2=81;y2=45;w=96;h=64|>"
+     }
+    ],
+    "response_schema": null,
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "sam_segmentation"
+   },
+   "inputs": [
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "2c52c3d098971e0b5b66ca8a3fe8615915dd1085b4eb3d25f828775e086c83f4"
+    }
+   ],
+   "response": {
+    "content": "<0f>1<|box;x1=18;y1=18;x2=42;y2=42;w=96;h=64|><|mask;x=0;y=0;data=25,25,~!!!'y#LB[y63qY(Hp):V.`/eH!Z$'su'ZoN_8WzG%Tcc4gt'*qiorIpf1eWD/-9xuaV&.=#!m7eWU[uJ]Jv3rY#LWdCJ44RvUC_hdAZ^vegPz9Nc{%k*`]_PCXL$Q$:Z`fZVu6Fku8=0)1I?'*tzo^#GMI`1WF+A-O+@[0hXc8.Gs6uDSQ'4_#0)ld7Bttj:e:4+RPYU]g-n[VD5hi0[l0:ueeP$pvWjgw{gD6(DFR9uFbWsn!jHLtIqA%_80AX8UhE/Ns?3F]Sq@!gf.N:Ih6:1FUD-omf%.y`sBbT*D(UycX2##WZro:TnEW4w)QYcZoAmB[ZkZFmR:yJ88V*N*8+u)hZiq++lT0*.nY@%j)edg0'Az2/&h:l/eYoVO@G)3*pS!wCVgRkFpC1sBv9qFV0i{sq6Ld*6:cF6Pb'QLkQ$=SDmu8CmuPX'gmX+*rY.*r53NPc11y0ahWVx]rO4gLDvxd1RO8?Fs.9K0GH4oQXR9`@wgog:3kv#_99D_n'bQ)kvfisvg'EIPf)mIV)w9JZ4R(4#M4W_H_Yn0t+giMIpo`R:7IdFj$OUx^B2:{jM9{?dCF.DqTWg1A7pi6fORT.AHowvSlEreu9fxpCO{La!Am2WHBPOCf[yV+!-cFE|>,2<|box;x1=61;y1=25;x2=79;y2=43;w=96;h=64|><|mask;x=0;y=0;data=19,19,~!!!%.!O'+%5U!J$I^@qyP1.qfvvJ+OLF(1N)@j:gBU:xnqFa^LI.8^rRl%()cG'RGTw=B]38hUzJ@y8fw6b]s6/`3:g*2mK&]zf(dc2@+xEMl&?3H4(:2o7nB@@A2Mx@zIMf@jlx[^UYncWuEqtu_w0ZZz(m.e!NH1ft0j_fxW^SL++=egP4ca9G10NX9pA*8m6d]{LmG/6/[[n:FxlSX[W5RQ$b'q^H{O-*8nUbvw@`x3c#qy#Cc!8lX(9Xcvr:5uA`1(o(vBNbIEPzhzYKv^bOCn[8L?TN-M@xnO+doQT_TJ3:+F?4Mb9Bg.BQ^_jw-BIxINtsWlH{(*FUMK|>\n",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": [
+     {
+      "response": {
+       "background": false,
+       "created_at": 1793680898.0,
+       "error": null,
+       "id": "resp_6ae966020c21d7f502b5401b",
+       "incomplete_details": null,
+       "instructions": null,
+       "model": "sam-3.1",
+       "object": "response",
+       "output": [],
+       "parallel_tool_calls": true,
+       "service_tier": "auto",
+       "status": "in_progress",
+       "store": true,
+       "temperature": 1.0,
+       "tool_choice": "auto",
+       "tools": [],
+       "top_logprobs": 0,
+       "top_p": 1.0,
+       "truncation": "disabled"
+      },
+      "sequence_number": 0,
+      "type": "response.created"
+     },
+     {
+      "response": {
+       "background": false,
+       "created_at": 1793680898.0,
+       "error": null,
+       "id": "resp_6ae966020c21d7f502b5401b",
+       "incomplete_details": null,
+       "instructions": null,
+       "model": "sam-3.1",
+       "object": "response",
+       "output": [],
+       "parallel_tool_calls": true,
+       "service_tier": "auto",
+       "status": "in_progress",
+       "store": true,
+       "temperature": 1.0,
+       "tool_choice": "auto",
+       "tools": [],
+       "top_logprobs": 0,
+       "top_p": 1.0,
+       "truncation": "disabled"
+      },
+      "sequence_number": 1,
+      "type": "response.in_progress"
+     },
+     {
+      "item": {
+       "content": [
+        {
+         "annotations": [],
+         "logprobs": [],
+         "text": "",
+         "type": "output_text"
+        }
+       ],
+       "id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+       "role": "assistant",
+       "status": "in_progress",
+       "type": "message"
+      },
+      "output_index": 0,
+      "sequence_number": 2,
+      "type": "response.output_item.added"
+     },
+     {
+      "content_index": 0,
+      "item_id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+      "output_index": 0,
+      "part": {
+       "annotations": [],
+       "logprobs": [],
+       "text": "",
+       "type": "output_text"
+      },
+      "sequence_number": 3,
+      "type": "response.content_part.added"
+     },
+     {
+      "content_index": 0,
+      "delta": "<0f>1<|box;x1=18;y1=18;x2=42;y2=42;w=96;h=64|><|mask;x=0;y=0;data=25,25,~!!!'y#LB[y63qY(Hp):V.`/eH!Z$'su'ZoN_8WzG%Tcc4gt'*qiorIpf1eWD/-9xuaV&.=#!m7eWU[uJ]Jv3rY#LWdCJ44RvUC_hdAZ^vegPz9Nc{%k*`]_PCXL$Q$:Z`fZVu6Fku8=0)1I?'*tzo^#GMI`1WF+A-O+@[0hXc8.Gs6uDSQ'4_#0)ld7Bttj:e:4+RPYU]g-n[VD5hi0[l0:ueeP$pvWjgw{gD6(DFR9uFbWsn!jHLtIqA%_80AX8UhE/Ns?3F]Sq@!gf.N:Ih6:1FUD-omf%.y`sBbT*D(UycX2##WZro:TnEW4w)QYcZoAmB[ZkZFmR:yJ88V*N*8+u)hZiq++lT0*.nY@%j)edg0'Az2/&h:l/eYoVO@G)3*pS!wCVgRkFpC1sBv9qFV0i{sq6Ld*6:cF6Pb'QLkQ$=SDmu8CmuPX'gmX+*rY.*r53NPc11y0ahWVx]rO4gLDvxd1RO8?Fs.9K0GH4oQXR9`@wgog:3kv#_99D_n'bQ)kvfisvg'EIPf)mIV)w9JZ4R(4#M4W_H_Yn0t+giMIpo`R:7IdFj$OUx^B2:{jM9{?dCF.DqTWg1A7pi6fORT.AHowvSlEreu9fxpCO{La!Am2WHBPOCf[yV+!-cFE|>,2<|box;x1=61;y1=25;x2=79;y2=43;w=96;h=64|><|mask;x=0;y=0;data=19,19,~!!!%.!O'+%5U!J$I^@qyP1.qfvvJ+OLF(1N)@j:gBU:xnqFa^LI.8^rRl%()cG'RGTw=B]38hUzJ@y8fw6b]s6/`3:g*2mK&]zf(dc2@+xEMl&?3H4(:2o7nB@@A2Mx@zIMf@jlx[^UYncWuEqtu_w0ZZz(m.e!NH1ft0j_fxW^SL++=egP4ca9G10NX9pA*8m6d]{LmG/6/[[n:FxlSX[W5RQ$b'q^H{O-*8nUbvw@`x3c#qy#Cc!8lX(9Xcvr:5uA`1(o(vBNbIEPzhzYKv^bOCn[8L?TN-M@xnO+doQT_TJ3:+F?4Mb9Bg.BQ^_jw-BIxINtsWlH{(*FUMK|>\n",
+      "item_id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+      "logprobs": [],
+      "output_index": 0,
+      "sequence_number": 4,
+      "type": "response.output_text.delta"
+     },
+     {
+      "content_index": 0,
+      "item_id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+      "logprobs": [],
+      "output_index": 0,
+      "sequence_number": 5,
+      "text": "<0f>1<|box;x1=18;y1=18;x2=42;y2=42;w=96;h=64|><|mask;x=0;y=0;data=25,25,~!!!'y#LB[y63qY(Hp):V.`/eH!Z$'su'ZoN_8WzG%Tcc4gt'*qiorIpf1eWD/-9xuaV&.=#!m7eWU[uJ]Jv3rY#LWdCJ44RvUC_hdAZ^vegPz9Nc{%k*`]_PCXL$Q$:Z`fZVu6Fku8=0)1I?'*tzo^#GMI`1WF+A-O+@[0hXc8.Gs6uDSQ'4_#0)ld7Bttj:e:4+RPYU]g-n[VD5hi0[l0:ueeP$pvWjgw{gD6(DFR9uFbWsn!jHLtIqA%_80AX8UhE/Ns?3F]Sq@!gf.N:Ih6:1FUD-omf%.y`sBbT*D(UycX2##WZro:TnEW4w)QYcZoAmB[ZkZFmR:yJ88V*N*8+u)hZiq++lT0*.nY@%j)edg0'Az2/&h:l/eYoVO@G)3*pS!wCVgRkFpC1sBv9qFV0i{sq6Ld*6:cF6Pb'QLkQ$=SDmu8CmuPX'gmX+*rY.*r53NPc11y0ahWVx]rO4gLDvxd1RO8?Fs.9K0GH4oQXR9`@wgog:3kv#_99D_n'bQ)kvfisvg'EIPf)mIV)w9JZ4R(4#M4W_H_Yn0t+giMIpo`R:7IdFj$OUx^B2:{jM9{?dCF.DqTWg1A7pi6fORT.AHowvSlEreu9fxpCO{La!Am2WHBPOCf[yV+!-cFE|>,2<|box;x1=61;y1=25;x2=79;y2=43;w=96;h=64|><|mask;x=0;y=0;data=19,19,~!!!%.!O'+%5U!J$I^@qyP1.qfvvJ+OLF(1N)@j:gBU:xnqFa^LI.8^rRl%()cG'RGTw=B]38hUzJ@y8fw6b]s6/`3:g*2mK&]zf(dc2@+xEMl&?3H4(:2o7nB@@A2Mx@zIMf@jlx[^UYncWuEqtu_w0ZZz(m.e!NH1ft0j_fxW^SL++=egP4ca9G10NX9pA*8m6d]{LmG/6/[[n:FxlSX[W5RQ$b'q^H{O-*8nUbvw@`x3c#qy#Cc!8lX(9Xcvr:5uA`1(o(vBNbIEPzhzYKv^bOCn[8L?TN-M@xnO+doQT_TJ3:+F?4Mb9Bg.BQ^_jw-BIxINtsWlH{(*FUMK|>\n",
+      "type": "response.output_text.done"
+     },
+     {
+      "content_index": 0,
+      "item_id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+      "output_index": 0,
+      "part": {
+       "annotations": [],
+       "logprobs": [],
+       "text": "<0f>1<|box;x1=18;y1=18;x2=42;y2=42;w=96;h=64|><|mask;x=0;y=0;data=25,25,~!!!'y#LB[y63qY(Hp):V.`/eH!Z$'su'ZoN_8WzG%Tcc4gt'*qiorIpf1eWD/-9xuaV&.=#!m7eWU[uJ]Jv3rY#LWdCJ44RvUC_hdAZ^vegPz9Nc{%k*`]_PCXL$Q$:Z`fZVu6Fku8=0)1I?'*tzo^#GMI`1WF+A-O+@[0hXc8.Gs6uDSQ'4_#0)ld7Bttj:e:4+RPYU]g-n[VD5hi0[l0:ueeP$pvWjgw{gD6(DFR9uFbWsn!jHLtIqA%_80AX8UhE/Ns?3F]Sq@!gf.N:Ih6:1FUD-omf%.y`sBbT*D(UycX2##WZro:TnEW4w)QYcZoAmB[ZkZFmR:yJ88V*N*8+u)hZiq++lT0*.nY@%j)edg0'Az2/&h:l/eYoVO@G)3*pS!wCVgRkFpC1sBv9qFV0i{sq6Ld*6:cF6Pb'QLkQ$=SDmu8CmuPX'gmX+*rY.*r53NPc11y0ahWVx]rO4gLDvxd1RO8?Fs.9K0GH4oQXR9`@wgog:3kv#_99D_n'bQ)kvfisvg'EIPf)mIV)w9JZ4R(4#M4W_H_Yn0t+giMIpo`R:7IdFj$OUx^B2:{jM9{?dCF.DqTWg1A7pi6fORT.AHowvSlEreu9fxpCO{La!Am2WHBPOCf[yV+!-cFE|>,2<|box;x1=61;y1=25;x2=79;y2=43;w=96;h=64|><|mask;x=0;y=0;data=19,19,~!!!%.!O'+%5U!J$I^@qyP1.qfvvJ+OLF(1N)@j:gBU:xnqFa^LI.8^rRl%()cG'RGTw=B]38hUzJ@y8fw6b]s6/`3:g*2mK&]zf(dc2@+xEMl&?3H4(:2o7nB@@A2Mx@zIMf@jlx[^UYncWuEqtu_w0ZZz(m.e!NH1ft0j_fxW^SL++=egP4ca9G10NX9pA*8m6d]{LmG/6/[[n:FxlSX[W5RQ$b'q^H{O-*8nUbvw@`x3c#qy#Cc!8lX(9Xcvr:5uA`1(o(vBNbIEPzhzYKv^bOCn[8L?TN-M@xnO+doQT_TJ3:+F?4Mb9Bg.BQ^_jw-BIxINtsWlH{(*FUMK|>\n",
+       "type": "output_text"
+      },
+      "sequence_number": 6,
+      "type": "response.content_part.done"
+     },
+     {
+      "item": {
+       "content": [
+        {
+         "annotations": [],
+         "logprobs": [],
+         "text": "<0f>1<|box;x1=18;y1=18;x2=42;y2=42;w=96;h=64|><|mask;x=0;y=0;data=25,25,~!!!'y#LB[y63qY(Hp):V.`/eH!Z$'su'ZoN_8WzG%Tcc4gt'*qiorIpf1eWD/-9xuaV&.=#!m7eWU[uJ]Jv3rY#LWdCJ44RvUC_hdAZ^vegPz9Nc{%k*`]_PCXL$Q$:Z`fZVu6Fku8=0)1I?'*tzo^#GMI`1WF+A-O+@[0hXc8.Gs6uDSQ'4_#0)ld7Bttj:e:4+RPYU]g-n[VD5hi0[l0:ueeP$pvWjgw{gD6(DFR9uFbWsn!jHLtIqA%_80AX8UhE/Ns?3F]Sq@!gf.N:Ih6:1FUD-omf%.y`sBbT*D(UycX2##WZro:TnEW4w)QYcZoAmB[ZkZFmR:yJ88V*N*8+u)hZiq++lT0*.nY@%j)edg0'Az2/&h:l/eYoVO@G)3*pS!wCVgRkFpC1sBv9qFV0i{sq6Ld*6:cF6Pb'QLkQ$=SDmu8CmuPX'gmX+*rY.*r53NPc11y0ahWVx]rO4gLDvxd1RO8?Fs.9K0GH4oQXR9`@wgog:3kv#_99D_n'bQ)kvfisvg'EIPf)mIV)w9JZ4R(4#M4W_H_Yn0t+giMIpo`R:7IdFj$OUx^B2:{jM9{?dCF.DqTWg1A7pi6fORT.AHowvSlEreu9fxpCO{La!Am2WHBPOCf[yV+!-cFE|>,2<|box;x1=61;y1=25;x2=79;y2=43;w=96;h=64|><|mask;x=0;y=0;data=19,19,~!!!%.!O'+%5U!J$I^@qyP1.qfvvJ+OLF(1N)@j:gBU:xnqFa^LI.8^rRl%()cG'RGTw=B]38hUzJ@y8fw6b]s6/`3:g*2mK&]zf(dc2@+xEMl&?3H4(:2o7nB@@A2Mx@zIMf@jlx[^UYncWuEqtu_w0ZZz(m.e!NH1ft0j_fxW^SL++=egP4ca9G10NX9pA*8m6d]{LmG/6/[[n:FxlSX[W5RQ$b'q^H{O-*8nUbvw@`x3c#qy#Cc!8lX(9Xcvr:5uA`1(o(vBNbIEPzhzYKv^bOCn[8L?TN-M@xnO+doQT_TJ3:+F?4Mb9Bg.BQ^_jw-BIxINtsWlH{(*FUMK|>\n",
+         "type": "output_text"
+        }
+       ],
+       "id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+       "role": "assistant",
+       "status": "completed",
+       "type": "message"
+      },
+      "output_index": 0,
+      "sequence_number": 7,
+      "type": "response.output_item.done"
+     },
+     {
+      "response": {
+       "background": false,
+       "completed_at": 1793680898.0,
+       "created_at": 1793680898.0,
+       "error": null,
+       "id": "resp_6ae966020c21d7f502b5401b",
+       "incomplete_details": null,
+       "instructions": null,
+       "model": "sam-3.1",
+       "object": "response",
+       "output": [
+        {
+         "content": [
+          {
+           "annotations": [],
+           "logprobs": [],
+           "text": "<0f>1<|box;x1=18;y1=18;x2=42;y2=42;w=96;h=64|><|mask;x=0;y=0;data=25,25,~!!!'y#LB[y63qY(Hp):V.`/eH!Z$'su'ZoN_8WzG%Tcc4gt'*qiorIpf1eWD/-9xuaV&.=#!m7eWU[uJ]Jv3rY#LWdCJ44RvUC_hdAZ^vegPz9Nc{%k*`]_PCXL$Q$:Z`fZVu6Fku8=0)1I?'*tzo^#GMI`1WF+A-O+@[0hXc8.Gs6uDSQ'4_#0)ld7Bttj:e:4+RPYU]g-n[VD5hi0[l0:ueeP$pvWjgw{gD6(DFR9uFbWsn!jHLtIqA%_80AX8UhE/Ns?3F]Sq@!gf.N:Ih6:1FUD-omf%.y`sBbT*D(UycX2##WZro:TnEW4w)QYcZoAmB[ZkZFmR:yJ88V*N*8+u)hZiq++lT0*.nY@%j)edg0'Az2/&h:l/eYoVO@G)3*pS!wCVgRkFpC1sBv9qFV0i{sq6Ld*6:cF6Pb'QLkQ$=SDmu8CmuPX'gmX+*rY.*r53NPc11y0ahWVx]rO4gLDvxd1RO8?Fs.9K0GH4oQXR9`@wgog:3kv#_99D_n'bQ)kvfisvg'EIPf)mIV)w9JZ4R(4#M4W_H_Yn0t+giMIpo`R:7IdFj$OUx^B2:{jM9{?dCF.DqTWg1A7pi6fORT.AHowvSlEreu9fxpCO{La!Am2WHBPOCf[yV+!-cFE|>,2<|box;x1=61;y1=25;x2=79;y2=43;w=96;h=64|><|mask;x=0;y=0;data=19,19,~!!!%.!O'+%5U!J$I^@qyP1.qfvvJ+OLF(1N)@j:gBU:xnqFa^LI.8^rRl%()cG'RGTw=B]38hUzJ@y8fw6b]s6/`3:g*2mK&]zf(dc2@+xEMl&?3H4(:2o7nB@@A2Mx@zIMf@jlx[^UYncWuEqtu_w0ZZz(m.e!NH1ft0j_fxW^SL++=egP4ca9G10NX9pA*8m6d]{LmG/6/[[n:FxlSX[W5RQ$b'q^H{O-*8nUbvw@`x3c#qy#Cc!8lX(9Xcvr:5uA`1(o(vBNbIEPzhzYKv^bOCn[8L?TN-M@xnO+doQT_TJ3:+F?4Mb9Bg.BQ^_jw-BIxINtsWlH{(*FUMK|>\n",
+           "type": "output_text"
+          }
+         ],
+         "id": "msg_2263603d-a237-46d1-acfc-0803fa1c9795",
+         "role": "assistant",
+         "status": "completed",
+         "type": "message"
+        }
+       ],
+       "parallel_tool_calls": true,
+       "service_tier": "auto",
+       "status": "completed",
+       "store": true,
+       "temperature": 1.0,
+       "tool_choice": "auto",
+       "tools": [],
+       "top_logprobs": 0,
+       "top_p": 1.0,
+       "truncation": "disabled",
+       "usage": {
+        "images_processed": 1,
+        "input_tokens": 0,
+        "input_tokens_details": {
+         "cached_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+         "reasoning_tokens": 0
+        },
+        "total_tokens": 0
+       }
+      },
+      "sequence_number": 8,
+      "type": "response.completed"
+     }
+    ],
+    "audio_duration_ms": null
+   },
+   "latency_ms": 879
+  },
+  {
+   "purpose": "smoke:transcribe",
+   "cache_key": "697d2a5783f9e7181f47f9266868cba6aaad9f9ff704b11b131744204695e2e2",
+   "request": {
+    "provider": "meta",
+    "model": "muse-voice-transcribe-1.0",
+    "messages": [
+     {
+      "role": "user",
+      "content": "Transcribe the attached WAV audio."
+     }
+    ],
+    "response_schema": null,
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "asr_transcribe"
+   },
+   "inputs": [
+    {
+     "name": "audio/wav",
+     "version": "bytes",
+     "sha256": "bfbb70b35cae8fe3ae77759efd33e65ec320cbaabc49ee3b9557a6ed9834ae5f"
+    }
+   ],
+   "response": {
+    "content": "Does podocyte LRP2 survive nucleus only assignment??",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": 4400
+   },
+   "latency_ms": 1486
+  }
+ ]
+}
