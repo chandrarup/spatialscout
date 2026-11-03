@@ -55,6 +55,7 @@ export function applyEvent(view: InvestigationView, event: InvestigationEvent): 
       };
     case "tool_started":
     case "tool_finished":
+    case "model_call":
       return next;
     case "claim_drafted":
       return { ...next, claims: [...next.claims, event.claim] };

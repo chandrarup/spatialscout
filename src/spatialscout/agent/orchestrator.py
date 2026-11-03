@@ -2,6 +2,11 @@
 
 question -> plan proposed -> (approval) -> tool steps -> claim drafted -> package ready
 
+Run modes (ADR-0003): `cached_tool_rerun` serves stored model responses; `live` makes fresh calls once the
+live gate admits the passcode, and records them in the investigation's `recording.json`; `immutable_replay`
+runs nothing and serves a recorded investigation's events verbatim, read-only, under its original id.
+Every model call, live or stored, is written to the audit log and streamed as a `model_call` event.
+
 Work runs in tasks the orchestrator owns, so a client may disconnect and reconnect (with `after_seq`)
 without affecting it. Every state change is persisted before it is announced.
 """
@@ -22,6 +27,8 @@ from ..contracts import (
     ErrorEvent,
     FindingRef,
     InvestigationStatus,
+    ModelCallEvent,
+    ModelCallRecord,
     PackageInfo,
     PackageReadyEvent,
     Plan,
@@ -29,6 +36,7 @@ from ..contracts import (
     PlanProposal,
     PlanProposedEvent,
     Recording,
+    ReplayInfo,
     RunMode,
     ToolFinishedEvent,
     ToolStartedEvent,
@@ -37,8 +45,19 @@ from ..contracts import (
 )
 from ..data import DatasetStore
 from ..export import AUDIT_LOG_FILE, CLAIMS_FILE, MANIFEST_FILE, build_package
-from ..gateway import GatewayError, ModelGateway, RecordingLibrary, ReplaySource, StoredResponseMissing, normalise_question
-from .errors import InvestigationError, RunModeUnavailable
+from ..gateway import (
+    GatewayError,
+    LiveSource,
+    ModelGateway,
+    RecordingLibrary,
+    RecordingWriter,
+    ReplaySource,
+    ResponseSource,
+    StoredResponseMissing,
+    normalise_question,
+)
+from ..gateway.gate import LiveGate
+from .errors import InvestigationError, NoRecordedInvestigation, RunModeUnavailable
 from .investigation import Investigation
 from .prompts import claim_request, plan_request
 from .tools import Tool, ToolContext, ToolRegistry
@@ -58,6 +77,7 @@ class Orchestrator:
         investigations_dir: Path,
         dataset_id: str,
         clock: Callable[[], datetime] = utc_now,
+        live_gate: LiveGate | None = None,
     ) -> None:
         self._store = store
         self._recordings = recordings
@@ -65,13 +85,25 @@ class Orchestrator:
         self._root = Path(investigations_dir)
         self._dataset_id = dataset_id
         self._clock = clock
+        self._live_gate = live_gate
         self._investigations: dict[str, Investigation] = {}
         self._gateways: dict[str, ModelGateway] = {}
         self._tasks: set[asyncio.Task[None]] = set()
 
-    def start(self, question: str, run_mode: RunMode) -> Investigation:
-        """Create and persist an investigation, then propose its plan in the background."""
+    def start(self, question: str, run_mode: RunMode, passcode: str | None = None) -> Investigation:
+        """Create and persist an investigation, then propose its plan in the background.
+
+        `immutable_replay` instead returns the recorded investigation that answers the question (or raises
+        NoRecordedInvestigation). `live` first asks the live gate, which raises LiveRunRefused before anything
+        is created when the passcode is wrong, live runs are not configured or today's budget is spent.
+        """
         question = normalise_question(question)
+        if run_mode == "immutable_replay":
+            return self._replay(question)
+        if run_mode == "live":
+            if self._live_gate is None:
+                raise RunModeUnavailable("Live runs are not enabled on this server.")
+            self._live_gate.admit(passcode)
         recording = self._recordings.for_question(question)
         investigation = Investigation.create(
             self._root, question, run_mode, self._dataset_id, recording.info if recording else None, self._clock
@@ -92,6 +124,11 @@ class Orchestrator:
         as interrupted rather than left for clients to wait on. One awaiting approval can still be approved.
         """
         if investigation_id not in self._investigations:
+            recorded = self._recordings.recorded_investigation_by_id(investigation_id)
+            if recorded is not None:
+                directory, info = recorded
+                self._investigations[investigation_id] = Investigation.load_recorded(directory, info, self._clock)
+                return self._investigations[investigation_id]
             investigation = Investigation.load(self._root, investigation_id, self._clock)
             self._investigations[investigation_id] = investigation
             if investigation.state.status in (InvestigationStatus.PLANNING, InvestigationStatus.RUNNING):
@@ -107,7 +144,7 @@ class Orchestrator:
         """
         investigation = self.get(investigation_id)
         plan = investigation.plan()
-        if investigation.state.status != InvestigationStatus.AWAITING_APPROVAL or plan is None:
+        if investigation.read_only or investigation.state.status != InvestigationStatus.AWAITING_APPROVAL or plan is None:
             return investigation
         plan_hash = checksum(plan)
         investigation.update_state(status=InvestigationStatus.RUNNING, approved_plan_hash=plan_hash, approved_at_utc=self._clock())
@@ -120,6 +157,16 @@ class Orchestrator:
         for task in list(self._tasks):
             task.cancel()
         await asyncio.gather(*self._tasks, return_exceptions=True)
+        if self._live_gate is not None:
+            await self._live_gate.aclose()
+
+    def _replay(self, question: str) -> Investigation:
+        recorded = self._recordings.recorded_investigation(question)
+        if recorded is None:
+            raise NoRecordedInvestigation(f"No recorded investigation answers {question!r}; ask one of the recorded questions.")
+        directory, info = recorded
+        investigation = Investigation.load_recorded(directory, info, self._clock)
+        return self._investigations.setdefault(investigation.investigation_id, investigation)
 
     def _spawn(self, investigation: Investigation, work: Coroutine[Any, Any, None]) -> None:
         task = asyncio.get_running_loop().create_task(self._guarded(investigation, work))
@@ -142,32 +189,55 @@ class Orchestrator:
         investigation.emit(ErrorEvent, status=InvestigationStatus.FAILED, code=code, message=message)
 
     def _gateway(self, investigation: Investigation, recording: Recording | None) -> ModelGateway:
-        run_mode = investigation.state.run_mode
-        if run_mode == "live":
-            raise RunModeUnavailable("Live runs arrive with ticket 03, behind a passcode and a daily spend budget.")
-        if run_mode == "immutable_replay":
-            raise RunModeUnavailable("Immutable replay of recorded events arrives with ticket 03; use cached_tool_rerun.")
-        if recording is None:
-            raise StoredResponseMissing(
-                "No stored model responses answer this question. A cached tool rerun can only ask recorded questions; "
-                "live runs arrive with ticket 03."
-            )
+        """The investigation's gateway: stored responses for a cached tool rerun, fresh recorded calls for a live run."""
         gateway = self._gateways.get(investigation.investigation_id)
-        if gateway is None:
-            gateway = self._gateways[investigation.investigation_id] = ModelGateway(ReplaySource(recording), self._clock)
+        if gateway is not None:
+            return gateway
+        state = investigation.state
+        source: ResponseSource
+        recorder = None
+        if state.run_mode == "live":
+            if self._live_gate is None or not self._live_gate.enabled:
+                raise RunModeUnavailable("Live runs are not enabled on this server.")
+            source = LiveSource(self._live_gate.client, recording_id=investigation.investigation_id)
+            recorder = RecordingWriter(
+                investigation.directory / "recording.json",
+                ReplayInfo(
+                    recording_id=investigation.investigation_id,
+                    recorded_at=state.created_at_utc,
+                    origin="live",
+                    question=state.question,
+                    note="Model responses recorded from a live run.",
+                ),
+            )
+        elif state.run_mode == "cached_tool_rerun":
+            if recording is None:
+                raise StoredResponseMissing(
+                    "No stored model responses answer this question. A cached tool rerun can only ask recorded questions."
+                )
+            source = ReplaySource(recording)
+        else:
+            raise RunModeUnavailable(f"{state.run_mode} never calls a model")
+        gateway = ModelGateway(
+            source,
+            self._clock,
+            run_mode=state.run_mode,
+            on_call=lambda record: self._model_call(investigation, record),
+            recorder=recorder,
+        )
+        self._gateways[investigation.investigation_id] = gateway
         return gateway
+
+    def _model_call(self, investigation: Investigation, record: ModelCallRecord) -> None:
+        """Audit and stream one model call: provider, model, purpose, latency, tokens, cost, live or stored."""
+        investigation.audit_log.append("model_call", record.model_dump(mode="json"))
+        investigation.emit(ModelCallEvent, call=record)
 
     async def _propose_plan(self, investigation: Investigation, recording: Recording | None) -> None:
         gateway = self._gateway(investigation, recording)
         state = investigation.state
         request, inputs = plan_request(state.question, self._store.capability_report(state.dataset_id), self._registry.specs())
-        try:
-            proposal, call = await gateway.complete_json("plan", request, inputs, PlanProposal)
-        except GatewayError as error:
-            if error.record is not None:
-                investigation.audit_log.append("model_call", error.record.model_dump(mode="json"))
-            raise
-        investigation.audit_log.append("model_call", call.model_dump(mode="json"))
+        proposal, _ = await gateway.complete_json("plan", request, inputs, PlanProposal)
         plan = self._registry.plan_from(
             proposal,
             investigation_id=investigation.investigation_id,
@@ -215,13 +285,7 @@ class Orchestrator:
         never the model's; verification and review start pending and unreviewed."""
         gateway = self._gateway(investigation, self._recordings.for_question(investigation.state.question))
         request, inputs = claim_request(investigation.state.question, finding, tool.spec())
-        try:
-            draft, call = await gateway.complete_json("claim_draft", request, inputs, ClaimDraft)
-        except GatewayError as error:
-            if error.record is not None:
-                investigation.audit_log.append("model_call", error.record.model_dump(mode="json"))
-            raise
-        investigation.audit_log.append("model_call", call.model_dump(mode="json"))
+        draft, _ = await gateway.complete_json("claim_draft", request, inputs, ClaimDraft)
         return Claim(
             claim_id=new_id("clm"),
             investigation_id=investigation.investigation_id,

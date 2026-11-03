@@ -15,3 +15,9 @@ class PlanInvalid(InvestigationError):
 
 class UnknownInvestigation(KeyError):
     """No investigation with this id exists in the investigations directory."""
+
+
+class NoRecordedInvestigation(InvestigationError):
+    """Immutable replay was asked for a question with no recorded investigation."""
+
+    code = "no_recorded_investigation"

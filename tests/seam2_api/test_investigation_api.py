@@ -4,7 +4,6 @@ import io
 import json
 import zipfile
 
-import pytest
 from fastapi.testclient import TestClient
 
 from spatialscout.api import create_app
@@ -39,7 +38,7 @@ def test_a_question_gets_the_recorded_plan_and_nothing_runs_before_approval(clie
 
     assert investigation["status"] == "awaiting_approval"
     assert [step["tool"] for step in investigation["plan"]["steps"]] == ["audit_population"]
-    assert [event["type"] for event in investigation["events"]] == ["plan_proposed"]
+    assert [event["type"] for event in investigation["events"]] == ["model_call", "plan_proposed"]
 
 
 def test_a_question_without_stored_responses_fails_instead_of_calling_a_model(client):
@@ -51,7 +50,10 @@ def test_a_question_without_stored_responses_fails_instead_of_calling_a_model(cl
     assert (last["type"], last["code"]) == ("error", "replay_miss")
 
 
-FULL_SEQUENCE = ["plan_proposed", "plan_approved", "tool_started", "tool_finished", "claim_drafted", "package_ready"]
+# Every model call is streamed as a model_call telemetry event just before the event that uses its response.
+FULL_SEQUENCE = [
+    "model_call", "plan_proposed", "plan_approved", "tool_started", "tool_finished", "model_call", "claim_drafted", "package_ready",
+]
 
 
 def approve(client, investigation_id):
@@ -67,7 +69,7 @@ def test_an_approved_plan_streams_through_to_an_evidence_package(client):
     events = read_events(client, investigation_id)
 
     assert [event["type"] for event in events] == FULL_SEQUENCE
-    assert [event["seq"] for event in events] == [1, 2, 3, 4, 5, 6]
+    assert [event["seq"] for event in events] == [1, 2, 3, 4, 5, 6, 7, 8]
     assert client.get(f"/api/investigations/{investigation_id}").json()["status"] == "complete"
 
 
@@ -91,12 +93,12 @@ def test_the_claim_cites_the_audit_result_with_the_answers_known_by_construction
 
 
 def test_refreshing_at_approval_loses_no_events(client):
-    investigation_id = start(client)["investigation_id"]  # the page saw plan_proposed (seq 1), then reloaded
+    investigation_id = start(client)["investigation_id"]  # the page saw plan_proposed (seq 2), then reloaded
     approve(client, investigation_id)
 
-    after_refresh = read_events(client, investigation_id, after_seq=1)
+    after_refresh = read_events(client, investigation_id, after_seq=2)
 
-    assert [event["type"] for event in after_refresh] == FULL_SEQUENCE[1:]
+    assert [event["type"] for event in after_refresh] == FULL_SEQUENCE[2:]
 
 
 def test_approving_twice_runs_the_plan_once(client):
@@ -118,7 +120,7 @@ def test_reconnecting_mid_execution_with_after_seq_delivers_exactly_the_missing_
     before_drop = read_events(client, investigation_id, until={"tool_started"})
     after_reconnect = read_events(client, investigation_id, after_seq=before_drop[-1]["seq"])
 
-    assert [event["seq"] for event in before_drop + after_reconnect] == [1, 2, 3, 4, 5, 6]
+    assert [event["seq"] for event in before_drop + after_reconnect] == [1, 2, 3, 4, 5, 6, 7, 8]
     assert [event["type"] for event in before_drop + after_reconnect] == FULL_SEQUENCE
 
 
@@ -170,13 +172,18 @@ def test_editing_any_entry_of_the_exported_audit_log_fails_the_chain_check_at_th
         assert (result["ok"], result["first_bad_seq"]) == (False, index + 1)
 
 
-@pytest.mark.parametrize("run_mode", ["live", "immutable_replay"])
-def test_run_modes_that_ticket_03_builds_are_refused_with_a_reason_and_call_no_model(client, run_mode):
-    response = client.post("/api/investigations", json={"question": RECORDED_QUESTION, "run_mode": run_mode})
+def test_a_live_run_on_a_server_without_a_passcode_and_budget_is_refused_and_creates_nothing(client, tmp_path):
+    response = client.post("/api/investigations", json={"question": RECORDED_QUESTION, "run_mode": "live"})
 
-    events = read_events(client, response.json()["investigation_id"])
+    assert response.status_code == 403, response.text
+    assert "not enabled" in response.json()["detail"]
+    assert not list((tmp_path / "investigations").glob("inv-*"))
 
-    assert [(event["type"], event["code"]) for event in events] == [("error", "run_mode_unavailable")]
+
+def test_immutable_replay_of_a_question_nobody_recorded_is_not_found(client):
+    response = client.post("/api/investigations", json={"question": "Is UMOD higher in B cells in DKD?", "run_mode": "immutable_replay"})
+
+    assert response.status_code == 404, response.text
 
 
 def test_the_package_is_not_served_before_it_is_ready(client):

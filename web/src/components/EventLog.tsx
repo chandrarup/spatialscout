@@ -40,6 +40,12 @@ function describe(event: InvestigationEvent): string {
       return `claim ${event.claim.claim_id} on ${event.claim.finding.finding_kind} result ${event.claim.finding.finding_id}`;
     case "package_ready":
       return `evidence package ${event.package.package_id}`;
+    case "model_call": {
+      const call = event.call;
+      const where = call.failover_from ? `${call.served_by} (failover from ${call.failover_from})` : (call.served_by ?? call.provider);
+      const origin = call.source === "live" ? "live" : "stored";
+      return `${call.purpose}: ${call.model} on ${where}, ${origin}, ${call.latency_ms} ms${call.error_code ? `, ${call.error_code}` : ""}`;
+    }
     case "error":
       return `${event.code}: ${event.message}`;
   }

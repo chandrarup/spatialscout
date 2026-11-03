@@ -5,9 +5,13 @@ from typing import Any, Literal
 
 from pydantic import Field
 
-from .base import SCHEMA_VERSION, Contract
+from .base import SCHEMA_VERSION, Contract, RunMode
 
 Provider = Literal["meta", "baseten", "fireworks"]
+
+ModelApi = Literal["chat_completions", "responses", "sam_segmentation", "asr_transcribe"]
+"""Which provider endpoint a request goes to: OpenAI-style chat completions or responses, SAM 3.1 box-prompt
+segmentation (a streamed responses call) or Muse Voice Transcribe (multipart WAV upload)."""
 
 
 class ChatMessage(Contract):
@@ -23,8 +27,9 @@ class ModelRequest(Contract):
     model: str
     messages: list[ChatMessage]
     response_schema: dict[str, Any] | None = None
-    max_tokens: int = 4000
+    max_tokens: int = Field(default=4000, ge=2000, description="Every model here reasons before answering; a small cap returns empty content.")
     reasoning_effort: Literal["low", "medium", "high"] = "low"
+    api: ModelApi = "chat_completions"
 
 
 class TokenUsage(Contract):
@@ -34,9 +39,17 @@ class TokenUsage(Contract):
 
 
 class ModelResponse(Contract):
+    """What a provider returned. `finish_reason` is "length" when the token cap cut the answer short, on either
+    endpoint. `served_by` names the provider that answered when it differs from the requested one (failover)."""
+
     content: str
     finish_reason: str
     usage: TokenUsage | None = None
+    served_by: Provider | None = None
+    events: list[dict[str, Any]] | None = Field(
+        default=None, description="SAM 3.1: the streamed response events, kept so a stored response is parsed exactly as a live one."
+    )
+    audio_duration_ms: int | None = None
 
 
 class CacheInput(Contract):
@@ -78,7 +91,8 @@ class Recording(Contract):
 
 
 class ModelCallRecord(Contract):
-    """One model call as the audit log records it, including whether its response was live or replayed."""
+    """One model call as the audit log records it and the telemetry pills show it, including whether its
+    response was live (`source: live`) or stored (`source: replay`)."""
 
     call_id: str
     purpose: str
@@ -91,4 +105,8 @@ class ModelCallRecord(Contract):
     latency_ms: int
     finish_reason: str
     usage: TokenUsage | None = None
-    estimated_cost_usd: float | None = None
+    estimated_cost_usd: float | None = Field(default=None, description="Spend charged to the live budget; null for stored responses.")
+    run_mode: RunMode | None = None
+    served_by: Provider | None = Field(default=None, description="The provider that answered; differs from `provider` after failover.")
+    failover_from: Provider | None = None
+    error_code: str | None = Field(default=None, description="Set when the call produced no usable response.")

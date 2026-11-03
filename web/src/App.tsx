@@ -8,6 +8,7 @@ import { ExportButton } from "./components/ExportButton";
 import { PlanCard } from "./components/PlanCard";
 import { QuestionBar } from "./components/QuestionBar";
 import { RunModeBanner } from "./components/RunModeBanner";
+import { TelemetryPills } from "./components/TelemetryPills";
 import { Viewer } from "./components/Viewer";
 import { ViewerLegend } from "./components/ViewerLegend";
 import type { InvestigationEvent, InvestigationSnapshot, ModeInfo, RegionView } from "./contracts/generated";
@@ -152,6 +153,7 @@ export default function App() {
               {investigation.plan && (
                 <PlanCard plan={investigation.plan} status={investigation.status} approving={approving} onApprove={approve} />
               )}
+              <TelemetryPills events={investigation.events} />
               <EventLog events={investigation.events} />
               {investigation.claims.map((claim) => (
                 <ClaimCard key={claim.claim_id} claim={claim} />

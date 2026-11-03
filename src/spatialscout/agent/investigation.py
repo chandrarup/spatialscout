@@ -45,10 +45,19 @@ _EVENT = TypeAdapter(InvestigationEvent)
 
 
 class Investigation:
-    def __init__(self, directory: Path, state: InvestigationState, events: list[Any], clock: Callable[[], datetime]) -> None:
+    def __init__(
+        self,
+        directory: Path,
+        state: InvestigationState,
+        lines: list[str],
+        clock: Callable[[], datetime],
+        read_only: bool = False,
+    ) -> None:
         self.directory = directory
         self.state = state
-        self.events: list[Any] = events
+        self.lines: list[str] = lines  # each event exactly as written to events.jsonl, streamed verbatim
+        self.events: list[Any] = [_EVENT.validate_json(line) for line in lines]
+        self.read_only = read_only
         self.audit_log = AuditLog(directory / "audit_log.jsonl", state.investigation_id, clock)
         self._clock = clock
         self._changed = asyncio.Event()
@@ -83,7 +92,18 @@ class Investigation:
             raise UnknownInvestigation(investigation_id)
         state = InvestigationState.model_validate_json((directory / "state.json").read_text(encoding="utf-8"))
         lines = (directory / "events.jsonl").read_text(encoding="utf-8").splitlines()
-        return cls(directory, state, [_EVENT.validate_json(line) for line in lines if line], clock)
+        return cls(directory, state, [line for line in lines if line], clock)
+
+    @classmethod
+    def load_recorded(cls, directory: Path, replay: ReplayInfo | None, clock: Callable[[], datetime]) -> "Investigation":
+        """A recorded investigation for immutable replay: its events exactly as recorded, never written to.
+        Its snapshot reports the run mode `immutable_replay`; the recorded state file is left untouched."""
+        state = InvestigationState.model_validate_json((directory / "state.json").read_text(encoding="utf-8"))
+        if state.status not in TERMINAL_STATUSES:
+            raise ValueError(f"recorded investigation {state.investigation_id} did not finish; record it again")
+        lines = (directory / "events.jsonl").read_text(encoding="utf-8").splitlines()
+        state = state.model_copy(update={"run_mode": "immutable_replay", "replay": replay or state.replay})
+        return cls(directory, state, [line for line in lines if line], clock, read_only=True)
 
     @property
     def investigation_id(self) -> str:
@@ -95,11 +115,15 @@ class Investigation:
 
     def emit(self, event_type: type[EventBase], status: InvestigationStatus | None = None, **fields: Any) -> Any:
         """Record an event (and optionally the status it moves to), then wake every waiting stream."""
+        if self.read_only:
+            raise PermissionError(f"{self.investigation_id} is a recorded investigation and never changes")
         now = self._clock()
         event = event_type(seq=self.state.last_seq + 1, investigation_id=self.investigation_id, recorded_at_utc=now, **fields)
+        line = event.model_dump_json()
         with (self.directory / "events.jsonl").open("a", encoding="utf-8") as events_file:
-            events_file.write(event.model_dump_json() + "\n")
+            events_file.write(line + "\n")
             events_file.flush()
+        self.lines.append(line)
         self.events.append(event)
         changes: dict[str, Any] = {"last_seq": event.seq, "updated_at_utc": now}
         if status is not None:
@@ -112,6 +136,8 @@ class Investigation:
         return event
 
     def update_state(self, **changes: Any) -> None:
+        if self.read_only:
+            raise PermissionError(f"{self.investigation_id} is a recorded investigation and never changes")
         self.state = self.state.model_copy(update=changes)
         self._write_state()
 
@@ -120,13 +146,14 @@ class Investigation:
         temporary.write_text(self.state.model_dump_json(indent=2), encoding="utf-8")
         os.replace(temporary, self.directory / "state.json")
 
-    async def events_after(self, after_seq: int) -> AsyncIterator[Any]:
-        """Every event with `seq > after_seq`, in order, waiting for new ones until the investigation finishes."""
+    async def events_after(self, after_seq: int) -> AsyncIterator[tuple[Any, str]]:
+        """Every event with `seq > after_seq` and its line as written to events.jsonl, in order, waiting for new
+        ones until the investigation finishes."""
         position = max(after_seq, 0)  # the event at index i has seq i + 1
         while True:
             changed = self._changed
             while position < len(self.events):
-                yield self.events[position]
+                yield self.events[position], self.lines[position]
                 position += 1
             if self.finished:
                 return

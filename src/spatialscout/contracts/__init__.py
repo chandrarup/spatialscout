@@ -35,6 +35,7 @@ from .events import (
     ErrorEvent,
     EventBase,
     InvestigationEvent,
+    ModelCallEvent,
     PackageReadyEvent,
     PlanApprovedEvent,
     PlanProposedEvent,
@@ -65,6 +66,7 @@ from .investigation import (
 from .model_call import (
     CacheInput,
     ChatMessage,
+    ModelApi,
     ModelCallRecord,
     ModelRequest,
     ModelResponse,
