@@ -3,6 +3,9 @@
 from datetime import datetime
 from typing import Literal
 
+from pydantic import Field
+
+from .agent import OpenQuestion
 from .audit_log import ChainCheckResult
 from .base import SCHEMA_VERSION, Contract, RunMode
 from .dataset import DatasetManifest, FileChecksum
@@ -27,6 +30,7 @@ class PackageManifest(Contract):
     review_state: Literal["work_in_progress", "reviewed"]
     claims: int
     notes: list[str]
+    open_questions: list[OpenQuestion] = Field(default_factory=list, description="What the investigation could not settle within its budget.")
 
 
 class PackageInfo(Contract):
@@ -38,3 +42,4 @@ class PackageInfo(Contract):
     files: list[str]
     audit_log: ChainCheckResult
     review_state: Literal["work_in_progress", "reviewed"]
+    open_questions: list[OpenQuestion] = Field(default_factory=list)

@@ -85,6 +85,7 @@ class ReplayInfo(Contract):
     )
     question: str
     note: str
+    dataset_id: str | None = Field(default=None, description="The dataset the recorded investigation ran on; the server's default when null.")
 
 
 class Recording(Contract):
