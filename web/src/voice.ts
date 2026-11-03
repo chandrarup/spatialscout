@@ -36,6 +36,8 @@ export async function startRecording(onLimit: () => void): Promise<Recorder> {
 
   // Capture at the device's own rate: some browsers refuse a microphone stream into a context at another rate.
   const context = new AudioContext();
+  // Created after the permission prompt, outside the user gesture, so Safari may start it suspended.
+  await context.resume().catch(() => undefined);
   const input = context.createMediaStreamSource(stream);
   const processor = context.createScriptProcessor(4096, 1, 1);
   const chunks: Float32Array[] = [];
@@ -70,6 +72,9 @@ export async function startRecording(onLimit: () => void): Promise<Recorder> {
     stop: async () => {
       const sourceRate = context.sampleRate;
       release();
+      if (samples === 0) {
+        throw new VoiceError("No sound arrived from the microphone. Check it is not muted, or type your question.");
+      }
       const pcm = new Float32Array(Math.min(samples, limit));
       let offset = 0;
       for (const chunk of chunks) {

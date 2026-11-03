@@ -52,7 +52,16 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
     const active = recorder.current;
     recorder.current = null;
     if (!active) return;
-    await transcribe(await active.stop());
+    let wav: Blob;
+    try {
+      wav = await active.stop();
+    } catch (error) {
+      setVoice("idle");
+      setNote({ kind: "error", text: error instanceof VoiceError ? error.message : "Recording failed. Type your question instead." });
+      input.current?.focus();
+      return;
+    }
+    await transcribe(wav);
   };
 
   const begin = async () => {
@@ -149,7 +158,7 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
             }
           }}
           onContextMenu={(event) => event.preventDefault()}
-          className={`flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm select-none disabled:cursor-not-allowed disabled:opacity-40 ${
+          className={`flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm select-none touch-none disabled:cursor-not-allowed disabled:opacity-40 ${
             voice === "recording"
               ? "border-red-500/60 bg-red-500/15 text-red-300"
               : "border-line text-ink-2 hover:border-ink-3 hover:text-ink"
