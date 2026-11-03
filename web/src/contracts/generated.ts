@@ -994,6 +994,10 @@ export interface ModelRequest {
   max_tokens: number;
   reasoning_effort: "low" | "medium" | "high";
   api: "chat_completions" | "responses" | "sam_segmentation" | "asr_transcribe";
+  /**
+   * Muse Voice Transcribe: terms to bias recognition toward, such as panel gene names. Left out of the cache key when empty, so requests stored before this field existed keep their keys.
+   */
+  keywords: string[];
 }
 /**
  * What a provider returned. `finish_reason` is "length" when the token cap cut the answer short, on either
@@ -1266,6 +1270,30 @@ export interface ToolSpec {
   arguments_schema: {
     [k: string]: unknown;
   };
+}
+/**
+ * What Muse Voice Transcribe heard. Nothing runs on it until the researcher confirms the edited text.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "Transcription".
+ */
+export interface Transcription {
+  transcript: string;
+  /**
+   * `cached_tool_rerun` serves a stored response; `live` made a fresh call.
+   */
+  run_mode: "immutable_replay" | "cached_tool_rerun" | "live";
+  source: "live" | "replay" | "cache";
+  model: string;
+  /**
+   * The panel genes recognition was biased toward.
+   */
+  keywords: string[];
+  /**
+   * The clip's length, read from its WAV header.
+   */
+  audio_duration_ms: number;
+  latency_ms: number;
 }
 /**
  * Every check run on one claim version, and the verification status they add up to.
