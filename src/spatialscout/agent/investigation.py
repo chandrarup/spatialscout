@@ -34,6 +34,7 @@ from ..contracts import (
     Plan,
     PlanApprovedEvent,
     PlanProposedEvent,
+    PlanRejectedEvent,
     ReplayInfo,
     RunMode,
     new_id,
@@ -178,6 +179,8 @@ class Investigation:
                 plan = event.plan
             elif isinstance(event, PlanApprovedEvent) and plan is not None:
                 plan = plan.model_copy(update={"status": "approved", "plan_hash": event.plan_hash, "approved_at_utc": event.recorded_at_utc})
+            elif isinstance(event, PlanRejectedEvent) and event.by == "researcher" and plan is not None:
+                plan = plan.model_copy(update={"status": "rejected"})
         return plan
 
     def snapshot(self) -> InvestigationSnapshot:
@@ -193,4 +196,5 @@ class Investigation:
             claims=[e.claim for e in self.events if isinstance(e, ClaimDraftedEvent)],
             package=packages[-1] if packages else None,
             events=list(self.events),
+            approved_plan_hash=self.state.approved_plan_hash,
         )

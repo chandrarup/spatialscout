@@ -1,6 +1,7 @@
 """SpatialScout data contracts. Pydantic models here are the single source of truth for every shape
 that crosses a module or the HTTP boundary; TypeScript types are generated from them (see `schema.py`)."""
 
+from .agent import FollowUpDecision, FollowUpProposal, FollowUpRequest, FollowUpStatus, OpenQuestion
 from .assignment import AuditMetrics, SectionAudit
 from .audit_log import GENESIS_HASH, AuditEntry, AuditEntryKind, ChainCheckResult
 from .base import (
@@ -43,7 +44,12 @@ from .dataset import (
     SectionValidation,
 )
 from .events import (
+    AgentDecisionEvent,
+    BudgetExhaustedEvent,
     ClaimDraftedEvent,
+    ClaimRejectedEvent,
+    PlanRejectedEvent,
+    ToolFailedEvent,
     ErrorEvent,
     EventBase,
     InvestigationEvent,

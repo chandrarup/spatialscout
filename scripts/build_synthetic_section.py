@@ -11,6 +11,10 @@ Construction, in micrometres, on a 200 x 150 section:
   facing C06: the default condition counts the LRP2 toward the podocyte, and nucleus-only excludes them.
 - 60 unassigned molecules lie outside every cell. Every molecule has qv >= 20.
 
+Two label rules, both by construction: `synthetic-by-construction` (the default, as listed in CELLS) and
+`synthetic-alternative`, which also labels PT cell C06 as Podocyte, so a label-sensitivity check on SYN-01 has
+exactly one cell the rules disagree on (podocytes: 3 under the default rule, 4 under the alternative).
+
 Known answers (asserted in tests/seam1_engine/test_synthetic_section.py): the default condition counts
 240 molecules and nucleus-only keeps 180 (retention 0.75, 60 excluded); every cell type keeps 0.75;
 podocyte LRP2 goes from 4 to 0 and podocyte NPHS1 from 56 to 45.
@@ -56,6 +60,8 @@ GENES = {
     "T cell": (["CD3D"] * 15, ["CD3D"] * 5),
 }
 ADMIXED_CELL, ADMIXED_TOWARD = "C03", "C06"
+DEFAULT_RULE, ALTERNATIVE_RULE = "synthetic-by-construction", "synthetic-alternative"
+ALTERNATIVE_LABELS = {"C06": "Podocyte"}  # the one cell whose label differs under the alternative rule
 ADMIXED_EXPANSION_GENES = ["NPHS1", "LRP2", "LRP2", "LRP2", "LRP2"]
 N_UNASSIGNED = 60
 PANEL = sorted({gene for nuclear, expansion in GENES.values() for gene in nuclear + expansion})
@@ -89,7 +95,7 @@ def main() -> None:
     molecules = pd.DataFrame(rows)
     molecules.insert(0, "molecule_id", [f"{SECTION_ID}-m{i:04d}" for i in range(1, len(molecules) + 1)])
     cells = pd.DataFrame([
-        {"cell_id": cid, "cell_type": ct, "x": x, "y": y, "nucleus_area": math.pi * r**2, "cell_area": math.pi * (r + EXPANSION_UM) ** 2}
+        {"cell_id": cid, "cell_type": ct, "cell_type_alternative": ALTERNATIVE_LABELS.get(cid, ct), "x": x, "y": y, "nucleus_area": math.pi * r**2, "cell_area": math.pi * (r + EXPANSION_UM) ** 2}
         for cid, ct, x, y, r in CELLS
     ])
     section_dir = OUT / SECTION_ID
@@ -131,7 +137,8 @@ def _dataset_info() -> dict:
         "title": "Synthetic kidney section (answers known by construction)",
         "description": "A hand-designed section for tests and the walking skeleton. Not real tissue; never cite it as a result.",
         "coordinate_units": "micrometre",
-        "label_rule_id": "synthetic-by-construction",
+        "label_rule_id": DEFAULT_RULE,
+        "label_rules": {DEFAULT_RULE: "cell_type", ALTERNATIVE_RULE: "cell_type_alternative"},
         "panel": PANEL,
         "sections": [{"section_id": SECTION_ID, "group": "Synthetic", "extent": EXTENT}],
         "capabilities": [

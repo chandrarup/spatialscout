@@ -3,6 +3,66 @@
   "title": "SpatialScoutContracts",
   "type": "object",
   "definitions": {
+    "AgentDecisionEvent": {
+      "additionalProperties": false,
+      "description": "Muse Spark 1.3 after reading one observation: what it read, the follow-ups it requested (each citing an\nobservation, with its status) and the questions it left open.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "agent_decision",
+          "default": "agent_decision",
+          "type": "string"
+        },
+        "observation_id": {
+          "type": "string"
+        },
+        "reading": {
+          "type": "string"
+        },
+        "requests": {
+          "items": {
+            "$ref": "#/definitions/FollowUpRequest"
+          },
+          "type": "array"
+        },
+        "open_questions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "tool_calls_used": {
+          "type": "integer"
+        },
+        "max_tool_calls": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "observation_id",
+        "reading",
+        "requests",
+        "open_questions",
+        "tool_calls_used",
+        "max_tool_calls"
+      ],
+      "title": "AgentDecisionEvent",
+      "type": "object"
+    },
     "AuditConditionValue": {
       "additionalProperties": false,
       "description": "One section under one assignment condition.\n\n`molecules` counts the result's molecules in the population kept under the condition; retention divides it\nby the default condition's count. Each excess drop is its expectation minus the observed value.",
@@ -186,8 +246,13 @@
             "model_call",
             "plan_proposed",
             "plan_approved",
+            "plan_rejected",
             "tool_call",
+            "tool_failed",
+            "agent_decision",
+            "budget_exhausted",
             "claim_drafted",
+            "claim_rejected",
             "package_exported",
             "error"
           ],
@@ -788,6 +853,51 @@
       "title": "Budget",
       "type": "object"
     },
+    "BudgetExhaustedEvent": {
+      "additionalProperties": false,
+      "description": "The plan's tool-call budget is spent: the investigation drafts claims from the evidence it has and reports\nwhat it could not settle.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "budget_exhausted",
+          "default": "budget_exhausted",
+          "type": "string"
+        },
+        "tool_calls_used": {
+          "type": "integer"
+        },
+        "max_tool_calls": {
+          "type": "integer"
+        },
+        "open_questions": {
+          "items": {
+            "$ref": "#/definitions/OpenQuestion"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "tool_calls_used",
+        "max_tool_calls",
+        "open_questions"
+      ],
+      "title": "BudgetExhaustedEvent",
+      "type": "object"
+    },
     "CacheInput": {
       "additionalProperties": false,
       "description": "A computed input a model request was built from. Part of the cache key, so a changed tool version\nor artifact invalidates the stored response.",
@@ -1216,6 +1326,47 @@
         "claim"
       ],
       "title": "ClaimDraftedEvent",
+      "type": "object"
+    },
+    "ClaimRejectedEvent": {
+      "additionalProperties": false,
+      "description": "A claim draft that failed validation even after one redraft. No claim is made from it.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "claim_rejected",
+          "default": "claim_rejected",
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "problems": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "finding_id",
+        "problems"
+      ],
+      "title": "ClaimRejectedEvent",
       "type": "object"
     },
     "CompositeFigure": {
@@ -2289,6 +2440,119 @@
       "title": "FindingRef",
       "type": "object"
     },
+    "FollowUpDecision": {
+      "additionalProperties": false,
+      "description": "The agent model's structured output after reading one observation.",
+      "properties": {
+        "reading": {
+          "description": "What the agent reads in the observation, in one to three sentences.",
+          "type": "string"
+        },
+        "requests": {
+          "description": "Follow-up tool calls; empty when the observation needs none.",
+          "items": {
+            "$ref": "#/definitions/FollowUpProposal"
+          },
+          "type": "array"
+        },
+        "open_questions": {
+          "description": "Questions the evidence leaves open that the registry's tools cannot answer.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "reading",
+        "requests",
+        "open_questions"
+      ],
+      "title": "FollowUpDecision",
+      "type": "object"
+    },
+    "FollowUpProposal": {
+      "additionalProperties": false,
+      "description": "One follow-up tool call as the agent model proposes it, before it is checked against the registry.",
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "cites_observation": {
+          "description": "The id of the observation that prompted this request, such as obs-1.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Why this observation calls for this tool, in one or two sentences.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "arguments",
+        "cites_observation",
+        "reason"
+      ],
+      "title": "FollowUpProposal",
+      "type": "object"
+    },
+    "FollowUpRequest": {
+      "additionalProperties": false,
+      "description": "A follow-up request as the orchestrator recorded it: accepted (and run), rejected (with the reason) or over\nbudget (not run, and reported as an open question).",
+      "properties": {
+        "request_id": {
+          "description": "req-<n>, numbered in the order the agent made its requests.",
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "cites_observation_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "over_budget"
+          ],
+          "type": "string"
+        },
+        "rejection_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "request_id",
+        "tool",
+        "arguments",
+        "cites_observation_id",
+        "reason",
+        "status",
+        "rejection_reason"
+      ],
+      "title": "FollowUpRequest",
+      "type": "object"
+    },
     "GateStatus": {
       "additionalProperties": false,
       "description": "Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged.",
@@ -2398,12 +2662,17 @@
     "InvestigationEvent": {
       "discriminator": {
         "mapping": {
+          "agent_decision": "#/definitions/AgentDecisionEvent",
+          "budget_exhausted": "#/definitions/BudgetExhaustedEvent",
           "claim_drafted": "#/definitions/ClaimDraftedEvent",
+          "claim_rejected": "#/definitions/ClaimRejectedEvent",
           "error": "#/definitions/ErrorEvent",
           "model_call": "#/definitions/ModelCallEvent",
           "package_ready": "#/definitions/PackageReadyEvent",
           "plan_approved": "#/definitions/PlanApprovedEvent",
           "plan_proposed": "#/definitions/PlanProposedEvent",
+          "plan_rejected": "#/definitions/PlanRejectedEvent",
+          "tool_failed": "#/definitions/ToolFailedEvent",
           "tool_finished": "#/definitions/ToolFinishedEvent",
           "tool_started": "#/definitions/ToolStartedEvent"
         },
@@ -2417,13 +2686,28 @@
           "$ref": "#/definitions/PlanApprovedEvent"
         },
         {
+          "$ref": "#/definitions/PlanRejectedEvent"
+        },
+        {
           "$ref": "#/definitions/ToolStartedEvent"
         },
         {
           "$ref": "#/definitions/ToolFinishedEvent"
         },
         {
+          "$ref": "#/definitions/ToolFailedEvent"
+        },
+        {
+          "$ref": "#/definitions/AgentDecisionEvent"
+        },
+        {
+          "$ref": "#/definitions/BudgetExhaustedEvent"
+        },
+        {
           "$ref": "#/definitions/ClaimDraftedEvent"
+        },
+        {
+          "$ref": "#/definitions/ClaimRejectedEvent"
         },
         {
           "$ref": "#/definitions/PackageReadyEvent"
@@ -2501,12 +2785,17 @@
           "items": {
             "discriminator": {
               "mapping": {
+                "agent_decision": "#/definitions/AgentDecisionEvent",
+                "budget_exhausted": "#/definitions/BudgetExhaustedEvent",
                 "claim_drafted": "#/definitions/ClaimDraftedEvent",
+                "claim_rejected": "#/definitions/ClaimRejectedEvent",
                 "error": "#/definitions/ErrorEvent",
                 "model_call": "#/definitions/ModelCallEvent",
                 "package_ready": "#/definitions/PackageReadyEvent",
                 "plan_approved": "#/definitions/PlanApprovedEvent",
                 "plan_proposed": "#/definitions/PlanProposedEvent",
+                "plan_rejected": "#/definitions/PlanRejectedEvent",
+                "tool_failed": "#/definitions/ToolFailedEvent",
                 "tool_finished": "#/definitions/ToolFinishedEvent",
                 "tool_started": "#/definitions/ToolStartedEvent"
               },
@@ -2520,13 +2809,28 @@
                 "$ref": "#/definitions/PlanApprovedEvent"
               },
               {
+                "$ref": "#/definitions/PlanRejectedEvent"
+              },
+              {
                 "$ref": "#/definitions/ToolStartedEvent"
               },
               {
                 "$ref": "#/definitions/ToolFinishedEvent"
               },
               {
+                "$ref": "#/definitions/ToolFailedEvent"
+              },
+              {
+                "$ref": "#/definitions/AgentDecisionEvent"
+              },
+              {
+                "$ref": "#/definitions/BudgetExhaustedEvent"
+              },
+              {
                 "$ref": "#/definitions/ClaimDraftedEvent"
+              },
+              {
+                "$ref": "#/definitions/ClaimRejectedEvent"
               },
               {
                 "$ref": "#/definitions/PackageReadyEvent"
@@ -2540,6 +2844,17 @@
             ]
           },
           "type": "array"
+        },
+        "approved_plan_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -2552,7 +2867,8 @@
         "plan",
         "claims",
         "package",
-        "events"
+        "events",
+        "approved_plan_hash"
       ],
       "title": "InvestigationSnapshot",
       "type": "object"
@@ -2667,7 +2983,8 @@
         "awaiting_approval",
         "running",
         "complete",
-        "failed"
+        "failed",
+        "rejected"
       ],
       "title": "InvestigationStatus",
       "type": "string"
@@ -3567,6 +3884,53 @@
       "title": "MoleculeColumns",
       "type": "object"
     },
+    "OpenQuestion": {
+      "additionalProperties": false,
+      "description": "Something the investigation could not settle: a follow-up the budget did not allow, an observation the agent\nnever read because the budget ran out, or a question the agent raised.",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "over_budget_request",
+            "unread_observation",
+            "agent"
+          ],
+          "type": "string"
+        },
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "text",
+        "source",
+        "observation_id",
+        "request_id"
+      ],
+      "title": "OpenQuestion",
+      "type": "object"
+    },
     "OutlineMeasures": {
       "additionalProperties": false,
       "description": "One candidate outline of a seed (the seed box, the convex hull of its NPHS1 clusters, or the SAM 3.1\noutline) measured the same way, so what SAM adds over the cruder shapes is visible.\n\n- `seed_box_coverage`: the share of the seed box's area the shape covers.\n- `retention`: the structure-constrained condition with this shape as the only structure, over default\n  molecules whose molecule or cell centroid lies inside it: the share kept.\n- PECAM1 (endothelium) and PDGFRB (mesangium) consistency: each gene's molecule density inside the shape over\n  its density in the rest of the seed's crop, and the share of the crop's molecules of the gene inside.\n  Glomerular tufts carry both; neither gene seeded the box.",
@@ -3707,6 +4071,12 @@
             "reviewed"
           ],
           "type": "string"
+        },
+        "open_questions": {
+          "items": {
+            "$ref": "#/definitions/OpenQuestion"
+          },
+          "type": "array"
         }
       },
       "required": [
@@ -3715,7 +4085,8 @@
         "created_at",
         "files",
         "audit_log",
-        "review_state"
+        "review_state",
+        "open_questions"
       ],
       "title": "PackageInfo",
       "type": "object"
@@ -3806,6 +4177,13 @@
             "type": "string"
           },
           "type": "array"
+        },
+        "open_questions": {
+          "description": "What the investigation could not settle within its budget.",
+          "items": {
+            "$ref": "#/definitions/OpenQuestion"
+          },
+          "type": "array"
         }
       },
       "required": [
@@ -3823,7 +4201,8 @@
         "audit_log",
         "review_state",
         "claims",
-        "notes"
+        "notes",
+        "open_questions"
       ],
       "title": "PackageManifest",
       "type": "object"
@@ -4290,6 +4669,74 @@
         "plan"
       ],
       "title": "PlanProposedEvent",
+      "type": "object"
+    },
+    "PlanRejectedEvent": {
+      "additionalProperties": false,
+      "description": "A plan turned down. By the validator: it names a tool outside the registry, invalid arguments or an analysis\nthe capability report does not support; the planner gets one re-plan. By the researcher: the investigation ends\nand nothing runs.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "plan_rejected",
+          "default": "plan_rejected",
+          "type": "string"
+        },
+        "by": {
+          "enum": [
+            "validator",
+            "researcher"
+          ],
+          "type": "string"
+        },
+        "attempt": {
+          "description": "1 for the first proposal, 2 for the re-plan.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "tools": {
+          "description": "The tools the rejected proposal named.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "by",
+        "attempt",
+        "reason",
+        "tools",
+        "plan_id"
+      ],
+      "title": "PlanRejectedEvent",
       "type": "object"
     },
     "PlanStep": {
@@ -4770,6 +5217,18 @@
         },
         "note": {
           "type": "string"
+        },
+        "dataset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The dataset the recorded investigation ran on; the server's default when null."
         }
       },
       "required": [
@@ -4777,7 +5236,8 @@
         "recorded_at",
         "origin",
         "question",
-        "note"
+        "note",
+        "dataset_id"
       ],
       "title": "ReplayInfo",
       "type": "object"
@@ -5189,11 +5649,24 @@
             "live"
           ],
           "type": "string"
+        },
+        "dataset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The dataset to investigate; the server's default when omitted. A recording names its own."
         }
       },
       "required": [
         "question",
-        "run_mode"
+        "run_mode",
+        "dataset_id"
       ],
       "title": "StartInvestigationRequest",
       "type": "object"
@@ -5549,6 +6022,52 @@
       "title": "TokenUsage",
       "type": "object"
     },
+    "ToolFailedEvent": {
+      "additionalProperties": false,
+      "description": "A tool call that raised instead of returning an artifact. The failure is itself an observation the agent reads.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_failed",
+          "default": "tool_failed",
+          "type": "string"
+        },
+        "step_id": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "observation_id": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "step_id",
+        "tool",
+        "observation_id",
+        "error"
+      ],
+      "title": "ToolFailedEvent",
+      "type": "object"
+    },
     "ToolFinishedEvent": {
       "additionalProperties": false,
       "properties": {
@@ -5579,6 +6098,29 @@
         },
         "summary": {
           "type": "string"
+        },
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/EvidenceStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The artifact's computed evidence label, when it has one."
         }
       },
       "required": [
@@ -5589,7 +6131,9 @@
         "step_id",
         "tool",
         "artifact_id",
-        "summary"
+        "summary",
+        "observation_id",
+        "label"
       ],
       "title": "ToolFinishedEvent",
       "type": "object"
@@ -5623,6 +6167,7 @@
     },
     "ToolStartedEvent": {
       "additionalProperties": false,
+      "description": "A tool call starting. A plan step has no request; a follow-up names its request and the observation it cites.",
       "properties": {
         "seq": {
           "minimum": 1,
@@ -5649,6 +6194,52 @@
         "arguments": {
           "additionalProperties": true,
           "type": "object"
+        },
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The observation this call will produce."
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cites_observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A plan step's rationale, or the agent's reason for a follow-up."
         }
       },
       "required": [
@@ -5658,7 +6249,11 @@
         "type",
         "step_id",
         "tool",
-        "arguments"
+        "arguments",
+        "observation_id",
+        "request_id",
+        "cites_observation_id",
+        "reason"
       ],
       "title": "ToolStartedEvent",
       "type": "object"

@@ -54,7 +54,7 @@ def test_an_investigation_longer_than_the_window_streams_completely_through_reco
             break
         seen += read_one_connection(windowed_client, investigation_id, after_seq=seen[-1]["seq"])
 
-    assert [event["seq"] for event in seen] == [1, 2, 3, 4, 5, 6, 7, 8]
+    assert [event["seq"] for event in seen] == list(range(1, 11))
     assert [event["type"] for event in seen] == FULL_SEQUENCE
 
 
@@ -65,4 +65,4 @@ def test_a_browser_reconnect_with_last_event_id_resumes_after_that_event(windowe
 
     events = read_one_connection(windowed_client, investigation_id, headers={"Last-Event-ID": "2"})
 
-    assert [event["seq"] for event in events] == [3, 4, 5, 6, 7, 8]
+    assert [event["seq"] for event in events] == list(range(3, 11))

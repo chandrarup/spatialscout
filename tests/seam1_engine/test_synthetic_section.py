@@ -12,7 +12,7 @@ import pytest
 
 from spatialscout.contracts import ConditionName, EvidenceStatus
 from spatialscout.data import DatasetStore
-from spatialscout.engine import audit_population, audit_section
+from spatialscout.engine import audit_population, audit_section, label_sensitivity_check
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
 DEFAULT = ConditionName.DEFAULT
@@ -92,3 +92,15 @@ def test_the_home_matched_expectation_uses_lrp2_retention_in_pt_cells(podocyte_l
 
     assert nucleus_only.expectation_home_matched == pytest.approx((1 - (3 / 11) ** 4) / 3)
     assert nucleus_only.excess_drop_home_matched == pytest.approx((1 - (3 / 11) ** 4) / 3)
+
+
+def test_the_alternative_label_rule_also_labels_pt_cell_c06_a_podocyte_and_the_check_counts_that_one_cell():
+    store = DatasetStore(FIXTURES)
+    by_rule = {rule: [store.load_section("SYN-01", rule)] for rule in ("synthetic-by-construction", "synthetic-alternative")}
+
+    check = label_sensitivity_check(by_rule, "Podocyte", ["LRP2"], [DEFAULT, NUCLEUS_ONLY])
+
+    assert store.manifest("synthetic").label_rule_ids == ["synthetic-by-construction", "synthetic-alternative"]
+    assert [arm.label_rule_id for arm in check.arms] == ["synthetic-by-construction", "synthetic-alternative"]
+    assert [arm.cells_labelled for arm in check.arms] == [3, 4]
+    assert (check.cells_in_both, check.cells_only_first, check.cells_only_second) == (3, 0, 1)

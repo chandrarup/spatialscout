@@ -54,9 +54,14 @@ export type FindingKind = "audit" | "contrast";
 export type InvestigationEvent =
   | PlanProposedEvent
   | PlanApprovedEvent
+  | PlanRejectedEvent
   | ToolStartedEvent
   | ToolFinishedEvent
+  | ToolFailedEvent
+  | AgentDecisionEvent
+  | BudgetExhaustedEvent
   | ClaimDraftedEvent
+  | ClaimRejectedEvent
   | PackageReadyEvent
   | ModelCallEvent
   | ErrorEvent;
@@ -64,7 +69,7 @@ export type InvestigationEvent =
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "InvestigationStatus".
  */
-export type InvestigationStatus = "planning" | "awaiting_approval" | "running" | "complete" | "failed";
+export type InvestigationStatus = "planning" | "awaiting_approval" | "running" | "complete" | "failed" | "rejected";
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "RunMode".
@@ -72,6 +77,46 @@ export type InvestigationStatus = "planning" | "awaiting_approval" | "running" |
 export type RunMode = "immutable_replay" | "cached_tool_rerun" | "live";
 
 export interface SpatialScoutContracts {}
+/**
+ * Muse Spark 1.3 after reading one observation: what it read, the follow-ups it requested (each citing an
+ * observation, with its status) and the questions it left open.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "AgentDecisionEvent".
+ */
+export interface AgentDecisionEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "agent_decision";
+  observation_id: string;
+  reading: string;
+  requests: FollowUpRequest[];
+  open_questions: string[];
+  tool_calls_used: number;
+  max_tool_calls: number;
+}
+/**
+ * A follow-up request as the orchestrator recorded it: accepted (and run), rejected (with the reason) or over
+ * budget (not run, and reported as an open question).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "FollowUpRequest".
+ */
+export interface FollowUpRequest {
+  /**
+   * req-<n>, numbered in the order the agent made its requests.
+   */
+  request_id: string;
+  tool: string;
+  arguments: {
+    [k: string]: unknown;
+  };
+  cites_observation_id: string;
+  reason: string;
+  status: "accepted" | "rejected" | "over_budget";
+  rejection_reason: string | null;
+}
 /**
  * One section under one assignment condition.
  *
@@ -120,8 +165,13 @@ export interface AuditEntry {
     | "model_call"
     | "plan_proposed"
     | "plan_approved"
+    | "plan_rejected"
     | "tool_call"
+    | "tool_failed"
+    | "agent_decision"
+    | "budget_exhausted"
     | "claim_drafted"
+    | "claim_rejected"
     | "package_exported"
     | "error";
   payload: {
@@ -419,6 +469,35 @@ export interface Budget {
   max_tool_calls: number;
 }
 /**
+ * The plan's tool-call budget is spent: the investigation drafts claims from the evidence it has and reports
+ * what it could not settle.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "BudgetExhaustedEvent".
+ */
+export interface BudgetExhaustedEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "budget_exhausted";
+  tool_calls_used: number;
+  max_tool_calls: number;
+  open_questions: OpenQuestion[];
+}
+/**
+ * Something the investigation could not settle: a follow-up the budget did not allow, an observation the agent
+ * never read because the budget ran out, or a question the agent raised.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "OpenQuestion".
+ */
+export interface OpenQuestion {
+  text: string;
+  source: "over_budget_request" | "unread_observation" | "agent";
+  observation_id: string | null;
+  request_id: string | null;
+}
+/**
  * A computed input a model request was built from. Part of the cache key, so a changed tool version
  * or artifact invalidates the stored response.
  *
@@ -626,6 +705,20 @@ export interface ClaimDraftedEvent {
   recorded_at_utc: string;
   type: "claim_drafted";
   claim: Claim;
+}
+/**
+ * A claim draft that failed validation even after one redraft. No claim is made from it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ClaimRejectedEvent".
+ */
+export interface ClaimRejectedEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "claim_rejected";
+  finding_id: string;
+  problems: string[];
 }
 /**
  * The difference between group means of the log2 values under one condition (disease minus control).
@@ -967,6 +1060,46 @@ export interface EventBase {
   recorded_at_utc: string;
 }
 /**
+ * The agent model's structured output after reading one observation.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "FollowUpDecision".
+ */
+export interface FollowUpDecision {
+  /**
+   * What the agent reads in the observation, in one to three sentences.
+   */
+  reading: string;
+  /**
+   * Follow-up tool calls; empty when the observation needs none.
+   */
+  requests: FollowUpProposal[];
+  /**
+   * Questions the evidence leaves open that the registry's tools cannot answer.
+   */
+  open_questions: string[];
+}
+/**
+ * One follow-up tool call as the agent model proposes it, before it is checked against the registry.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "FollowUpProposal".
+ */
+export interface FollowUpProposal {
+  tool: string;
+  arguments: {
+    [k: string]: unknown;
+  };
+  /**
+   * The id of the observation that prompted this request, such as obs-1.
+   */
+  cites_observation: string;
+  /**
+   * Why this observation calls for this tool, in one or two sentences.
+   */
+  reason: string;
+}
+/**
  * Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1053,6 +1186,33 @@ export interface PlanApprovedEvent {
   plan_hash: string;
 }
 /**
+ * A plan turned down. By the validator: it names a tool outside the registry, invalid arguments or an analysis
+ * the capability report does not support; the planner gets one re-plan. By the researcher: the investigation ends
+ * and nothing runs.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PlanRejectedEvent".
+ */
+export interface PlanRejectedEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "plan_rejected";
+  by: "validator" | "researcher";
+  /**
+   * 1 for the first proposal, 2 for the re-plan.
+   */
+  attempt: number;
+  reason: string;
+  /**
+   * The tools the rejected proposal named.
+   */
+  tools: string[];
+  plan_id: string | null;
+}
+/**
+ * A tool call starting. A plan step has no request; a follow-up names its request and the observation it cites.
+ *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "ToolStartedEvent".
  */
@@ -1066,6 +1226,16 @@ export interface ToolStartedEvent {
   arguments: {
     [k: string]: unknown;
   };
+  /**
+   * The observation this call will produce.
+   */
+  observation_id: string | null;
+  request_id: string | null;
+  cites_observation_id: string | null;
+  /**
+   * A plan step's rationale, or the agent's reason for a follow-up.
+   */
+  reason: string | null;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1080,6 +1250,27 @@ export interface ToolFinishedEvent {
   tool: string;
   artifact_id: string;
   summary: string;
+  observation_id: string | null;
+  /**
+   * The artifact's computed evidence label, when it has one.
+   */
+  label: EvidenceStatus | null;
+}
+/**
+ * A tool call that raised instead of returning an artifact. The failure is itself an observation the agent reads.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ToolFailedEvent".
+ */
+export interface ToolFailedEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "tool_failed";
+  step_id: string;
+  tool: string;
+  observation_id: string;
+  error: string;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1105,6 +1296,7 @@ export interface PackageInfo {
   files: string[];
   audit_log: ChainCheckResult;
   review_state: "work_in_progress" | "reviewed";
+  open_questions: OpenQuestion[];
 }
 /**
  * Telemetry for one model call: provider, model, purpose, latency, tokens, estimated cost, whether the
@@ -1182,13 +1374,19 @@ export interface InvestigationSnapshot {
   events: (
     | PlanProposedEvent
     | PlanApprovedEvent
+    | PlanRejectedEvent
     | ToolStartedEvent
     | ToolFinishedEvent
+    | ToolFailedEvent
+    | AgentDecisionEvent
+    | BudgetExhaustedEvent
     | ClaimDraftedEvent
+    | ClaimRejectedEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent
   )[];
+  approved_plan_hash: string | null;
 }
 /**
  * What the replay banner shows about the recording being played.
@@ -1205,6 +1403,10 @@ export interface ReplayInfo {
   origin: "live" | "hand_authored";
   question: string;
   note: string;
+  /**
+   * The dataset the recorded investigation ran on; the server's default when null.
+   */
+  dataset_id: string | null;
 }
 /**
  * state.json in the investigation's directory; events.jsonl beside it holds every event.
@@ -1488,6 +1690,10 @@ export interface PackageManifest {
   review_state: "work_in_progress" | "reviewed";
   claims: number;
   notes: string[];
+  /**
+   * What the investigation could not settle within its budget.
+   */
+  open_questions: OpenQuestion[];
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1718,6 +1924,10 @@ export interface SectionAudit {
 export interface StartInvestigationRequest {
   question: string;
   run_mode: "immutable_replay" | "cached_tool_rerun" | "live";
+  /**
+   * The dataset to investigate; the server's default when omitted. A recording names its own.
+   */
+  dataset_id: string | null;
 }
 /**
  * What SAM 3.1 proposed for one seed. Empty, fragmented and rejected proposals are kept, never forced:

@@ -19,9 +19,11 @@ class InvestigationStatus(StrEnum):
     RUNNING = "running"
     COMPLETE = "complete"
     FAILED = "failed"
+    REJECTED = "rejected"
+    """The researcher rejected the plan; nothing ran."""
 
 
-TERMINAL_STATUSES = frozenset({InvestigationStatus.COMPLETE, InvestigationStatus.FAILED})
+TERMINAL_STATUSES = frozenset({InvestigationStatus.COMPLETE, InvestigationStatus.FAILED, InvestigationStatus.REJECTED})
 
 
 class InvestigationState(Contract):
@@ -45,6 +47,9 @@ class InvestigationState(Contract):
 class StartInvestigationRequest(Contract):
     question: str = Field(min_length=1, max_length=2000)
     run_mode: RunMode = "cached_tool_rerun"
+    dataset_id: str | None = Field(
+        default=None, description="The dataset to investigate; the server's default when omitted. A recording names its own."
+    )
 
 
 class InvestigationSnapshot(Contract):
@@ -60,6 +65,7 @@ class InvestigationSnapshot(Contract):
     claims: list[Claim]
     package: PackageInfo | None
     events: list[InvestigationEvent]
+    approved_plan_hash: str | None = None
 
 
 class ModeInfo(Contract):

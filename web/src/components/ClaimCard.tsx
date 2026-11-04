@@ -1,4 +1,5 @@
 // The claim card: the sentence, every number it cites with its source field, and its three separate statuses.
+// It names the controls the agent ran for the claim's finding, or says none ran: nothing runs a control for the agent.
 // Ticket 10 adds the verification panel; ticket 11 adds review controls.
 import type { Claim } from "../contracts/generated";
 
@@ -22,6 +23,12 @@ export function ClaimCard({ claim }: { claim: Claim }) {
         <Status label="Verification" value={claim.verification_status} />
         <Status label="Review" value={claim.review_status} />
       </div>
+      <dl className="mb-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+        <dt className="text-ink-3">Random-thinning control</dt>
+        <dd className="font-mono text-ink-2">{claim.controls.random_thinning ?? <span className="font-sans text-ink-3">none: the agent did not run one</span>}</dd>
+        <dt className="text-ink-3">Label-sensitivity check</dt>
+        <dd className="font-mono text-ink-2">{claim.controls.label_sensitivity ?? <span className="font-sans text-ink-3">none: the agent did not run one</span>}</dd>
+      </dl>
       <table className="w-full text-xs">
         <caption className="mb-1 text-left text-ink-3">
           Cited numbers, from {claim.finding.finding_kind} result <span className="font-mono">{claim.finding.finding_id}</span>

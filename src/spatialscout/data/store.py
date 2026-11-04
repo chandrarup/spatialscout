@@ -96,8 +96,8 @@ class DatasetStore:
     def load_section(self, section_id: str, label_rule_id: str | None = None) -> SectionTables:
         dataset_id = self.dataset_of(section_id)
         if dataset_id == SYNTHETIC:
-            rule = self._synthetic_info["label_rule_id"]
-            if label_rule_id not in (None, rule):
+            rule = label_rule_id or self._synthetic_info["label_rule_id"]
+            if rule not in self._synthetic_label_columns:
                 raise UnknownLabelRule(label_rule_id)
         else:
             rules = self._gse_label_rules
@@ -107,7 +107,7 @@ class DatasetStore:
         key = (section_id, rule)
         if key not in self._sections:
             self._sections[key] = (
-                self._read_synthetic_section(section_id) if dataset_id == SYNTHETIC else self._read_gse_section(section_id, rule)
+                self._read_synthetic_section(section_id, rule) if dataset_id == SYNTHETIC else self._read_gse_section(section_id, rule)
             )
         return self._sections[key]
 
@@ -178,24 +178,33 @@ class DatasetStore:
                 FileChecksum(path=p.relative_to(self._synthetic_dir).as_posix(), sha256=hashlib.sha256(p.read_bytes()).hexdigest(), bytes=p.stat().st_size)
                 for p in files
             ],
-            label_rule_ids=[info["label_rule_id"]],
+            label_rule_ids=list(self._synthetic_label_columns),
         )
+
+    @cached_property
+    def _synthetic_label_columns(self) -> dict[str, str]:
+        """Each synthetic label rule and the cells column holding its labels; the default rule comes first."""
+        info = self._synthetic_info
+        return info.get("label_rules") or {info["label_rule_id"]: "cell_type"}
 
     def _check(self, dataset_id: str) -> None:
         if dataset_id not in self.dataset_ids():
             raise UnknownDataset(dataset_id)
 
-    def _read_synthetic_section(self, section_id: str) -> SectionTables:
+    def _read_synthetic_section(self, section_id: str, label_rule_id: str) -> SectionTables:
         info = self._synthetic_info
         directory = self._synthetic_dir / section_id
-        text_columns = {"molecule_id": "string", "gene": "string", "cell_id": "string", "cell_type": "string"}
+        label_columns = self._synthetic_label_columns
+        text_columns = {"molecule_id": "string", "gene": "string", "cell_id": "string", **{c: "string" for c in label_columns.values()}}
         molecules = pd.read_csv(directory / "molecules.csv", dtype=text_columns)
         cells = pd.read_csv(directory / "cells.csv", dtype=text_columns)
+        cells["cell_type"] = cells[label_columns[label_rule_id]]
+        cells = cells.drop(columns=[c for c in label_columns.values() if c != "cell_type"])
         structures = [StructureMask.model_validate(s) for s in json.loads((directory / "structures.json").read_text())]
         return make_section(
             section_id,
             info["dataset_id"],
-            label_rule_id=info["label_rule_id"],
+            label_rule_id=label_rule_id,
             molecules=molecules,
             cells=cells,
             structures=structures,

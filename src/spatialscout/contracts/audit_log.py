@@ -16,8 +16,13 @@ AuditEntryKind = Literal[
     "model_call",
     "plan_proposed",
     "plan_approved",
+    "plan_rejected",
     "tool_call",
+    "tool_failed",
+    "agent_decision",
+    "budget_exhausted",
     "claim_drafted",
+    "claim_rejected",
     "package_exported",
     "error",
 ]

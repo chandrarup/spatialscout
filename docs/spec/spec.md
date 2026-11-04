@@ -328,7 +328,7 @@ Write once, frozen before the primary run, and record them in every result. They
 - section counts match
 - required controls are present:
   - a home-matched thinning control for any claim about assignment sensitivity
-  - a label-sensitivity check for any claim about a population whose label rule involves the claim's genes
+  - a label-sensitivity check for any claim about a population whose label rule involves the claim's genes, or decides membership against those genes' home cell type (the NPHS1-anchored podocyte rule competes with proximal tubule, the home type of LRP2/CUBN)
 
 **Numerical check.** An independent code path recomputes every cited number from the stored molecule tables, within declared tolerances:
 

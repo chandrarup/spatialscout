@@ -1,4 +1,4 @@
-// The event log: every investigation event in seq order, as it streams. Ticket 09a adds the reasoning timeline.
+// The event log: every investigation event in seq order, as it streams. The reasoning timeline groups the agent loop.
 import type { InvestigationEvent } from "../contracts/generated";
 
 export function EventLog({ events }: { events: InvestigationEvent[] }) {
@@ -46,6 +46,16 @@ function describe(event: InvestigationEvent): string {
       const origin = call.source === "live" ? "live" : "stored";
       return `${call.purpose}: ${call.model} on ${where}, ${origin}, ${call.latency_ms} ms${call.error_code ? `, ${call.error_code}` : ""}`;
     }
+    case "plan_rejected":
+      return `${event.by === "researcher" ? "rejected by the researcher" : `rejected (attempt ${event.attempt})`}: ${event.reason}`;
+    case "tool_failed":
+      return `${event.tool} failed: ${event.error}`;
+    case "agent_decision":
+      return `read ${event.observation_id}: ${event.requests.length} follow-up request(s)`;
+    case "budget_exhausted":
+      return `budget spent (${event.tool_calls_used}/${event.max_tool_calls}); ${event.open_questions.length} open question(s)`;
+    case "claim_rejected":
+      return `claim draft on ${event.finding_id} rejected: ${event.problems.join("; ")}`;
     case "error":
       return `${event.code}: ${event.message}`;
   }

@@ -153,7 +153,7 @@ The comparison of a finding under two label rules, one of which does not use the
 _Avoid_: robustness check, ablation
 
 **Required control**:
-A check a claim must cite before it can be verified: a random-thinning control for claims about assignment sensitivity, and a label-sensitivity check for claims about a population whose label rule involves the claim's genes.
+A check a claim must cite before it can be verified: a random-thinning control for claims about assignment sensitivity, and a label-sensitivity check for claims about a population whose label rule involves the claim's genes or decides membership against those genes' home cell type.
 _Avoid_: optional check, sanity check
 
 ## Investigation

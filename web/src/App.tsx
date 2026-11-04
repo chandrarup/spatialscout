@@ -8,6 +8,7 @@ import { EventLog } from "./components/EventLog";
 import { ExportButton } from "./components/ExportButton";
 import { FindingsPanel } from "./components/FindingsPanel";
 import { PlanCard } from "./components/PlanCard";
+import { ReasoningTimeline } from "./components/ReasoningTimeline";
 import { QuestionBar } from "./components/QuestionBar";
 import { RunModeBanner } from "./components/RunModeBanner";
 import { TelemetryPills } from "./components/TelemetryPills";
@@ -62,16 +63,16 @@ export default function App() {
   const ask = (question: string) => {
     setProblem(null);
     api
-      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun" })
+      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: shown?.manifest.dataset_id ?? null })
       .then(follow)
       .catch((error: unknown) => setProblem(String(error)));
   };
 
-  const approve = () => {
+  // Approve or reject the plan; both are idempotent on the server, so a double click changes nothing.
+  const decide = (call: (investigationId: string) => Promise<InvestigationSnapshot>) => {
     if (!investigation) return;
     setApproving(true);
-    api
-      .approve(investigation.investigationId)
+    call(investigation.investigationId)
       .then((snapshot) => snapshot.events.forEach((event) => dispatch({ type: "event", event })))
       .catch((error: unknown) => setProblem(String(error)))
       .finally(() => setApproving(false));
@@ -117,15 +118,30 @@ export default function App() {
                   {investigation.error}
                 </p>
               )}
-              {investigation.plan && (
-                <PlanCard plan={investigation.plan} status={investigation.status} approving={approving} onApprove={approve} />
-              )}
-              <TelemetryPills events={investigation.events} />
-              <EventLog events={investigation.events} />
+              <PlanCard
+                plan={investigation.plan}
+                events={investigation.events}
+                status={investigation.status}
+                busy={approving}
+                onApprove={() => decide(api.approve)}
+                onReject={() => decide(api.reject)}
+              />
+              <ReasoningTimeline events={investigation.events} />
               {investigation.claims.map((claim) => (
                 <ClaimCard key={claim.claim_id} claim={claim} />
               ))}
+              {investigation.events.map(
+                (event) =>
+                  event.type === "claim_rejected" && (
+                    <p key={event.seq} className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-300">
+                      No claim on finding <span className="font-mono">{event.finding_id}</span>: its draft failed the check
+                      twice ({event.problems.join("; ")}).
+                    </p>
+                  ),
+              )}
               <ExportButton pkg={investigation.pkg} />
+              <TelemetryPills events={investigation.events} />
+              <EventLog events={investigation.events} />
             </>
           ) : (
             <p className="rounded-lg border border-line bg-panel p-4 text-sm text-ink-2">
