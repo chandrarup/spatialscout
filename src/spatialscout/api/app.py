@@ -17,6 +17,7 @@ from ..gateway.gate import LiveGate
 from ..settings import Settings
 from .audit_routes import router as audit_router
 from .routes import router
+from .structure_routes import router as structure_router
 from .voice import router as voice_router
 
 
@@ -67,6 +68,7 @@ def create_app(
     app.include_router(router, prefix="/api")
     app.include_router(audit_router, prefix="/api")
     app.include_router(voice_router, prefix="/api")
+    app.include_router(structure_router, prefix="/api")
     if settings.web_dist is not None and (settings.web_dist / "index.html").is_file():
         app.mount("/", StaticFiles(directory=settings.web_dist, html=True), name="web")
     else:

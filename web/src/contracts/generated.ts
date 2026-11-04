@@ -1310,6 +1310,35 @@ export interface MoleculeColumns {
   };
 }
 /**
+ * One candidate outline of a seed (the seed box, the convex hull of its NPHS1 clusters, or the SAM 3.1
+ * outline) measured the same way, so what SAM adds over the cruder shapes is visible.
+ *
+ * - `seed_box_coverage`: the share of the seed box's area the shape covers.
+ * - `retention`: the structure-constrained condition with this shape as the only structure, over default
+ *   molecules whose molecule or cell centroid lies inside it: the share kept.
+ * - PECAM1 (endothelium) and PDGFRB (mesangium) consistency: each gene's molecule density inside the shape over
+ *   its density in the rest of the seed's crop, and the share of the crop's molecules of the gene inside.
+ *   Glomerular tufts carry both; neither gene seeded the box.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "OutlineMeasures".
+ */
+export interface OutlineMeasures {
+  shape: "seed_box" | "convex_hull" | "sam_outline";
+  area_um2: number | null;
+  seed_box_coverage: number | null;
+  default_molecules: number;
+  kept_molecules: number;
+  retention: number | null;
+  pecam1_enrichment: number | null;
+  pdgfrb_enrichment: number | null;
+  pecam1_share_inside: number | null;
+  pdgfrb_share_inside: number | null;
+  missing_reasons: {
+    [k: string]: string;
+  };
+}
+/**
  * manifest.json inside the evidence package: what it contains and how it was produced.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1411,6 +1440,18 @@ export interface StructureMask {
   kind: "glomerulus";
   outline: number[][];
   source: "synthetic" | "sam-3.1";
+  /**
+   * SAM 3.1 outlines: the version of the finder's frozen rules.
+   */
+  mask_version: string | null;
+  /**
+   * SAM 3.1 outlines: the structure-finder run that proposed it.
+   */
+  run_id: string | null;
+  /**
+   * SAM 3.1 outlines: the seed box it was prompted with.
+   */
+  seed_id: string | null;
 }
 /**
  * The planner model's structured output, before it is checked against the tool registry.
@@ -1549,6 +1590,81 @@ export interface SectionAudit {
 export interface StartInvestigationRequest {
   question: string;
   run_mode: "immutable_replay" | "cached_tool_rerun" | "live";
+}
+/**
+ * What SAM 3.1 proposed for one seed. Empty, fragmented and rejected proposals are kept, never forced:
+ * - outlined: one connected piece that passes the geometric checks;
+ * - fragmented: several pieces; the largest is outlined and the count recorded;
+ * - empty: no mask came back, or it has no pixels;
+ * - rejected: a geometric check failed (see the run's `rejection_rule`), or the seed was never sent.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "StructureProposal".
+ */
+export interface StructureProposal {
+  seed: StructureSeed;
+  status: "outlined" | "fragmented" | "empty" | "rejected";
+  reason: string | null;
+  /**
+   * The structure mask built from it; null when it is empty or rejected.
+   */
+  structure_id: string | null;
+  fragments: number;
+  /**
+   * The image it was sent in, by index into the run's crops.
+   */
+  crop_index: number | null;
+  comparisons: OutlineMeasures[];
+}
+/**
+ * One box prompt: merged NPHS1 clusters (one per glomerulus, padded), or a box the researcher drew.
+ * NPHS1 seeds the box, so it is never used to judge the outline.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "StructureSeed".
+ */
+export interface StructureSeed {
+  seed_id: string;
+  section_id: string;
+  origin: "nphs1_clusters" | "user_box";
+  box: Region;
+  /**
+   * NPHS1 molecules in the merged clusters; null for a user box.
+   */
+  nphs1_molecules: number | null;
+  /**
+   * NPHS1 clusters merged into this seed; null for a user box.
+   */
+  clusters_merged: number | null;
+}
+/**
+ * One run of the structure finder on one section: the images sent to SAM 3.1, what came back for every seed,
+ * and the outlines kept. Exploratory (ADR-0006): the outlines feed only the structure-constrained condition,
+ * which never enters an evidence label.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "StructureRun".
+ */
+export interface StructureRun {
+  schema_version: string;
+  run_id: string;
+  mask_version: string;
+  dataset_id: string;
+  section_id: string;
+  model: string;
+  run_mode: "cached_tool_rerun" | "live";
+  badge: "SAM 3.1 proposal (exploratory)";
+  seeding_rule: string;
+  rendering_rule: string;
+  rejection_rule: string;
+  images_sent: number;
+  /**
+   * Live spend for a live run; for a stored run, what the same images cost at list price.
+   */
+  estimated_cost_usd: number;
+  crops: Region[];
+  proposals: StructureProposal[];
+  structures: StructureMask[];
 }
 /**
  * A tool as the planner sees it in the registry.

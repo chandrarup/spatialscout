@@ -6,17 +6,21 @@ Coordinates: a crop is a window of the section rendered at `um_per_px`. Pixel (i
 [x0 + i·s, x0 + (i + 1)·s) × [y0 + j·s, y0 + (j + 1)·s) µm, with s = `um_per_px`.
 """
 
+import math
 from dataclasses import dataclass
+from typing import Literal
 
 import contourpy
 import numpy as np
+from matplotlib.path import Path as MplPath
 from scipy import ndimage, sparse
 from scipy.sparse.csgraph import connected_components
-from scipy.spatial import cKDTree
+from scipy.spatial import ConvexHull, QhullError, cKDTree
 
-from ..contracts import Region, StructureSeed
+from ..contracts import ConditionName, OutlineMeasures, Region, StructureMask, StructureSeed
 from ..data import SectionTables
 from ..gateway import SegmentedObject
+from .conditions import inclusion_mask, structure_index
 
 
 # --- seeding ------------------------------------------------------------------------------------------------------
@@ -131,6 +135,9 @@ class Crop:
         return self.x0 + px * self.um_per_px, self.y0 + py * self.um_per_px
 
 
+SPECK_SHARE = 0.05
+
+
 @dataclass(frozen=True)
 class PlacedOutline:
     """One SAM object's mask in section coordinates: the outline of its largest connected piece (empty when the
@@ -150,7 +157,9 @@ def place_outline(obj: SegmentedObject, crop: Crop) -> PlacedOutline:
         return PlacedOutline(outline=[], fragments=0, pixel_area_um2=0.0)
     sizes = np.bincount(pieces.ravel())[1:]
     largest = pieces == (int(np.argmax(sizes)) + 1)
-    return PlacedOutline(outline=_trace(largest, crop), fragments=int(fragments), pixel_area_um2=pixel_area)
+    # A speck (under 5% of the mask's pixels) is not counted as a fragment; its pixels still count toward the area.
+    counted = int((sizes >= SPECK_SHARE * sizes.sum()).sum())
+    return PlacedOutline(outline=_trace(largest, crop), fragments=counted, pixel_area_um2=pixel_area)
 
 
 def _trace(mask: np.ndarray, crop: Crop) -> list[list[float]]:
@@ -167,3 +176,163 @@ def _trace(mask: np.ndarray, crop: Crop) -> list[list[float]]:
 def _signed_area(line: np.ndarray) -> float:
     x, y = line[:, 0], line[:, 1]
     return float((x * np.roll(y, -1) - np.roll(x, -1) * y).sum() / 2)
+
+
+# --- judging a proposal -------------------------------------------------------------------------------------------
+
+MIN_AREA_SHARE_OF_SEED = 0.1
+MAX_AREA_SHARE_OF_SEED = 2.0
+MAX_SEED_SIDE_UM = 300.0
+REJECTION_RULE = (
+    "Geometry only; no gene judges a proposal. A seed box wider or taller than "
+    f"{MAX_SEED_SIDE_UM:g} µm is rejected unsent (merged beyond one glomerulus). A proposal is empty when SAM 3.1 "
+    f"returns no mask or an empty one; rejected when its mask covers less than {MIN_AREA_SHARE_OF_SEED:g}x or more "
+    f"than {MAX_AREA_SHARE_OF_SEED:g}x the seed box's area, or its outline touches the image edge (clipped); "
+    f"fragmented when the mask has several pieces of at least {SPECK_SHARE:.0%} of its pixels (the largest is "
+    "outlined; smaller specks are ignored); otherwise outlined."
+)
+
+Status = Literal["outlined", "fragmented", "empty", "rejected"]
+
+
+def judge_proposal(seed: StructureSeed, placed: PlacedOutline | None, crop: Crop) -> tuple[Status, str | None]:
+    """A proposal's status and the reason, by the frozen geometric rejection rule."""
+    if placed is None:
+        return "empty", "SAM 3.1 returned no mask for this box"
+    if placed.fragments == 0 or not placed.outline:
+        return "empty", "SAM 3.1 returned an empty mask for this box"
+    seed_area = (seed.box.x1 - seed.box.x0) * (seed.box.y1 - seed.box.y0)
+    share = placed.pixel_area_um2 / seed_area if seed_area > 0 else math.inf
+    if share < MIN_AREA_SHARE_OF_SEED:
+        return "rejected", f"the mask covers {share:.2f}x the seed box's area, below {MIN_AREA_SHARE_OF_SEED:g}x"
+    if share > MAX_AREA_SHARE_OF_SEED:
+        return "rejected", f"the mask covers {share:.2f}x the seed box's area, above {MAX_AREA_SHARE_OF_SEED:g}x"
+    xs = np.array([p[0] for p in placed.outline])
+    ys = np.array([p[1] for p in placed.outline])
+    edge = crop.um_per_px
+    x1, y1 = crop.x0 + crop.width * crop.um_per_px, crop.y0 + crop.height * crop.um_per_px
+    if xs.min() <= crop.x0 + edge or ys.min() <= crop.y0 + edge or xs.max() >= x1 - edge or ys.max() >= y1 - edge:
+        return "rejected", "the outline touches the image edge, so the mask may be clipped"
+    if placed.fragments > 1:
+        return "fragmented", f"the mask has {placed.fragments} separate pieces; the largest is outlined"
+    return "outlined", None
+
+
+# --- comparing an outline with its seed box and the convex-hull baseline ------------------------------------------
+
+LOCAL_MARGIN_UM = 100.0
+CONSISTENCY_GENES = ("PECAM1", "PDGFRB")
+COMPARISON_RULE = (
+    "Each SAM 3.1 outline is measured beside its seed box and the convex hull of its seed's NPHS1 clusters, on a 1 µm "
+    f"grid over the seed's local window (the box widened by {LOCAL_MARGIN_UM:g} µm on each side): area; the share of "
+    "the seed box it covers; the retention the structure-constrained condition would cause with that shape as the "
+    "only structure, over default molecules whose position or cell centroid lies inside it; and PECAM1 and PDGFRB "
+    "consistency, each gene's molecule density inside the shape over its density in the rest of the window. "
+    "NPHS1 seeded the box and is never measured."
+)
+
+
+def compare_shapes(section: SectionTables, seed: StructureSeed, outline: list[list[float]] | None) -> list[OutlineMeasures]:
+    """The seed box, the convex hull of its NPHS1 clusters (NPHS1 seeds only) and the SAM 3.1 outline (when there
+    is one), measured the same way."""
+    b = seed.box
+    m = LOCAL_MARGIN_UM
+    window = Region(section_id=section.section_id, x0=b.x0 - m, y0=b.y0 - m, x1=b.x1 + m, y1=b.y1 + m)
+    local = _local(section, window)
+    gx, gy = np.meshgrid(np.arange(window.x0, window.x1) + 0.5, np.arange(window.y0, window.y1) + 0.5)
+    grid_points = np.column_stack([gx.ravel(), gy.ravel()])
+    in_box = _inside(_box_polygon(b), grid_points)
+    shapes: list[tuple[str, list[list[float]] | None, str | None]] = [("seed_box", _box_polygon(b), None)]
+    if seed.origin == "nphs1_clusters":
+        hull = _hull(seed_points(section, seed))
+        shapes.append(("convex_hull", hull, None if hull else "fewer than 3 non-collinear NPHS1 seed molecules"))
+    if outline:
+        shapes.append(("sam_outline", outline, None))
+    return [_measure(kind, shape, reason, local, grid_points, in_box) for kind, shape, reason in shapes]
+
+
+def _measure(kind, shape, reason, local: SectionTables, grid_points: np.ndarray, in_box: np.ndarray) -> OutlineMeasures:
+    if shape is None:
+        return OutlineMeasures(
+            shape=kind, area_um2=None, seed_box_coverage=None, default_molecules=0, kept_molecules=0, retention=None,
+            pecam1_enrichment=None, pdgfrb_enrichment=None, pecam1_share_inside=None, pdgfrb_share_inside=None,
+            missing_reasons={"shape": reason or "no shape"},
+        )
+    inside = _inside(shape, grid_points)
+    area = float(inside.sum())
+    reasons: dict[str, str] = {}
+    mask = StructureMask(structure_id="candidate", section_id=local.section_id, kind="glomerulus", outline=shape, source="sam-3.1")
+    candidate = SectionTables(local.section_id, local.dataset_id, local.label_rule_id, local.molecules, local.cells, (mask,))
+    molecules, cells = local.molecules, local.cells
+    molecule_in = structure_index(candidate, molecules["x"].to_numpy(dtype=float), molecules["y"].to_numpy(dtype=float)) >= 0
+    cell_flags = structure_index(candidate, cells["x"].to_numpy(dtype=float), cells["y"].to_numpy(dtype=float)) >= 0
+    cell_in = dict(zip(cells["cell_id"].astype(str), cell_flags, strict=True))
+    centroid_in = molecules["cell_id"].astype("string").fillna("").map(lambda c: bool(cell_in.get(c, False))).to_numpy(dtype=bool)
+    default = inclusion_mask(candidate, ConditionName.DEFAULT)
+    kept = inclusion_mask(candidate, ConditionName.STRUCTURE_CONSTRAINED)
+    scope = default & (molecule_in | centroid_in)
+    n_scope, n_kept = int(scope.sum()), int((scope & kept).sum())
+    if not n_scope:
+        reasons["retention"] = "no default-condition molecules inside the shape or assigned to a cell centred in it"
+    consistency: dict[str, tuple[float | None, float | None]] = {}
+    window_area = float(len(grid_points))
+    genes = molecules["gene"].astype(str).to_numpy()
+    for gene in CONSISTENCY_GENES:
+        of_gene = genes == gene
+        total, inner = int(of_gene.sum()), int((of_gene & molecule_in).sum())
+        field = f"{gene.lower()}_enrichment"
+        if total == 0:
+            consistency[gene] = (None, None)
+            reasons[field] = f"no {gene} molecules in the seed's local window"
+            continue
+        outer_density = (total - inner) / (window_area - area) if window_area > area else 0.0
+        if outer_density == 0:
+            consistency[gene] = (None, inner / total)
+            reasons[field] = f"no {gene} molecules in the window outside the shape"
+            continue
+        consistency[gene] = ((inner / area) / outer_density if area else 0.0, inner / total)
+    return OutlineMeasures(
+        shape=kind,
+        area_um2=area,
+        seed_box_coverage=round(float((inside & in_box).sum()) / float(in_box.sum()), 6) if in_box.any() else None,
+        default_molecules=n_scope,
+        kept_molecules=n_kept,
+        retention=n_kept / n_scope if n_scope else None,
+        pecam1_enrichment=_round(consistency["PECAM1"][0]),
+        pdgfrb_enrichment=_round(consistency["PDGFRB"][0]),
+        pecam1_share_inside=_round(consistency["PECAM1"][1]),
+        pdgfrb_share_inside=_round(consistency["PDGFRB"][1]),
+        missing_reasons=reasons,
+    )
+
+
+def _round(value: float | None) -> float | None:
+    return None if value is None else round(float(value), 6)
+
+
+def _local(section: SectionTables, window: Region) -> SectionTables:
+    """The molecules in a window and every cell they or the window hold, for measuring shapes inside it."""
+    m, c = section.molecules, section.cells
+    in_window = m["x"].between(window.x0, window.x1) & m["y"].between(window.y0, window.y1)
+    cells_in = c["x"].between(window.x0, window.x1) & c["y"].between(window.y0, window.y1)
+    wanted = set(m.loc[in_window, "cell_id"].dropna().astype(str)) | set(c.loc[cells_in, "cell_id"].astype(str))
+    cells = c[c["cell_id"].astype(str).isin(wanted)].reset_index(drop=True)
+    return SectionTables(section.section_id, section.dataset_id, section.label_rule_id, m[in_window].reset_index(drop=True), cells)
+
+
+def _inside(polygon: list[list[float]], points: np.ndarray) -> np.ndarray:
+    return MplPath(np.asarray(polygon, dtype=float)).contains_points(points)
+
+
+def _box_polygon(b: Region) -> list[list[float]]:
+    return [[b.x0, b.y0], [b.x1, b.y0], [b.x1, b.y1], [b.x0, b.y1]]
+
+
+def _hull(points: np.ndarray) -> list[list[float]] | None:
+    if len(points) < 3:
+        return None
+    try:
+        hull = ConvexHull(points)
+    except QhullError:
+        return None
+    return [[round(float(x), 3), round(float(y), 3)] for x, y in points[hull.vertices]]
