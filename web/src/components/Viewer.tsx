@@ -111,7 +111,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [flyTo?.key, view.section_id, size !== null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [flyTo?.key, view.section_id, size !== null, camera !== null]); // eslint-disable-line react-hooks/exhaustive-deps -- camera: a viewer mounted by the fly-to itself flies once it has fitted
 
   const { background, highlighted } = useMemo(() => moleculeBuffers(section, genes, visibleGenes), [section, genes, visibleGenes]);
   const excluded = useMemo(

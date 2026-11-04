@@ -162,7 +162,7 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="min-h-0 flex-1">
+          <div className="flex min-h-0 flex-1 flex-col *:flex-1">
             {workspace === "dual" ? (
               adapters.length > 0 && (
                 <DualViewer
