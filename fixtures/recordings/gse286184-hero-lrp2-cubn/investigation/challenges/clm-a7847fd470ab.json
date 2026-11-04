@@ -1,0 +1,957 @@
+{
+ "schema_version": "1.0",
+ "claim_id": "clm-a7847fd470ab",
+ "claim_version": 1,
+ "base_status": "verified",
+ "variants": [
+  {
+   "kind": "reversed_direction",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-reversed_direction",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing drops under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": "ctl-b6924bf54830d2cd"
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "reversed_direction"
+    },
+    "direction": "drops",
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-reversed_direction",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "passed",
+      "details": "references, section counts and required controls check out",
+      "reasons": []
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+      "reasons": [
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows pooled observed share stays above home-matched, cell-matched and threshold lines across stricter conditions with many sections; Panel B shows a 300 µm crop with 40 retained blue and 82 excluded yellow CUBN molecules in Podocyte cells.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows pooled observed share stays above home-matched, cell-matched and threshold lines across stricter conditions with many sections; Panel B shows a 300 µm crop with 40 retained blue and 82 excluded yellow CUBN molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+     "after": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing drops under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5."
+    },
+    {
+     "field": "direction",
+     "before": null,
+     "after": "drops"
+    }
+   ],
+   "new_reasons": [
+    "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+    "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "wrong_section_count",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-wrong_section_count",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 15 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 15,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": "ctl-b6924bf54830d2cd"
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "wrong_section_count"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-wrong_section_count",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "section count mismatch: the claim cites 15 for eligible_section_ids.count, the finding has 18",
+      "reasons": [
+       "section count mismatch: the claim cites 15 for eligible_section_ids.count, the finding has 18"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "cited eligible_section_ids.count is 15, but the independent recompute of eligible_section_ids.count gives 18",
+      "reasons": [
+       "cited eligible_section_ids.count is 15, but the independent recompute of eligible_section_ids.count gives 18"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+     "after": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 15 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5."
+    },
+    {
+     "field": "cited.eligible_section_ids.count",
+     "before": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "after": {
+      "value": 15,
+      "source": "eligible_section_ids.count"
+     }
+    }
+   ],
+   "new_reasons": [
+    "section count mismatch: the claim cites 15 for eligible_section_ids.count, the finding has 18",
+    "cited eligible_section_ids.count is 15, but the independent recompute of eligible_section_ids.count gives 18"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "wrong_dataset_reference",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-wrong_dataset_reference",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE271188",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": "ctl-b6924bf54830d2cd"
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "wrong_dataset_reference"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-wrong_dataset_reference",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "dataset reference 'GSE271188' names no dataset served here",
+      "reasons": [
+       "dataset reference 'GSE271188' names no dataset served here",
+       "dataset reference 'GSE271188' does not match the finding's dataset 'GSE286184'"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "5 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "dataset_id",
+     "before": "GSE286184",
+     "after": "GSE271188"
+    }
+   ],
+   "new_reasons": [
+    "dataset reference 'GSE271188' names no dataset served here",
+    "dataset reference 'GSE271188' does not match the finding's dataset 'GSE286184'"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "changed_effect",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-changed_effect",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 37.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.37415493850640297,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": "ctl-b6924bf54830d2cd"
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "changed_effect"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-changed_effect",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "passed",
+      "details": "references, section counts and required controls check out",
+      "reasons": []
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "cited pooled[nucleus_only].observed_value is 0.37415493850640297, but the independent recompute of pooled[nucleus_only].observed_value gives 0.2942",
+      "reasons": [
+       "cited pooled[nucleus_only].observed_value is 0.37415493850640297, but the independent recompute of pooled[nucleus_only].observed_value gives 0.2942"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+     "after": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 37.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5."
+    },
+    {
+     "field": "cited.pooled[nucleus_only].observed_value",
+     "before": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "after": {
+      "value": 0.37415493850640297,
+      "source": "pooled[nucleus_only].observed_value"
+     }
+    }
+   ],
+   "new_reasons": [
+    "cited pooled[nucleus_only].observed_value is 0.37415493850640297, but the independent recompute of pooled[nucleus_only].observed_value gives 0.2942"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "figure_label_mismatch",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-figure_label_mismatch",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": "ctl-b6924bf54830d2cd"
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "figure_label_mismatch"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-figure_label_mismatch",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "figure-label mismatch: figure fig-4a21e15ed7a0771a shows finding fnd-ce7d56f1db059532, not fnd-1b28f0398f4885ff",
+      "reasons": [
+       "figure-label mismatch: figure fig-4a21e15ed7a0771a shows finding fnd-ce7d56f1db059532, not fnd-1b28f0398f4885ff"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "5 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows pooled observed share staying above the threshold under all stricter conditions for LRP2 in Podocyte, not CUBN. The figure title names LRP2, so it does not name the claim's CUBN population-gene subject.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows pooled observed share staying above the threshold under all stricter conditions for LRP2 in Podocyte, not CUBN. The figure title names LRP2, so it does not name the claim's CUBN population-gene subject."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "figure_id",
+     "before": "fig-adcc51d6452dc0ef",
+     "after": "fig-4a21e15ed7a0771a"
+    }
+   ],
+   "new_reasons": [
+    "figure-label mismatch: figure fig-4a21e15ed7a0771a shows finding fnd-ce7d56f1db059532, not fnd-1b28f0398f4885ff",
+    "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "misstated_spatial_pattern",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-misstated_spatial_pattern",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5. Excluded molecules lie closer to a cell of their gene's home type no more often than retained molecules do.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": "ctl-b6924bf54830d2cd"
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "misstated_spatial_pattern"
+    },
+    "direction": null,
+    "neighbour_pattern": "excluded_not_nearer_home"
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-misstated_spatial_pattern",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "passed",
+      "details": "references, section counts and required controls check out",
+      "reasons": []
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "misstated spatial pattern: the claim states excluded not nearer home, but the recomputed neighbour-proximity shares in GSM8720423 under nucleus_only are 0.07357 (excluded) and 0.01597 (retained)",
+      "reasons": [
+       "misstated spatial pattern: the claim states excluded not nearer home, but the recomputed neighbour-proximity shares in GSM8720423 under nucleus_only are 0.07357 (excluded) and 0.01597 (retained)"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel B does not show the neighbour pattern the claim states. Panel A shows pooled observed share stays above threshold under nucleus-only, cap 1 and cap 2 µm while Panel B shows 40 retained and 82 excluded CUBN molecules in Podocyte cells in GSM8720423.",
+      "reasons": [
+       "visual check: Panel B does not show the neighbour pattern the claim states"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": false,
+     "explanation": "Panel A shows pooled observed share stays above threshold under nucleus-only, cap 1 and cap 2 µm while Panel B shows 40 retained and 82 excluded CUBN molecules in Podocyte cells in GSM8720423."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds",
+     "neighbour_pattern": "excluded_nearer_home"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+     "after": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5. Excluded molecules lie closer to a cell of their gene's home type no more often than retained molecules do."
+    },
+    {
+     "field": "neighbour_pattern",
+     "before": null,
+     "after": "excluded_not_nearer_home"
+    }
+   ],
+   "new_reasons": [
+    "misstated spatial pattern: the claim states excluded not nearer home, but the recomputed neighbour-proximity shares in GSM8720423 under nucleus_only are 0.07357 (excluded) and 0.01597 (retained)",
+    "visual check: Panel B does not show the neighbour pattern the claim states"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "missing_required_control",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-a7847fd470ab-inj-missing_required_control",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "finding_kind": "audit"
+    },
+    "text": "In cells labelled Podocyte by our nphs1-anchored-v1 rule, CUBN share_expressing persists under the tested restriction with pooled observed 29.4% compared to the home-matched expectation of 27.3% under nucleus_only across the 18 eligible sections, consistent with remaining at or above the home-matched expectation x 2^-0.5.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 18.0,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.29415493850640295,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.2734149352654412,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.32458475973120327,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].cells": {
+      "value": 7887.0,
+      "source": "pooled[nucleus_only].cells"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-cb117ac2f45fa9ad",
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "missing_required_control"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-a7847fd470ab-inj-missing_required_control",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: nphs1-anchored-v1 is defined by ignoring CUBN; nphs1-anchored-v1 decides Podocyte membership against PT, the home type of CUBN)",
+      "reasons": [
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: nphs1-anchored-v1 is defined by ignoring CUBN; nphs1-anchored-v1 decides Podocyte membership against PT, the home type of CUBN)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "5 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-1b28f0398f4885ff",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays above the home-matched x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 18,
+     "pooled[nucleus_only].observed_value": 0.29415493850640295,
+     "pooled[nucleus_only].expectation_home_matched": 0.27341493526544114,
+     "pooled[default].observed_value": 0.32458475973120327,
+     "pooled[nucleus_only].cells": 7887,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "controls",
+     "before": {
+      "random_thinning": "ctl-cb117ac2f45fa9ad",
+      "label_sensitivity": "ctl-b6924bf54830d2cd"
+     },
+     "after": {
+      "random_thinning": "ctl-cb117ac2f45fa9ad",
+      "label_sensitivity": null
+     }
+    }
+   ],
+   "new_reasons": [
+    "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: nphs1-anchored-v1 is defined by ignoring CUBN; nphs1-anchored-v1 decides Podocyte membership against PT, the home type of CUBN)"
+   ],
+   "detected": true
+  }
+ ]
+}

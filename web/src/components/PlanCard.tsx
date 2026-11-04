@@ -61,6 +61,21 @@ export function PlanCard({ plan, events, status, busy, onApprove, onReject }: Pr
             <dt className="text-ink-3">Budget</dt>
             <dd className="text-ink-2">{plan.budget.max_tool_calls} tool calls, follow-ups included</dd>
           </dl>
+          {plan.sub_claims.length > 0 && (
+            <div className="mb-3 text-xs">
+              <p className="mb-1 text-ink-3">Sub-claims, with the hypothesis's prediction under stricter assignment</p>
+              <ul className="space-y-1">
+                {plan.sub_claims.map((sub) => (
+                  <li key={sub.text} className="flex gap-2">
+                    <span className="shrink-0 rounded border border-line px-1.5 font-mono text-[10px] uppercase text-ink-2">{sub.predicted}</span>
+                    <span className="text-ink-2">
+                      {sub.text} <span className="text-ink-3">({sub.cell_type} · {sub.genes.join("/")})</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <ol className="mb-3 space-y-2">
             {plan.steps.map((step, index) => {
               const state = MARK[states.get(step.step_id) ?? "waiting"];

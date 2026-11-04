@@ -33,6 +33,8 @@ web_image = (
             "SPATIALSCOUT_INVESTIGATIONS_DIR": f"{INVESTIGATIONS_MOUNT}/investigations",
             # Modal cuts web requests at 150 s; each SSE connection ends well before that and the client reconnects.
             "SPATIALSCOUT_STREAM_WINDOW_SECONDS": "110",
+            # The molecule tables are not in the image, so the public URL plays the recorded investigations.
+            "SPATIALSCOUT_DEFAULT_RUN_MODE": "immutable_replay",
         }
     )
     # Only the package, fixtures, configs, committed artifacts and the built web app are shipped: never the repo

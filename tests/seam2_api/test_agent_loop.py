@@ -271,3 +271,31 @@ def test_a_claim_may_state_the_frozen_threshold_without_citing_it(tmp_path):
     assert [e["call"]["purpose"] for e in of_type(events, "model_call") if e["call"]["purpose"] != "visual_check"] == [
         "plan", "follow_up", "claim_draft"]
     assert len(of_type(events, "claim_drafted")) == 1
+
+
+TWO_PART = ("My hypothesis: the podocytes this atlas calls 'endocytic' really carry LRP2, and the UMOD seen in B cells is "
+            "spillover from neighbouring thick ascending limb cells. Does each part hold up under stricter assignment?")
+
+
+def test_the_recorded_two_part_hypothesis_replays_with_verdicts_that_follow_the_rule_from_its_own_claims(client):
+    """The live golden-path run, as immutable replay. Checks that each streamed verdict is what the frozen rule gives
+    for the streamed claims, never what the outcome is (ADR-0001)."""
+    from spatialscout.contracts import Claim, SubClaim
+    from spatialscout.verify.verdict import derive_verdicts
+
+    snapshot = client.post("/api/investigations", json={"question": TWO_PART, "run_mode": "immutable_replay"}).json()
+    events = snapshot["events"]
+    assert (snapshot["run_mode"], snapshot["replay"]["origin"], snapshot["status"]) == ("immutable_replay", "live", "complete")
+    [verdict] = of_type(events, "verdict")
+    subs = [SubClaim.model_validate(v["sub_claim"]) for v in verdict["verdict"]["verdicts"]]
+    assert len(subs) == 2
+    claims = [Claim.model_validate(e["claim"]) for e in of_type(events, "claim_verified") if not e["claim"]["injected"]["is_injected"]]
+    populations = {e["artifact_id"]: None for e in of_type(events, "tool_finished")}
+    started = {e["observation_id"]: e for e in of_type(events, "tool_started")}
+    for finished in of_type(events, "tool_finished"):
+        arguments = started[finished["observation_id"]]["arguments"]
+        if finished["tool"] == "audit_population":
+            populations[finished["artifact_id"]] = (arguments["cell_type"], arguments["genes"])
+    populations = {k: v for k, v in populations.items() if v is not None}
+    expected = derive_verdicts(subs, claims, populations, dataset_id=snapshot["dataset_id"])
+    assert [v.model_dump(mode="json") for v in expected] == verdict["verdict"]["verdicts"]

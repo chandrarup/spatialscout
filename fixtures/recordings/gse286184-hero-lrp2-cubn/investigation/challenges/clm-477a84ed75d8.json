@@ -1,0 +1,967 @@
+{
+ "schema_version": "1.0",
+ "claim_id": "clm-477a84ed75d8",
+ "claim_version": 1,
+ "base_status": "failed",
+ "variants": [
+  {
+   "kind": "reversed_direction",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-reversed_direction",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling at or above the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": "ctl-8d40224d1d6ea630"
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "verified",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "reversed_direction"
+    },
+    "direction": "holds",
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-reversed_direction",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "passed",
+      "details": "references, section counts and required controls check out",
+      "reasons": []
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "5 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Panel A shows the pooled observed share of Podocyte cells expressing LRP2 stays above the home x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 61 retained and 46 nucleus-only-excluded molecules.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "verified",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share of Podocyte cells expressing LRP2 stays above the home x 2^-0.5 threshold at nucleus-only, cap 1 um and cap 2 um; Panel B shows the 300 um crop with 61 retained and 46 nucleus-only-excluded molecules."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds"
+    },
+    "in_validated_summary": true
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+     "after": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling at or above the home-matched expectation x 2^-0.5 across 19 eligible sections."
+    },
+    {
+     "field": "direction",
+     "before": null,
+     "after": "holds"
+    }
+   ],
+   "new_reasons": [],
+   "detected": false
+  },
+  {
+   "kind": "wrong_section_count",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-wrong_section_count",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 16 eligible sections.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 16,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": "ctl-8d40224d1d6ea630"
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "wrong_section_count"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-wrong_section_count",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "section count mismatch: the claim cites 16 for eligible_section_ids.count, the finding has 19",
+      "reasons": [
+       "section count mismatch: the claim cites 16 for eligible_section_ids.count, the finding has 19"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "cited eligible_section_ids.count is 16, but the independent recompute of eligible_section_ids.count gives 19",
+      "reasons": [
+       "cited eligible_section_ids.count is 16, but the independent recompute of eligible_section_ids.count gives 19",
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+     "after": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 16 eligible sections."
+    },
+    {
+     "field": "cited.eligible_section_ids.count",
+     "before": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "after": {
+      "value": 16,
+      "source": "eligible_section_ids.count"
+     }
+    }
+   ],
+   "new_reasons": [
+    "section count mismatch: the claim cites 16 for eligible_section_ids.count, the finding has 19",
+    "cited eligible_section_ids.count is 16, but the independent recompute of eligible_section_ids.count gives 19"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "wrong_dataset_reference",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-wrong_dataset_reference",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE271188",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": "ctl-8d40224d1d6ea630"
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "wrong_dataset_reference"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-wrong_dataset_reference",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "dataset reference 'GSE271188' names no dataset served here",
+      "reasons": [
+       "dataset reference 'GSE271188' names no dataset served here",
+       "dataset reference 'GSE271188' does not match the finding's dataset 'GSE286184'"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+      "reasons": [
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "dataset_id",
+     "before": "GSE286184",
+     "after": "GSE271188"
+    }
+   ],
+   "new_reasons": [
+    "dataset reference 'GSE271188' names no dataset served here",
+    "dataset reference 'GSE271188' does not match the finding's dataset 'GSE286184'"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "changed_effect",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-changed_effect",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 31.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.31757254605097146,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": "ctl-8d40224d1d6ea630"
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "changed_effect"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-changed_effect",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "passed",
+      "details": "references, section counts and required controls check out",
+      "reasons": []
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "cited pooled[nucleus_only].observed_value is 0.31757254605097146, but the independent recompute of pooled[nucleus_only].observed_value gives 0.2376",
+      "reasons": [
+       "cited pooled[nucleus_only].observed_value is 0.31757254605097146, but the independent recompute of pooled[nucleus_only].observed_value gives 0.2376",
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+     "after": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 31.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections."
+    },
+    {
+     "field": "cited.pooled[nucleus_only].observed_value",
+     "before": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "after": {
+      "value": 0.31757254605097146,
+      "source": "pooled[nucleus_only].observed_value"
+     }
+    }
+   ],
+   "new_reasons": [
+    "cited pooled[nucleus_only].observed_value is 0.31757254605097146, but the independent recompute of pooled[nucleus_only].observed_value gives 0.2376"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "figure_label_mismatch",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-figure_label_mismatch",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": "ctl-8d40224d1d6ea630"
+    },
+    "figure_id": "fig-adcc51d6452dc0ef",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "figure_label_mismatch"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-figure_label_mismatch",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "figure-label mismatch: figure fig-adcc51d6452dc0ef shows finding fnd-1b28f0398f4885ff, not fnd-ce7d56f1db059532",
+      "reasons": [
+       "figure-label mismatch: figure fig-adcc51d6452dc0ef shows finding fnd-1b28f0398f4885ff, not fnd-ce7d56f1db059532"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+      "reasons": [
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows the pooled observed share staying at or above the threshold under all stricter conditions, and the figure title names CUBN in Podocyte not LRP2. Panel B shows a 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-adcc51d6452dc0ef",
+     "finding_id": "fnd-1b28f0398f4885ff",
+     "path": "figures/fnd-1b28f0398f4885ff.png",
+     "sha256": "3c4864e2fd4a4a69dbc78af0aa4b3922501a7518956bbf25ec03febd2b975776",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share staying at or above the threshold under all stricter conditions, and the figure title names CUBN in Podocyte not LRP2. Panel B shows a 300 um crop with 40 retained and 82 excluded molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "figure_id",
+     "before": "fig-4a21e15ed7a0771a",
+     "after": "fig-adcc51d6452dc0ef"
+    }
+   ],
+   "new_reasons": [
+    "figure-label mismatch: figure fig-adcc51d6452dc0ef shows finding fnd-1b28f0398f4885ff, not fnd-ce7d56f1db059532"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "misstated_spatial_pattern",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-misstated_spatial_pattern",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections. Excluded molecules lie closer to a cell of their gene's home type no more often than retained molecules do.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": "ctl-8d40224d1d6ea630"
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "misstated_spatial_pattern"
+    },
+    "direction": null,
+    "neighbour_pattern": "excluded_not_nearer_home"
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-misstated_spatial_pattern",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "passed",
+      "details": "references, section counts and required controls check out",
+      "reasons": []
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+      "reasons": [
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+       "misstated spatial pattern: the claim states excluded not nearer home, but the recomputed neighbour-proximity shares in GSM8720423 under nucleus_only are 0.1005 (excluded) and 0.01769 (retained)"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows the pooled observed share stays at or above the home x 2^-0.5 threshold under nucleus-only, cap 1 um and cap 2 um. Panel B shows the GSM8720423 crop with 61 retained and 46 excluded molecules, where computed shares show excluded molecules are strictly closer to home-type cells more often than retained are.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction",
+       "visual check: Panel B does not show the neighbour pattern the claim states"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": false,
+     "explanation": "Panel A shows the pooled observed share stays at or above the home x 2^-0.5 threshold under nucleus-only, cap 1 um and cap 2 um. Panel B shows the GSM8720423 crop with 61 retained and 46 excluded molecules, where computed shares show excluded molecules are strictly closer to home-type cells more often than retained are."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds",
+     "neighbour_pattern": "excluded_nearer_home"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+     "after": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections. Excluded molecules lie closer to a cell of their gene's home type no more often than retained molecules do."
+    },
+    {
+     "field": "neighbour_pattern",
+     "before": null,
+     "after": "excluded_not_nearer_home"
+    }
+   ],
+   "new_reasons": [
+    "misstated spatial pattern: the claim states excluded not nearer home, but the recomputed neighbour-proximity shares in GSM8720423 under nucleus_only are 0.1005 (excluded) and 0.01769 (retained)",
+    "visual check: Panel B does not show the neighbour pattern the claim states"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "missing_required_control",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-477a84ed75d8-inj-missing_required_control",
+    "version": 1,
+    "investigation_id": "inv-9d567ce7bd9d",
+    "dataset_id": "GSE286184",
+    "finding": {
+     "finding_id": "fnd-ce7d56f1db059532",
+     "finding_kind": "audit"
+    },
+    "text": "Co-expression persists under the tested nucleus_only restriction in cells labelled Podocyte by our nphs1-anchored-v1 rule, where the pooled share expressing LRP2 is 23.76% under nucleus_only at 76.12% molecular retention versus a home-matched expectation of 24.35%, and 26.18% under default, with no condition falling below the home-matched expectation x 2^-0.5 across 19 eligible sections.",
+    "cited": {
+     "eligible_section_ids.count": {
+      "value": 19,
+      "source": "eligible_section_ids.count"
+     },
+     "pooled[default].observed_value": {
+      "value": 0.2617966187231895,
+      "source": "pooled[default].observed_value"
+     },
+     "pooled[nucleus_only].observed_value": {
+      "value": 0.23757254605097147,
+      "source": "pooled[nucleus_only].observed_value"
+     },
+     "pooled[nucleus_only].expectation_home_matched": {
+      "value": 0.24353600077052723,
+      "source": "pooled[nucleus_only].expectation_home_matched"
+     },
+     "pooled[nucleus_only].retention": {
+      "value": 0.7611784371082323,
+      "source": "pooled[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": "ctl-9ea26a53c27dc17f",
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-4a21e15ed7a0771a",
+    "evidence_status": "stable",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "missing_required_control"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-477a84ed75d8-inj-missing_required_control",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: nphs1-anchored-v1 is defined by ignoring LRP2; nphs1-anchored-v1 decides Podocyte membership against PT, the home type of LRP2)",
+      "reasons": [
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: nphs1-anchored-v1 is defined by ignoring LRP2; nphs1-anchored-v1 decides Podocyte membership against PT, the home type of LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold",
+      "reasons": [
+       "the claim states the observed value drops below the home-matched threshold, but recomputed it holds at or above the home-matched threshold"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "disputed",
+      "details": "visual check: Panel A reads as 'holds', which does not match the claim's direction. Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells.",
+      "reasons": [
+       "visual check: Panel A reads as 'holds', which does not match the claim's direction"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-ce7d56f1db059532",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-4a21e15ed7a0771a",
+     "finding_id": "fnd-ce7d56f1db059532",
+     "path": "figures/fnd-ce7d56f1db059532.png",
+     "sha256": "21a03b5f0bd8733b442365e101eb99da4318cb84a83d60397df327804651228b",
+     "crop": {
+      "section_id": "GSM8720423",
+      "x0": 3075.0,
+      "y0": 7125.0,
+      "x1": 3375.0,
+      "y1": 7425.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 µm, cap 2 µm for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": false,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Panel A shows the pooled observed share stays at or above the threshold line at nucleus-only, cap 1 µm and cap 2 µm; Panel B shows the 300 µm crop with 61 retained and 46 nucleus-only-excluded LRP2 molecules in Podocyte cells."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "eligible_section_ids.count": 19,
+     "pooled[default].observed_value": 0.2617966187231895,
+     "pooled[nucleus_only].observed_value": 0.23757254605097147,
+     "pooled[nucleus_only].expectation_home_matched": 0.24353600077052723,
+     "pooled[nucleus_only].retention": 0.7611784371082323,
+     "direction": "holds"
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "controls",
+     "before": {
+      "random_thinning": "ctl-9ea26a53c27dc17f",
+      "label_sensitivity": "ctl-8d40224d1d6ea630"
+     },
+     "after": {
+      "random_thinning": "ctl-9ea26a53c27dc17f",
+      "label_sensitivity": null
+     }
+    }
+   ],
+   "new_reasons": [
+    "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: nphs1-anchored-v1 is defined by ignoring LRP2; nphs1-anchored-v1 decides Podocyte membership against PT, the home type of LRP2)"
+   ],
+   "detected": true
+  }
+ ]
+}
