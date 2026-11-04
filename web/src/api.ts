@@ -14,6 +14,7 @@ import type {
   InvestigationEvent,
   InvestigationSnapshot,
   KpmpCellMap,
+  LabRun,
   KpmpManifest,
   ModeInfo,
   ProteinAuditResult,
@@ -51,6 +52,10 @@ export const api = {
     if (box) for (const k of ["x0", "y0", "x1", "y1"] as const) params.set(k, String(box[k]));
     return fetch(`/api/kpmp/${encodeURIComponent(participantId)}/protein-audit?${params}`, { signal }).then(json<ProteinAuditResult>);
   },
+  /** The lab run on a finished investigation, or null before it has run. */
+  lab: (investigationId: string) => fetch(`/api/investigations/${investigationId}/lab`).then((r) => (r.status === 404 ? null : json<LabRun>(r))),
+  startLab: (investigationId: string) => fetch(`/api/investigations/${investigationId}/lab`, { method: "POST" }).then(json<LabRun>),
+  labFigureUrl: (investigationId: string, name: string) => `/api/investigations/${investigationId}/lab/figures/${encodeURIComponent(name)}`,
   /** A participant's marker-positive cells under the frozen thresholds, for drawing on the image. */
   kpmpCells: (participantId: string) => fetch(`/api/kpmp/${encodeURIComponent(participantId)}/cells`).then(json<KpmpCellMap>),
   capabilityReport: (datasetId: string) =>

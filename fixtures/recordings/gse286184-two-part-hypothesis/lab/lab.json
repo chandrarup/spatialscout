@@ -1,0 +1,1401 @@
+{
+ "schema_version": "1.0",
+ "investigation_id": "inv-22e74f687b16",
+ "question": "My hypothesis: the podocytes this atlas calls 'endocytic' really carry LRP2, and the UMOD seen in B cells is spillover from neighbouring thick ascending limb cells. Does each part hold up under stricter assignment?",
+ "origin": "live",
+ "started_at_utc": "2026-11-04T09:52:18.206094Z",
+ "finished_at_utc": "2026-11-04T09:52:41.140273Z",
+ "dispatch_summary": "Follow-up on both sub-claims: external literature context, protein-level audit in KPMP CODEX biopsies (different assay, different people — a second line of evidence, not a replication), and publication figures from the verified numbers.",
+ "tasks": [
+  {
+   "task_id": "lab-1",
+   "agent": "literature",
+   "sub_claim": 0,
+   "reason": "Checking published human literature is needed to judge whether LRP2 expression in podocytes has been reported, contradicted or untested.",
+   "query": "(LRP2 OR megalin) AND podocyte AND human"
+  },
+  {
+   "task_id": "lab-2",
+   "agent": "protein_crosscheck",
+   "sub_claim": 0,
+   "reason": "Measuring LRP2 protein in Podocalyxin-positive cells in independent KPMP CODEX biopsies provides a second, protein-level line of evidence for the podocyte claim.",
+   "query": null
+  },
+  {
+   "task_id": "lab-3",
+   "agent": "publication_figure",
+   "sub_claim": 0,
+   "reason": "This sub-claim rests on a verified claim, so its audit result should be rendered as a publication figure from the computed numbers.",
+   "query": null
+  },
+  {
+   "task_id": "lab-4",
+   "agent": "literature",
+   "sub_claim": 1,
+   "reason": "Checking published human literature is needed to judge whether UMOD expression in B cells has been reported, contradicted or untested.",
+   "query": "(UMOD OR uromodulin) AND \"B cell\" AND human"
+  },
+  {
+   "task_id": "lab-5",
+   "agent": "protein_crosscheck",
+   "sub_claim": 1,
+   "reason": "Measuring UMOD protein in CD20-positive cells in independent KPMP CODEX biopsies provides a second, protein-level line of evidence for the B cell claim.",
+   "query": null
+  },
+  {
+   "task_id": "lab-6",
+   "agent": "publication_figure",
+   "sub_claim": 1,
+   "reason": "This sub-claim rests on a verified claim, so its audit result should be rendered as a publication figure from the computed numbers.",
+   "query": null
+  }
+ ],
+ "events": [
+  {
+   "seq": 1,
+   "at_utc": "2026-11-04T09:52:18.206095Z",
+   "type": "lab_started",
+   "task_id": null,
+   "agent": null,
+   "text": "Muse Wonder reads the verdict and the verified claims, and chooses sub-agents.",
+   "call": null
+  },
+  {
+   "seq": 2,
+   "at_utc": "2026-11-04T09:52:24.097385Z",
+   "type": "model_call",
+   "task_id": null,
+   "agent": null,
+   "text": "muse-wonder-1.0 · lab_dispatch",
+   "call": {
+    "call_id": "mcl-bb1757c68b9e",
+    "purpose": "lab_dispatch",
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "cache_key": "a994c7a9caec9f57a0b13bd6bd5c41d2fef76412714c5f9b8ed164e484a53925",
+    "source": "live",
+    "recording_id": "gse286184-two-part-hypothesis-lab",
+    "started_at": "2026-11-04T09:52:18.206789Z",
+    "latency_ms": 5890,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 1113,
+     "completion_tokens": 870,
+     "reasoning_tokens": 472
+    },
+    "estimated_cost_usd": 0.021852,
+    "run_mode": "live",
+    "served_by": "meta",
+    "failover_from": null,
+    "error_code": null
+   }
+  },
+  {
+   "seq": 3,
+   "at_utc": "2026-11-04T09:52:24.097800Z",
+   "type": "dispatched",
+   "task_id": null,
+   "agent": null,
+   "text": "Follow-up on both sub-claims: external literature context, protein-level audit in KPMP CODEX biopsies (different assay, different people — a second line of evidence, not a replication), and publication figures from the verified numbers. 6 sub-agents start together.",
+   "call": null
+  },
+  {
+   "seq": 4,
+   "at_utc": "2026-11-04T09:52:24.097940Z",
+   "type": "subagent_started",
+   "task_id": "lab-1",
+   "agent": "literature",
+   "text": "Searching Europe PMC: (LRP2 OR megalin) AND podocyte AND human",
+   "call": null
+  },
+  {
+   "seq": 5,
+   "at_utc": "2026-11-04T09:52:24.099722Z",
+   "type": "subagent_started",
+   "task_id": "lab-2",
+   "agent": "protein_crosscheck",
+   "text": "Auditing the protein on both KPMP biopsies.",
+   "call": null
+  },
+  {
+   "seq": 6,
+   "at_utc": "2026-11-04T09:52:24.099975Z",
+   "type": "subagent_started",
+   "task_id": "lab-3",
+   "agent": "publication_figure",
+   "text": "Rendering a two-panel vector figure at 180 mm.",
+   "call": null
+  },
+  {
+   "seq": 7,
+   "at_utc": "2026-11-04T09:52:24.100141Z",
+   "type": "subagent_started",
+   "task_id": "lab-4",
+   "agent": "literature",
+   "text": "Searching Europe PMC: (UMOD OR uromodulin) AND \"B cell\" AND human",
+   "call": null
+  },
+  {
+   "seq": 8,
+   "at_utc": "2026-11-04T09:52:24.103261Z",
+   "type": "subagent_started",
+   "task_id": "lab-5",
+   "agent": "protein_crosscheck",
+   "text": "Auditing the protein on both KPMP biopsies.",
+   "call": null
+  },
+  {
+   "seq": 9,
+   "at_utc": "2026-11-04T09:52:24.103455Z",
+   "type": "subagent_started",
+   "task_id": "lab-6",
+   "agent": "publication_figure",
+   "text": "Rendering a two-panel vector figure at 180 mm.",
+   "call": null
+  },
+  {
+   "seq": 10,
+   "at_utc": "2026-11-04T09:52:24.287949Z",
+   "type": "subagent_finished",
+   "task_id": "lab-2",
+   "agent": "protein_crosscheck",
+   "text": "164-17 (healthy reference): 0.3% of 2,628 Podocalyxin+ cells are LRP2+, 0.3% with outlines trimmed 2 px, insufficient evidence; 31-10013 (diseased): 17.4% of 219 Podocalyxin+ cells are LRP2+, 19.2% with outlines trimmed 2 px, stable. Descriptive: one person each, thresholds frozen on the healthy reference and not calibrated across imaging runs, masks nucleus-sized. A second line of evidence on protein, not a replication.",
+   "call": null
+  },
+  {
+   "seq": 11,
+   "at_utc": "2026-11-04T09:52:24.288493Z",
+   "type": "subagent_finished",
+   "task_id": "lab-5",
+   "agent": "protein_crosscheck",
+   "text": "164-17 (healthy reference): 16.7% of 6,810 CD20+ cells are UMOD+, 13.6% with outlines trimmed 2 px, stable; 31-10013 (diseased): 8.5% of 827 CD20+ cells are UMOD+, 7.0% with outlines trimmed 2 px, stable. Descriptive: one person each, thresholds frozen on the healthy reference and not calibrated across imaging runs, masks nucleus-sized. A second line of evidence on protein, not a replication.",
+   "call": null
+  },
+  {
+   "seq": 12,
+   "at_utc": "2026-11-04T09:52:24.752518Z",
+   "type": "subagent_finished",
+   "task_id": "lab-3",
+   "agent": "publication_figure",
+   "text": "figure-lab-3.svg, figure-lab-3.pdf and figure-lab-3.png: 19 sections, 7,926 cells.",
+   "call": null
+  },
+  {
+   "seq": 13,
+   "at_utc": "2026-11-04T09:52:24.775565Z",
+   "type": "subagent_finished",
+   "task_id": "lab-6",
+   "agent": "publication_figure",
+   "text": "figure-lab-6.svg, figure-lab-6.pdf and figure-lab-6.png: 19 sections, 4,359 cells.",
+   "call": null
+  },
+  {
+   "seq": 14,
+   "at_utc": "2026-11-04T09:52:37.464840Z",
+   "type": "model_call",
+   "task_id": "lab-1",
+   "agent": "literature",
+   "text": "muse-spark-1.3 · literature_review",
+   "call": {
+    "call_id": "mcl-6d282f37eabb",
+    "purpose": "literature_review",
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "cache_key": "258f2213cb06c34163bfaedf352da087b00db8ea104b9bdd430d766c7d0cd3fe",
+    "source": "live",
+    "recording_id": "gse286184-two-part-hypothesis-lab",
+    "started_at": "2026-11-04T09:52:25.600935Z",
+    "latency_ms": 11849,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 7977,
+     "completion_tokens": 1569,
+     "reasoning_tokens": 1375
+    },
+    "estimated_cost_usd": 0.0166395,
+    "run_mode": "live",
+    "served_by": "meta",
+    "failover_from": null,
+    "error_code": null
+   }
+  },
+  {
+   "seq": 15,
+   "at_utc": "2026-11-04T09:52:37.467433Z",
+   "type": "subagent_finished",
+   "task_id": "lab-1",
+   "agent": "literature",
+   "text": "Read 25 of 1,141 hits. 3 cited statements kept, 0 dropped by the citation check. 0 of the 25 most-cited records read (of 1,141 Europe PMC hits for '(LRP2 OR megalin) AND podocyte AND human') mention LRP2 together with podocytes in a human context in their title or abstract. A count over the records read, not a search of everything published.",
+   "call": null
+  },
+  {
+   "seq": 16,
+   "at_utc": "2026-11-04T09:52:41.133570Z",
+   "type": "model_call",
+   "task_id": "lab-4",
+   "agent": "literature",
+   "text": "muse-spark-1.3 · literature_review",
+   "call": {
+    "call_id": "mcl-333489a7d3fb",
+    "purpose": "literature_review",
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "cache_key": "ac66a4e4ab5389ae765045008e7d9075dbd8ac8313b37cccd2494f1c39dd5865",
+    "source": "live",
+    "recording_id": "gse286184-two-part-hypothesis-lab",
+    "started_at": "2026-11-04T09:52:27.159686Z",
+    "latency_ms": 13953,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 7015,
+     "completion_tokens": 1749,
+     "reasoning_tokens": 1387
+    },
+    "estimated_cost_usd": 0.016202,
+    "run_mode": "live",
+    "served_by": "meta",
+    "failover_from": null,
+    "error_code": null
+   }
+  },
+  {
+   "seq": 17,
+   "at_utc": "2026-11-04T09:52:41.137681Z",
+   "type": "subagent_finished",
+   "task_id": "lab-4",
+   "agent": "literature",
+   "text": "Read 25 of 454 hits. 6 cited statements kept, 0 dropped by the citation check. 0 of the 25 most-cited records read (of 454 Europe PMC hits for '(UMOD OR uromodulin) AND \"B cell\" AND human') mention UMOD together with B cells in a human context in their title or abstract. A count over the records read, not a search of everything published.",
+   "call": null
+  },
+  {
+   "seq": 18,
+   "at_utc": "2026-11-04T09:52:41.140262Z",
+   "type": "lab_finished",
+   "task_id": null,
+   "agent": null,
+   "text": "Report assembled from 2 literature review(s), 2 protein check(s) and 2 figure(s).",
+   "call": null
+  }
+ ],
+ "literature": [
+  {
+   "task_id": "lab-1",
+   "query": "(LRP2 OR megalin) AND podocyte AND human",
+   "hit_count": 1141,
+   "records": [
+    {
+     "record_id": "PMID:19571279",
+     "pmid": "19571279",
+     "doi": "10.1056/nejmoa0810457",
+     "title": "M-type phospholipase A2 receptor as target antigen in idiopathic membranous nephropathy.",
+     "journal": "The New England journal of medicine",
+     "year": 2009,
+     "first_author": "Beck LH",
+     "abstract": "BackgroundIdiopathic membranous nephropathy, a common form of the nephrotic syndrome, is an antibody-mediated autoimmune glomerular disease. Serologic diagnosis has been elusive because the target antigen is unknown.MethodsWe performed Western blotting of protein extracts from normal human glomeruli with serum samples from patients with idiopathic or secondary membranous nephropathy or other proteinuric or autoimmune diseases and from normal controls. We used mass spectrometry to analyze the reactive protein bands and confirmed the identity and location of the target antigen with a monospecific antibody.ResultsSerum samples from 26 of 37 patients (70%) with idiopathic but not secondary membranous nephropathy specifically identified a 185-kD glycoprotein in nonreduced glomerular extract. Mass spectrometry of the reactive protein band detected the M-type phospholipase A(2) receptor (PLA(2)R). Reactive serum specimens recognized recombinant PLA(2)R and bound the same 185-kD glomerular protein as did the monospecific anti-PLA(2)R antibody. Anti-PLA(2)R autoantibodies in serum samples from patients with membranous nephropathy were mainly IgG4, the predominant immunoglobulin subclass in glomerular deposits. PLA(2)R was expressed in podocytes in normal human glomeruli and colocalized with IgG4 in immune deposits in glomeruli of patients with membranous nephropathy. IgG eluted from such deposits in patients with idiopathic membranous nephropathy, but not in those with lupus membranou",
+     "url": "https://europepmc.org/article/MED/19571279"
+    },
+    {
+     "record_id": "PMID:23899561",
+     "pmid": "23899561",
+     "doi": "10.1152/physrev.00028.2012",
+     "title": "Phosphoinositides: tiny lipids with giant impact on cell regulation.",
+     "journal": "Physiological reviews",
+     "year": 2013,
+     "first_author": "Balla T.",
+     "abstract": "Phosphoinositides (PIs) make up only a small fraction of cellular phospholipids, yet they control almost all aspects of a cell's life and death. These lipids gained tremendous research interest as plasma membrane signaling molecules when discovered in the 1970s and 1980s. Research in the last 15 years has added a wide range of biological processes regulated by PIs, turning these lipids into one of the most universal signaling entities in eukaryotic cells. PIs control organelle biology by regulating vesicular trafficking, but they also modulate lipid distribution and metabolism via their close relationship with lipid transfer proteins. PIs regulate ion channels, pumps, and transporters and control both endocytic and exocytic processes. The nuclear phosphoinositides have grown from being an epiphenomenon to a research area of its own. As expected from such pleiotropic regulators, derangements of phosphoinositide metabolism are responsible for a number of human diseases ranging from rare genetic disorders to the most common ones such as cancer, obesity, and diabetes. Moreover, it is increasingly evident that a number of infectious agents hijack the PI regulatory systems of host cells for their intracellular movements, replication, and assembly. As a result, PI converting enzymes began to be noticed by pharmaceutical companies as potential therapeutic targets. This review is an attempt to give an overview of this enormous research field focusing on major developments in diverse a",
+     "url": "https://europepmc.org/article/MED/23899561"
+    },
+    {
+     "record_id": "PMID:18694980",
+     "pmid": "18694980",
+     "doi": "10.1210/er.2008-0004",
+     "title": "Vitamin D and human health: lessons from vitamin D receptor null mice.",
+     "journal": "Endocrine reviews",
+     "year": 2008,
+     "first_author": "Bouillon R",
+     "abstract": "The vitamin D endocrine system is essential for calcium and bone homeostasis. The precise mode of action and the full spectrum of activities of the vitamin D hormone, 1,25-dihydroxyvitamin D [1,25-(OH)(2)D], can now be better evaluated by critical analysis of mice with engineered deletion of the vitamin D receptor (VDR). Absence of a functional VDR or the key activating enzyme, 25-OHD-1alpha-hydroxylase (CYP27B1), in mice creates a bone and growth plate phenotype that mimics humans with the same congenital disease or severe vitamin D deficiency. The intestine is the key target for the VDR because high calcium intake, or selective VDR rescue in the intestine, restores a normal bone and growth plate phenotype. The VDR is nearly ubiquitously expressed, and almost all cells respond to 1,25-(OH)(2)D exposure; about 3% of the mouse or human genome is regulated, directly and/or indirectly, by the vitamin D endocrine system, suggesting a more widespread function. VDR-deficient mice, but not vitamin D- or 1alpha-hydroxylase-deficient mice, and man develop total alopecia, indicating that the function of the VDR and its ligand is not fully overlapping. The immune system of VDR- or vitamin D-deficient mice is grossly normal but shows increased sensitivity to autoimmune diseases such as inflammatory bowel disease or type 1 diabetes after exposure to predisposing factors. VDR-deficient mice do not have a spontaneous increase in cancer but are more prone to oncogene- or chemocarcinogen-indu",
+     "url": "https://europepmc.org/article/MED/18694980"
+    },
+    {
+     "record_id": "PMID:30742039",
+     "pmid": "30742039",
+     "doi": "10.1038/s41592-019-0325-y",
+     "title": "Flow-enhanced vascularization and maturation of kidney organoids in vitro.",
+     "journal": "Nature methods",
+     "year": 2019,
+     "first_author": "Homan KA",
+     "abstract": "Kidney organoids derived from human pluripotent stem cells have glomerular- and tubular-like compartments that are largely avascular and immature in static culture. Here we report an in vitro method for culturing kidney organoids under flow on millifluidic chips, which expands their endogenous pool of endothelial progenitor cells and generates vascular networks with perfusable lumens surrounded by mural cells. We found that vascularized kidney organoids cultured under flow had more mature podocyte and tubular compartments with enhanced cellular polarity and adult gene expression compared with that in static controls. Glomerular vascular development progressed through intermediate stages akin to those involved in the embryonic mammalian kidney's formation of capillary loops abutting foot processes. The association of vessels with these compartments was reduced after disruption of the endogenous VEGF gradient. The ability to induce substantial vascularization and morphological maturation of kidney organoids in vitro under flow opens new avenues for studies of kidney development, disease, and regeneration.",
+     "url": "https://europepmc.org/article/MED/30742039"
+    },
+    {
+     "record_id": "PMID:20383146",
+     "pmid": "20383146",
+     "doi": "10.1038/ng.568",
+     "title": "New loci associated with kidney function and chronic kidney disease.",
+     "journal": "Nature genetics",
+     "year": 2010,
+     "first_author": "Köttgen A",
+     "abstract": "Chronic kidney disease (CKD) is a significant public health problem, and recent genetic studies have identified common CKD susceptibility variants. The CKDGen consortium performed a meta-analysis of genome-wide association data in 67,093 individuals of European ancestry from 20 predominantly population-based studies in order to identify new susceptibility loci for reduced renal function as estimated by serum creatinine (eGFRcrea), serum cystatin c (eGFRcys) and CKD (eGFRcrea < 60 ml/min/1.73 m(2); n = 5,807 individuals with CKD (cases)). Follow-up of the 23 new genome-wide-significant loci (P < 5 x 10(-8)) in 22,982 replication samples identified 13 new loci affecting renal function and CKD (in or near LASS2, GCKR, ALMS1, TFDP2, DAB2, SLC34A1, VEGFA, PRKAG2, PIP5K1B, ATXN2, DACH1, UBE2Q2 and SLC7A9) and 7 loci suspected to affect creatinine production and secretion (CPS1, SLC22A2, TMEM60, WDR37, SLC6A13, WDR72 and BCAS3). These results further our understanding of the biologic mechanisms of kidney function by identifying loci that potentially influence nephrogenesis, podocyte function, angiogenesis, solute transport and metabolic functions of the kidney.",
+     "url": "https://europepmc.org/article/MED/20383146"
+    },
+    {
+     "record_id": "PMID:26493500",
+     "pmid": "26493500",
+     "doi": "10.1038/ncomms9715",
+     "title": "Modelling kidney disease with CRISPR-mutant kidney organoids derived from human pluripotent epiblast spheroids.",
+     "journal": "Nature communications",
+     "year": 2015,
+     "first_author": "Freedman BS",
+     "abstract": "Human-pluripotent-stem-cell-derived kidney cells (hPSC-KCs) have important potential for disease modelling and regeneration. Whether the hPSC-KCs can reconstitute tissue-specific phenotypes is currently unknown. Here we show that hPSC-KCs self-organize into kidney organoids that functionally recapitulate tissue-specific epithelial physiology, including disease phenotypes after genome editing. In three-dimensional cultures, epiblast-stage hPSCs form spheroids surrounding hollow, amniotic-like cavities. GSK3β inhibition differentiates spheroids into segmented, nephron-like kidney organoids containing cell populations with characteristics of proximal tubules, podocytes and endothelium. Tubules accumulate dextran and methotrexate transport cargoes, and express kidney injury molecule-1 after nephrotoxic chemical injury. CRISPR/Cas9 knockout of podocalyxin causes junctional organization defects in podocyte-like cells. Knockout of the polycystic kidney disease genes PKD1 or PKD2 induces cyst formation from kidney tubules. All of these functional phenotypes are distinct from effects in epiblast spheroids, indicating that they are tissue specific. Our findings establish a reproducible, versatile three-dimensional framework for human epithelial disease modelling and regenerative medicine applications.",
+     "url": "https://europepmc.org/article/MED/26493500"
+    },
+    {
+     "record_id": "PMID:28550082",
+     "pmid": "28550082",
+     "doi": "10.2215/cjn.11761116",
+     "title": "Primary Membranous Nephropathy.",
+     "journal": "Clinical journal of the American Society of Nephrology : CJASN",
+     "year": 2017,
+     "first_author": "Couser WG.",
+     "abstract": "Membranous nephropathy (MN) is a unique glomerular lesion that is the most common cause of idiopathic nephrotic syndrome in nondiabetic white adults. About 80% of cases are renal limited (primary MN, PMN) and 20% are associated with other systemic diseases or exposures (secondary MN). This review focuses only on PMN. Most cases of PMN have circulating IgG4 autoantibody to the podocyte membrane antigen PLA2R (70%), biopsy evidence PLA2R staining indicating recent immunologic disease activity despite negative serum antibody levels (15%), or serum anti-THSD7A (3%-5%). The remaining 10% without demonstrable anti-PLA2R/THSd7A antibody or antigen likely have PMN probably secondary to a different, still unidentified, anti-podocyte antibody. Considerable clinical and experimental data now suggests these antibodies are pathogenic. Clinically, 80% of patients with PMN present with nephrotic syndrome and 20% with non-nephrotic proteinuria. Untreated, about one third undergo spontaneous remission, especially those with absent or low anti-PLA2R levels, one-third progress to ESRD over 10 years, and the remainder develop nonprogressive CKD. Proteinuria can persist for months after circulating anti-PLA2R/THSD7A antibody is no longer detectable (immunologic remission). All patients with PMN should be treated with supportive care from the time of diagnosis to minimize protein excretion. Patients with elevated anti-PLA2R/THSD7A levels and proteinuria >3.5 g/d at diagnosis, and those who fail to",
+     "url": "https://europepmc.org/article/MED/28550082"
+    },
+    {
+     "record_id": "PMID:31506348",
+     "pmid": "31506348",
+     "doi": "10.1073/pnas.1908706116",
+     "title": "The single-cell transcriptomic landscape of early human diabetic nephropathy.",
+     "journal": "Proceedings of the National Academy of Sciences of the United States of America",
+     "year": 2019,
+     "first_author": "Wilson PC",
+     "abstract": "Diabetic nephropathy is characterized by damage to both the glomerulus and tubulointerstitium, but relatively little is known about accompanying cell-specific changes in gene expression. We performed unbiased single-nucleus RNA sequencing (snRNA-seq) on cryopreserved human diabetic kidney samples to generate 23,980 single-nucleus transcriptomes from 3 control and 3 early diabetic nephropathy samples. All major cell types of the kidney were represented in the final dataset. Side-by-side comparison demonstrated cell-type-specific changes in gene expression that are important for ion transport, angiogenesis, and immune cell activation. In particular, we show that the diabetic thick ascending limb, late distal convoluted tubule, and principal cells all adopt a gene expression signature consistent with increased potassium secretion, including alterations in Na+/K+-ATPase, WNK1, mineralocorticoid receptor, and NEDD4L expression, as well as decreased paracellular calcium and magnesium reabsorption. We also identify strong angiogenic signatures in glomerular cell types, proximal convoluted tubule, distal convoluted tubule, and principal cells. Taken together, these results suggest that increased potassium secretion and angiogenic signaling represent early kidney responses in human diabetic nephropathy.",
+     "url": "https://europepmc.org/article/MED/31506348"
+    },
+    {
+     "record_id": "PMID:33850129",
+     "pmid": "33850129",
+     "doi": "10.1038/s41467-021-22368-w",
+     "title": "Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney.",
+     "journal": "Nature communications",
+     "year": 2021,
+     "first_author": "Muto Y",
+     "abstract": "The integration of single cell transcriptome and chromatin accessibility datasets enables a deeper understanding of cell heterogeneity. We performed single nucleus ATAC (snATAC-seq) and RNA (snRNA-seq) sequencing to generate paired, cell-type-specific chromatin accessibility and transcriptional profiles of the adult human kidney. We demonstrate that snATAC-seq is comparable to snRNA-seq in the assignment of cell identity and can further refine our understanding of functional heterogeneity in the nephron. The majority of differentially accessible chromatin regions are localized to promoters and a significant proportion are closely associated with differentially expressed genes. Cell-type-specific enrichment of transcription factor binding motifs implicates the activation of NF-κB that promotes VCAM1 expression and drives transition between a subpopulation of proximal tubule epithelial cells. Our multi-omics approach improves the ability to detect unique cell states within the kidney and redefines cellular heterogeneity in the proximal tubule and thick ascending limb.",
+     "url": "https://europepmc.org/article/MED/33850129"
+    },
+    {
+     "record_id": "PMID:31689386",
+     "pmid": "31689386",
+     "doi": "10.1016/j.devcel.2019.10.005",
+     "title": "Single-Cell Profiling Reveals Sex, Lineage, and Regional Diversity in the Mouse Kidney.",
+     "journal": "Developmental cell",
+     "year": 2019,
+     "first_author": "Ransick A",
+     "abstract": "Chronic kidney disease affects 10% of the population with notable differences in ethnic and sex-related susceptibility to kidney injury and disease. Kidney dysfunction leads to significant morbidity and mortality and chronic disease in other organ systems. A mouse-organ-centered understanding underlies rapid progress in human disease modeling and cellular approaches to repair damaged systems. To enhance an understanding of the mammalian kidney, we combined anatomy-guided single-cell RNA sequencing of the adult male and female mouse kidney with in situ expression studies and cell lineage tracing. These studies reveal cell diversity and marked sex differences, distinct organization and cell composition of nephrons dependent on the time of nephron specification, and lineage convergence, in which contiguous functionally related cell types are specified from nephron and collecting system progenitor populations. A searchable database, Kidney Cell Explorer (https://cello.shinyapps.io/kidneycellexplorer/), enables gene-cell relationships to be viewed in the anatomical framework of the kidney.",
+     "url": "https://europepmc.org/article/MED/31689386"
+    },
+    {
+     "record_id": "PMID:29081510",
+     "pmid": "29081510",
+     "doi": "10.1038/nrneph.2017.148",
+     "title": "Isolation and characterization of urinary extracellular vesicles: implications for biomarker discovery.",
+     "journal": "Nature reviews. Nephrology",
+     "year": 2017,
+     "first_author": "Merchant ML",
+     "abstract": "Urine is a valuable diagnostic medium and, with the discovery of urinary extracellular vesicles, is viewed as a dynamic bioactive fluid. Extracellular vesicles are lipid-enclosed structures that can be classified into three categories: exosomes, microvesicles (or ectosomes) and apoptotic bodies. This classification is based on the mechanisms by which membrane vesicles are formed: fusion of multivesicular bodies with the plasma membranes (exosomes), budding of vesicles directly from the plasma membrane (microvesicles) or those shed from dying cells (apoptotic bodies). During their formation, urinary extracellular vesicles incorporate various cell-specific components (proteins, lipids and nucleic acids) that can be transferred to target cells. The rigour needed for comparative studies has fueled the search for optimal approaches for their isolation, purification, and characterization. RNA, the newest extracellular vesicle component to be discovered, has received substantial attention as an extracellular vesicle therapeutic, and compelling evidence suggests that ex vivo manipulation of microRNA composition may have uses in the treatment of kidney disorders. The results of these studies are building the case that urinary extracellular vesicles act as mediators of renal pathophysiology. As the field of extracellular vesicle studies is burgeoning, this Review focuses on primary data obtained from studies of human urine rather than on data from studies of laboratory animals or cultu",
+     "url": "https://europepmc.org/article/MED/29081510"
+    },
+    {
+     "record_id": "PMID:34319011",
+     "pmid": "34319011",
+     "doi": "10.1002/advs.202100275",
+     "title": "Emerging Targets in Type 2 Diabetes and Diabetic Complications.",
+     "journal": "Advanced science (Weinheim, Baden-Wurttemberg, Germany)",
+     "year": 2021,
+     "first_author": "Demir S",
+     "abstract": "Type 2 diabetes is a metabolic, chronic disorder characterized by insulin resistance and elevated blood glucose levels. Although a large drug portfolio exists to keep the blood glucose levels under control, these medications are not without side effects. More importantly, once diagnosed diabetes is rarely reversible. Dysfunctions in the kidney, retina, cardiovascular system, neurons, and liver represent the common complications of diabetes, which again lack effective therapies that can reverse organ injury. Overall, the molecular mechanisms of how type 2 diabetes develops and leads to irreparable organ damage remain elusive. This review particularly focuses on novel targets that may play role in pathogenesis of type 2 diabetes. Further research on these targets may eventually pave the way to novel therapies for the treatment-or even the prevention-of type 2 diabetes along with its complications.",
+     "url": "https://europepmc.org/article/MED/34319011"
+    },
+    {
+     "record_id": "PMID:27194714",
+     "pmid": "27194714",
+     "doi": "10.1152/ajprenal.00164.2016",
+     "title": "The proximal tubule is the primary target of injury and progression of kidney disease: role of the glomerulotubular junction.",
+     "journal": "American journal of physiology. Renal physiology",
+     "year": 2016,
+     "first_author": "Chevalier RL.",
+     "abstract": "There is an alarming global increase in the incidence of end-stage kidney disease, for which early biomarkers and effective treatment options are lacking. Largely based on the histology of the end-stage kidney and on the model of unilateral ureteral obstruction, current investigation is focused on the pathogenesis of renal interstitial fibrosis as a central mechanism in the progression of chronic kidney disease (CKD). It is now recognized that cumulative episodes of acute kidney injury (AKI) can lead to CKD, and, conversely, CKD is a risk factor for AKI. Based on recent and historic studies, this review shifts attention from the glomerulus and interstitium to the proximal tubule as the primary sensor and effector in the progression of CKD as well as AKI. Packed with mitochondria and dependent on oxidative phosphorylation, the proximal tubule is particularly vulnerable to injury (obstructive, ischemic, hypoxic, oxidative, metabolic), resulting in cell death and ultimately in the formation of atubular glomeruli. Animal models of human glomerular and tubular disorders have provided evidence for a broad repertoire of morphological and functional responses of the proximal tubule, revealing processes of degeneration and repair that may lead to new therapeutic strategies. Most promising are studies that encompass the entire life cycle from fetus to senescence, recognizing epigenetic factors. The application of techniques in molecular characterization of tubule segments and the devel",
+     "url": "https://europepmc.org/article/MED/27194714"
+    },
+    {
+     "record_id": "PMID:31354709",
+     "pmid": "31354709",
+     "doi": "10.3389/fimmu.2019.01540",
+     "title": "The Neonatal Fc Receptor (FcRn): A Misnomer?",
+     "journal": "Frontiers in immunology",
+     "year": 2019,
+     "first_author": "Pyzik M",
+     "abstract": "Antibodies are essential components of an adaptive immune response. Immunoglobulin G (IgG) is the most common type of antibody found in circulation and extracellular fluids. Although IgG alone can directly protect the body from infection through the activities of its antigen binding region, the majority of IgG immune functions are mediated via proteins and receptors expressed by specialized cell subsets that bind to the fragment crystallizable (Fc) region of IgG. Fc gamma (γ) receptors (FcγR) belong to a broad family of proteins that presently include classical membrane-bound surface receptors as well as atypical intracellular receptors and cytoplasmic glycoproteins. Among the atypical FcγRs, the neonatal Fc receptor (FcRn) has increasingly gained notoriety given its intimate influence on IgG biology and its ability to also bind to albumin. FcRn functions as a recycling or transcytosis receptor that is responsible for maintaining IgG and albumin in the circulation, and bidirectionally transporting these two ligands across polarized cellular barriers. More recently, it has been appreciated that FcRn acts as an immune receptor by interacting with and facilitating antigen presentation of peptides derived from IgG immune complexes (IC). Here we review FcRn biology and focus on newer advances including how emerging FcRn-targeted therapies may affect the immune responses to IgG and IgG IC.",
+     "url": "https://europepmc.org/article/MED/31354709"
+    },
+    {
+     "record_id": "PMID:34035881",
+     "pmid": "34035881",
+     "doi": "10.1002/jev2.12093",
+     "title": "Urinary extracellular vesicles: A position paper by the Urine Task Force of the International Society for Extracellular Vesicles.",
+     "journal": "Journal of extracellular vesicles",
+     "year": 2021,
+     "first_author": "Erdbrügger U",
+     "abstract": "Urine is commonly used for clinical diagnosis and biomedical research. The discovery of extracellular vesicles (EV) in urine opened a new fast-growing scientific field. In the last decade urinary extracellular vesicles (uEVs) were shown to mirror molecular processes as well as physiological and pathological conditions in kidney, urothelial and prostate tissue. Therefore, several methods to isolate and characterize uEVs have been developed. However, methodological aspects of EV separation and analysis, including normalization of results, need further optimization and standardization to foster scientific advances in uEV research and a subsequent successful translation into clinical practice. This position paper is written by the Urine Task Force of the Rigor and Standardization Subcommittee of ISEV consisting of nephrologists, urologists, cardiologists and biologists with active experience in uEV research. Our aim is to present the state of the art and identify challenges and gaps in current uEV-based analyses for clinical applications. Finally, recommendations for improved rigor, reproducibility and interoperability in uEV research are provided in order to facilitate advances in the field.",
+     "url": "https://europepmc.org/article/MED/34035881"
+    },
+    {
+     "record_id": "PMID:33230326",
+     "pmid": "33230326",
+     "doi": "10.1038/s41563-020-00853-9",
+     "title": "Cellular extrusion bioprinting improves kidney organoid reproducibility and conformation.",
+     "journal": "Nature materials",
+     "year": 2021,
+     "first_author": "Lawlor KT",
+     "abstract": "Directed differentiation of human pluripotent stem cells to kidney organoids brings the prospect of drug screening, disease modelling and the generation of tissue for renal replacement. Currently, these applications are hampered by organoid variability, nephron immaturity, low throughput and limited scale. Here, we apply extrusion-based three-dimensional cellular bioprinting to deliver rapid and high-throughput generation of kidney organoids with highly reproducible cell number and viability. We demonstrate that manual organoid generation can be replaced by 6- or 96-well organoid bioprinting and evaluate the relative toxicity of aminoglycosides as a proof of concept for drug testing. In addition, three-dimensional bioprinting enables precise manipulation of biophysical properties, including organoid size, cell number and conformation, with modification of organoid conformation substantially increasing nephron yield per starting cell number. This facilitates the manufacture of uniformly patterned kidney tissue sheets with functional proximal tubular segments. Hence, automated extrusion-based bioprinting for kidney organoid production delivers improvements in throughput, quality control, scale and structure, facilitating in vitro and in vivo applications of stem cell-derived human kidney tissue.",
+     "url": "https://europepmc.org/article/MED/33230326"
+    },
+    {
+     "record_id": "PMID:20428099",
+     "pmid": "20428099",
+     "doi": "10.1038/ki.2010.106",
+     "title": "Nucleic acids within urinary exosomes/microvesicles are potential biomarkers for renal disease.",
+     "journal": "Kidney international",
+     "year": 2010,
+     "first_author": "Miranda KC",
+     "abstract": "Urinary exosomes or microvesicles are being studied intensively to identify potential new biomarkers for renal disease. We sought to identify whether these microvesicles contain nucleic acids. We isolated microvesicles from human urine in the same density range as that previously described for urinary exosomes and found them to have an RNA integrity profile similar to that of kidney tissue, including 18S and 28S rRNA. This profile was better preserved in urinary microvesicles compared with whole cells isolated from urine, suggesting that microvesicles may protect RNA during urine passage. We were able to detect mRNA in the human urinary microvesicles encoding proteins from all regions of the nephron and the collecting duct. Further, to provide a proof of principle, we found that microvesicles isolated from the urine of the V-ATPase B1 subunit knockout mice lacked mRNA of this subunit while containing a normal amount of the B2 subunit and aquaporin 2. The microvesicles were found to be contaminated with extraneous DNA potentially on their surface; therefore, we developed a rapid and reliable means to isolate nucleic acids from within urine microvesicles devoid of this extraneous contamination. Our study provides an experimental strategy for the routine isolation and use of urinary microvesicles as a novel and non-invasive source of nucleic acids to further renal disease biomarker discovery.",
+     "url": "https://europepmc.org/article/MED/20428099"
+    },
+    {
+     "record_id": "PMID:32680910",
+     "pmid": "32680910",
+     "doi": "10.1681/asn.2020060802",
+     "title": "Kidney Biopsy Findings in Patients with COVID-19.",
+     "journal": "Journal of the American Society of Nephrology : JASN",
+     "year": 2020,
+     "first_author": "Kudose S",
+     "abstract": "BackgroundCoronavirus disease 2019 (COVID-19) is thought to cause kidney injury by a variety of mechanisms. To date, pathologic analyses have been limited to patient reports and autopsy series.MethodsWe evaluated biopsy samples of native and allograft kidneys from patients with COVID-19 at a single center in New York City between March and June of 2020. We also used immunohistochemistry, in situ hybridization, and electron microscopy to examine this tissue for presence of severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2).ResultsThe study group included 17 patients with COVID-19 (12 men, 12 black; median age of 54 years). Sixteen patients had comorbidities, including hypertension, obesity, diabetes, malignancy, or a kidney or heart allograft. Nine patients developed COVID-19 pneumonia. Fifteen patients (88%) presented with AKI; nine had nephrotic-range proteinuria. Among 14 patients with a native kidney biopsy, 5 were diagnosed with collapsing glomerulopathy, 1 was diagnosed with minimal change disease, 2 were diagnosed with membranous glomerulopathy, 1 was diagnosed with crescentic transformation of lupus nephritis, 1 was diagnosed with anti-GBM nephritis, and 4 were diagnosed with isolated acute tubular injury. The three allograft specimens showed grade 2A acute T cell-mediated rejection, cortical infarction, or acute tubular injury. Genotyping of three patients with collapsing glomerulopathy and the patient with minimal change disease revealed that all four patie",
+     "url": "https://europepmc.org/article/MED/32680910"
+    },
+    {
+     "record_id": "PMID:19589948",
+     "pmid": "19589948",
+     "doi": "10.1210/er.2009-0010",
+     "title": "The role of liver-derived insulin-like growth factor-I.",
+     "journal": "Endocrine reviews",
+     "year": 2009,
+     "first_author": "Ohlsson C",
+     "abstract": "IGF-I is expressed in virtually every tissue of the body, but with much higher expression in the liver than in any other tissue. Studies using mice with liver-specific IGF-I knockout have demonstrated that liver-derived IGF-I, constituting a major part of circulating IGF-I, is an important endocrine factor involved in a variety of physiological and pathological processes. Detailed studies comparing the impact of liver-derived IGF-I and local bone-derived IGF-I demonstrate that both sources of IGF-I can stimulate longitudinal bone growth. We propose here that liver-derived circulating IGF-I and local bone-derived IGF-I to some extent have overlapping growth-promoting effects and might have the capacity to replace each other (= redundancy) in the maintenance of normal longitudinal bone growth. Importantly, and in contrast to the regulation of longitudinal bone growth, locally derived IGF-I cannot replace (= lack of redundancy) liver-derived IGF-I for the regulation of a large number of other parameters including GH secretion, cortical bone mass, kidney size, prostate size, peripheral vascular resistance, spatial memory, sodium retention, insulin sensitivity, liver size, sexually dimorphic liver functions, and progression of some tumors. It is clear that a major role of liver-derived IGF-I is to regulate GH secretion and that some, but not all, of the phenotypes in the liver-specific IGF-I knockout mice are indirect, mediated via the elevated GH levels. All of the described mult",
+     "url": "https://europepmc.org/article/MED/19589948"
+    },
+    {
+     "record_id": "PMID:21566055",
+     "pmid": "21566055",
+     "doi": "10.1681/asn.2010090967",
+     "title": "Anti-phospholipase A2 receptor antibody in membranous nephropathy.",
+     "journal": "Journal of the American Society of Nephrology : JASN",
+     "year": 2011,
+     "first_author": "Qin W",
+     "abstract": "The M-type phospholipase A2 receptor (PLA2R) is a target autoantigen in adult idiopathic membranous nephropathy (MN), but the prevalence of autoantibodies against PLA2R is unknown among Chinese patients with MN. Here, we measured anti-PLA2R antibody in the serum of 60 patients with idiopathic MN, 20 with lupus-associated MN, 16 with hepatitis B (HBV)-associated MN, and 10 with tumor-associated MN. Among patients with idiopathic MN, 49 (82%) had detectable anti-PLA2R autoantibodies using a Western blot assay; an assay with greater sensitivity detected very low titers of anti-PLA2R in 10 of the remaining 11 patients. Using the standard assay, we detected anti-PLA2R antibody in only 1 patient with lupus, 1 with HBV, and 3 with cancer, producing an overall specificity of 89% in this cohort limited to patients with secondary MN. The enhanced assay detected low titers of anti-PLA2R in only 2 additional samples of HBV-associated MN. In summary, these results suggest that PLA2R is a major target antigen in Chinese idiopathic MN and that detection of anti-PLA2R is a sensitive test for idiopathic MN.",
+     "url": "https://europepmc.org/article/MED/21566055"
+    },
+    {
+     "record_id": "PMID:31303547",
+     "pmid": "31303547",
+     "doi": "10.1016/j.stem.2019.06.009",
+     "title": "Generation of Human PSC-Derived Kidney Organoids with Patterned Nephron Segments and a De Novo Vascular Network.",
+     "journal": "Cell stem cell",
+     "year": 2019,
+     "first_author": "Low JH",
+     "abstract": "Human pluripotent stem cell-derived kidney organoids recapitulate developmental processes and tissue architecture, but intrinsic limitations, such as lack of vasculature and functionality, have greatly hampered their application. Here we establish a versatile protocol for generating vascularized three-dimensional (3D) kidney organoids. We employ dynamic modulation of WNT signaling to control the relative proportion of proximal versus distal nephron segments, producing a correlative level of vascular endothelial growth factor A (VEGFA) to define a resident vascular network. Single-cell RNA sequencing identifies a subset of nephron progenitor cells as a potential source of renal vasculature. These kidney organoids undergo further structural and functional maturation upon implantation. Using this kidney organoid platform, we establish an in vitro model of autosomal recessive polycystic kidney disease (ARPKD), the cystic phenotype of which can be effectively prevented by gene correction or drug treatment. Our studies provide new avenues for studying human kidney development, modeling disease pathogenesis, and performing patient-specific drug validation.",
+     "url": "https://europepmc.org/article/MED/31303547"
+    },
+    {
+     "record_id": "PMID:27560173",
+     "pmid": "27560173",
+     "doi": "10.1038/nprot.2016.098",
+     "title": "Generation of kidney organoids from human pluripotent stem cells.",
+     "journal": "Nature protocols",
+     "year": 2016,
+     "first_author": "Takasato M",
+     "abstract": "The human kidney develops from four progenitor populations-nephron progenitors, ureteric epithelial progenitors, renal interstitial progenitors and endothelial progenitors-resulting in the formation of maximally 2 million nephrons. Until recently, the reported methods differentiated human pluripotent stem cells (hPSCs) into either nephron progenitor or ureteric epithelial progenitor cells, consequently forming only nephrons or collecting ducts, respectively. Here we detail a protocol that simultaneously induces all four progenitors to generate kidney organoids within which segmented nephrons are connected to collecting ducts and surrounded by renal interstitial cells and an endothelial network. As evidence of functional maturity, proximal tubules within organoids display megalin-mediated and cubilin-mediated endocytosis, and they respond to a nephrotoxicant to undergo apoptosis. This protocol consists of 7 d of monolayer culture for intermediate mesoderm induction, followed by 18 d of 3D culture to facilitate self-organizing renogenic events leading to organoid formation. Personnel experienced in culturing hPSCs are required to conduct this protocol.",
+     "url": "https://europepmc.org/article/MED/27560173"
+    },
+    {
+     "record_id": "PMID:25918223",
+     "pmid": "25918223",
+     "doi": "10.1083/jcb.201410017",
+     "title": "Review series: The cell biology of renal filtration.",
+     "journal": "The Journal of cell biology",
+     "year": 2015,
+     "first_author": "Scott RP",
+     "abstract": "The function of the kidney, filtering blood and concentrating metabolic waste into urine, takes place in an intricate and functionally elegant structure called the renal glomerulus. Normal glomerular function retains circulating cells and valuable macromolecular components of plasma in blood, resulting in urine with just trace amounts of proteins. Endothelial cells of glomerular capillaries, the podocytes wrapped around them, and the fused extracellular matrix these cells form altogether comprise the glomerular filtration barrier, a dynamic and highly selective filter that sieves on the basis of molecular size and electrical charge. Current understanding of the structural organization and the cellular and molecular basis of renal filtration draws from studies of human glomerular diseases and animal models of glomerular dysfunction.",
+     "url": "https://europepmc.org/article/MED/25918223"
+    },
+    {
+     "record_id": "PMID:17953490",
+     "pmid": "17953490",
+     "doi": "10.1371/journal.pgen.0030189",
+     "title": "The cdx genes and retinoic acid control the positioning and segmentation of the zebrafish pronephros.",
+     "journal": "PLoS genetics",
+     "year": 2007,
+     "first_author": "Wingert RA",
+     "abstract": "Kidney function depends on the nephron, which comprises a blood filter, a tubule that is subdivided into functionally distinct segments, and a collecting duct. How these regions arise during development is poorly understood. The zebrafish pronephros consists of two linear nephrons that develop from the intermediate mesoderm along the length of the trunk. Here we show that, contrary to current dogma, these nephrons possess multiple proximal and distal tubule domains that resemble the organization of the mammalian nephron. We examined whether pronephric segmentation is mediated by retinoic acid (RA) and the caudal (cdx) transcription factors, which are known regulators of segmental identity during development. Inhibition of RA signaling resulted in a loss of the proximal segments and an expansion of the distal segments, while exogenous RA treatment induced proximal segment fates at the expense of distal fates. Loss of cdx function caused abrogation of distal segments, a posterior shift in the position of the pronephros, and alterations in the expression boundaries of raldh2 and cyp26a1, which encode enzymes that synthesize and degrade RA, respectively. These results suggest that the cdx genes act to localize the activity of RA along the axis, thereby determining where the pronephros forms. Consistent with this, the pronephric-positioning defect and the loss of distal tubule fate were rescued in embryos doubly-deficient for cdx and RA. These findings reveal a novel link between ",
+     "url": "https://europepmc.org/article/MED/17953490"
+    },
+    {
+     "record_id": "PMID:34638659",
+     "pmid": "34638659",
+     "doi": "10.3390/ijms221910318",
+     "title": "Serum Albumin in Health and Disease: Esterase, Antioxidant, Transporting and Signaling Properties.",
+     "journal": "International journal of molecular sciences",
+     "year": 2021,
+     "first_author": "Belinskaia DA",
+     "abstract": "Being one of the main proteins in the human body and many animal species, albumin plays a decisive role in the transport of various ions-electrically neutral and charged molecules-and in maintaining the colloidal osmotic pressure of the blood. Albumin is able to bind to almost all known drugs, as well as many nutraceuticals and toxic substances, largely determining their pharmaco- and toxicokinetics. Albumin of humans and respective representatives in cattle and rodents have their own structural features that determine species differences in functional properties. However, albumin is not only passive, but also an active participant of pharmacokinetic and toxicokinetic processes, possessing a number of enzymatic activities. Numerous experiments have shown esterase or pseudoesterase activity of albumin towards a number of endogeneous and exogeneous esters. Due to the free thiol group of Cys34, albumin can serve as a trap for reactive oxygen and nitrogen species, thus participating in redox processes. Glycated albumin makes a significant contribution to the pathogenesis of diabetes and other diseases. The interaction of albumin with blood cells, blood vessels and tissue cells outside the vascular bed is of great importance. Interactions with endothelial glycocalyx and vascular endothelial cells largely determine the integrative role of albumin. This review considers the esterase, antioxidant, transporting and signaling properties of albumin, as well as its structural and functio",
+     "url": "https://europepmc.org/article/MED/34638659"
+    }
+   ],
+   "statements": [
+    {
+     "text": "In kidney organoids generated from human pluripotent stem cells, proximal tubules displayed megalin-mediated and cubilin-mediated endocytosis.",
+     "cites": [
+      "PMID:27560173"
+     ]
+    },
+    {
+     "text": "In normal human glomeruli, PLA2R was reported as expressed in podocytes and to colocalize with IgG4 in immune deposits in patients with membranous nephropathy.",
+     "cites": [
+      "PMID:19571279"
+     ]
+    },
+    {
+     "text": "Primary membranous nephropathy is described as involving circulating autoantibodies to the podocyte membrane antigens PLA2R and THSD7A.",
+     "cites": [
+      "PMID:28550082"
+     ]
+    }
+   ],
+   "dropped": [],
+   "gap": "These records do not report LRP2/megalin expression in native human podocytes or in human tissue podocytes described as endocytic.",
+   "co_mention": {
+    "term_groups": [
+     [
+      "LRP2",
+      "megalin",
+      "gp330"
+     ],
+     [
+      "podocyte",
+      "podocytes",
+      "visceral epithelial"
+     ],
+     [
+      "human",
+      "patient",
+      "patients",
+      "biopsy",
+      "biopsies"
+     ]
+    ],
+    "records_searched": 25,
+    "records_mentioning_all": 0,
+    "record_ids": []
+   },
+   "note": "0 of the 25 most-cited records read (of 1,141 Europe PMC hits for '(LRP2 OR megalin) AND podocyte AND human') mention LRP2 together with podocytes in a human context in their title or abstract. A count over the records read, not a search of everything published."
+  },
+  {
+   "task_id": "lab-4",
+   "query": "(UMOD OR uromodulin) AND \"B cell\" AND human",
+   "hit_count": 454,
+   "records": [
+    {
+     "record_id": "PMID:38326288",
+     "pmid": "38326288",
+     "doi": "10.1002/jev2.12404",
+     "title": "Minimal information for studies of extracellular vesicles (MISEV2023): From basic to advanced approaches.",
+     "journal": "Journal of extracellular vesicles",
+     "year": 2024,
+     "first_author": "Welsh JA",
+     "abstract": "Extracellular vesicles (EVs), through their complex cargo, can reflect the state of their cell of origin and change the functions and phenotypes of other cells. These features indicate strong biomarker and therapeutic potential and have generated broad interest, as evidenced by the steady year-on-year increase in the numbers of scientific publications about EVs. Important advances have been made in EV metrology and in understanding and applying EV biology. However, hurdles remain to realising the potential of EVs in domains ranging from basic biology to clinical applications due to challenges in EV nomenclature, separation from non-vesicular extracellular particles, characterisation and functional studies. To address the challenges and opportunities in this rapidly evolving field, the International Society for Extracellular Vesicles (ISEV) updates its 'Minimal Information for Studies of Extracellular Vesicles', which was first published in 2014 and then in 2018 as MISEV2014 and MISEV2018, respectively. The goal of the current document, MISEV2023, is to provide researchers with an updated snapshot of available approaches and their advantages and limitations for production, separation and characterisation of EVs from multiple sources, including cell culture, body fluids and solid tissues. In addition to presenting the latest state of the art in basic principles of EV research, this document also covers advanced techniques and approaches that are currently expanding the boundari",
+     "url": "https://europepmc.org/article/MED/38326288"
+    },
+    {
+     "record_id": "PMID:34321199",
+     "pmid": "34321199",
+     "doi": "10.1126/sciadv.abh2169",
+     "title": "A single-cell type transcriptomics map of human tissues.",
+     "journal": "Science advances",
+     "year": 2021,
+     "first_author": "Karlsson M",
+     "abstract": "Advances in molecular profiling have opened up the possibility to map the expression of genes in cells, tissues, and organs in the human body. Here, we combined single-cell transcriptomics analysis with spatial antibody-based protein profiling to create a high-resolution single-cell type map of human tissues. An open access atlas has been launched to allow researchers to explore the expression of human protein-coding genes in 192 individual cell type clusters. An expression specificity classification was performed to determine the number of genes elevated in each cell type, allowing comparisons with bulk transcriptomics data. The analysis highlights distinct expression clusters corresponding to cell types sharing similar functions, both within the same organs and between organs.",
+     "url": "https://europepmc.org/article/MED/34321199"
+    },
+    {
+     "record_id": "PMID:32669714",
+     "pmid": "32669714",
+     "doi": "10.1038/s41586-020-2496-1",
+     "title": "A single-cell transcriptomic atlas characterizes ageing tissues in the mouse.",
+     "journal": "Nature",
+     "year": 2020,
+     "first_author": "Tabula Muris Consortium.",
+     "abstract": "Ageing is characterized by a progressive loss of physiological integrity, leading to impaired function and increased vulnerability to death1. Despite rapid advances over recent years, many of the molecular and cellular processes that underlie the progressive loss of healthy physiology are poorly understood2. To gain a better insight into these processes, here we generate a single-cell transcriptomic atlas across the lifespan of Mus musculus that includes data from 23 tissues and organs. We found cell-specific changes occurring across multiple cell types and organs, as well as age-related changes in the cellular composition of different organs. Using single-cell transcriptomic data, we assessed cell-type-specific manifestations of different hallmarks of ageing-such as senescence3, genomic instability4 and changes in the immune system2. This transcriptomic atlas-which we denote Tabula Muris Senis, or 'Mouse Ageing Cell Atlas'-provides molecular information about how the most important hallmarks of ageing are reflected in a broad range of tissues and cell types.",
+     "url": "https://europepmc.org/article/MED/32669714"
+    },
+    {
+     "record_id": "PMID:37468583",
+     "pmid": "37468583",
+     "doi": "10.1038/s41586-023-05769-3",
+     "title": "An atlas of healthy and injured cell states and niches in the human kidney.",
+     "journal": "Nature",
+     "year": 2023,
+     "first_author": "Lake BB",
+     "abstract": "Understanding kidney disease relies on defining the complexity of cell types and states, their associated molecular profiles and interactions within tissue neighbourhoods1. Here we applied multiple single-cell and single-nucleus assays (>400,000 nuclei or cells) and spatial imaging technologies to a broad spectrum of healthy reference kidneys (45 donors) and diseased kidneys (48 patients). This has provided a high-resolution cellular atlas of 51 main cell types, which include rare and previously undescribed cell populations. The multi-omic approach provides detailed transcriptomic profiles, regulatory factors and spatial localizations spanning the entire kidney. We also define 28 cellular states across nephron segments and interstitium that were altered in kidney injury, encompassing cycling, adaptive (successful or maladaptive repair), transitioning and degenerative states. Molecular signatures permitted the localization of these states within injury neighbourhoods using spatial transcriptomics, while large-scale 3D imaging analysis (around 1.2 million neighbourhoods) provided corresponding linkages to active immune responses. These analyses defined biological pathways that are relevant to injury time-course and niches, including signatures underlying epithelial repair that predicted maladaptive states associated with a decline in kidney function. This integrated multimodal spatial cell atlas of healthy and diseased human kidneys represents a comprehensive benchmark of cellu",
+     "url": "https://europepmc.org/article/MED/37468583"
+    },
+    {
+     "record_id": "PMID:23695511",
+     "pmid": "23695511",
+     "doi": "10.1038/mi.2013.30",
+     "title": "Microfold (M) cells: important immunosurveillance posts in the intestinal epithelium.",
+     "journal": "Mucosal immunology",
+     "year": 2013,
+     "first_author": "Mabbott NA",
+     "abstract": "The transcytosis of antigens across the gut epithelium by microfold cells (M cells) is important for the induction of efficient immune responses to some mucosal antigens in Peyer's patches. Recently, substantial progress has been made in our understanding of the factors that influence the development and function of M cells. This review highlights these important advances, with particular emphasis on: the host genes which control the functional maturation of M cells; how this knowledge has led to the rapid advance in our understanding of M-cell biology in the steady state and during aging; molecules expressed on M cells which appear to be used as \"immunosurveillance\" receptors to sample pathogenic microorganisms in the gut; how certain pathogens appear to exploit M cells to infect the host; and finally how this knowledge has been used to specifically target antigens to M cells to attempt to improve the efficacy of mucosal vaccines.",
+     "url": "https://europepmc.org/article/MED/23695511"
+    },
+    {
+     "record_id": "PMID:10456976",
+     "pmid": "10456976",
+     "doi": "10.1136/thx.54.9.825",
+     "title": "Cytokines in asthma.",
+     "journal": "Thorax",
+     "year": 1999,
+     "first_author": "Chung KF",
+     "abstract": "",
+     "url": "https://europepmc.org/article/MED/10456976"
+    },
+    {
+     "record_id": "PMID:31110316",
+     "pmid": "31110316",
+     "doi": "10.1038/s41590-019-0386-1",
+     "title": "Tubular cell and keratinocyte single-cell transcriptomics applied to lupus nephritis reveal type I IFN and fibrosis relevant pathways.",
+     "journal": "Nature immunology",
+     "year": 2019,
+     "first_author": "Der E",
+     "abstract": "The molecular and cellular processes that lead to renal damage and to the heterogeneity of lupus nephritis (LN) are not well understood. We applied single-cell RNA sequencing (scRNA-seq) to renal biopsies from patients with LN and evaluated skin biopsies as a potential source of diagnostic and prognostic markers of renal disease. Type I interferon (IFN)-response signatures in tubular cells and keratinocytes distinguished patients with LN from healthy control subjects. Moreover, a high IFN-response signature and fibrotic signature in tubular cells were each associated with failure to respond to treatment. Analysis of tubular cells from patients with proliferative, membranous and mixed LN indicated pathways relevant to inflammation and fibrosis, which offer insight into their histologic differences. In summary, we applied scRNA-seq to LN to deconstruct its heterogeneity and identify novel targets for personalized approaches to therapy.",
+     "url": "https://europepmc.org/article/MED/31110316"
+    },
+    {
+     "record_id": "PMID:28742762",
+     "pmid": "28742762",
+     "doi": "10.1097/tp.0000000000001769",
+     "title": "KDIGO Clinical Practice Guideline on the Evaluation and Care of Living Kidney Donors.",
+     "journal": "Transplantation",
+     "year": 2017,
+     "first_author": "Lentine KL",
+     "abstract": "The 2017 Kidney Disease: Improving Global Outcomes (KDIGO) Clinical Practice Guideline on the Evaluation and Care of Living Kidney Donors is intended to assist medical professionals who evaluate living kidney donor candidates and provide care before, during and after donation. The guideline development process followed the Grades of Recommendation Assessment, Development, and Evaluation (GRADE) approach and guideline recommendations are based on systematic reviews of relevant studies that included critical appraisal of the quality of the evidence and the strength of recommendations. However, many recommendations, for which there was no evidence or no systematic search for evidence was undertaken by the Evidence Review Team, were issued as ungraded expert opinion recommendations. The guideline work group concluded that a comprehensive approach to risk assessment should replace decisions based on assessments of single risk factors in isolation. Original data analyses were undertaken to produce a \"proof-in-concept\" risk-prediction model for kidney failure to support a framework for quantitative risk assessment in the donor candidate evaluation and defensible shared decision making. This framework is grounded in the simultaneous consideration of each candidate's profile of demographic and health characteristics. The processes and framework for the donor candidate evaluation are presented, along with recommendations for optimal care before, during, and after donation. Limitations ",
+     "url": "https://europepmc.org/article/MED/28742762"
+    },
+    {
+     "record_id": "PMID:23263672",
+     "pmid": "23263672",
+     "doi": "10.3390/ijms14010434",
+     "title": "An involvement of oxidative stress in endoplasmic reticulum stress and its associated diseases.",
+     "journal": "International journal of molecular sciences",
+     "year": 2012,
+     "first_author": "Bhandary B",
+     "abstract": "The endoplasmic reticulum (ER) is the major site of calcium storage and protein folding. It has a unique oxidizing-folding environment due to the predominant disulfide bond formation during the process of protein folding. Alterations in the oxidative environment of the ER and also intra-ER Ca2+ cause the production of ER stress-induced reactive oxygen species (ROS). Protein disulfide isomerases, endoplasmic reticulum oxidoreductin-1, reduced glutathione and mitochondrial electron transport chain proteins also play crucial roles in ER stress-induced production of ROS. In this article, we discuss ER stress-associated ROS and related diseases, and the current understanding of the signaling transduction involved in ER stress.",
+     "url": "https://europepmc.org/article/MED/23263672"
+    },
+    {
+     "record_id": "PMID:34732507",
+     "pmid": "34732507",
+     "doi": "10.1681/asn.2021060794",
+     "title": "Discovery of Autoantibodies Targeting Nephrin in Minimal Change Disease Supports a Novel Autoimmune Etiology.",
+     "journal": "Journal of the American Society of Nephrology : JASN",
+     "year": 2022,
+     "first_author": "Watts AJB",
+     "abstract": "BackgroundFailure of the glomerular filtration barrier, primarily by loss of slit diaphragm architecture, underlies nephrotic syndrome in minimal change disease. The etiology remains unknown. The efficacy of B cell-targeted therapies in some patients, together with the known proteinuric effect of anti-nephrin antibodies in rodent models, prompted us to hypothesize that nephrin autoantibodies may be present in patients with minimal change disease.MethodsWe evaluated sera from patients with minimal change disease, enrolled in the Nephrotic Syndrome Study Network (NEPTUNE) cohort and from our own institutions, for circulating nephrin autoantibodies by indirect ELISA and by immunoprecipitation of full-length nephrin from human glomerular extract or a recombinant purified extracellular domain of human nephrin. We also evaluated renal biopsies from our institutions for podocyte-associated punctate IgG colocalizing with nephrin by immunofluorescence.ResultsIn two independent patient cohorts, we identified circulating nephrin autoantibodies during active disease that were significantly reduced or absent during treatment response in a subset of patients with minimal change disease. We correlated the presence of these autoantibodies with podocyte-associated punctate IgG in renal biopsies from our institutions. We also identified a patient with steroid-dependent childhood minimal change disease that progressed to end stage kidney disease; she developed a massive post-transplant recurren",
+     "url": "https://europepmc.org/article/MED/34732507"
+    },
+    {
+     "record_id": "PMID:21259410",
+     "pmid": "21259410",
+     "doi": "10.1002/anie.201002313",
+     "title": "The Tn antigen-structural simplicity and biological complexity.",
+     "journal": "Angewandte Chemie (International ed. in English)",
+     "year": 2011,
+     "first_author": "Ju T",
+     "abstract": "Glycoproteins in animal cells contain a variety of glycan structures that are added co- and/or posttranslationally to proteins. Of over 20 different types of sugar-amino acid linkages known, the two major types are N-glycans (Asn-linked) and O-glycans (Ser/Thr-linked). An abnormal mucin-type O-glycan whose expression is associated with cancer and several human disorders is the Tn antigen. It has a relatively simple structure composed of N-acetyl-D-galactosamine with a glycosidic α linkage to serine/threonine residues in glycoproteins (GalNAcα1-O-Ser/Thr), and was one of the first glycoconjugates to be chemically synthesized. The Tn antigen is normally modified by a specific galactosyltransferase (T-synthase) in the Golgi apparatus of cells. Expression of active T-synthase is uniquely dependent on the molecular chaperone Cosmc, which is encoded by a gene on the X chromosome. Expression of the Tn antigen can arise as a consequence of mutations in the genes for T-synthase or Cosmc, or genes affecting other steps of O-glycosylation pathways. Because of the association of the Tn antigen with disease, there is much interest in the development of Tn-based vaccines and other therapeutic approaches based on Tn expression.",
+     "url": "https://europepmc.org/article/MED/21259410"
+    },
+    {
+     "record_id": "PMID:8106553",
+     "pmid": "8106553",
+     "doi": "10.1083/jcb.124.4.557",
+     "title": "Betaglycan can act as a dual modulator of TGF-beta access to signaling receptors: mapping of ligand binding and GAG attachment sites.",
+     "journal": "The Journal of cell biology",
+     "year": 1994,
+     "first_author": "López-Casillas F",
+     "abstract": "Betaglycan, also known as the TGF-beta type III receptor, is a membrane-anchored proteoglycan that presents TGF-beta to the type II signaling receptor, a transmembrane serine/threonine kinase. The betaglycan extracellular region, which can be shed by cells into the medium, contains a NH2-terminal domain related to endoglin and a COOH-terminal domain related to uromodulin, sperm receptors Zp2 and 3, and pancreatic secretory granule GP-2 protein. We identified residues Ser535 and Ser546 in the uromodulin-related region as the glycosaminoglycan (GAG) attachment sites. Their mutation to alanine prevents GAG attachment but does not interfere with betaglycan stability or ability to bind and present TGF-beta to receptor II. Using a panel of deletion mutants, we found that TGF-beta binds to the NH2-terminal endoglin-related region of betaglycan. The remainder of the extracellular domain and the cytoplasmic domain are not required for presentation of TGF-beta to receptor II; however, membrane anchorage is required. Soluble betaglycan can bind TGF-beta but does not enhance binding to membrane receptors. In fact, recombinant soluble betaglycan acts as potent inhibitor of TGF-beta binding to membrane receptors and blocks TGF-beta action, this effect being particularly pronounced with the TGF-beta 2 isoform. The results suggest that release of betaglycan into the medium converts this enhancer of TGF-beta action into a TGF-beta antagonist.",
+     "url": "https://europepmc.org/article/MED/8106553"
+    },
+    {
+     "record_id": "PMID:29424333",
+     "pmid": "29424333",
+     "doi": "10.1128/ecosalplus.esp-0009-2017",
+     "title": "Pathogenesis of &lt;i&gt;Proteus mirabilis&lt;/i&gt; Infection.",
+     "journal": "EcoSal Plus",
+     "year": 2018,
+     "first_author": "Armbruster CE",
+     "abstract": "Proteus mirabilis, a Gram-negative rod-shaped bacterium most noted for its swarming motility and urease activity, frequently causes catheter-associated urinary tract infections (CAUTIs) that are often polymicrobial. These infections may be accompanied by urolithiasis, the development of bladder or kidney stones due to alkalinization of urine from urease-catalyzed urea hydrolysis. Adherence of the bacterium to epithelial and catheter surfaces is mediated by 17 different fimbriae, most notably MR/P fimbriae. Repressors of motility are often encoded by these fimbrial operons. Motility is mediated by flagella encoded on a single contiguous 54-kb chromosomal sequence. On agar plates, P. mirabilis undergoes a morphological conversion to a filamentous swarmer cell expressing hundreds of flagella. When swarms from different strains meet, a line of demarcation, a \"Dienes line,\" develops due to the killing action of each strain's type VI secretion system. During infection, histological damage is caused by cytotoxins including hemolysin and a variety of proteases, some autotransported. The pathogenesis of infection, including assessment of individual genes or global screens for virulence or fitness factors has been assessed in murine models of ascending urinary tract infections or CAUTIs using both single-species and polymicrobial models. Global gene expression studies performed in culture and in the murine model have revealed the unique metabolism of this bacterium. Vaccines, using MR/",
+     "url": "https://europepmc.org/article/MED/29424333"
+    },
+    {
+     "record_id": "PMID:34272381",
+     "pmid": "34272381",
+     "doi": "10.1038/s41467-021-24491-0",
+     "title": "Discovery and prioritization of variants and genes for kidney function in &gt;1.2 million individuals.",
+     "journal": "Nature communications",
+     "year": 2021,
+     "first_author": "Stanzick KJ",
+     "abstract": "Genes underneath signals from genome-wide association studies (GWAS) for kidney function are promising targets for functional studies, but prioritizing variants and genes is challenging. By GWAS meta-analysis for creatinine-based estimated glomerular filtration rate (eGFR) from the Chronic Kidney Disease Genetics Consortium and UK Biobank (n = 1,201,909), we expand the number of eGFRcrea loci (424 loci, 201 novel; 9.8% eGFRcrea variance explained by 634 independent signal variants). Our increased sample size in fine-mapping (n = 1,004,040, European) more than doubles the number of signals with resolved fine-mapping (99% credible sets down to 1 variant for 44 signals, ≤5 variants for 138 signals). Cystatin-based eGFR and/or blood urea nitrogen association support 348 loci (n = 460,826 and 852,678, respectively). Our customizable tool for Gene PrioritiSation reveals 23 compelling genes including mechanistic insights and enables navigation through genes and variants likely relevant for kidney function in human to help select targets for experimental follow-up.",
+     "url": "https://europepmc.org/article/MED/34272381"
+    },
+    {
+     "record_id": "PMID:24762401",
+     "pmid": "24762401",
+     "doi": "10.1681/asn.2014010117",
+     "title": "Beyond tissue injury-damage-associated molecular patterns, toll-like receptors, and inflammasomes also drive regeneration and fibrosis.",
+     "journal": "Journal of the American Society of Nephrology : JASN",
+     "year": 2014,
+     "first_author": "Anders HJ",
+     "abstract": "Tissue injury initiates an inflammatory response through the actions of immunostimulatory molecules referred to as damage-associated molecular patterns (DAMPs). DAMPs encompass a group of heterogenous molecules, including intracellular molecules released during cell necrosis and molecules involved in extracellular matrix remodeling such as hyaluronan, biglycan, and fibronectin. Kidney-specific DAMPs include crystals and uromodulin released by renal tubular damage. DAMPs trigger innate immunity by activating Toll-like receptors, purinergic receptors, or the NLRP3 inflammasome. However, recent evidence revealed that DAMPs also trigger re-epithelialization upon kidney injury and contribute to epithelial-mesenchymal transition and, potentially, to myofibroblast differentiation and proliferation. Thus, these discoveries suggest that DAMPs drive not only immune injury but also kidney regeneration and renal scarring. Here, we review the data from these studies and discuss the increasingly complex connection between DAMPs and kidney diseases.",
+     "url": "https://europepmc.org/article/MED/24762401"
+    },
+    {
+     "record_id": "PMID:27558558",
+     "pmid": "27558558",
+     "doi": "10.1152/ajprenal.00314.2016",
+     "title": "Immunity and inflammation in diabetic kidney disease: translating mechanisms to biomarkers and treatment targets.",
+     "journal": "American journal of physiology. Renal physiology",
+     "year": 2017,
+     "first_author": "Pichler R",
+     "abstract": "Increasing incidences of obesity and diabetes have made diabetic kidney disease (DKD) the leading cause of chronic kidney disease and end-stage renal disease worldwide. Despite current pharmacological treatments, including strategies for optimizing glycemic control and inhibitors of the renin-angiotensin system, DKD still makes up almost one-half of all cases of end-stage renal disease in the United States. Compelling and mounting evidence has clearly demonstrated that immunity and inflammation play a paramount role in the pathogenesis of DKD. This article reviews the involvement of the immune system in DKD and identifies important roles of key immune and inflammatory mediators. One of the most recently identified biomarkers is serum amyloid A, which appears to be relatively specific for DKD. Novel and evolving treatment approaches target protein kinases, transcription factors, chemokines, adhesion molecules, growth factors, advanced glycation end-products, and other inflammatory molecules. This is the beginning of a new era in the understanding and treatment of DKD, and we may have finally reached a tipping point in our fight against the growing burden of DKD.",
+     "url": "https://europepmc.org/article/MED/27558558"
+    },
+    {
+     "record_id": "PMID:30377700",
+     "pmid": "30377700",
+     "doi": "10.1007/s00018-018-2956-z",
+     "title": "Pathological effects of ionizing radiation: endothelial activation and dysfunction.",
+     "journal": "Cellular and molecular life sciences : CMLS",
+     "year": 2019,
+     "first_author": "Baselet B",
+     "abstract": "The endothelium, a tissue that forms a single layer of cells lining various organs and cavities of the body, especially the heart and blood as well as lymphatic vessels, plays a complex role in vascular biology. It contributes to key aspects of vascular homeostasis and is also involved in pathophysiological processes, such as thrombosis, inflammation, and hypertension. Epidemiological data show that high doses of ionizing radiation lead to cardiovascular disease over time. The aim of this review is to summarize the current knowledge on endothelial cell activation and dysfunction after ionizing radiation exposure as a central feature preceding the development of cardiovascular diseases.",
+     "url": "https://europepmc.org/article/MED/30377700"
+    },
+    {
+     "record_id": "PMID:19138409",
+     "pmid": "19138409",
+     "doi": "10.1186/1479-5876-7-4",
+     "title": "Can urinary exosomes act as treatment response markers in prostate cancer?",
+     "journal": "Journal of translational medicine",
+     "year": 2009,
+     "first_author": "Mitchell PJ",
+     "abstract": "BackgroundRecently, nanometer sized vesicles (termed exosomes) have been described as a component of urine. Such vesicles may be a useful non-invasive source of markers in renal disease. Their utility as a source of markers in urological cancer remains unstudied. Our aim in this study was to investigate the feasibility and value of analysing urinary exosomes in prostate cancer patients undergoing standard therapy.MethodsTen patients (with locally advanced PCa) provided spot urine specimens at three time points during standard therapy. Patients received 3-6 months neoadjuvant androgen deprivation therapy prior to radical radiotherapy, comprising a single phase delivering 55 Gy in 20 fractions to the prostate and 44 Gy in 20 fractions to the pelvic nodes. Patients were continued on adjuvant ADT according to clinical need. Exosomes were purified, and the phenotype compared to exosomes isolated from the prostate cancer cell line LNcaP. A control group of 10 healthy donors was included. Serum PSA was used as a surrogate treatment response marker. Exosomes present in urine were quantified, and expression of prostate markers (PSA and PSMA) and tumour-associated marker 5T4 was examined.ResultsThe quantity and quality of exosomes present in urine was highly variable, even though we handled all materials freshly and used methods optimized for obtaining highly pure exosomes. There was approx 2-fold decrease in urinary exosome content following 12 weeks ADT, but this was not sustained du",
+     "url": "https://europepmc.org/article/MED/19138409"
+    },
+    {
+     "record_id": "PMID:29679077",
+     "pmid": "29679077",
+     "doi": "10.1038/s41467-018-04003-3",
+     "title": "Proteome-wide analysis of cysteine oxidation reveals metabolic sensitivity to redox stress.",
+     "journal": "Nature communications",
+     "year": 2018,
+     "first_author": "van der Reest J",
+     "abstract": "Reactive oxygen species (ROS) are increasingly recognised as important signalling molecules through oxidation of protein cysteine residues. Comprehensive identification of redox-regulated proteins and pathways is crucial to understand ROS-mediated events. Here, we present stable isotope cysteine labelling with iodoacetamide (SICyLIA), a mass spectrometry-based workflow to assess proteome-scale cysteine oxidation. SICyLIA does not require enrichment steps and achieves unbiased proteome-wide sensitivity. Applying SICyLIA to diverse cellular models and primary tissues provides detailed insights into thiol oxidation proteomes. Our results demonstrate that acute and chronic oxidative stress causes oxidation of distinct metabolic proteins, indicating that cysteine oxidation plays a key role in the metabolic adaptation to redox stress. Analysis of mouse kidneys identifies oxidation of proteins circulating in biofluids, through which cellular redox stress can affect whole-body physiology. Obtaining accurate peptide oxidation profiles from complex organs using SICyLIA holds promise for future analysis of patient-derived samples to study human pathologies.",
+     "url": "https://europepmc.org/article/MED/29679077"
+    },
+    {
+     "record_id": "PMID:30188322",
+     "pmid": "30188322",
+     "doi": "10.7554/elife.36187",
+     "title": "Transcriptional and epigenomic landscapes of CNS and non-CNS vascular endothelial cells.",
+     "journal": "eLife",
+     "year": 2018,
+     "first_author": "Sabbagh MF",
+     "abstract": "Vascular endothelial cell (EC) function depends on appropriate organ-specific molecular and cellular specializations. To explore genomic mechanisms that control this specialization, we have analyzed and compared the transcriptome, accessible chromatin, and DNA methylome landscapes from mouse brain, liver, lung, and kidney ECs. Analysis of transcription factor (TF) gene expression and TF motifs at candidate cis-regulatory elements reveals both shared and organ-specific EC regulatory networks. In the embryo, only those ECs that are adjacent to or within the central nervous system (CNS) exhibit canonical Wnt signaling, which correlates precisely with blood-brain barrier (BBB) differentiation and Zic3 expression. In the early postnatal brain, single-cell RNA-seq of purified ECs reveals (1) close relationships between veins and mitotic cells and between arteries and tip cells, (2) a division of capillary ECs into vein-like and artery-like classes, and (3) new endothelial subtype markers, including new validated tip cell markers.",
+     "url": "https://europepmc.org/article/MED/30188322"
+    },
+    {
+     "record_id": "PMID:30275566",
+     "pmid": "30275566",
+     "doi": "10.1038/s41591-018-0194-4",
+     "title": "Renal compartment-specific genetic variation analyses identify new pathways in chronic kidney disease.",
+     "journal": "Nature medicine",
+     "year": 2018,
+     "first_author": "Qiu C",
+     "abstract": "Chronic kidney disease (CKD), a condition in which the kidneys are unable to clear waste products, affects 700 million people globally. Genome-wide association studies (GWASs) have identified sequence variants for CKD; however, the biological basis of these GWAS results remains poorly understood. To address this issue, we created an expression quantitative trait loci (eQTL) atlas for the glomerular and tubular compartments of the human kidney. Through integrating the CKD GWAS with eQTL, single-cell RNA sequencing and regulatory region maps, we identified novel genes for CKD. Putative causal genes were enriched for proximal tubule expression and endolysosomal function, where DAB2, an adaptor protein in the TGF-β pathway, formed a central node. Functional experiments confirmed that reducing Dab2 expression in renal tubules protected mice from CKD. In conclusion, compartment-specific eQTL analysis is an important avenue for the identification of novel genes and cellular pathways involved in CKD development and thus potential new opportunities for its treatment.",
+     "url": "https://europepmc.org/article/MED/30275566"
+    },
+    {
+     "record_id": "PMID:38355799",
+     "pmid": "38355799",
+     "doi": "10.1038/s41586-024-07069-w",
+     "title": "A single-cell time-lapse of mouse prenatal development from gastrula to birth.",
+     "journal": "Nature",
+     "year": 2024,
+     "first_author": "Qiu C",
+     "abstract": "The house mouse (Mus musculus) is an exceptional model system, combining genetic tractability with close evolutionary affinity to humans1,2. Mouse gestation lasts only 3 weeks, during which the genome orchestrates the astonishing transformation of a single-cell zygote into a free-living pup composed of more than 500 million cells. Here, to establish a global framework for exploring mammalian development, we applied optimized single-cell combinatorial indexing3 to profile the transcriptional states of 12.4 million nuclei from 83 embryos, precisely staged at 2- to 6-hour intervals spanning late gastrulation (embryonic day 8) to birth (postnatal day 0). From these data, we annotate hundreds of cell types and explore the ontogenesis of the posterior embryo during somitogenesis and of kidney, mesenchyme, retina and early neurons. We leverage the temporal resolution and sampling depth of these whole-embryo snapshots, together with published data4-8 from earlier timepoints, to construct a rooted tree of cell-type relationships that spans the entirety of prenatal development, from zygote to birth. Throughout this tree, we systematically nominate genes encoding transcription factors and other proteins as candidate drivers of the in vivo differentiation of hundreds of cell types. Remarkably, the most marked temporal shifts in cell states are observed within one hour of birth and presumably underlie the massive physiological adaptations that must accompany the successful transition of a",
+     "url": "https://europepmc.org/article/MED/38355799"
+    },
+    {
+     "record_id": "PMID:24335234",
+     "pmid": "24335234",
+     "doi": "10.1182/blood-2013-04-490847",
+     "title": "SAMHD1 is mutated recurrently in chronic lymphocytic leukemia and is involved in response to DNA damage.",
+     "journal": "Blood",
+     "year": 2014,
+     "first_author": "Clifford R",
+     "abstract": "SAMHD1 is a deoxynucleoside triphosphate triphosphohydrolase and a nuclease that restricts HIV-1 in noncycling cells. Germ-line mutations in SAMHD1 have been described in patients with Aicardi-Goutières syndrome (AGS), a congenital autoimmune disease. In a previous longitudinal whole genome sequencing study of chronic lymphocytic leukemia (CLL), we revealed a SAMHD1 mutation as a potential founding event. Here, we describe an AGS patient carrying a pathogenic germ-line SAMHD1 mutation who developed CLL at 24 years of age. Using clinical trial samples, we show that acquired SAMHD1 mutations are associated with high variant allele frequency and reduced SAMHD1 expression and occur in 11% of relapsed/refractory CLL patients. We provide evidence that SAMHD1 regulates cell proliferation and survival and engages in specific protein interactions in response to DNA damage. We propose that SAMHD1 may have a function in DNA repair and that the presence of SAMHD1 mutations in CLL promotes leukemia development.",
+     "url": "https://europepmc.org/article/MED/24335234"
+    },
+    {
+     "record_id": "PMID:33988964",
+     "pmid": "33988964",
+     "doi": "10.1021/acsbiomaterials.1c00217",
+     "title": "Potential Use of Exosomes as Diagnostic Biomarkers and in Targeted Drug Delivery: Progress in Clinical and Preclinical Applications.",
+     "journal": "ACS biomaterials science & engineering",
+     "year": 2021,
+     "first_author": "Huda MN",
+     "abstract": "Exosomes are cell-derived vesicles containing heterogeneous active biomolecules such as proteins, lipids, mRNAs, receptors, immune regulatory molecules, and nucleic acids. They typically range in size from 30 to 150 nm in diameter. An exosome's surfaces can be bioengineered with antibodies, fluorescent dye, peptides, and tailored for small molecule and large active biologics. Exosomes have enormous potential as a drug delivery vehicle due to enhanced biocompatibility, excellent payload capability, and reduced immunogenicity compared to alternative polymeric-based carriers. Because of active targeting and specificity, exosomes are capable of delivering their cargo to exosome-recipient cells. Additionally, exosomes can potentially act as early stage disease diagnostic tools as the exosome carries various protein biomarkers associated with a specific disease. In this review, we summarize recent progress on exosome composition, biological characterization, and isolation techniques. Finally, we outline the exosome's clinical applications and preclinical advancement to provide an outlook on the importance of exosomes for use in targeted drug delivery, biomarker study, and vaccine development.",
+     "url": "https://europepmc.org/article/MED/33988964"
+    },
+    {
+     "record_id": "PMID:39048792",
+     "pmid": "39048792",
+     "doi": "10.1038/s41588-024-01802-x",
+     "title": "Single-cell multi-omic and spatial profiling of human kidneys implicates the fibrotic microenvironment in kidney disease progression.",
+     "journal": "Nature genetics",
+     "year": 2024,
+     "first_author": "Abedini A",
+     "abstract": "Kidneys are intricate three-dimensional structures in the body, yet the spatial and molecular principles of kidney health and disease remain inadequately understood. We generated high-quality datasets for 81 samples, including single-cell, single-nuclear, spot-level (Visium) and single-cell resolution (CosMx) spatial-RNA expression and single-nuclear open chromatin, capturing cells from healthy, diabetic and hypertensive diseased human kidneys. Combining these data, we identify cell types and map them to their locations within the tissue. Unbiased deconvolution of the spatial data identifies the following four distinct microenvironments: glomerular, immune, tubule and fibrotic. We describe the complex organization of microenvironments in health and disease and find that the fibrotic microenvironment is able to molecularly classify human kidneys and offers an improved prognosis compared to traditional histopathology. We provide a comprehensive spatially resolved molecular roadmap of the human kidney and the fibrotic process, demonstrating the clinical utility of spatial transcriptomics.",
+     "url": "https://europepmc.org/article/MED/39048792"
+    }
+   ],
+   "statements": [
+    {
+     "text": "The review states that kidney-specific damage-associated molecular patterns include uromodulin released by renal tubular damage.",
+     "cites": [
+      "PMID:24762401"
+     ]
+    },
+    {
+     "text": "The study reports that the betaglycan extracellular region contains a COOH-terminal domain related to uromodulin, sperm receptors Zp2 and 3, and pancreatic secretory granule GP-2 protein.",
+     "cites": [
+      "PMID:8106553"
+     ]
+    },
+    {
+     "text": "The study applied multiple single-cell, single-nucleus and spatial imaging assays to healthy reference and diseased human kidneys to build a multimodal atlas of 51 cell types and injury-associated states and neighborhoods.",
+     "cites": [
+      "PMID:37468583"
+     ]
+    },
+    {
+     "text": "The study generated single-cell, single-nuclear, spot-level and single-cell-resolution spatial RNA plus open-chromatin data from healthy, diabetic and hypertensive human kidneys and defined glomerular, immune, tubule and fibrotic microenvironments.",
+     "cites": [
+      "PMID:39048792"
+     ]
+    },
+    {
+     "text": "The study of patients with minimal change disease states that efficacy of B cell-targeted therapies in some patients prompted testing for nephrin autoantibodies.",
+     "cites": [
+      "PMID:34732507"
+     ]
+    },
+    {
+     "text": "The study combined single-cell transcriptomics with spatial antibody-based protein profiling to create a high-resolution single-cell type map of human tissues across 192 cell-type clusters.",
+     "cites": [
+      "PMID:34321199"
+     ]
+    }
+   ],
+   "dropped": [],
+   "gap": "These records do not address UMOD detection in human B cells, spillover from neighboring TAL cells, or changes under stricter molecule assignment.",
+   "co_mention": {
+    "term_groups": [
+     [
+      "UMOD",
+      "uromodulin",
+      "Tamm-Horsfall"
+     ],
+     [
+      "B cell",
+      "B cells",
+      "B-cell",
+      "B-cells",
+      "B lymphocyte",
+      "B lymphocytes"
+     ],
+     [
+      "human",
+      "patient",
+      "patients",
+      "biopsy",
+      "biopsies"
+     ]
+    ],
+    "records_searched": 25,
+    "records_mentioning_all": 0,
+    "record_ids": []
+   },
+   "note": "0 of the 25 most-cited records read (of 454 Europe PMC hits for '(UMOD OR uromodulin) AND \"B cell\" AND human') mention UMOD together with B cells in a human context in their title or abstract. A count over the records read, not a search of everything published."
+  }
+ ],
+ "protein": [
+  {
+   "task_id": "lab-2",
+   "sub_claim": 0,
+   "marker": "LRP2",
+   "population": "Podocalyxin+ cells",
+   "results": [
+    {
+     "result_id": "pra-3380fd8b63328380",
+     "dataset_id": "KPMP-CODEX",
+     "participant_id": "164-17",
+     "role": "healthy reference",
+     "roi": null,
+     "population": "Podocalyxin+ cells",
+     "population_marker": "Podocalyxin",
+     "marker": "LRP2",
+     "home": "LRP2+ cells that are not Podocalyxin+",
+     "population_cells": 2628,
+     "home_cells": 3153,
+     "thresholds": [
+      {
+       "marker": "Podocalyxin",
+       "value": 62.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      },
+      {
+       "marker": "LRP2",
+       "value": 6.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      }
+     ],
+     "conditions": [
+      {
+       "condition": "whole_cell",
+       "positive_cells": 7,
+       "observed_share": 0.002663622526636225,
+       "expected_share": 0.002663622526636225,
+       "pixel_retention": 1.0,
+       "excluded_cells": 0,
+       "retained_cells": 7,
+       "bordering_home_share_excluded": null,
+       "bordering_home_share_retained": 0.0,
+       "reasons": {
+        "bordering_home_share_excluded": "no population cell loses positivity under this condition"
+       }
+      },
+      {
+       "condition": "eroded_1px",
+       "positive_cells": 8,
+       "observed_share": 0.0030441400304414,
+       "expected_share": 0.002749519350601205,
+       "pixel_retention": 0.6110146151695586,
+       "excluded_cells": 0,
+       "retained_cells": 7,
+       "bordering_home_share_excluded": null,
+       "bordering_home_share_retained": 0.0,
+       "reasons": {
+        "bordering_home_share_excluded": "no population cell loses positivity under this condition"
+       }
+      },
+      {
+       "condition": "eroded_2px",
+       "positive_cells": 7,
+       "observed_share": 0.002663622526636225,
+       "expected_share": 0.002437127592382881,
+       "pixel_retention": 0.3155020730104156,
+       "excluded_cells": 1,
+       "retained_cells": 6,
+       "bordering_home_share_excluded": 0.0,
+       "bordering_home_share_retained": 0.0,
+       "reasons": {}
+      },
+      {
+       "condition": "nucleus_region",
+       "positive_cells": 5,
+       "observed_share": 0.001902587519025875,
+       "expected_share": 0.0016415454247285482,
+       "pixel_retention": 0.47094513809164074,
+       "excluded_cells": 3,
+       "retained_cells": 4,
+       "bordering_home_share_excluded": 0.0,
+       "bordering_home_share_retained": 0.0,
+       "reasons": {}
+      }
+     ],
+     "label": "insufficient_evidence",
+     "label_reason": "7 population cells positive as whole cells, under the 10-cell gate",
+     "inference": "Descriptive only: one participant's section, with no leave-one-out; a participant compared with another is one person against one person.",
+     "rules": {
+      "threshold": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+      "population": "Cells positive for the population marker as whole cells; frozen for every measurement condition.",
+      "home": "Cells positive for the marker as whole cells and not positive for the population marker.",
+      "bordering": "Two cells border when a pixel of one lies within 2 px of a pixel of the other along a row or a column of the segmentation mask, so a one-pixel background gap between cells still counts.",
+      "expectation": "Closed form. A condition keeping k of a cell's n pixels is compared with k pixels drawn at random: their mean has the whole-cell mean m and variance s^2 / k x (n - k) / (n - 1), with s^2 the whole-cell pixel variance, and reaches the threshold t with probability Phi((m - t) / sd) (1 or 0 when sd = 0; 0 when k = 0). Expected share: the mean of that probability over the population.",
+      "label": "Gates: at least 20 population cells and 10 of them positive for the marker as whole cells, else insufficient evidence. Segmentation-sensitive: under one stricter condition the observed share O is below the expectation E x 2^-0.5. Otherwise stable.",
+      "caveat": "Eroding a cell also removes genuine membrane signal, which random pixel loss does not model; compare the bordering-home shares of excluded and retained cells before reading an excess drop as spillover."
+     },
+     "cell_table_checksum": "14036e204261b35603fcaf83dee1b40178615b9e02c91a7af5f6179eb34d3d98"
+    },
+    {
+     "result_id": "pra-35a94fc5426b31ad",
+     "dataset_id": "KPMP-CODEX",
+     "participant_id": "31-10013",
+     "role": "diseased",
+     "roi": null,
+     "population": "Podocalyxin+ cells",
+     "population_marker": "Podocalyxin",
+     "marker": "LRP2",
+     "home": "LRP2+ cells that are not Podocalyxin+",
+     "population_cells": 219,
+     "home_cells": 6379,
+     "thresholds": [
+      {
+       "marker": "Podocalyxin",
+       "value": 62.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      },
+      {
+       "marker": "LRP2",
+       "value": 6.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      }
+     ],
+     "conditions": [
+      {
+       "condition": "whole_cell",
+       "positive_cells": 38,
+       "observed_share": 0.1735159817351598,
+       "expected_share": 0.1735159817351598,
+       "pixel_retention": 1.0,
+       "excluded_cells": 0,
+       "retained_cells": 38,
+       "bordering_home_share_excluded": null,
+       "bordering_home_share_retained": 0.07894736842105263,
+       "reasons": {
+        "bordering_home_share_excluded": "no population cell loses positivity under this condition"
+       }
+      },
+      {
+       "condition": "eroded_1px",
+       "positive_cells": 40,
+       "observed_share": 0.182648401826484,
+       "expected_share": 0.1715746642710009,
+       "pixel_retention": 0.6636668905305574,
+       "excluded_cells": 1,
+       "retained_cells": 37,
+       "bordering_home_share_excluded": 0.0,
+       "bordering_home_share_retained": 0.08108108108108109,
+       "reasons": {}
+      },
+      {
+       "condition": "eroded_2px",
+       "positive_cells": 42,
+       "observed_share": 0.1917808219178082,
+       "expected_share": 0.1633913553897484,
+       "pixel_retention": 0.39629281396910676,
+       "excluded_cells": 5,
+       "retained_cells": 33,
+       "bordering_home_share_excluded": 0.0,
+       "bordering_home_share_retained": 0.09090909090909091,
+       "reasons": {}
+      },
+      {
+       "condition": "nucleus_region",
+       "positive_cells": 35,
+       "observed_share": 0.1598173515981735,
+       "expected_share": 0.15930859601313296,
+       "pixel_retention": 0.639543317662861,
+       "excluded_cells": 6,
+       "retained_cells": 32,
+       "bordering_home_share_excluded": 0.0,
+       "bordering_home_share_retained": 0.09375,
+       "reasons": {}
+      }
+     ],
+     "label": "stable",
+     "label_reason": "no stricter condition drops the observed share below the random-pixel-loss expectation x 2^-0.5",
+     "inference": "Descriptive only: one participant's section, with no leave-one-out; a participant compared with another is one person against one person.",
+     "rules": {
+      "threshold": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+      "population": "Cells positive for the population marker as whole cells; frozen for every measurement condition.",
+      "home": "Cells positive for the marker as whole cells and not positive for the population marker.",
+      "bordering": "Two cells border when a pixel of one lies within 2 px of a pixel of the other along a row or a column of the segmentation mask, so a one-pixel background gap between cells still counts.",
+      "expectation": "Closed form. A condition keeping k of a cell's n pixels is compared with k pixels drawn at random: their mean has the whole-cell mean m and variance s^2 / k x (n - k) / (n - 1), with s^2 the whole-cell pixel variance, and reaches the threshold t with probability Phi((m - t) / sd) (1 or 0 when sd = 0; 0 when k = 0). Expected share: the mean of that probability over the population.",
+      "label": "Gates: at least 20 population cells and 10 of them positive for the marker as whole cells, else insufficient evidence. Segmentation-sensitive: under one stricter condition the observed share O is below the expectation E x 2^-0.5. Otherwise stable.",
+      "caveat": "Eroding a cell also removes genuine membrane signal, which random pixel loss does not model; compare the bordering-home shares of excluded and retained cells before reading an excess drop as spillover."
+     },
+     "cell_table_checksum": "ed24695fe0d07451646296dcd46a0c49256ecef0b23e37435ddfaf8765f13540"
+    }
+   ],
+   "note": "164-17 (healthy reference): 0.3% of 2,628 Podocalyxin+ cells are LRP2+, 0.3% with outlines trimmed 2 px, insufficient evidence; 31-10013 (diseased): 17.4% of 219 Podocalyxin+ cells are LRP2+, 19.2% with outlines trimmed 2 px, stable. Descriptive: one person each, thresholds frozen on the healthy reference and not calibrated across imaging runs, masks nucleus-sized. A second line of evidence on protein, not a replication."
+  },
+  {
+   "task_id": "lab-5",
+   "sub_claim": 1,
+   "marker": "UMOD",
+   "population": "CD20+ cells",
+   "results": [
+    {
+     "result_id": "pra-e32e3db415f13766",
+     "dataset_id": "KPMP-CODEX",
+     "participant_id": "164-17",
+     "role": "healthy reference",
+     "roi": null,
+     "population": "CD20+ cells",
+     "population_marker": "CD20",
+     "marker": "UMOD",
+     "home": "UMOD+ cells that are not CD20+",
+     "population_cells": 6810,
+     "home_cells": 4870,
+     "thresholds": [
+      {
+       "marker": "UMOD",
+       "value": 18.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      },
+      {
+       "marker": "CD20",
+       "value": 16.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      }
+     ],
+     "conditions": [
+      {
+       "condition": "whole_cell",
+       "positive_cells": 1139,
+       "observed_share": 0.1672540381791483,
+       "expected_share": 0.1672540381791483,
+       "pixel_retention": 1.0,
+       "excluded_cells": 0,
+       "retained_cells": 1139,
+       "bordering_home_share_excluded": null,
+       "bordering_home_share_retained": 0.32484635645302895,
+       "reasons": {
+        "bordering_home_share_excluded": "no population cell loses positivity under this condition"
+       }
+      },
+      {
+       "condition": "eroded_1px",
+       "positive_cells": 1053,
+       "observed_share": 0.15462555066079295,
+       "expected_share": 0.1669008850802222,
+       "pixel_retention": 0.6573170664344227,
+       "excluded_cells": 87,
+       "retained_cells": 1052,
+       "bordering_home_share_excluded": 0.3103448275862069,
+       "bordering_home_share_retained": 0.32604562737642584,
+       "reasons": {}
+      },
+      {
+       "condition": "eroded_2px",
+       "positive_cells": 927,
+       "observed_share": 0.13612334801762113,
+       "expected_share": 0.16184629795290734,
+       "pixel_retention": 0.3804434485285588,
+       "excluded_cells": 214,
+       "retained_cells": 925,
+       "bordering_home_share_excluded": 0.35514018691588783,
+       "bordering_home_share_retained": 0.3178378378378378,
+       "reasons": {}
+      },
+      {
+       "condition": "nucleus_region",
+       "positive_cells": 917,
+       "observed_share": 0.13465491923641704,
+       "expected_share": 0.14525300194830904,
+       "pixel_retention": 0.4220945412230003,
+       "excluded_cells": 223,
+       "retained_cells": 916,
+       "bordering_home_share_excluded": 0.24663677130044842,
+       "bordering_home_share_retained": 0.34388646288209607,
+       "reasons": {}
+      }
+     ],
+     "label": "stable",
+     "label_reason": "no stricter condition drops the observed share below the random-pixel-loss expectation x 2^-0.5",
+     "inference": "Descriptive only: one participant's section, with no leave-one-out; a participant compared with another is one person against one person.",
+     "rules": {
+      "threshold": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+      "population": "Cells positive for the population marker as whole cells; frozen for every measurement condition.",
+      "home": "Cells positive for the marker as whole cells and not positive for the population marker.",
+      "bordering": "Two cells border when a pixel of one lies within 2 px of a pixel of the other along a row or a column of the segmentation mask, so a one-pixel background gap between cells still counts.",
+      "expectation": "Closed form. A condition keeping k of a cell's n pixels is compared with k pixels drawn at random: their mean has the whole-cell mean m and variance s^2 / k x (n - k) / (n - 1), with s^2 the whole-cell pixel variance, and reaches the threshold t with probability Phi((m - t) / sd) (1 or 0 when sd = 0; 0 when k = 0). Expected share: the mean of that probability over the population.",
+      "label": "Gates: at least 20 population cells and 10 of them positive for the marker as whole cells, else insufficient evidence. Segmentation-sensitive: under one stricter condition the observed share O is below the expectation E x 2^-0.5. Otherwise stable.",
+      "caveat": "Eroding a cell also removes genuine membrane signal, which random pixel loss does not model; compare the bordering-home shares of excluded and retained cells before reading an excess drop as spillover."
+     },
+     "cell_table_checksum": "14036e204261b35603fcaf83dee1b40178615b9e02c91a7af5f6179eb34d3d98"
+    },
+    {
+     "result_id": "pra-ef4d7c5d11432587",
+     "dataset_id": "KPMP-CODEX",
+     "participant_id": "31-10013",
+     "role": "diseased",
+     "roi": null,
+     "population": "CD20+ cells",
+     "population_marker": "CD20",
+     "marker": "UMOD",
+     "home": "UMOD+ cells that are not CD20+",
+     "population_cells": 827,
+     "home_cells": 3095,
+     "thresholds": [
+      {
+       "marker": "UMOD",
+       "value": 18.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      },
+      {
+       "marker": "CD20",
+       "value": 16.0,
+       "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+       "source_participant_id": "164-17"
+      }
+     ],
+     "conditions": [
+      {
+       "condition": "whole_cell",
+       "positive_cells": 70,
+       "observed_share": 0.08464328899637243,
+       "expected_share": 0.08464328899637243,
+       "pixel_retention": 1.0,
+       "excluded_cells": 0,
+       "retained_cells": 70,
+       "bordering_home_share_excluded": null,
+       "bordering_home_share_retained": 0.21428571428571427,
+       "reasons": {
+        "bordering_home_share_excluded": "no population cell loses positivity under this condition"
+       }
+      },
+      {
+       "condition": "eroded_1px",
+       "positive_cells": 62,
+       "observed_share": 0.07496977025392987,
+       "expected_share": 0.085026509025078,
+       "pixel_retention": 0.6583284549916693,
+       "excluded_cells": 9,
+       "retained_cells": 61,
+       "bordering_home_share_excluded": 0.2222222222222222,
+       "bordering_home_share_retained": 0.21311475409836064,
+       "reasons": {}
+      },
+      {
+       "condition": "eroded_2px",
+       "positive_cells": 58,
+       "observed_share": 0.07013301088270858,
+       "expected_share": 0.0823765852852117,
+       "pixel_retention": 0.38385043754972153,
+       "excluded_cells": 14,
+       "retained_cells": 56,
+       "bordering_home_share_excluded": 0.14285714285714285,
+       "bordering_home_share_retained": 0.23214285714285715,
+       "reasons": {}
+      },
+      {
+       "condition": "nucleus_region",
+       "positive_cells": 62,
+       "observed_share": 0.07496977025392987,
+       "expected_share": 0.07604207463463163,
+       "pixel_retention": 0.5111001035709462,
+       "excluded_cells": 12,
+       "retained_cells": 58,
+       "bordering_home_share_excluded": 0.08333333333333333,
+       "bordering_home_share_retained": 0.2413793103448276,
+       "reasons": {}
+      }
+     ],
+     "label": "stable",
+     "label_reason": "no stricter condition drops the observed share below the random-pixel-loss expectation x 2^-0.5",
+     "inference": "Descriptive only: one participant's section, with no leave-one-out; a participant compared with another is one person against one person.",
+     "rules": {
+      "threshold": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+      "population": "Cells positive for the population marker as whole cells; frozen for every measurement condition.",
+      "home": "Cells positive for the marker as whole cells and not positive for the population marker.",
+      "bordering": "Two cells border when a pixel of one lies within 2 px of a pixel of the other along a row or a column of the segmentation mask, so a one-pixel background gap between cells still counts.",
+      "expectation": "Closed form. A condition keeping k of a cell's n pixels is compared with k pixels drawn at random: their mean has the whole-cell mean m and variance s^2 / k x (n - k) / (n - 1), with s^2 the whole-cell pixel variance, and reaches the threshold t with probability Phi((m - t) / sd) (1 or 0 when sd = 0; 0 when k = 0). Expected share: the mean of that probability over the population.",
+      "label": "Gates: at least 20 population cells and 10 of them positive for the marker as whole cells, else insufficient evidence. Segmentation-sensitive: under one stricter condition the observed share O is below the expectation E x 2^-0.5. Otherwise stable.",
+      "caveat": "Eroding a cell also removes genuine membrane signal, which random pixel loss does not model; compare the bordering-home shares of excluded and retained cells before reading an excess drop as spillover."
+     },
+     "cell_table_checksum": "ed24695fe0d07451646296dcd46a0c49256ecef0b23e37435ddfaf8765f13540"
+    }
+   ],
+   "note": "164-17 (healthy reference): 16.7% of 6,810 CD20+ cells are UMOD+, 13.6% with outlines trimmed 2 px, stable; 31-10013 (diseased): 8.5% of 827 CD20+ cells are UMOD+, 7.0% with outlines trimmed 2 px, stable. Descriptive: one person each, thresholds frozen on the healthy reference and not calibrated across imaging runs, masks nucleus-sized. A second line of evidence on protein, not a replication."
+  }
+ ],
+ "figures": [
+  {
+   "task_id": "lab-3",
+   "sub_claim": 0,
+   "finding_id": "fnd-ce7d56f1db059532",
+   "title": "LRP2 in Podocyte cells under stricter molecule assignment",
+   "svg": "figure-lab-3.svg",
+   "pdf": "figure-lab-3.pdf",
+   "png": "figure-lab-3.png",
+   "legend": "LRP2 in cells labelled Podocyte (label rule nphs1-anchored-v1), GSE286184, 19 eligible sections, 7,926 cells. (a) Share of cells expressing under each assignment rule; grey lines are single sections, black is pooled (26.2% default, 23.8% nucleus-only), dashed is the pooled expectation if nucleus-only only removed molecules at random (24.4%). (b) Per section, observed against expected change from default to nucleus-only, in percentage points; 13 of 19 sections fall below the diagonal (lost more than thinning explains). Evidence label: stable. Finding fnd-ce7d56f1db059532.",
+   "sections": 19,
+   "cells": 7926
+  },
+  {
+   "task_id": "lab-6",
+   "sub_claim": 1,
+   "finding_id": "fnd-fb36fadff91b78bd",
+   "title": "UMOD in B cell cells under stricter molecule assignment",
+   "svg": "figure-lab-6.svg",
+   "pdf": "figure-lab-6.pdf",
+   "png": "figure-lab-6.png",
+   "legend": "UMOD in cells labelled B cell (label rule full-panel-v1), GSE286184, 19 eligible sections, 4,359 cells. (a) Share of cells expressing under each assignment rule; grey lines are single sections, black is pooled (17.0% default, 12.3% nucleus-only), dashed is the pooled expectation if nucleus-only only removed molecules at random (9.5%). (b) Per section, observed against expected change from default to nucleus-only, in percentage points; 1 of 19 sections fall below the diagonal (lost more than thinning explains). Evidence label: stable. Finding fnd-fb36fadff91b78bd.",
+   "sections": 19,
+   "cells": 4359
+  }
+ ],
+ "report": {
+  "what_happened": [
+   "Part 1, Podocyte LRP2: predicted to stay under stricter assignment; confirmed. Pooled over 19 sections and 7,926 cells, the share went from 26.2% to 23.8% under nucleus-only, against 24.4% expected from random thinning.",
+   "Part 2, B cell UMOD: predicted to fall away under stricter assignment; refuted. Pooled over 19 sections and 4,359 cells, the share went from 17.0% to 12.3% under nucleus-only, against 9.5% expected from random thinning."
+  ],
+  "why": [
+   "Part 1: evidence label stable (Pooled over 19 eligible sections, the observed value stays at or above the home-matched expectation x 2^-0.5 under every stricter primary condition, and still does with any one eligible section left out.). Verification verified: structural passed; numerical passed; visual passed.",
+   "Part 1: the claim cites 2 controls (ctl-9ea26a53c27dc17f, ctl-104cb07000ec6c1a).",
+   "Part 1, literature: 0 of the 25 most-cited records read (of 1,141 Europe PMC hits for '(LRP2 OR megalin) AND podocyte AND human') mention LRP2 together with podocytes in a human context in their title or abstract. A count over the records read, not a search of everything published.",
+   "Part 1, protein: 164-17 (healthy reference): 0.3% of 2,628 Podocalyxin+ cells are LRP2+, 0.3% with outlines trimmed 2 px, insufficient evidence; 31-10013 (diseased): 17.4% of 219 Podocalyxin+ cells are LRP2+, 19.2% with outlines trimmed 2 px, stable. Descriptive: one person each, thresholds frozen on the healthy reference and not calibrated across imaging runs, masks nucleus-sized. A second line of evidence on protein, not a replication.",
+   "Part 2: evidence label stable (Pooled over 19 eligible sections, the observed value stays at or above the home-matched expectation x 2^-0.5 under every stricter primary condition, and still does with any one eligible section left out.). Verification verified: structural passed; numerical passed; visual passed.",
+   "Part 2: the claim cites 2 controls (ctl-c81e0416a3b217fc, ctl-83dc43354fb5bc9f).",
+   "Part 2, literature: 0 of the 25 most-cited records read (of 454 Europe PMC hits for '(UMOD OR uromodulin) AND \"B cell\" AND human') mention UMOD together with B cells in a human context in their title or abstract. A count over the records read, not a search of everything published.",
+   "Part 2, protein: 164-17 (healthy reference): 16.7% of 6,810 CD20+ cells are UMOD+, 13.6% with outlines trimmed 2 px, stable; 31-10013 (diseased): 8.5% of 827 CD20+ cells are UMOD+, 7.0% with outlines trimmed 2 px, stable. Descriptive: one person each, thresholds frozen on the healthy reference and not calibrated across imaging runs, masks nucleus-sized. A second line of evidence on protein, not a replication."
+  ],
+  "next_steps": [
+   "Part 1: none of the 25 records read pairs LRP2 with podocytes in human tissue. A targeted search (full text, other databases) and an orthogonal assay such as RNAscope or immunostaining on human biopsies would test it directly.",
+   "Part 1: repeat the protein check on more KPMP participants imaged with the same panel, so a healthy-versus-disease difference is not one person against one.",
+   "Part 2: none of the 25 records read pairs UMOD with b cells in human tissue. A targeted search (full text, other databases) and an orthogonal assay such as RNAscope or immunostaining on human biopsies would test it directly.",
+   "Part 2: repeat the protein check on more KPMP participants imaged with the same panel, so a healthy-versus-disease difference is not one person against one.",
+   "Figure for part 1 (figure-lab-3.svg, figure-lab-3.pdf) is ready for a manuscript; its legend lists every number it shows.",
+   "Figure for part 2 (figure-lab-6.svg, figure-lab-6.pdf) is ready for a manuscript; its legend lists every number it shows."
+  ]
+ }
+}

@@ -48,10 +48,10 @@ def lab_for(tmp_path: Path, digest: dict):
     dispatch_req, dispatch_in = dispatch_request(finished.question, _verdict_view(finished), _claim_view(finished))
     proposal = {"summary": "Check the literature, the protein and draw the figure.", "tasks": [
         {"agent": "literature", "sub_claim": 0, "reason": "Is podocyte LRP2 reported?", "query": QUERY},
-        {"agent": "protein_crosscheck", "sub_claim": 0, "reason": "Protein-level counterpart."},
-        {"agent": "publication_figure", "sub_claim": 0, "reason": "A figure for the manuscript."},
-        {"agent": "protein_crosscheck", "sub_claim": 0, "reason": "Duplicate."},
-        {"agent": "publication_figure", "sub_claim": 5, "reason": "No such sub-claim."},
+        {"agent": "protein_crosscheck", "sub_claim": 0, "reason": "Protein-level counterpart.", "query": ""},
+        {"agent": "publication_figure", "sub_claim": 0, "reason": "A figure for the manuscript.", "query": ""},
+        {"agent": "protein_crosscheck", "sub_claim": 0, "reason": "Duplicate.", "query": ""},
+        {"agent": "publication_figure", "sub_claim": 5, "reason": "No such sub-claim.", "query": ""},
     ]}
     sub = finished.verdict.verdicts[0].sub_claim
     claim = finished.claim_for(0)

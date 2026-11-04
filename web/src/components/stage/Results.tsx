@@ -11,6 +11,7 @@ import { ExportButton } from "../ExportButton";
 import { FindingsPanel } from "../FindingsPanel";
 import { TelemetryPills } from "../TelemetryPills";
 import type { TissueFocus } from "../TissuePanel";
+import { LabView } from "./LabView";
 import { labelTone } from "./RunCanvas";
 import type { RunGraph } from "./runGraph";
 
@@ -185,6 +186,10 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
             <p className="mt-6 text-[15px] text-ink-2">No verdict yet: the run has not finished.</p>
           )}
         </section>
+
+        {view.verdict && view.status === "complete" && (
+          <LabView investigationId={view.investigationId} subClaims={view.verdict.verdicts.map((v) => `${v.sub_claim.cell_type} · ${v.sub_claim.genes.join("/")}`)} />
+        )}
 
         <section aria-label="What to look at next" className="flex flex-col gap-3">
           <h2 className="text-[22px] font-semibold tracking-tight">What to look at next</h2>

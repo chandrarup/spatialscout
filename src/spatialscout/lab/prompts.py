@@ -47,7 +47,8 @@ sub-agents. Choose the sub-agents to start; they run at the same time.
 Rules:
 - Use only agents from the registry, and only as its 'when' says.
 - At most 8 tasks. One task per agent per sub-claim.
-- For a literature task write `query` in Europe PMC boolean syntax. Name the gene with its protein name (for example
+- Every task has a `query` field. For a literature task it is required and must not be empty: write it in Europe PMC
+  boolean syntax. For other agents set it to "". Name the gene with its protein name (for example
   '(LRP2 OR megalin)'), the cell type, and restrict to human ('AND human'). Keep it short enough to return records.
 - `reason` is one plain sentence a scientist would accept.
 - Do not invent results; the sub-agents compute and fetch them.

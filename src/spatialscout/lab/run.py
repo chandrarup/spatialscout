@@ -132,7 +132,7 @@ def validate(proposal: DispatchProposal, finished: Finished) -> tuple[list[LabTa
             rejected.append(f"{p.agent} for sub-claim {p.sub_claim}: {problem}")
             continue
         seen.add((p.agent, p.sub_claim))
-        tasks.append(LabTask(task_id=f"lab-{len(tasks) + 1}", agent=p.agent, sub_claim=p.sub_claim, reason=p.reason, query=p.query))
+        tasks.append(LabTask(task_id=f"lab-{len(tasks) + 1}", agent=p.agent, sub_claim=p.sub_claim, reason=p.reason, query=p.query or None))
     return tasks, rejected
 
 

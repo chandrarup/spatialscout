@@ -20,9 +20,9 @@ class LabTaskProposal(Contract):
     agent: LabAgent
     sub_claim: int = Field(ge=0, description="Index of the sub-claim in the verdict, from 0.")
     reason: str = Field(description="One sentence: why this sub-agent, for this sub-claim.")
-    query: str | None = Field(
-        default=None,
-        description="Literature only: a Europe PMC query (boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human').",
+    query: str = Field(
+        description="Required for a literature task: a Europe PMC query in boolean syntax, for example "
+        "'(LRP2 OR megalin) AND podocyte AND human'. An empty string for every other agent.",
     )
 
 
