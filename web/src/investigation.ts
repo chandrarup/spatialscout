@@ -87,6 +87,8 @@ export function applyEvent(view: InvestigationView, event: InvestigationEvent): 
         claims: next.claims.map((claim) => (claim.claim_id === event.claim.claim_id ? event.claim : claim)),
         verifications: { ...next.verifications, [event.claim.claim_id]: event.verification },
       };
+    case "review_decided":
+      return { ...next, claims: next.claims.map((claim) => (claim.claim_id === event.claim.claim_id ? event.claim : claim)) };
     case "verdict":
       return { ...next, verdict: event.verdict };
     case "package_ready":

@@ -31,6 +31,7 @@ class PackageManifest(Contract):
     claims: int
     notes: list[str]
     open_questions: list[OpenQuestion] = Field(default_factory=list, description="What the investigation could not settle within its budget.")
+    reviews: int = Field(default=0, description="Review decisions recorded so far (reviews.json).")
 
 
 class PackageInfo(Contract):

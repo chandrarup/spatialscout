@@ -2,18 +2,29 @@
 // It names the controls the agent ran for the claim's finding, or says none ran: nothing runs a control for the agent.
 // The verification panel shows each check's recorded result and reasons. "Challenge the verifier" swaps in one of the
 // claim's recorded injected variants, named only by its error kind, with its recorded verification: the diff and the
-// actual outcome, misses included. Nothing is recomputed and no model is called. Ticket 11 adds review controls.
+// actual outcome, misses included. Nothing is recomputed and no model is called. The review buttons record the
+// researcher's decision on this claim version in the audit log.
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import type { Claim, ClaimChallenge, ClaimChallenges, FieldChange, VerificationResult } from "../contracts/generated";
+import type { Claim, ClaimChallenge, ClaimChallenges, FieldChange, ReviewRequest, VerificationResult } from "../contracts/generated";
 
 interface Props {
   claim: Claim;
   verification?: VerificationResult;
   investigationId?: string;
+  /** Record a review decision; absent when the claim cannot be reviewed (an injected variant, a recorded replay). */
+  onReview?: (decision: ReviewRequest["decision"]) => Promise<void>;
 }
 
-export function ClaimCard({ claim, verification, investigationId }: Props) {
+const DECISIONS: [ReviewRequest["decision"], string][] = [
+  ["accepted_for_follow_up", "Accept for follow-up"],
+  ["needs_investigation", "Needs investigation"],
+  ["unresolved", "Unresolved"],
+];
+
+export function ClaimCard({ claim, verification, investigationId, onReview }: Props) {
+  const [reviewing, setReviewing] = useState(false);
+  const [reviewProblem, setReviewProblem] = useState<string | null>(null);
   const [challenges, setChallenges] = useState<ClaimChallenges | null>(null);
   const [chosen, setChosen] = useState<string>("");
 
@@ -69,6 +80,30 @@ export function ClaimCard({ claim, verification, investigationId }: Props) {
         <Status label="Verification" value={shown.verification_status} />
         <Status label="Review" value={shown.review_status} />
       </div>
+      {onReview && !variant && (
+        <div className="mb-3 flex flex-wrap items-center gap-1.5 text-xs" role="group" aria-label="Review decision">
+          <span className="text-ink-3">Review</span>
+          {DECISIONS.map(([decision, label]) => (
+            <button
+              key={decision}
+              type="button"
+              disabled={reviewing}
+              aria-pressed={claim.review_status === decision}
+              onClick={() => {
+                setReviewing(true);
+                setReviewProblem(null);
+                onReview(decision)
+                  .catch((e: unknown) => setReviewProblem(String(e)))
+                  .finally(() => setReviewing(false));
+              }}
+              className={`rounded border px-2 py-0.5 ${claim.review_status === decision ? "border-accent bg-accent/20 text-ink" : "border-line text-ink-2 hover:text-ink"}`}
+            >
+              {label}
+            </button>
+          ))}
+          {reviewProblem && <span className="text-red-300">{reviewProblem}</span>}
+        </div>
+      )}
       {variant && <ChallengeOutcome variant={variant} />}
       {shownVerification && <VerificationPanel verification={shownVerification} />}
       <dl className="mb-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">

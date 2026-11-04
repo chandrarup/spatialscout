@@ -256,6 +256,7 @@
             "claim_verified",
             "claim_challenges_recorded",
             "verdict_computed",
+            "review_decided",
             "figure_failed",
             "package_exported",
             "error"
@@ -2914,6 +2915,7 @@
           "plan_approved": "#/definitions/PlanApprovedEvent",
           "plan_proposed": "#/definitions/PlanProposedEvent",
           "plan_rejected": "#/definitions/PlanRejectedEvent",
+          "review_decided": "#/definitions/ReviewDecidedEvent",
           "tool_failed": "#/definitions/ToolFailedEvent",
           "tool_finished": "#/definitions/ToolFinishedEvent",
           "tool_started": "#/definitions/ToolStartedEvent",
@@ -2957,6 +2959,9 @@
         },
         {
           "$ref": "#/definitions/VerdictEvent"
+        },
+        {
+          "$ref": "#/definitions/ReviewDecidedEvent"
         },
         {
           "$ref": "#/definitions/PackageReadyEvent"
@@ -3045,6 +3050,7 @@
                 "plan_approved": "#/definitions/PlanApprovedEvent",
                 "plan_proposed": "#/definitions/PlanProposedEvent",
                 "plan_rejected": "#/definitions/PlanRejectedEvent",
+                "review_decided": "#/definitions/ReviewDecidedEvent",
                 "tool_failed": "#/definitions/ToolFailedEvent",
                 "tool_finished": "#/definitions/ToolFinishedEvent",
                 "tool_started": "#/definitions/ToolStartedEvent",
@@ -3088,6 +3094,9 @@
               },
               {
                 "$ref": "#/definitions/VerdictEvent"
+              },
+              {
+                "$ref": "#/definitions/ReviewDecidedEvent"
               },
               {
                 "$ref": "#/definitions/PackageReadyEvent"
@@ -4660,6 +4669,11 @@
             "$ref": "#/definitions/OpenQuestion"
           },
           "type": "array"
+        },
+        "reviews": {
+          "default": 0,
+          "description": "Review decisions recorded so far (reviews.json).",
+          "type": "integer"
         }
       },
       "required": [
@@ -4678,7 +4692,8 @@
         "review_state",
         "claims",
         "notes",
-        "open_questions"
+        "open_questions",
+        "reviews"
       ],
       "title": "PackageManifest",
       "type": "object"
@@ -6046,6 +6061,44 @@
       "title": "ReplayInfo",
       "type": "object"
     },
+    "ReviewDecidedEvent": {
+      "additionalProperties": false,
+      "description": "The researcher's decision on one claim version, and the claim with its new review status.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "review_decided",
+          "default": "review_decided",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/definitions/ReviewDecision"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "decision",
+        "claim"
+      ],
+      "title": "ReviewDecidedEvent",
+      "type": "object"
+    },
     "ReviewDecision": {
       "additionalProperties": false,
       "description": "The researcher's decision on one claim version; voice decisions need confirmation.",
@@ -6101,6 +6154,45 @@
         "confirmed"
       ],
       "title": "ReviewDecision",
+      "type": "object"
+    },
+    "ReviewRequest": {
+      "additionalProperties": false,
+      "description": "A review decision as the client sends it; the server adds the claim version, the time and the id.",
+      "properties": {
+        "decision": {
+          "enum": [
+            "accepted_for_follow_up",
+            "needs_investigation",
+            "unresolved"
+          ],
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string"
+        },
+        "via": {
+          "default": "click",
+          "enum": [
+            "click",
+            "voice"
+          ],
+          "type": "string"
+        },
+        "confirmed": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "decision",
+        "reviewer",
+        "via",
+        "confirmed"
+      ],
+      "title": "ReviewRequest",
       "type": "object"
     },
     "ReviewStatus": {

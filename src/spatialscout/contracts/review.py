@@ -105,3 +105,12 @@ class ReviewDecision(Contract):
     decided_at_utc: datetime
     via: Literal["click", "voice"]
     confirmed: bool
+
+
+class ReviewRequest(Contract):
+    """A review decision as the client sends it; the server adds the claim version, the time and the id."""
+
+    decision: Literal["accepted_for_follow_up", "needs_investigation", "unresolved"]
+    reviewer: str = Field(min_length=1, max_length=80)
+    via: Literal["click", "voice"] = "click"
+    confirmed: bool = True

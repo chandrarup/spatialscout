@@ -14,7 +14,7 @@ from .claim import Claim
 from .model_call import ModelCallRecord
 from .package import PackageInfo
 from .plan import Plan
-from .review import VerificationResult
+from .review import ReviewDecision, VerificationResult
 from .verdict import HypothesisVerdict
 
 
@@ -129,6 +129,14 @@ class ClaimVerifiedEvent(EventBase):
     verification: VerificationResult
 
 
+class ReviewDecidedEvent(EventBase):
+    """The researcher's decision on one claim version, and the claim with its new review status."""
+
+    type: Literal["review_decided"] = "review_decided"
+    decision: ReviewDecision
+    claim: Claim
+
+
 class VerdictEvent(EventBase):
     """Each sub-claim's verdict, derived by the frozen rule from the verified claims once verification ends."""
 
@@ -168,6 +176,7 @@ InvestigationEvent = Annotated[
     | ClaimRejectedEvent
     | ClaimVerifiedEvent
     | VerdictEvent
+    | ReviewDecidedEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent,

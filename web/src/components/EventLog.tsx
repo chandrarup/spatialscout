@@ -61,6 +61,8 @@ function describe(event: InvestigationEvent): string {
       const what = injected.is_injected ? `injected error (${injected.kind}) on claim` : "claim";
       return `${what} ${event.claim.claim_id}: ${event.verification.verification_status}`;
     }
+    case "review_decided":
+      return `${event.decision.reviewer} marked ${event.decision.claim_id} v${event.decision.claim_version} ${event.decision.decision.replaceAll("_", " ")}`;
     case "verdict":
       return event.verdict.verdicts.map((v) => `${v.sub_claim.text}: ${v.verdict}`).join("; ") || "no sub-claims";
     case "error":

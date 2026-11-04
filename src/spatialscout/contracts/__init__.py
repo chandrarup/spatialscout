@@ -53,6 +53,7 @@ from .events import (
     ClaimRejectedEvent,
     ClaimVerifiedEvent,
     VerdictEvent,
+    ReviewDecidedEvent,
     PlanRejectedEvent,
     ToolFailedEvent,
     ErrorEvent,
@@ -140,7 +141,7 @@ from .region import (
     StructureRun,
     StructureSeed,
 )
-from .review import CheckKind, CheckResult, ClaimChallenge, ClaimChallenges, FieldChange, ReviewDecision, VerificationResult, VisualAnswer
+from .review import CheckKind, CheckResult, ClaimChallenge, ClaimChallenges, FieldChange, ReviewDecision, ReviewRequest, VerificationResult, VisualAnswer
 from .verdict import HypothesisVerdict, Prediction, SubClaim, SubClaimVerdict
 from .voice import Transcription
 

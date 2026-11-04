@@ -150,8 +150,12 @@ def verify_chain(client, audit_log_jsonl):
 def test_the_package_holds_the_claims_the_audit_log_and_a_manifest_with_the_head_hash(client):
     package = run_to_package(client)
 
-    assert sorted(package.namelist()) == ["audit_log.jsonl", "claims.json", "manifest.json"]
+    names = set(package.namelist())
+    assert {"audit_log.jsonl", "claims.json", "manifest.json", "reviews.json", "replay.json", "RERUN.md",
+            "verify.ipynb", "verify_package.py"} <= names
+    assert any(n.startswith("artifacts/fnd-") for n in names) and any(n.startswith("figures/") for n in names)
     manifest = json.loads(package.read("manifest.json"))
+    assert {f["path"] for f in manifest["files"]} == names - {"manifest.json"}
     last_entry = json.loads(package.read("audit_log.jsonl").decode().splitlines()[-1])
     assert manifest["audit_log"]["head_hash"] == last_entry["entry_hash"]
     assert (manifest["run_mode"], manifest["review_state"]) == ("cached_tool_rerun", "work_in_progress")

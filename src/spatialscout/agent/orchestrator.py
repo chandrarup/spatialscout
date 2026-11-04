@@ -43,6 +43,10 @@ from ..contracts import (
     ClaimRejectedEvent,
     ClaimVerifiedEvent,
     VerdictEvent,
+    ReviewDecidedEvent,
+    ReviewDecision,
+    ReviewRequest,
+    ReviewStatus,
     DatasetManifest,
     InjectedErrorKind,
     ErrorEvent,
@@ -97,6 +101,8 @@ from ..gateway.gate import LiveGate
 from .claims import claim_problems
 from .errors import (
     DatasetUnavailable,
+    ReviewRefused,
+    UnknownClaim,
     InvalidRegions,
     InvestigationError,
     NoRecordedInvestigation,
@@ -224,6 +230,33 @@ class Orchestrator:
         investigation.audit_log.append("plan_approved", {"plan_id": plan.plan_id, "plan_hash": plan_hash})
         investigation.emit(PlanApprovedEvent, plan_id=plan.plan_id, plan_hash=plan_hash)
         self._spawn(investigation, self._execute(investigation, investigation.plan()))
+        return investigation
+
+    def review(self, investigation_id: str, claim_id: str, request: ReviewRequest) -> Investigation:
+        """Record the researcher's decision on the claim's latest version, then export the package again so it carries
+        the decision. Only a finished, writable investigation can be reviewed; a recorded one never changes."""
+        investigation = self.get(investigation_id)
+        if investigation.read_only:
+            raise ReviewRefused("a recorded investigation never changes; review a cached tool rerun or a live run instead")
+        if investigation.state.status != InvestigationStatus.COMPLETE:
+            raise ReviewRefused(f"the investigation is {investigation.state.status.value}; claims can be reviewed once it is complete")
+        if request.via == "voice" and not request.confirmed:
+            raise ReviewRefused("a spoken decision needs confirmation before it is recorded")
+        claims = latest_claims(investigation)
+        claim = next((c for c in claims if c.claim_id == claim_id), None)
+        if claim is None:
+            raise UnknownClaim(claim_id)
+        decision = ReviewDecision(
+            decision_id=new_id("rvw"), claim_id=claim.claim_id, claim_version=claim.version, decision=request.decision,
+            reviewer=request.reviewer, decided_at_utc=self._clock(), via=request.via, confirmed=request.confirmed,
+        )
+        reviewed = claim.model_copy(update={"review_status": ReviewStatus(request.decision)})
+        investigation.audit_log.append("review_decided", decision.model_dump(mode="json"))
+        investigation.emit(ReviewDecidedEvent, decision=decision, claim=reviewed)
+        packages = [e.package for e in investigation.events if isinstance(e, PackageReadyEvent)]
+        open_questions = packages[-1].open_questions if packages else []
+        package = self._export(investigation, latest_claims(investigation), open_questions)
+        investigation.emit(PackageReadyEvent, package=package)
         return investigation
 
     def reject(self, investigation_id: str) -> Investigation:
@@ -720,6 +753,9 @@ class Orchestrator:
             audit_log_text=investigation.audit_log.text(),
             created_at=self._clock(),
             open_questions=open_questions,
+            directory=investigation.directory,
+            reviews=[e.decision for e in investigation.events if isinstance(e, ReviewDecidedEvent)],
+            model_calls=[e.call for e in investigation.events if isinstance(e, ModelCallEvent)],
         )
         investigation.audit_log.append(
             "package_exported",
@@ -795,6 +831,18 @@ class _Run:
             None,
         )
         return thinning, labels
+
+
+def latest_claims(investigation: Investigation) -> list[Claim]:
+    """Each claim's latest version, in drafting order: drafted, then verified, then reviewed. Injected variants are not
+    claims of the investigation."""
+    latest: dict[str, Claim] = {}
+    for event in investigation.events:
+        if isinstance(event, ClaimDraftedEvent | ReviewDecidedEvent) or (
+            isinstance(event, ClaimVerifiedEvent) and not event.claim.injected.is_injected
+        ):
+            latest[event.claim.claim_id] = event.claim
+    return list(latest.values())
 
 
 def _artifact_id(artifact: Any) -> str:

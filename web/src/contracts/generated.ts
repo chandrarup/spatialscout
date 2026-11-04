@@ -64,6 +64,7 @@ export type InvestigationEvent =
   | ClaimRejectedEvent
   | ClaimVerifiedEvent
   | VerdictEvent
+  | ReviewDecidedEvent
   | PackageReadyEvent
   | ModelCallEvent
   | ErrorEvent;
@@ -177,6 +178,7 @@ export interface AuditEntry {
     | "claim_verified"
     | "claim_challenges_recorded"
     | "verdict_computed"
+    | "review_decided"
     | "figure_failed"
     | "package_exported"
     | "error";
@@ -1512,6 +1514,37 @@ export interface VerdictEvent {
   verdict: HypothesisVerdict;
 }
 /**
+ * The researcher's decision on one claim version, and the claim with its new review status.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ReviewDecidedEvent".
+ */
+export interface ReviewDecidedEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "review_decided";
+  decision: ReviewDecision;
+  claim: Claim;
+}
+/**
+ * The researcher's decision on one claim version; voice decisions need confirmation.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ReviewDecision".
+ */
+export interface ReviewDecision {
+  schema_version: string;
+  decision_id: string;
+  claim_id: string;
+  claim_version: number;
+  decision: "accepted_for_follow_up" | "needs_investigation" | "unresolved";
+  reviewer: string;
+  decided_at_utc: string;
+  via: "click" | "voice";
+  confirmed: boolean;
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "PackageReadyEvent".
  */
@@ -1623,6 +1656,7 @@ export interface InvestigationSnapshot {
     | ClaimRejectedEvent
     | ClaimVerifiedEvent
     | VerdictEvent
+    | ReviewDecidedEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent
@@ -2037,6 +2071,10 @@ export interface PackageManifest {
    * What the investigation could not settle within its budget.
    */
   open_questions: OpenQuestion[];
+  /**
+   * Review decisions recorded so far (reviews.json).
+   */
+  reviews: number;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -2327,19 +2365,14 @@ export interface RegionView {
   notes: string[];
 }
 /**
- * The researcher's decision on one claim version; voice decisions need confirmation.
+ * A review decision as the client sends it; the server adds the claim version, the time and the id.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "ReviewDecision".
+ * via the `definition` "ReviewRequest".
  */
-export interface ReviewDecision {
-  schema_version: string;
-  decision_id: string;
-  claim_id: string;
-  claim_version: number;
+export interface ReviewRequest {
   decision: "accepted_for_follow_up" | "needs_investigation" | "unresolved";
   reviewer: string;
-  decided_at_utc: string;
   via: "click" | "voice";
   confirmed: boolean;
 }

@@ -263,6 +263,14 @@ export default function App() {
                   claim={claim}
                   verification={investigation.verifications[claim.claim_id]}
                   investigationId={investigation.investigationId}
+                  onReview={
+                    investigation.status === "complete" && investigation.runMode !== "immutable_replay"
+                      ? (decision) =>
+                          api
+                            .review(investigation.investigationId, claim.claim_id, { decision, reviewer: "Researcher", via: "click", confirmed: true })
+                            .then((snapshot) => snapshot.events.forEach((event) => dispatch({ type: "event", event })))
+                      : undefined
+                  }
                 />
               ))}
               {investigation.injected.map(({ claim, verification }) => (

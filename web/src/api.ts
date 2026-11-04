@@ -19,6 +19,7 @@ import type {
   RecordedBoxes,
   Region,
   RegionView,
+  ReviewRequest,
   StartInvestigationRequest,
   StructureRun,
   Transcription,
@@ -76,6 +77,12 @@ export const api = {
     fetch(`/api/investigations/${encodeURIComponent(investigationId)}/claims/${encodeURIComponent(claimId)}/challenges`).then(
       json<ClaimChallenges>,
     ),
+  review: (investigationId: string, claimId: string, body: ReviewRequest) =>
+    fetch(`/api/investigations/${encodeURIComponent(investigationId)}/claims/${encodeURIComponent(claimId)}/review`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    }).then(json<InvestigationSnapshot>),
   start: (body: StartInvestigationRequest) =>
     fetch("/api/investigations", {
       method: "POST",

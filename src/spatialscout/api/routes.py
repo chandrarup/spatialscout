@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from ..agent import Investigation, NoRecordedInvestigation, Orchestrator, RunModeUnavailable, UnknownInvestigation
-from ..agent.errors import DatasetUnavailable, InvalidRegions
+from ..agent.errors import DatasetUnavailable, InvalidRegions, ReviewRefused, UnknownClaim
 from ..audit import verify_chain
 from ..contracts import (
     CapabilityReport,
@@ -21,6 +21,7 @@ from ..contracts import (
     InvestigationSnapshot,
     ModeInfo,
     RegionView,
+    ReviewRequest,
     RunMode,
     StartInvestigationRequest,
 )
@@ -215,6 +216,18 @@ async def claim_challenges(claim_id: str, investigation: InvestigationDep) -> Cl
     if "/" in claim_id or not path.is_file():
         raise HTTPException(status_code=404, detail=f"no recorded injected variants for claim {claim_id}")
     return ClaimChallenges.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+@router.post("/investigations/{investigation_id}/claims/{claim_id}/review")
+async def review_claim(claim_id: str, body: ReviewRequest, investigation: InvestigationDep, orchestrator: OrchestratorDep) -> InvestigationSnapshot:
+    """Record the researcher's decision on the claim's latest version (reviewer, time and version go in the audit
+    log) and export the evidence package again with it. Recorded investigations and unfinished ones are refused."""
+    try:
+        return orchestrator.review(investigation.investigation_id, claim_id, body).snapshot()
+    except UnknownClaim:
+        raise HTTPException(status_code=404, detail=f"no claim {claim_id} in {investigation.investigation_id}") from None
+    except ReviewRefused as refused:
+        raise HTTPException(status_code=409, detail={"code": refused.code, "message": str(refused)}) from None
 
 
 @router.post("/audit-log/verify")

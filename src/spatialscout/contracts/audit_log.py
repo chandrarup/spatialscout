@@ -26,6 +26,7 @@ AuditEntryKind = Literal[
     "claim_verified",
     "claim_challenges_recorded",
     "verdict_computed",
+    "review_decided",
     "figure_failed",
     "package_exported",
     "error",

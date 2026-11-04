@@ -41,3 +41,13 @@ class NoRecordedInvestigation(InvestigationError):
     """Immutable replay was asked for a question with no recorded investigation."""
 
     code = "no_recorded_investigation"
+
+
+class ReviewRefused(InvestigationError):
+    """A review decision that cannot be recorded: the investigation is recorded, unfinished, or the spoken decision is unconfirmed."""
+
+    code = "review_refused"
+
+
+class UnknownClaim(KeyError):
+    """No claim with this id in the investigation."""
