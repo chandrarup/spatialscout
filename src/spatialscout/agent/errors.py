@@ -17,6 +17,12 @@ class DatasetUnavailable(InvestigationError):
     code = "dataset_unavailable"
 
 
+class InvalidRegions(InvestigationError):
+    """A region drawn in the viewer is not on a section of the investigated dataset."""
+
+    code = "invalid_regions"
+
+
 class PlanUnsupported(InvestigationError):
     """The planner's proposal failed the registry and capability checks twice; the investigation reports the limitation."""
 

@@ -14,7 +14,7 @@ always finds every event it missed.
 import asyncio
 import os
 import re
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -35,6 +35,7 @@ from ..contracts import (
     PlanApprovedEvent,
     PlanProposedEvent,
     PlanRejectedEvent,
+    Region,
     ReplayInfo,
     RunMode,
     new_id,
@@ -65,7 +66,14 @@ class Investigation:
 
     @classmethod
     def create(
-        cls, root: Path, question: str, run_mode: RunMode, dataset_id: str, replay: ReplayInfo | None, clock: Callable[[], datetime]
+        cls,
+        root: Path,
+        question: str,
+        run_mode: RunMode,
+        dataset_id: str,
+        replay: ReplayInfo | None,
+        clock: Callable[[], datetime],
+        regions: Sequence[Region] = (),
     ) -> "Investigation":
         investigation_id = new_id("inv")
         directory = Path(root) / investigation_id
@@ -80,6 +88,7 @@ class Investigation:
             replay=replay,
             created_at_utc=now,
             updated_at_utc=now,
+            regions=list(regions),
         )
         (directory / "events.jsonl").touch()
         investigation = cls(directory, state, [], clock)
@@ -197,4 +206,5 @@ class Investigation:
             package=packages[-1] if packages else None,
             events=list(self.events),
             approved_plan_hash=self.state.approved_plan_hash,
+            regions=self.state.regions,
         )

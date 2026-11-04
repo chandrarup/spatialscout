@@ -7,10 +7,11 @@ from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from ..agent import Investigation, NoRecordedInvestigation, Orchestrator, RunModeUnavailable, UnknownInvestigation
-from ..agent.errors import DatasetUnavailable
+from ..agent.errors import DatasetUnavailable, InvalidRegions
 from ..audit import verify_chain
 from ..contracts import (
     CapabilityReport,
+    ChannelSet,
     ChainCheckResult,
     ClaimChallenges,
     ConditionName,
@@ -24,7 +25,7 @@ from ..contracts import (
     StartInvestigationRequest,
 )
 from ..data import DatasetStore, SectionNotIngested, SectionTables, UnknownDataset, UnknownLabelRule, UnknownSection
-from ..engine import build_packed_region_view, build_region_view, conditions_for
+from ..engine import build_packed_region_view, build_region_view, conditions_for, section_channels
 from ..gateway import LiveRunRefused, RecordingLibrary
 from ..gateway.gate import LiveGate
 from ..settings import Settings
@@ -149,6 +150,13 @@ def packed_region_view(section_id: str, store: StoreDep, label_rule_id: str | No
     )
 
 
+@router.get("/sections/{section_id}/channels")
+def channels(section_id: str, store: StoreDep) -> ChannelSet:
+    """The section's rendered channels (nuclei and five marker groups), each with its molecule count and whether
+    the section has any. The viewer draws them from the packed view's molecules: rendered, not imaged."""
+    return section_channels(_section(store, section_id, None))
+
+
 @router.post("/investigations", status_code=201)
 async def start_investigation(
     body: StartInvestigationRequest,
@@ -159,11 +167,15 @@ async def start_investigation(
     `X-Live-Passcode` header (never the URL, which access logs keep) and budget left today; otherwise 403 and
     nothing is created. Immutable replay returns the recorded investigation that answers the question."""
     try:
-        return orchestrator.start(body.question, body.run_mode, passcode=x_live_passcode, dataset_id=body.dataset_id).snapshot()
+        return orchestrator.start(
+            body.question, body.run_mode, passcode=x_live_passcode, dataset_id=body.dataset_id, regions=body.regions
+        ).snapshot()
     except LiveRunRefused as refused:
         raise HTTPException(status_code=403, detail=str(refused)) from None
     except RunModeUnavailable as unavailable:
         raise HTTPException(status_code=409, detail=str(unavailable)) from None
+    except InvalidRegions as invalid:
+        raise HTTPException(status_code=422, detail=str(invalid)) from None
     except (NoRecordedInvestigation, DatasetUnavailable) as missing:
         raise HTTPException(status_code=404, detail=str(missing)) from None
 

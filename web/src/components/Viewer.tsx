@@ -111,7 +111,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [flyTo?.key, view.section_id, size !== null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [flyTo?.key, view.section_id, size !== null, camera !== null]); // eslint-disable-line react-hooks/exhaustive-deps -- camera: a viewer mounted by the fly-to itself flies once it has fitted
 
   const { background, highlighted } = useMemo(() => moleculeBuffers(section, genes, visibleGenes), [section, genes, visibleGenes]);
   const excluded = useMemo(
@@ -283,6 +283,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
         </>
       )}
       <div className="pointer-events-none absolute bottom-2 left-3 text-xs text-ink-3">
+        <span className="font-medium text-ink-2">Rendered from molecules{view.synthetic ? " · synthetic section" : ""}</span> ·{" "}
         {view.section_name ? `${view.section_name} (${view.section_id})` : view.section_id} ·{" "}
         {section.moleculeCount.toLocaleString()} molecules · micrometres · drag to pan, scroll to zoom
       </div>

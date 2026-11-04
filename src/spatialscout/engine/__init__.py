@@ -1,6 +1,7 @@
 """Analysis engine: every deterministic science operation behind the agent's tools."""
 
 from .audit import audit_section
+from .channels import CHANNELS, section_channels
 from .conditions import (
     EXPLORATORY_CONDITIONS,
     IMPLEMENTED_CONDITIONS,
@@ -23,6 +24,8 @@ from .population import (
 from .region import build_packed_region_view, build_region_view
 
 __all__ = [
+    "CHANNELS",
+    "section_channels",
     "HOME_CELL_TYPES",
     "IMPLEMENTED_CONDITIONS",
     "MIN_ELIGIBLE_SECTIONS",

@@ -3,10 +3,11 @@
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from .base import SCHEMA_VERSION, Contract, RunMode
 from .claim import Claim
+from .finding import Region
 from .events import InvestigationEvent
 from .model_call import ReplayInfo
 from .package import PackageInfo
@@ -42,6 +43,7 @@ class InvestigationState(Contract):
     approved_at_utc: datetime | None = None
     finished_at_utc: datetime | None = None
     last_seq: int = 0
+    regions: list[Region] = Field(default_factory=list, description="Regions the researcher drew in the viewer, kept as context.")
 
 
 class StartInvestigationRequest(Contract):
@@ -50,6 +52,23 @@ class StartInvestigationRequest(Contract):
     dataset_id: str | None = Field(
         default=None, description="The dataset to investigate; the server's default when omitted. A recording names its own."
     )
+    regions: list[Region] = Field(
+        default_factory=list,
+        max_length=2,
+        description=(
+            "Regions the researcher drew in the dual-section viewer (one per section), kept with the investigation as "
+            "context and shown beside its verdicts. Each must lie on a section of the investigated dataset. They do not "
+            "scope the analysis or reach any model prompt. Ignored by immutable replay, which returns a recorded investigation."
+        ),
+    )
+
+    @field_validator("regions")
+    @classmethod
+    def _regions_have_area(cls, regions: list[Region]) -> list[Region]:
+        for region in regions:
+            if not (region.x1 > region.x0 and region.y1 > region.y0):
+                raise ValueError(f"region on {region.section_id} needs x1 > x0 and y1 > y0")
+        return regions
 
 
 class InvestigationSnapshot(Contract):
@@ -66,6 +85,7 @@ class InvestigationSnapshot(Contract):
     package: PackageInfo | None
     events: list[InvestigationEvent]
     approved_plan_hash: str | None = None
+    regions: list[Region] = Field(default_factory=list, description="Regions the researcher drew in the viewer, kept as context.")
 
 
 class ModeInfo(Contract):

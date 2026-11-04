@@ -4,6 +4,7 @@ that crosses a module or the HTTP boundary; TypeScript types are generated from 
 from .agent import FollowUpDecision, FollowUpProposal, FollowUpRequest, FollowUpStatus, OpenQuestion
 from .assignment import AuditMetrics, SectionAudit
 from .audit_log import GENESIS_HASH, AuditEntry, AuditEntryKind, ChainCheckResult
+from .channels import ChannelSet, RecordedBoxes, RenderedChannel
 from .base import (
     SCHEMA_VERSION,
     ConditionName,

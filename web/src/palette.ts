@@ -40,3 +40,19 @@ export function colourOf(highlight: Highlight, slots: readonly string[], name: s
 export function rgbOf(hex: string): Rgb {
   return rgb(hex);
 }
+
+// Rendered channels on the black dual viewport, blended additively like fluorescence. Yellow stays reserved for
+// excluded molecules and cyan for structure outlines; every channel is named in its toggle, so identity never
+// rests on colour alone.
+export const CHANNEL_COLOURS: Record<string, string> = {
+  nuclei: "#4a63ff", // blue, as a nuclear stain
+  nphs1: "#ff3fd0", // magenta
+  lrp2_cubn: "#2fd36b", // green
+  umod: "#ff8a1f", // orange
+  lymphocyte: "#ff2e4f", // crimson
+  postn: "#b48cff", // violet
+};
+export const OTHER_CHANNEL = "#c3c2b7";
+export const REGION_PASSING = "#f0efec";
+export const REGION_FAILING = "#ff6b6b";
+export const RECORDED_BOX = "#8e8d86";

@@ -1,9 +1,10 @@
 // SpatialScout workspace: question bar, tissue viewer, capability report, plan, events, claims and export.
 // The open investigation's id lives in the URL hash, so a refresh reconnects with after_seq and loses nothing.
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { api } from "./api";
 import { ClaimCard } from "./components/ClaimCard";
 import { DatasetCapabilities } from "./components/DatasetPanel";
+import { DualViewer, type RegionPair } from "./components/DualViewer";
 import { EventLog } from "./components/EventLog";
 import { ExportButton } from "./components/ExportButton";
 import { FindingsPanel } from "./components/FindingsPanel";
@@ -13,7 +14,9 @@ import { QuestionBar } from "./components/QuestionBar";
 import { RunModeBanner } from "./components/RunModeBanner";
 import { TelemetryPills } from "./components/TelemetryPills";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
-import type { DatasetManifest, InvestigationEvent, InvestigationSnapshot, ModeInfo } from "./contracts/generated";
+import type { DatasetManifest, InvestigationEvent, InvestigationSnapshot, ModeInfo, Region } from "./contracts/generated";
+import type { DatasetAdapter } from "./datasets/adapter";
+import { moleculeAdapter } from "./datasets/molecules";
 import { type InvestigationView, applyEvent, fromSnapshot, lastSeq } from "./investigation";
 
 type Action = { type: "open"; view: InvestigationView } | { type: "event"; event: InvestigationEvent };
@@ -37,6 +40,25 @@ export default function App() {
   const [focus, setFocus] = useState<TissueFocus | null>(null);
   const flyTo = useCallback((next: Omit<TissueFocus, "key">) => setFocus((f) => ({ ...next, key: (f?.key ?? 0) + 1 })), []);
   const [approving, setApproving] = useState(false);
+  const [workspace, setWorkspace] = useState<"dual" | "single">("dual");
+  const [manifests, setManifests] = useState<DatasetManifest[]>([]);
+  const adapters = useMemo<DatasetAdapter[]>(() => manifests.map(moleculeAdapter), [manifests]);
+  const [regionPair, setRegionPair] = useState<RegionPair | null>(null);
+  const [contextRegions, setContextRegions] = useState<Region[]>([]);
+  const showFromDual = useCallback(
+    (datasetId: string, sectionId: string) => {
+      const manifest = manifests.find((m) => m.dataset_id === datasetId);
+      if (manifest) setShown({ manifest, sectionId });
+    },
+    [manifests],
+  );
+  const focusFinding = useCallback(
+    (next: Omit<TissueFocus, "key">) => {
+      setWorkspace("single");
+      flyTo(next);
+    },
+    [flyTo],
+  );
   const [problem, setProblem] = useState<string | null>(null);
   const unsubscribe = useRef<(() => void) | null>(null);
 
@@ -44,6 +66,7 @@ export default function App() {
     unsubscribe.current?.();
     const view = fromSnapshot(snapshot);
     dispatch({ type: "open", view });
+    setContextRegions(snapshot.regions ?? []);
     window.history.replaceState(null, "", `#${snapshot.investigation_id}`);
     if (snapshot.status !== "complete" && snapshot.status !== "failed") {
       unsubscribe.current = api.subscribe(snapshot.investigation_id, lastSeq(view), (event) => dispatch({ type: "event", event }));
@@ -55,15 +78,36 @@ export default function App() {
       .mode()
       .then(setMode)
       .catch((error: unknown) => setProblem(String(error)));
+    api
+      .datasets()
+      .then(setManifests)
+      .catch((error: unknown) => setProblem(String(error)));
     const id = window.location.hash.slice(1);
     if (INVESTIGATION_ID.test(id)) api.investigation(id).then(follow).catch(() => window.history.replaceState(null, "", " "));
     return () => unsubscribe.current?.();
   }, [follow]);
 
+  // The region pair goes with a question only when it lies on the dataset the question will run on (a recorded
+  // question runs on its recording's dataset); the server refuses regions on any other dataset.
+  // A recorded question runs on its recording's dataset (the server's default when the recording names none);
+  // any other question on the open section's dataset.
+  const runsOn = (question: string): string | null => {
+    const recording = mode?.recordings.find((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase());
+    if (recording) return recording.dataset_id ?? mode?.dataset_id ?? null;
+    return shown?.manifest.dataset_id ?? mode?.dataset_id ?? null;
+  };
+  const regionsFor = (question: string): [] | [Region] | [Region, Region] =>
+    regionPair && regionPair.datasetIds.length === 1 && regionPair.datasetIds[0] === runsOn(question) ? (regionPair.regions.slice(0, 2) as [Region] | [Region, Region]) : [];
+
   const ask = (question: string) => {
     setProblem(null);
     api
-      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: shown?.manifest.dataset_id ?? null })
+      .start({
+        question,
+        run_mode: mode?.default_run_mode ?? "cached_tool_rerun",
+        dataset_id: runsOn(question),
+        regions: regionsFor(question),
+      })
       .then(follow)
       .catch((error: unknown) => setProblem(String(error)));
   };
@@ -98,7 +142,43 @@ export default function App() {
         </div>
       </header>
       <main className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 lg:grid-cols-[minmax(0,1fr)_26rem] lg:overflow-hidden">
-        <TissuePanel defaultDatasetId={mode?.dataset_id ?? null} onShow={show} focus={focus} />
+        <div className="flex min-h-[36rem] flex-col gap-2 lg:min-h-0">
+          <div role="tablist" aria-label="Workspace" className="flex items-center gap-1 text-xs">
+            {(
+              [
+                ["dual", "Control vs disease sections"],
+                ["single", "One section · molecules and conditions"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                role="tab"
+                type="button"
+                aria-selected={workspace === id}
+                onClick={() => setWorkspace(id)}
+                className={`rounded-t-md border-b-2 px-3 py-1.5 ${
+                  workspace === id ? "border-accent text-ink" : "border-transparent text-ink-3 hover:text-ink-2"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col *:flex-1">
+            {workspace === "dual" ? (
+              adapters.length > 0 && (
+                <DualViewer
+                  adapters={adapters}
+                  defaultDatasetId={manifests.some((m) => m.dataset_id === "GSE286184") ? "GSE286184" : (mode?.dataset_id ?? null)}
+                  onShow={showFromDual}
+                  onContext={setRegionPair}
+                />
+              )
+            ) : (
+              <TissuePanel defaultDatasetId={mode?.dataset_id ?? null} onShow={show} focus={focus} />
+            )}
+          </div>
+        </div>
         <aside aria-label="Investigation" className="flex min-h-0 flex-col gap-3 lg:overflow-y-auto">
           {problem && (
             <p role="alert" className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
@@ -106,7 +186,13 @@ export default function App() {
             </p>
           )}
           {shown && <DatasetCapabilities manifest={shown.manifest} sectionId={shown.sectionId} open={investigation === null} />}
-          <FindingsPanel datasetId="GSE286184" onFocus={flyTo} />
+          {regionPair && !investigation && (
+            <p className="rounded-lg border border-line bg-panel px-3 py-2 text-xs text-ink-2">
+              The region pair ({regionPair.regions.length} box{regionPair.regions.length === 1 ? "" : "es"}) goes with your next question on{" "}
+              {regionPair.datasetIds.join(", ")} as context.
+            </p>
+          )}
+          <FindingsPanel datasetId="GSE286184" onFocus={focusFinding} />
           {investigation ? (
             <>
               <div className="text-xs text-ink-3">
@@ -117,6 +203,17 @@ export default function App() {
                 <p role="alert" className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
                   {investigation.error}
                 </p>
+              )}
+              {contextRegions.length > 0 && (
+                <div className="rounded-lg border border-line bg-panel px-3 py-2 text-xs text-ink-2">
+                  <p className="font-semibold text-ink">Region pair kept as context</p>
+                  {contextRegions.map((r) => (
+                    <p key={`${r.section_id}${r.x0}${r.y0}`} className="font-mono text-[11px]">
+                      {r.section_id}: {Math.round(r.x0)}–{Math.round(r.x1)} × {Math.round(r.y0)}–{Math.round(r.y1)} µm
+                    </p>
+                  ))}
+                  <p className="mt-1 text-[11px] text-ink-3">Visual evidence beside cohort-level verdicts; it does not scope the analysis.</p>
+                </div>
               )}
               <PlanCard
                 plan={investigation.plan}
