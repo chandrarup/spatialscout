@@ -197,7 +197,7 @@ export function SectionPane(props: Props) {
         {loaded?.group && (
           <span
             className={`w-fit rounded px-1.5 py-px text-[10px] font-semibold uppercase tracking-wider ${
-              loaded.group.toLowerCase() === "control" ? "bg-sky-500/20 text-sky-200" : "bg-rose-500/20 text-rose-200"
+              loaded.group.toLowerCase() === "control" ? "bg-sky-500/20 text-sky-200" : loaded.group.toLowerCase() === "synthetic" ? "bg-white/10 text-ink-2" : "bg-rose-500/20 text-rose-200"
             }`}
           >
             {loaded.group}
