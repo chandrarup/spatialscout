@@ -7,7 +7,7 @@ import { api } from "./api";
 import { DualViewer } from "./components/DualViewer";
 import { formatUtc } from "./components/RunModeBanner";
 import { CONDITION_NAMES } from "./components/Viewer";
-import { AgentBar, ScoutMark } from "./components/stage/AgentBar";
+import { AgentBar, AgentOrb, ScoutMark } from "./components/stage/AgentBar";
 import { CompareView } from "./components/stage/CompareView";
 import { Explore, type TissueContext } from "./components/stage/Explore";
 import { Intro } from "./components/stage/Intro";
@@ -65,6 +65,43 @@ function partial(view: InvestigationView, count: number): InvestigationView {
   return view.events.slice(0, count).reduce(applyEvent, base);
 }
 
+interface Milestone {
+  key: string;
+  text: string;
+  sub?: string;
+  final?: boolean;
+}
+
+/** The moments worth announcing, each read from its own event. */
+function milestonesOf(events: InvestigationEvent[]): Milestone[] {
+  const out: Milestone[] = [];
+  const once = (key: string, m: Omit<Milestone, "key">) => {
+    if (!out.some((x) => x.key === key)) out.push({ key, ...m });
+  };
+  for (const e of events) {
+    if (e.type === "model_call" && e.call.purpose === "plan") once("plan-call", { text: "Muse Wonder is planning the checks", sub: `${(e.call.latency_ms / 1000).toFixed(1)} s` });
+    if (e.type === "plan_proposed") once("plan", { text: "Plan ready", sub: `${e.plan.steps.length} step${e.plan.steps.length === 1 ? "" : "s"}` });
+    if (e.type === "plan_approved") once("approved", { text: "Plan approved · the analysis engine starts" });
+    if (e.type === "tool_finished") once("first-result", { text: "First result in", sub: e.label?.replaceAll("_", " ") ?? undefined });
+    if (e.type === "agent_decision") once("reading", { text: "Muse Spark is reading the results" });
+    if (e.type === "claim_drafted") once("claims", { text: "Writing claims from the computed results" });
+    if (e.type === "claim_verified" && !e.claim.injected.is_injected) once("verified", { text: "Claims checked: every number recomputed, every figure read", sub: e.verification.verification_status });
+    if (e.type === "claim_verified" && e.claim.injected.is_injected) once("injected", { text: "Testing the verifier with a deliberately wrong claim", sub: e.verification.verification_status });
+    if (e.type === "verdict") once("verdict", { text: "Verdict reached", sub: e.verdict.verdicts.map((v) => v.verdict).join(" · "), final: true });
+  }
+  return out;
+}
+
+/** The finished run in one line: steps, model calls, recorded wall time and summed recorded cost. */
+function runSummary(events: InvestigationEvent[]) {
+  const calls = events.filter((e) => e.type === "model_call");
+  const cost = calls.reduce((sum, e) => sum + (e.type === "model_call" ? (e.call.estimated_cost_usd ?? 0) : 0), 0);
+  const times = events.map((e) => Date.parse(e.recorded_at_utc)).filter(Number.isFinite);
+  const ms = times.length ? Math.max(...times) - Math.min(...times) : 0;
+  const minutes = ms >= 60_000 ? `${Math.floor(ms / 60_000)} min ${Math.round((ms % 60_000) / 1000)} s` : `${Math.round(ms / 1000)} s`;
+  return { steps: events.filter(isStep).length, calls: calls.length, cost, minutes };
+}
+
 export default function App() {
   const [mode, setMode] = useState<ModeInfo | null>(null);
   const [investigation, dispatch] = useReducer(reducer, null);
@@ -86,6 +123,7 @@ export default function App() {
   const [auditFirst, setAuditFirst] = useState(false);
   const unsubscribe = useRef<(() => void) | null>(null);
   const focused = useRef(new Set<string>());
+  const seenMilestones = useRef(new Set<string>());
 
   const [manifests, setManifests] = useState<DatasetManifest[]>([]);
   // The classic viewer offers every dataset: KPMP CODEX images, and the molecule datasets with SAM 3.1 box outlines.
@@ -97,6 +135,7 @@ export default function App() {
     const view = fromSnapshot(snapshot);
     dispatch({ type: "open", view });
     focused.current = new Set();
+    seenMilestones.current = new Set();
     setShownCount(play ? 0 : Number.POSITIVE_INFINITY);
     setPaused(false);
     setFollow(true);
@@ -174,7 +213,25 @@ export default function App() {
 
   const shown = useMemo(() => (investigation ? partial(investigation, shownCount) : null), [investigation, shownCount]);
   const graph = useMemo(() => buildGraph(shown?.question ?? "", shown?.events ?? []), [shown]);
-  const current = graph.nodes.find((n) => n.id === graph.latest) ?? null;
+  const milestones = useMemo(() => milestonesOf(shown?.events ?? []), [shown]);
+  const [toasts, setToasts] = useState<Milestone[]>([]);
+  useEffect(() => {
+    const fresh = milestones.filter((m) => !seenMilestones.current.has(m.key));
+    if (fresh.length === 0) return;
+    for (const m of fresh) seenMilestones.current.add(m.key);
+    const latest = fresh[fresh.length - 1]!;
+    setToasts((t) => [...t.filter((x) => x.key !== latest.key), latest].slice(-2));
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x.key !== latest.key)), latest.final ? 6000 : 4200);
+  }, [milestones]);
+  const finishedRun = !!shown?.verdict && !playing;
+  const summary = useMemo(() => (shown ? runSummary(shown.events) : null), [shown]);
+  const collapsedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (finishedRun && shown && collapsedFor.current !== shown.investigationId && stage === "run") {
+      collapsedFor.current = shown.investigationId;
+      setRail("hidden");
+    }
+  }, [finishedRun, shown, stage]);
   const datasetId = shown?.plan?.dataset_id ?? mode?.dataset_id ?? "GSE286184";
 
   // When a finding arrives, fly the tissue to its first evidence region and split it against the stricter condition.
@@ -374,9 +431,31 @@ export default function App() {
               <div className="flex min-h-0 flex-1 flex-col px-3 pb-[150px] *:flex-1">
                 <TissuePanel defaultDatasetId={datasetId} onShow={() => undefined} focus={focus} compact />
               </div>
+              {/* Milestones: glow while the agent works, then fade. */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-[176px] z-20 flex flex-col items-center gap-2">
+                {toasts.map((t) => (
+                  <div key={t.key} className="milestone flex items-center gap-3 rounded-full bg-[#111214]/95 py-2 pr-5 pl-2 backdrop-blur">
+                    <AgentOrb size={26} working={!t.final} />
+                    <span className="text-[14px] font-medium text-ink">{t.text}</span>
+                    {t.sub && <span className="text-[12px] text-ink-3">{t.sub}</span>}
+                  </div>
+                ))}
+              </div>
               {rail === "hidden" && (
-                <button type="button" onClick={() => setRail("rail")} className="absolute top-5 right-5 z-10 h-9 rounded-full bg-raised px-4 text-[13px] text-ink hover:bg-raised">
-                  Show the agent's steps
+                <button
+                  type="button"
+                  onClick={() => setRail("rail")}
+                  className="absolute top-4 right-5 z-10 flex items-center gap-3 rounded-full bg-raised py-2 pr-4 pl-3 text-left text-[13px] text-ink ring-1 ring-white/[0.06] hover:bg-[#2a2d32]"
+                >
+                  <span className={`h-2 w-2 rounded-full ${finishedRun ? "bg-stable" : "animate-pulse bg-stable"}`} />
+                  {finishedRun && summary ? (
+                    <span>
+                      Run complete · {summary.steps} steps · {summary.calls} model calls · {summary.minutes} · ${summary.cost.toFixed(2)}
+                      <span className="ml-2 text-ink-3">Show the steps</span>
+                    </span>
+                  ) : (
+                    "Show the agent's steps"
+                  )}
                 </button>
               )}
             </div>
@@ -429,6 +508,9 @@ export default function App() {
               setFollow(true);
               setFocus(null);
               focused.current = new Set();
+              seenMilestones.current = new Set();
+              collapsedFor.current = null;
+              setRail("rail");
               setStage("run");
             }}
             onFocusFinding={(next) => {
@@ -468,7 +550,8 @@ export default function App() {
           <AgentBar
             mode={mode}
             view={stage === "run" ? shown : null}
-            current={current}
+            nodes={graph.nodes}
+            latest={graph.latest}
             playback={
               stage === "run" && shown
                 ? {

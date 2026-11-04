@@ -1,8 +1,8 @@
-// The assistant, docked on the image at the bottom of the screen instead of in a chat window. Before a run it takes a
-// question (typed or spoken), with what the researcher picked on the tissue as context and the recorded runs as
-// one-click starts. During a run it is the narrator and the presenter's remote: the step on screen in plain words,
-// built from that event's own fields, with back, play and next.
-import { useState } from "react";
+// The assistant, docked on the image. It behaves like a coding agent's terminal rather than a chat: its words stream
+// in, each step it takes is a tool line with a status mark and a collapsible output, and its mark turns faster while
+// it works. Before a run it reads back what the researcher picked (from computed values only) and offers questions;
+// during a run it narrates the steps and is the presenter's remote; after the verdict it shows only the outcome.
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ModeInfo } from "../../contracts/generated";
 import type { InvestigationView } from "../../investigation";
 import { QuestionBar } from "../QuestionBar";
@@ -27,7 +27,9 @@ interface Props {
   mode: ModeInfo | null;
   /** The run on screen, if any; the bar narrates it. */
   view: InvestigationView | null;
-  current: RunNode | null;
+  /** The run's steps so far. */
+  nodes: RunNode[];
+  latest: string | null;
   playback: Playback | null;
   busy: boolean;
   problem: string | null;
@@ -42,43 +44,127 @@ interface Props {
   onResults: () => void;
 }
 
-/** Recorded questions, the ones that mention what the researcher picked first. */
+/** Text that types itself out, restarting whenever the text changes. */
+export function useTyped(text: string, charsPerSecond = 70): { shown: string; done: boolean } {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCount(text.length);
+      return;
+    }
+    setCount(0);
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const n = Math.min(text.length, Math.floor(((now - start) / 1000) * charsPerSecond));
+      setCount(n);
+      if (n < text.length) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [text, charsPerSecond]);
+  return { shown: text.slice(0, count), done: count >= text.length };
+}
+
+export function Typed({ text, className = "", speed }: { text: string; className?: string; speed?: number }) {
+  const { shown, done } = useTyped(text, speed);
+  return <span className={`${className} ${done ? "" : "caret"}`}>{shown}</span>;
+}
+
+/** Recorded questions, the ones that mention what the researcher picked first; synthetic ones last. */
 function ranked(mode: ModeInfo | null, context: TissueContext | null) {
-  const runs = [...(mode?.recordings ?? [])].sort((a, b) => Number(a.dataset_id === "synthetic") - Number(b.dataset_id === "synthetic"));
+  const synthetic = (d: string | null) => !d || d === "synthetic";
+  const runs = [...(mode?.recordings ?? [])].sort((a, b) => Number(synthetic(a.dataset_id)) - Number(synthetic(b.dataset_id)));
   if (!context) return runs;
-  const words = context.markers.flatMap((m) => (m === "CD20" ? ["B cell", "B-cell", "CD20"] : m === "Podocalyxin" ? ["podocyte", "Podocyte"] : [m]));
+  const words = context.markers.flatMap((m) => (m === "CD20" ? ["B cell", "B-cell"] : m === "Podocalyxin" ? ["podocyte"] : [m]));
   const score = (q: string) => words.filter((w) => q.toLowerCase().includes(w.toLowerCase())).length;
   return [...runs].sort((a, b) => score(b.question) - score(a.question));
 }
 
+function short(question: string, max = 96): string {
+  return question.length > max ? `${question.slice(0, max - 1).trimEnd()}…` : question;
+}
+
+function StepLine({ node, latest }: { node: RunNode; latest: boolean }) {
+  const [open, setOpen] = useState(false);
+  const call = node.calls[node.calls.length - 1];
+  const tone = node.injected ? "text-sensitive" : node.state === "failed" ? "text-bad" : "text-stable";
+  return (
+    <li className={latest ? "" : "opacity-60"}>
+      <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-baseline gap-2.5 text-left font-mono text-[12.5px] leading-relaxed">
+        <span className={`w-3 shrink-0 text-center ${tone}`} aria-hidden="true">
+          {node.state === "active" ? <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-stable" /> : node.injected ? "◆" : node.state === "failed" ? "✕" : "✓"}
+        </span>
+        <span className="min-w-0 flex-1 truncate">
+          <span className="text-ink-3">{KIND_LINE[node.kind]} › </span>
+          <span className="text-ink">{node.title}</span>
+          {node.label && <span className="text-ink-3"> · {node.label.replaceAll("_", " ")}</span>}
+        </span>
+        {call && (
+          <span className="hidden shrink-0 text-ink-3 sm:inline">
+            {modelName(call)}
+            {call.latency_ms > 0 && ` ${(call.latency_ms / 1000).toFixed(1)}s`}
+          </span>
+        )}
+        {node.detail && <span className="shrink-0 text-ink-3">{open ? "▾" : "▸"}</span>}
+      </button>
+      {node.detail && (open || latest) && (
+        <p className={`mt-0.5 mb-1 ml-[22px] border-l border-line pl-3 text-[12.5px] leading-relaxed text-ink-2 ${open ? "" : "line-clamp-2"}`}>
+          {latest && !open ? <Typed text={node.detail} speed={170} /> : node.detail}
+        </p>
+      )}
+    </li>
+  );
+}
+
 export function AgentBar(props: Props) {
-  const { view, current, playback, mode, context, open } = props;
-  const [detail, setDetail] = useState(false);
+  const { view, nodes, latest, playback, mode, context, open } = props;
   const running = !!view && !!playback;
   const awaiting = view?.status === "awaiting_approval" && view.runMode !== "immutable_replay" && !playback?.playing;
+  const log = useRef<HTMLOListElement>(null);
+  const recent = useMemo(() => [...nodes].sort((a, b) => a.seq - b.seq).slice(-5), [nodes]);
+  useEffect(() => {
+    log.current?.scrollTo({ top: log.current.scrollHeight, behavior: "smooth" });
+  }, [latest]);
 
-  if (running && current) {
-    const call = current.calls[current.calls.length - 1];
+  if (running) {
+    const finished = !playback.playing && !!view.verdict;
     return (
-      <section aria-label="Agent narration" aria-live="polite" className="pointer-events-auto w-[min(820px,calc(100vw-24px))] rounded-3xl bg-[#16171b]/95 ring-1 ring-white/[0.08] p-3 shadow-[0_16px_50px_rgb(0_0_0/0.6)] backdrop-blur">
+      <section aria-label="Agent narration" aria-live="polite" className="pointer-events-auto w-[min(860px,calc(100vw-24px))] rounded-3xl bg-[#111214]/95 p-3 shadow-[0_16px_50px_rgb(0_0_0/0.6)] ring-1 ring-white/[0.08] backdrop-blur">
         <div className="flex items-start gap-3 px-1">
-          <ScoutMark size={34} pulse={playback.playing && !playback.paused} />
+          <AgentOrb size={34} working={playback.playing && !playback.paused} />
           <div className="min-w-0 flex-1">
-            <p className="text-[12px] text-ink-3">
-              Step {Math.max(1, playback.step)} of {playback.steps} · {KIND_LINE[current.kind]}
-              {call && ` · ${modelName(call)}${call.latency_ms > 0 ? `, ${(call.latency_ms / 1000).toFixed(1)} s` : ""}`}
-            </p>
-            <h2 className="text-[16px] leading-snug font-semibold">{current.title}</h2>
-            {current.detail && (
-              <button type="button" onClick={() => setDetail((d) => !d)} className="block w-full text-left">
-                <p className={`mt-0.5 text-[13px] leading-relaxed whitespace-pre-line text-ink-2 ${detail ? "" : "line-clamp-2"}`}>{current.detail}</p>
-              </button>
+            {finished ? (
+              <div>
+                <p className="text-[12px] text-ink-3">Done · {playback.steps} steps</p>
+                <ul className="mt-1 flex flex-wrap gap-x-5 gap-y-1">
+                  {view.verdict!.verdicts.map((v) => (
+                    <li key={v.sub_claim.text} className="flex items-baseline gap-2">
+                      <span className={`text-[20px] font-semibold tracking-tight uppercase ${v.verdict === "confirmed" ? "text-stable" : v.verdict === "refuted" ? "text-sensitive" : "text-ink-2"}`}>{v.verdict}</span>
+                      <span className="text-[13px] text-ink-2">
+                        {v.sub_claim.cell_type} · {v.sub_claim.genes.join("/")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <ol ref={log} className="flex max-h-[148px] flex-col gap-0.5 overflow-y-auto pr-1">
+                {recent.map((n) => (
+                  <StepLine key={n.id} node={n} latest={n.id === latest} />
+                ))}
+              </ol>
             )}
           </div>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-line pt-2">
-          <div className="mr-auto h-1 min-w-[80px] flex-1 overflow-hidden rounded-full bg-raised">
-            <div className="h-full rounded-full bg-white transition-[width] duration-500" style={{ width: `${(100 * playback.step) / Math.max(1, playback.steps)}%` }} />
+          <div className="mr-auto flex min-w-[80px] flex-1 items-center gap-2">
+            <div className="h-1 flex-1 overflow-hidden rounded-full bg-raised">
+              <div className="h-full rounded-full bg-gradient-to-r from-[#4a63ff] to-stable transition-[width] duration-500" style={{ width: `${(100 * playback.step) / Math.max(1, playback.steps)}%` }} />
+            </div>
+            <span className="font-mono text-[11px] text-ink-3 tabular-nums">
+              {Math.max(1, playback.step)}/{playback.steps}
+            </span>
           </div>
           {playback.playing && (
             <>
@@ -99,10 +185,10 @@ export function AgentBar(props: Props) {
               </button>
             </>
           )}
-          {!playback.playing && view.verdict && (
+          {finished && (
             <>
               <button type="button" onClick={playback.onBack} className="h-8 rounded-full px-3 text-[13px] text-ink hover:bg-raised">
-                ← Back
+                ← Step back
               </button>
               <button type="button" onClick={props.onResults} className="h-8 rounded-full bg-white px-4 text-[13px] font-medium text-black">
                 See the verdict
@@ -134,24 +220,35 @@ export function AgentBar(props: Props) {
       <button
         type="button"
         onClick={() => props.onOpen(true)}
-        className="pointer-events-auto flex h-14 w-[min(560px,calc(100vw-24px))] items-center gap-3 rounded-full bg-white pr-2 pl-3 text-left text-black shadow-[0_12px_40px_rgb(0_0_0/0.55)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+        aria-label={context ? `Talk to SpatialScout about ${context.label}` : "Talk to SpatialScout"}
+        className="pointer-events-auto flex h-14 w-[min(560px,calc(100vw-24px))] items-center gap-3 rounded-full bg-[#111214]/95 pr-2 pl-2.5 text-left shadow-[0_12px_40px_rgb(0_0_0/0.55)] ring-1 ring-white/[0.1] backdrop-blur transition-transform hover:scale-[1.01] active:scale-[0.99]"
       >
-        <ScoutMark size={34} pulse />
-        <span className="flex-1 truncate text-[15px] text-black/60">{context ? `Ask about ${context.label}…` : "Ask SpatialScout about this tissue…"}</span>
-        <span className="rounded-full bg-black px-4 py-2 text-[13px] font-medium text-white">Ask</span>
+        <AgentOrb size={38} />
+        <span className="min-w-0 flex-1 truncate text-[15px] text-ink-2">
+          {context ? <Typed text={`Ask about ${context.label}`} speed={90} /> : <Typed text="Talk to SpatialScout" speed={40} />}
+        </span>
+        <span className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[13px] font-medium text-black">
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4" />
+          </svg>
+          Talk
+        </span>
       </button>
     );
   }
 
-  const runs = ranked(mode, context);
+  const runs = ranked(mode, context).slice(0, context ? 2 : 3);
+  const greeting = context
+    ? context.summary
+    : "Ask me whether a gene really sits in a cell type, or is spillover from a neighbour. I'll plan the checks, run them on the tissue, and show you every step.";
   return (
-    <section aria-label="Ask SpatialScout" className="drawer-up pointer-events-auto w-[min(720px,calc(100vw-24px))] rounded-3xl bg-[#16171b]/97 ring-1 ring-white/[0.08] p-4 shadow-[0_16px_50px_rgb(0_0_0/0.6)] backdrop-blur">
-      <header className="flex items-start justify-between gap-3">
+    <section aria-label="Ask SpatialScout" className="drawer-up pointer-events-auto w-[min(680px,calc(100vw-24px))] rounded-3xl bg-[#111214]/97 p-4 shadow-[0_16px_50px_rgb(0_0_0/0.6)] ring-1 ring-white/[0.08] backdrop-blur">
+      <header className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <ScoutMark size={34} pulse />
+          <AgentOrb size={34} working={props.busy} />
           <div>
-            <h2 className="text-[16px] font-semibold">SpatialScout</h2>
-            <p className="text-[12px] text-ink-3">Plans with Muse Wonder, checks figures with Muse Spark. Every number it shows is computed.</p>
+            <h2 className="text-[15px] font-semibold">SpatialScout</h2>
+            <p className="text-[12px] text-ink-3">powered by Muse Wonder and Muse Spark</p>
           </div>
         </div>
         <button type="button" onClick={() => props.onOpen(false)} aria-label="Close the assistant" className="grid h-9 w-9 place-items-center rounded-full text-ink-2 hover:bg-raised hover:text-ink">
@@ -160,44 +257,28 @@ export function AgentBar(props: Props) {
           </svg>
         </button>
       </header>
+      <p className="mt-3 text-[14px] leading-relaxed text-ink">
+        <Typed text={greeting} speed={110} />
+      </p>
       {context && (
-        <div className="mt-3 flex items-center justify-between gap-2 rounded-2xl bg-raised px-3 py-2 text-[13px]">
-          <span className="text-ink-2">
-            About <span className="text-ink">{context.label}</span>
-          </span>
-          <button type="button" onClick={props.onClearContext} className="text-[12px] text-ink-3 hover:text-ink">
-            Clear
-          </button>
-        </div>
+        <button type="button" onClick={props.onClearContext} className="mt-1 text-[12px] text-ink-3 hover:text-ink">
+          Clear the selection
+        </button>
       )}
       {!props.busy && runs.length > 0 && (
-        <div className="mt-3">
-          <p className="text-[12px] text-ink-3">
-            {mode?.default_run_mode === "immutable_replay"
-              ? "This demo plays recorded runs. Each one ran on the GSE286184 Xenium kidney sections (RNA molecules), not on the protein image."
-              : "Recorded questions you can run again:"}
-          </p>
-          <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {runs.map((r, i) => (
-              <li key={r.recording_id}>
-                <button
-                  type="button"
-                  onClick={() => props.onAsk(r.question)}
-                  className="flex h-full w-full flex-col gap-1.5 rounded-2xl bg-raised p-3 text-left transition-colors hover:bg-[#2a2d32]"
-                >
-                  <span className="text-[13px] leading-snug text-ink">{r.question}</span>
-                  <span className="text-[11px] text-ink-3">
-                    {i === 0 && context ? "Closest to your selection · " : ""}
-                    {r.dataset_id ?? "synthetic section"} · {r.origin === "live" ? "recorded live" : "hand-authored responses"}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="mt-3 flex flex-col gap-0.5">
+          {runs.map((r) => (
+            <li key={r.recording_id}>
+              <button type="button" onClick={() => props.onAsk(r.question)} className="group flex w-full items-baseline gap-2.5 rounded-xl px-2 py-1.5 text-left font-mono text-[12.5px] hover:bg-raised">
+                <span className="text-stable">›</span>
+                <span className="text-ink-2 group-hover:text-ink">{short(r.question)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
       <div className="mt-3">
-        <QuestionBar examples={[]} busy={props.busy} onAsk={props.onAsk} />
+        <QuestionBar examples={[]} busy={props.busy} onAsk={props.onAsk} placeholder={context ? "Ask about your selection…" : "Ask about a gene, a cell type, a condition…"} />
       </div>
       {props.problem && (
         <p role="alert" className="mt-2 rounded-2xl bg-[#2c1a20] px-3.5 py-2.5 text-[13px] text-bad">
@@ -208,17 +289,25 @@ export function AgentBar(props: Props) {
   );
 }
 
-/** The product's mark: a cell outline with its nucleus, and one molecule just outside it. */
-export function ScoutMark({ size = 28, pulse = false }: { size?: number; pulse?: boolean }) {
+/** The agent's living mark: a colour ring that turns (faster while working) around a breathing core. */
+export function AgentOrb({ size = 32, working = false }: { size?: number; working?: boolean }) {
   return (
-    <span className="relative inline-grid shrink-0 place-items-center" style={{ width: size, height: size }}>
-      {pulse && <span className="mark-pulse absolute inset-0 rounded-full" aria-hidden="true" />}
-      <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" className="relative">
-        <circle cx="16" cy="16" r="15" fill="#000" />
-        <circle cx="15" cy="17" r="8.5" fill="none" stroke="#fff" strokeWidth="2" />
-        <circle cx="15" cy="17" r="3.2" fill="#4a63ff" />
-        <circle cx="25" cy="8" r="2.4" fill="#c6f24e" />
-      </svg>
+    <span className="relative inline-grid shrink-0 place-items-center" style={{ width: size, height: size }} aria-hidden="true">
+      <span className={`orb-ring absolute inset-0 rounded-full ${working ? "working" : ""}`} />
+      <span className="absolute rounded-full bg-[#0b0c0e]" style={{ inset: Math.max(2, size * 0.09) }} />
+      <span className="orb-core absolute rounded-full bg-gradient-to-br from-white to-[#c6f24e]" style={{ width: size * 0.3, height: size * 0.3 }} />
     </span>
+  );
+}
+
+/** The product's mark: a cell outline with its nucleus, and one molecule just outside it. */
+export function ScoutMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true">
+      <circle cx="16" cy="16" r="15" fill="#000" />
+      <circle cx="15" cy="17" r="8.5" fill="none" stroke="#fff" strokeWidth="2" />
+      <circle cx="15" cy="17" r="3.2" fill="#4a63ff" />
+      <circle cx="25" cy="8" r="2.4" fill="#c6f24e" />
+    </svg>
   );
 }

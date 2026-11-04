@@ -8,12 +8,13 @@ interface Props {
   examples: string[];
   busy: boolean;
   onAsk: (question: string) => void;
+  placeholder?: string;
 }
 
 type Voice = "idle" | "starting" | "recording" | "transcribing";
 type Note = { kind: "info" | "error"; text: string } | null;
 
-export function QuestionBar({ examples, busy, onAsk }: Props) {
+export function QuestionBar({ examples, busy, onAsk, placeholder = "Ask about a gene, a cell type, a condition…" }: Props) {
   const [question, setQuestion] = useState("");
   const [voice, setVoice] = useState<Voice>("idle");
   const [note, setNote] = useState<Note>(null);
@@ -156,14 +157,25 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
         <label htmlFor="question" className="sr-only">
           Question
         </label>
-        <input
-          id="question"
-          ref={input}
-          value={question}
-          onChange={(event) => setQuestion(event.target.value)}
-          placeholder="Ask about a gene, a cell type, a condition…"
-          className="min-w-0 flex-1 bg-transparent text-[14px] text-ink placeholder:text-ink-3 focus:outline-none"
-        />
+        {voice === "recording" || voice === "transcribing" || voice === "starting" ? (
+          <span className="flex min-w-0 flex-1 items-center gap-3 text-[14px] text-ink" role="status">
+            <span className="flex h-5 items-center gap-[3px]" aria-hidden="true">
+              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                <span key={i} className={`wave-bar w-[3px] rounded-full ${voice === "recording" ? "bg-stable" : "bg-ink-3"}`} style={{ animationDelay: `${i * 90}ms` }} />
+              ))}
+            </span>
+            <span className={voice === "transcribing" ? "shimmer-text" : ""}>{voice === "recording" ? "Listening… release to send" : voice === "transcribing" ? "Muse Voice is transcribing…" : "Opening the microphone…"}</span>
+          </span>
+        ) : (
+          <input
+            id="question"
+            ref={input}
+            value={question}
+            onChange={(event) => setQuestion(event.target.value)}
+            placeholder={placeholder}
+            className="min-w-0 flex-1 bg-transparent text-[14px] text-ink placeholder:text-ink-3 focus:outline-none"
+          />
+        )}
         <button
           type="button"
           aria-label={micLabel}
@@ -190,14 +202,14 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
             }
           }}
           onContextMenu={(event) => event.preventDefault()}
-          className={`grid h-9 w-9 shrink-0 place-items-center rounded-full select-none touch-none transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-            voice === "recording" ? "bg-bad text-white" : "text-ink-2 hover:bg-[#2a2d32] hover:text-ink"
+          className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 select-none touch-none transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+            voice === "recording" ? "talk-live bg-stable text-black" : "bg-[#2a2d32] text-ink hover:bg-[#33363c]"
           }`}
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="9" y="3" width="6" height="11" rx="3" />
-            <path d="M5 11a7 7 0 0 0 14 0M12 18v3" strokeLinecap="round" />
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4" />
           </svg>
+          <span className="text-[13px] font-medium">{voice === "recording" ? "Release" : "Talk"}</span>
         </button>
         <button
           type="submit"

@@ -36,7 +36,7 @@ def main(url: str) -> int:
         expect(page.locator("[data-testid=protein-audit-result]")).to_have_count(4, timeout=60_000)
         print("side by side: two KPMP strips and four protein audit results")
 
-        page.get_by_role("button", name="Ask SpatialScout").click()
+        page.get_by_role("button", name="Talk to SpatialScout").click()
         started = time.monotonic()
         page.get_by_role("button", name=GOLDEN).click()
         expect(page.locator(".react-flow__node").first).to_be_visible(timeout=30_000)

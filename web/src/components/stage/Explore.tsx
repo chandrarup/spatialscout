@@ -39,6 +39,8 @@ export interface TissueContext {
   participantId: string;
   label: string;
   markers: string[];
+  /** One sentence read back to the researcher, built only from computed values. */
+  summary: string;
 }
 
 type Selection = { kind: "cell"; index: number } | { kind: "box"; region: Region };
@@ -158,12 +160,36 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
 
   const selectedMarkers =
     selection?.kind === "cell" && cells ? cells.markers.filter((_, bit) => ((cells.positive[selection.index]! >> bit) & 1) === 1) : [];
+  const auditLines = (audit.results ?? []).map((r) => {
+    if (r.population_cells === 0) return `no ${r.population}`;
+    const whole = r.conditions.find((c) => c.condition === "whole_cell");
+    const trimmed = r.conditions.find((c) => c.condition === "eroded_2px");
+    return `${pct(whole?.observed_share ?? null)} of ${r.population_cells} ${r.population} are ${r.marker}+, ${pct(trimmed?.observed_share ?? null)} once edges are trimmed (${r.label.replaceAll("_", " ")})`;
+  });
   const askContext = (): TissueContext => {
-    if (selection?.kind === "cell") {
-      return { participantId: participant.participant_id, label: `${selectedMarkers.map((m) => `${m}+`).join(" ")} cell ${cells?.cell_id[selection.index]} on ${participant.participant_id}`, markers: selectedMarkers };
+    const around = auditLines.length ? ` Around it: ${auditLines.join("; ")}.` : "";
+    if (selection?.kind === "cell" && cells) {
+      const i = selection.index;
+      const strongest = cells.markers
+        .map((m, k) => ({ m, mean: cells.means[i]![k]!, t: cells.thresholds[k]!.value }))
+        .filter((x) => x.mean >= x.t)
+        .map((x) => `${x.m} ${x.mean.toFixed(0)} against a threshold of ${x.t}`)
+        .join(", ");
+      return {
+        participantId: participant.participant_id,
+        label: `cell ${cells.cell_id[i]} (${selectedMarkers.map((m) => `${m}+`).join(" ")})`,
+        markers: selectedMarkers,
+        summary: `Cell ${cells.cell_id[i]} on ${participant.participant_id} is ${selectedMarkers.map((m) => `${m}+`).join(" ")}: ${strongest}.${around}`,
+      };
     }
     const markers = [...cellMarkers];
-    return { participantId: participant.participant_id, label: `the box you drew on ${participant.participant_id}`, markers: markers.length ? markers : ["LRP2", "UMOD", "CD20"] };
+    const size = region ? `${Math.round(region.x1 - region.x0)} × ${Math.round(region.y1 - region.y0)} µm` : "";
+    return {
+      participantId: participant.participant_id,
+      label: `your ${size} box`,
+      markers: markers.length ? markers : ["LRP2", "UMOD", "CD20"],
+      summary: `Your ${size} box on ${participant.participant_id}.${around}`,
+    };
   };
 
   return (
@@ -179,7 +205,6 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
             onBox={(b) => {
               setBoxMode(false);
               setSelection(b ? { kind: "box", region: b } : null);
-              if (b) setAuditOpen(true);
             }}
             onPick={() => setSelection(null)}
             overlays={overlays}
@@ -356,15 +381,43 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
               })}
             </ul>
           )}
-          {selection.kind === "cell" && <p className="mt-1.5 text-[11px] text-ink-3">Mean signal in the cell's label / frozen threshold. Positive at or above it.</p>}
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" onClick={() => onAsk(askContext())} className="h-9 rounded-full bg-white px-4 text-[13px] font-medium text-black active:scale-95">
-              Ask SpatialScout about this
-            </button>
-            <button type="button" onClick={() => setAuditOpen(true)} className="h-9 rounded-full bg-raised px-4 text-[13px] text-ink hover:bg-[#2a2d32]">
-              {selection.kind === "cell" ? `Audit ${AROUND_UM * 2} µm around it` : "Audit this box"}
+          {selection.kind === "cell" && <p className="mt-1.5 text-[11px] text-ink-3">Mean signal in the cell's label / frozen threshold.</p>}
+          <div className="mt-3 border-t border-line pt-3">
+            <p className="text-[12px] text-ink-3">{selection.kind === "cell" ? `Protein audit, ${AROUND_UM * 2} µm around it` : "Protein audit of your box"}</p>
+            {audit.pending && <p className="shimmer-text mt-1 text-[13px]">Computing…</p>}
+            <ul className="mt-1 flex flex-col gap-1">
+              {!audit.pending &&
+                audit.results?.map((r) => {
+                  const whole = r.conditions.find((c) => c.condition === "whole_cell");
+                  const trimmed = r.conditions.find((c) => c.condition === "eroded_2px");
+                  if (r.population_cells === 0)
+                    return (
+                      <li key={r.result_id} className="text-[13px] text-ink-3">
+                        {r.marker} in {r.population}: none here
+                      </li>
+                    );
+                  return (
+                    <li key={r.result_id} className="flex items-center justify-between gap-2 text-[13px]">
+                      <span className="text-ink-2">
+                        {r.marker} in {r.population} <span className="text-ink-3">({r.population_cells})</span>
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <span className="text-ink tabular-nums">
+                          {pct(whole?.observed_share ?? null)} → {pct(trimmed?.observed_share ?? null)}
+                        </span>
+                        <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ${labelTone(r.label)}`}>{r.label.replaceAll("_", " ")}</span>
+                      </span>
+                    </li>
+                  );
+                })}
+            </ul>
+            <button type="button" onClick={() => setAuditOpen(true)} className="mt-1 text-[12px] text-ink-3 underline underline-offset-4 hover:text-ink">
+              How to read this
             </button>
           </div>
+          <button type="button" onClick={() => onAsk(askContext())} className="mt-3 h-9 w-full rounded-full bg-white px-4 text-[13px] font-medium text-black active:scale-95">
+            Ask SpatialScout about this
+          </button>
         </section>
       )}
 
