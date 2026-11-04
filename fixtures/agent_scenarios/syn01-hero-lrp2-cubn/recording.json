@@ -1,0 +1,1160 @@
+{
+ "schema_version": "1.0",
+ "info": {
+  "recording_id": "syn01-hero-lrp2-cubn",
+  "recorded_at": "2026-11-04T02:34:11Z",
+  "origin": "hand_authored",
+  "question": "Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?",
+  "note": "Hand-authored model responses: the agent requests the random-thinning control and the label-sensitivity check. No model was called.",
+  "dataset_id": null
+ },
+ "calls": [
+  {
+   "purpose": "plan",
+   "cache_key": "db54b49e07aa6c63f781968c82a9da38b4f710c5bd0e5c5d006af56f1cf83a82",
+   "request": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You are SpatialScout's planner. Propose the smallest plan that answers the researcher's question, using only the tools listed and only analyses the capability report marks as supported. Give each step the tool's arguments, valid against its arguments_schema, and a one-sentence rationale; use the dataset's own section ids, panel genes and label rule ids. The tools listed are the audits a plan may schedule. The controls (the random-thinning control and the label-sensitivity check) are not plan steps: after each audit runs, an agent reads its result and decides which controls it needs. If the question needs an analysis no listed tool provides, plan what the tools can do and say what is left out in the summary. Split the question into sub_claims, one per testable part: each names a cell type label from the label rules, its panel genes, and what the researcher's hypothesis predicts under stricter assignment conditions: 'holds' (the signal is real cell content) or 'drops' (it is admixture from neighbouring cells). Record the researcher's prediction as the question states or implies it; never predict an outcome yourself. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"capability_report\":{\"checks\":[{\"capability\":\"coordinate_inspection\",\"reason\":\"Molecule and cell positions are given in micrometres.\",\"status\":\"supported\"},{\"capability\":\"assignment_audit\",\"reason\":\"Molecules carry cell_id and overlaps_nucleus, so default and nucleus-only conditions can be compared.\",\"status\":\"supported\"},{\"capability\":\"structure_outlines\",\"reason\":\"One glomerulus outline is drawn by construction (not by SAM 3.1).\",\"status\":\"supported\"},{\"capability\":\"disease_contrast\",\"reason\":\"One synthetic section with no disease or control group, so no finding can be estimated.\",\"status\":\"unavailable\"},{\"capability\":\"cell_boundaries\",\"reason\":\"No cell or nucleus boundaries; the viewer draws nuclei as circles from nucleus area, an approximation.\",\"status\":\"unavailable\"}],\"contrasts\":[],\"dataset_id\":\"synthetic\",\"schema_version\":\"1.0\"},\"dataset\":{\"dataset_id\":\"synthetic\",\"default_label_rule_id\":\"synthetic-by-construction\",\"label_rules\":[{\"label_rule_id\":\"synthetic-by-construction\"},{\"label_rule_id\":\"synthetic-alternative\"}],\"panel\":[\"CD3D\",\"CUBN\",\"LRP2\",\"NPHS1\",\"PDGFRB\",\"PECAM1\",\"UMOD\"],\"sections\":[{\"group\":\"Synthetic\",\"section_id\":\"SYN-01\"}],\"synthetic\":true},\"question\":\"Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one measure of one cell population across assignment conditions, per section and pooled over eligible sections: a gene's presence, a gene set's presence, or the co-expression score over the frozen exclusive marker pairs. Reports molecules kept, retention, nuclear-overlap share, both random-thinning expectations, neighbour-proximity shares, ranked evidence regions and the evidence label. Optionally scoped to an ROI box.\",\"name\":\"audit_population\",\"version\":\"2\"}]}"
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "ConditionName": {
+       "description": "An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).",
+       "enum": [
+        "default",
+        "nucleus_only",
+        "distance_cap_1um",
+        "distance_cap_2um",
+        "structure_constrained"
+       ],
+       "title": "ConditionName",
+       "type": "string"
+      },
+      "Contrast": {
+       "additionalProperties": false,
+       "description": "One disease group compared with the control group, for example DKD vs Control.",
+       "properties": {
+        "disease": {
+         "title": "Disease",
+         "type": "string"
+        },
+        "control": {
+         "title": "Control",
+         "type": "string"
+        }
+       },
+       "required": [
+        "disease",
+        "control"
+       ],
+       "title": "Contrast",
+       "type": "object"
+      },
+      "ProposedStep": {
+       "additionalProperties": false,
+       "properties": {
+        "tool": {
+         "title": "Tool",
+         "type": "string"
+        },
+        "arguments": {
+         "additionalProperties": true,
+         "title": "Arguments",
+         "type": "object"
+        },
+        "rationale": {
+         "title": "Rationale",
+         "type": "string"
+        }
+       },
+       "required": [
+        "tool",
+        "arguments",
+        "rationale"
+       ],
+       "title": "ProposedStep",
+       "type": "object"
+      },
+      "SubClaim": {
+       "additionalProperties": false,
+       "description": "One testable part of the question: a population, its genes, and what the hypothesis predicts under stricter\nassignment conditions. A prediction, never an outcome.",
+       "properties": {
+        "text": {
+         "description": "The sub-claim as a question-scoped statement, for example 'podocyte LRP2/CUBN presence persists'.",
+         "title": "Text",
+         "type": "string"
+        },
+        "cell_type": {
+         "description": "A cell type label from the dataset's label rules.",
+         "title": "Cell Type",
+         "type": "string"
+        },
+        "genes": {
+         "description": "Panel genes the sub-claim is about.",
+         "items": {
+          "type": "string"
+         },
+         "title": "Genes",
+         "type": "array"
+        },
+        "predicted": {
+         "description": "What the researcher's hypothesis predicts: 'holds' (the signal stays when assignment is stricter, as real cell content would) or 'drops' (it falls beyond random thinning, as admixture from neighbours would).",
+         "enum": [
+          "holds",
+          "drops"
+         ],
+         "title": "Predicted",
+         "type": "string"
+        }
+       },
+       "required": [
+        "text",
+        "cell_type",
+        "genes",
+        "predicted"
+       ],
+       "title": "SubClaim",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The planner model's structured output, before it is checked against the tool registry.",
+     "properties": {
+      "summary": {
+       "title": "Summary",
+       "type": "string"
+      },
+      "contrast": {
+       "anyOf": [
+        {
+         "$ref": "#/$defs/Contrast"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "cell_types": {
+       "items": {
+        "type": "string"
+       },
+       "title": "Cell Types",
+       "type": "array"
+      },
+      "conditions": {
+       "items": {
+        "$ref": "#/$defs/ConditionName"
+       },
+       "title": "Conditions",
+       "type": "array"
+      },
+      "steps": {
+       "items": {
+        "$ref": "#/$defs/ProposedStep"
+       },
+       "title": "Steps",
+       "type": "array"
+      },
+      "sub_claims": {
+       "description": "The question split into testable sub-claims, each with the hypothesis's prediction.",
+       "items": {
+        "$ref": "#/$defs/SubClaim"
+       },
+       "title": "Sub Claims",
+       "type": "array"
+      }
+     },
+     "required": [
+      "summary",
+      "contrast",
+      "cell_types",
+      "conditions",
+      "steps"
+     ],
+     "title": "PlanProposal",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "capability_report",
+     "version": "1.0",
+     "sha256": "a904167708b8667f57ed39bd826d59aca35d257993e04c7d9b57e78fd68e18da"
+    },
+    {
+     "name": "dataset",
+     "version": "json",
+     "sha256": "c9df61b3ee7507cdfc9f5a0c1f9dc1f941f5e0e4965fc4ff192b435463ecfdb8"
+    },
+    {
+     "name": "tool:audit_population",
+     "version": "2",
+     "sha256": "30f2338ea2f976706c2c3fd3bb23fd0db413cd74f64b5dc95a8ac4e1fb5b1e49"
+    }
+   ],
+   "response": {
+    "content": "{\"summary\": \"Audit LRP2 or CUBN presence in cells labelled Podocyte in SYN-01 under the default and nucleus-only conditions.\", \"contrast\": null, \"cell_types\": [\"Podocyte\"], \"conditions\": [\"default\", \"nucleus_only\"], \"steps\": [{\"tool\": \"audit_population\", \"arguments\": {\"section_ids\": [\"SYN-01\"], \"cell_type\": \"Podocyte\", \"genes\": [\"LRP2\", \"CUBN\"], \"conditions\": [\"default\", \"nucleus_only\"], \"label_rule_id\": \"synthetic-by-construction\"}, \"rationale\": \"The question asks whether podocyte LRP2/CUBN survives a stricter assignment.\"}], \"sub_claims\": [{\"text\": \"Podocytes really carry LRP2 and CUBN.\", \"cell_type\": \"Podocyte\", \"genes\": [\"LRP2\", \"CUBN\"], \"predicted\": \"holds\"}]}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "follow_up",
+   "cache_key": "a40331128ca9123514ece7bf445e68f8a6098a17458595190d6cc9bec12e6e2a",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You are SpatialScout's investigating agent. A researcher approved a plan, and its tools have run. You now read one observation (a tool's result) and decide which follow-up tools, if any, it calls for. Rules:\n- Every follow-up must cite the observation that prompted it (its observation_id) and give the reason, naming what in that observation you are responding to.\n- Only tools in the registry can run, with arguments valid against their arguments_schema. To test the same result, reuse the cited observation's arguments exactly.\n- Required controls. Verification fails any claim that does not cite each control required of it: a random-thinning control for any claim about assignment sensitivity, and a label-sensitivity check for any claim about a population whose label rule involves the claim's genes, or decides membership against those genes' home cell type (a rule that ignores a gene still competes with that gene's home type if it can assign the cell to it instead). Read the label rules and the result's home cell types to decide which controls apply. Nobody runs a control for you.\n- Each tool call spends one of the investigation's tool calls; the remaining budget is given. Do not repeat a call that has already run.\n- List as open questions what the evidence leaves unsettled that these tools cannot answer.\nRespond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"budget\":{\"max_tool_calls\":12,\"tool_calls_left\":11,\"tool_calls_used\":1},\"observations\":[{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"fnd-2421322c0caca720\",\"observation_id\":\"obs-1\",\"origin\":\"plan\",\"result\":{\"dataset_id\":\"synthetic\",\"eligible_by_group\":{},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"finding_kind\":\"audit\",\"gene_pairs\":[],\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"leave_one_section_out\":[],\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"population\":{\"cell_type\":\"Podocyte\",\"label_rule_id\":\"synthetic-by-construction\"},\"ranking_rule\":\"150 x 150 µm windows on a grid anchored at (0, 0) in section coordinates, ranked by the result's molecules in the population excluded under nucleus_only; ties go to more default-condition molecules in the window, then section id, y0 and x0. Eligible sections only (every section when none is eligible); the top 10 windows with at least one excluded molecule are kept.\",\"roi\":null,\"schema_version\":\"1.0\",\"sections\":[{\"cells_labelled\":3,\"conditions\":[{\"cells_expressing\":1,\"cells_with_retained_molecule\":3,\"condition\":\"default\",\"excess_drop_cell_matched\":0.0,\"excess_drop_home_matched\":0.0,\"expectation_cell_matched\":0.3333333333333333,\"expectation_home_matched\":0.3333333333333333,\"missing_reasons\":{\"neighbour_proximity_share_excluded\":\"no molecules of the result are excluded under this condition\"},\"molecules\":4,\"neighbour_proximity_share_excluded\":null,\"neighbour_proximity_share_retained\":0.0,\"nuclear_overlap_share\":0.0,\"observed_value\":0.3333333333333333,\"pairs_scored\":null,\"retention\":1.0},{\"cells_expressing\":0,\"cells_with_retained_molecule\":3,\"condition\":\"nucleus_only\",\"excess_drop_cell_matched\":0.33203125,\"excess_drop_home_matched\":0.33148919700384766,\"expectation_cell_matched\":0.33203125,\"expectation_home_matched\":0.33148919700384766,\"missing_reasons\":{\"neighbour_proximity_share_retained\":\"no molecules of the result are kept under this condition\",\"nuclear_overlap_share\":\"no molecules kept under this condition\"},\"molecules\":0,\"neighbour_proximity_share_excluded\":0.0,\"neighbour_proximity_share_retained\":null,\"nuclear_overlap_share\":null,\"observed_value\":0.0,\"pairs_scored\":null,\"retention\":0.0}],\"eligible\":false,\"group\":\"Synthetic\",\"ineligible_reason\":\"3 cells labelled Podocyte; the population gate needs 20\",\"section_id\":\"SYN-01\"}],\"sections_left_out\":[],\"source_artifact_ids\":[]},\"summary\":\"SYN-01, nucleus_only: keeps 0 of 4 LRP2/CUBN molecules in the 3 cells labelled Podocyte (retention 0%, observed 0.0%, home-matched expectation 33.1%). Evidence label: insufficient evidence.\",\"tool\":\"audit_population\"}],\"plan\":{\"steps\":[{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"rationale\":\"The question asks whether podocyte LRP2/CUBN survives a stricter assignment.\",\"step_id\":\"step-1\",\"tool\":\"audit_population\"}],\"summary\":\"Audit LRP2 or CUBN presence in cells labelled Podocyte in SYN-01 under the default and nucleus-only conditions.\"},\"question\":\"Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?\",\"read_now\":\"obs-1\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one measure of one cell population across assignment conditions, per section and pooled over eligible sections: a gene's presence, a gene set's presence, or the co-expression score over the frozen exclusive marker pairs. Reports molecules kept, retention, nuclear-overlap share, both random-thinning expectations, neighbour-proximity shares, ranked evidence regions and the evidence label. Optionally scoped to an ROI box.\",\"name\":\"audit_population\",\"version\":\"2\"},{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"The required control for a claim about assignment sensitivity: compares an audit's observed values with what random molecule loss at a matched rate would give, cell-matched (each cell's own retention) and home-matched (the gene's retention in its home cell type), with the excess drop against each and the frozen verdict.\",\"name\":\"run_random_thinning_control\",\"version\":\"1\"},{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"label_rule_ids\":{\"description\":\"The two frozen label rules to compare; one should not use the finding's genes.\",\"items\":{\"type\":\"string\"},\"maxItems\":2,\"minItems\":2,\"title\":\"Label Rule Ids\",\"type\":\"array\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"LabelSensitivityArguments\",\"type\":\"object\"},\"description\":\"The required control for a claim about a population whose label rule involves the claim's genes: the same measure under two frozen label rules (by default NPHS1-anchored, which ignores LRP2 and CUBN, and full-panel), with cell counts under each, cells the rules disagree on, and each rule's evidence label.\",\"name\":\"run_label_sensitivity_check\",\"version\":\"1\"}]}"
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "FollowUpProposal": {
+       "additionalProperties": false,
+       "description": "One follow-up tool call as the agent model proposes it, before it is checked against the registry.",
+       "properties": {
+        "tool": {
+         "title": "Tool",
+         "type": "string"
+        },
+        "arguments": {
+         "additionalProperties": true,
+         "title": "Arguments",
+         "type": "object"
+        },
+        "cites_observation": {
+         "description": "The id of the observation that prompted this request, such as obs-1.",
+         "title": "Cites Observation",
+         "type": "string"
+        },
+        "reason": {
+         "description": "Why this observation calls for this tool, in one or two sentences.",
+         "title": "Reason",
+         "type": "string"
+        }
+       },
+       "required": [
+        "tool",
+        "arguments",
+        "cites_observation",
+        "reason"
+       ],
+       "title": "FollowUpProposal",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The agent model's structured output after reading one observation.",
+     "properties": {
+      "reading": {
+       "description": "What the agent reads in the observation, in one to three sentences.",
+       "title": "Reading",
+       "type": "string"
+      },
+      "requests": {
+       "description": "Follow-up tool calls; empty when the observation needs none.",
+       "items": {
+        "$ref": "#/$defs/FollowUpProposal"
+       },
+       "title": "Requests",
+       "type": "array"
+      },
+      "open_questions": {
+       "description": "Questions the evidence leaves open that the registry's tools cannot answer.",
+       "items": {
+        "type": "string"
+       },
+       "title": "Open Questions",
+       "type": "array"
+      }
+     },
+     "required": [
+      "reading",
+      "requests"
+     ],
+     "title": "FollowUpDecision",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "observations",
+     "version": "json",
+     "sha256": "45ab6cc94649bcfa7e6b8ff16add90e2e262577fabcb11f1cd37ca90e289ae03"
+    },
+    {
+     "name": "tool:audit_population",
+     "version": "2",
+     "sha256": "30f2338ea2f976706c2c3fd3bb23fd0db413cd74f64b5dc95a8ac4e1fb5b1e49"
+    },
+    {
+     "name": "tool:run_random_thinning_control",
+     "version": "1",
+     "sha256": "12cc69eaec6b72602e2615ac26771e9f603898ebd735e7c8fc859ead2e13f4d6"
+    },
+    {
+     "name": "tool:run_label_sensitivity_check",
+     "version": "1",
+     "sha256": "8ae2fb74e5c58e54d23ef4e8c14335ad6dfbde95151fda712bd3ffecda6c05ff"
+    }
+   ],
+   "response": {
+    "content": "{\"reading\": \"obs-1 shows the podocyte LRP2/CUBN molecules dropping under nucleus-only assignment, and the podocytes are labelled by a rule that could involve these genes.\", \"requests\": [{\"tool\": \"run_random_thinning_control\", \"arguments\": {\"cell_type\": \"Podocyte\", \"conditions\": [\"default\", \"nucleus_only\"], \"genes\": [\"LRP2\", \"CUBN\"], \"label_rule_id\": \"synthetic-by-construction\", \"section_ids\": [\"SYN-01\"]}, \"cites_observation\": \"obs-1\", \"reason\": \"The retention drop must be compared with what random molecule loss at the matched rate gives.\"}, {\"tool\": \"run_label_sensitivity_check\", \"arguments\": {\"cell_type\": \"Podocyte\", \"conditions\": [\"default\", \"nucleus_only\"], \"genes\": [\"LRP2\", \"CUBN\"], \"label_rule_id\": \"synthetic-by-construction\", \"section_ids\": [\"SYN-01\"], \"label_rule_ids\": [\"synthetic-by-construction\", \"synthetic-alternative\"]}, \"cites_observation\": \"obs-1\", \"reason\": \"The population is defined by a label rule; the result must be compared under a second rule.\"}], \"open_questions\": []}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "follow_up",
+   "cache_key": "b4882dca8f56ab30e66e359468aade25cd69e4fc5e33f31130f6af8ca0586a41",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You are SpatialScout's investigating agent. A researcher approved a plan, and its tools have run. You now read one observation (a tool's result) and decide which follow-up tools, if any, it calls for. Rules:\n- Every follow-up must cite the observation that prompted it (its observation_id) and give the reason, naming what in that observation you are responding to.\n- Only tools in the registry can run, with arguments valid against their arguments_schema. To test the same result, reuse the cited observation's arguments exactly.\n- Required controls. Verification fails any claim that does not cite each control required of it: a random-thinning control for any claim about assignment sensitivity, and a label-sensitivity check for any claim about a population whose label rule involves the claim's genes, or decides membership against those genes' home cell type (a rule that ignores a gene still competes with that gene's home type if it can assign the cell to it instead). Read the label rules and the result's home cell types to decide which controls apply. Nobody runs a control for you.\n- Each tool call spends one of the investigation's tool calls; the remaining budget is given. Do not repeat a call that has already run.\n- List as open questions what the evidence leaves unsettled that these tools cannot answer.\nRespond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"budget\":{\"max_tool_calls\":12,\"tool_calls_left\":9,\"tool_calls_used\":3},\"observations\":[{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"fnd-2421322c0caca720\",\"observation_id\":\"obs-1\",\"origin\":\"plan\",\"result\":{\"dataset_id\":\"synthetic\",\"eligible_by_group\":{},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"finding_kind\":\"audit\",\"gene_pairs\":[],\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"leave_one_section_out\":[],\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"population\":{\"cell_type\":\"Podocyte\",\"label_rule_id\":\"synthetic-by-construction\"},\"ranking_rule\":\"150 x 150 µm windows on a grid anchored at (0, 0) in section coordinates, ranked by the result's molecules in the population excluded under nucleus_only; ties go to more default-condition molecules in the window, then section id, y0 and x0. Eligible sections only (every section when none is eligible); the top 10 windows with at least one excluded molecule are kept.\",\"roi\":null,\"schema_version\":\"1.0\",\"sections\":[{\"cells_labelled\":3,\"conditions\":[{\"cells_expressing\":1,\"cells_with_retained_molecule\":3,\"condition\":\"default\",\"excess_drop_cell_matched\":0.0,\"excess_drop_home_matched\":0.0,\"expectation_cell_matched\":0.3333333333333333,\"expectation_home_matched\":0.3333333333333333,\"missing_reasons\":{\"neighbour_proximity_share_excluded\":\"no molecules of the result are excluded under this condition\"},\"molecules\":4,\"neighbour_proximity_share_excluded\":null,\"neighbour_proximity_share_retained\":0.0,\"nuclear_overlap_share\":0.0,\"observed_value\":0.3333333333333333,\"pairs_scored\":null,\"retention\":1.0},{\"cells_expressing\":0,\"cells_with_retained_molecule\":3,\"condition\":\"nucleus_only\",\"excess_drop_cell_matched\":0.33203125,\"excess_drop_home_matched\":0.33148919700384766,\"expectation_cell_matched\":0.33203125,\"expectation_home_matched\":0.33148919700384766,\"missing_reasons\":{\"neighbour_proximity_share_retained\":\"no molecules of the result are kept under this condition\",\"nuclear_overlap_share\":\"no molecules kept under this condition\"},\"molecules\":0,\"neighbour_proximity_share_excluded\":0.0,\"neighbour_proximity_share_retained\":null,\"nuclear_overlap_share\":null,\"observed_value\":0.0,\"pairs_scored\":null,\"retention\":0.0}],\"eligible\":false,\"group\":\"Synthetic\",\"ineligible_reason\":\"3 cells labelled Podocyte; the population gate needs 20\",\"section_id\":\"SYN-01\"}],\"sections_left_out\":[],\"source_artifact_ids\":[]},\"summary\":\"SYN-01, nucleus_only: keeps 0 of 4 LRP2/CUBN molecules in the 3 cells labelled Podocyte (retention 0%, observed 0.0%, home-matched expectation 33.1%). Evidence label: insufficient evidence.\",\"tool\":\"audit_population\"},{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"ctl-3dd9a27d0989041e\",\"cites_observation_id\":\"obs-1\",\"observation_id\":\"obs-2\",\"origin\":\"follow_up\",\"reason\":\"The retention drop must be compared with what random molecule loss at the matched rate gives.\",\"request_id\":\"req-1\",\"result\":{\"cell_type\":\"Podocyte\",\"conditions_below_threshold\":[],\"control_id\":\"ctl-3dd9a27d0989041e\",\"control_kind\":\"random_thinning\",\"dataset_id\":\"synthetic\",\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"roi\":null,\"schema_version\":\"1.0\",\"sections\":[{\"cells_labelled\":3,\"conditions\":[{\"cells_expressing\":1,\"cells_with_retained_molecule\":3,\"condition\":\"default\",\"excess_drop_cell_matched\":0.0,\"excess_drop_home_matched\":0.0,\"expectation_cell_matched\":0.3333333333333333,\"expectation_home_matched\":0.3333333333333333,\"missing_reasons\":{\"neighbour_proximity_share_excluded\":\"no molecules of the result are excluded under this condition\"},\"molecules\":4,\"neighbour_proximity_share_excluded\":null,\"neighbour_proximity_share_retained\":0.0,\"nuclear_overlap_share\":0.0,\"observed_value\":0.3333333333333333,\"pairs_scored\":null,\"retention\":1.0},{\"cells_expressing\":0,\"cells_with_retained_molecule\":3,\"condition\":\"nucleus_only\",\"excess_drop_cell_matched\":0.33203125,\"excess_drop_home_matched\":0.33148919700384766,\"expectation_cell_matched\":0.33203125,\"expectation_home_matched\":0.33148919700384766,\"missing_reasons\":{\"neighbour_proximity_share_retained\":\"no molecules of the result are kept under this condition\",\"nuclear_overlap_share\":\"no molecules kept under this condition\"},\"molecules\":0,\"neighbour_proximity_share_excluded\":0.0,\"neighbour_proximity_share_retained\":null,\"nuclear_overlap_share\":null,\"observed_value\":0.0,\"pairs_scored\":null,\"retention\":0.0}],\"eligible\":false,\"group\":\"Synthetic\",\"ineligible_reason\":\"3 cells labelled Podocyte; the population gate needs 20\",\"section_id\":\"SYN-01\"}],\"threshold\":\"observed below the home-matched expectation x 2^-0.5 (an excess log2 drop above 0.5)\"},\"summary\":\"Random-thinning control for fnd-2421322c0caca720: default: observed n/a, retention n/a, home-matched expectation n/a, cell-matched n/a; nucleus_only: observed n/a, retention n/a, home-matched expectation n/a, cell-matched n/a. Below the threshold (observed below the home-matched expectation x 2^-0.5 (an excess log2 drop above 0.5)): no condition. Evidence label: insufficient evidence.\",\"tool\":\"run_random_thinning_control\"},{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"label_rule_ids\":[\"synthetic-by-construction\",\"synthetic-alternative\"],\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"ctl-2f074d16fadfc03e\",\"cites_observation_id\":\"obs-1\",\"observation_id\":\"obs-3\",\"origin\":\"follow_up\",\"reason\":\"The population is defined by a label rule; the result must be compared under a second rule.\",\"request_id\":\"req-2\",\"result\":{\"arms\":[{\"cells_labelled\":3,\"cells_labelled_by_section\":{\"SYN-01\":3},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-by-construction\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}]},{\"cells_labelled\":4,\"cells_labelled_by_section\":{\"SYN-01\":4},\"eligible_section_ids\":[],\"finding_id\":\"fnd-5b4b20406755ffaf\",\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-alternative\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}]}],\"cell_type\":\"Podocyte\",\"cells_in_both\":3,\"cells_only_first\":0,\"cells_only_second\":1,\"control_id\":\"ctl-2f074d16fadfc03e\",\"control_kind\":\"label_sensitivity\",\"dataset_id\":\"synthetic\",\"genes\":[\"LRP2\",\"CUBN\"],\"measure\":\"gene_set_share_expressing\",\"roi\":null,\"same_label\":true,\"schema_version\":\"1.0\",\"summary\":\"Podocyte under synthetic-by-construction: 3 cells, insufficient evidence; under synthetic-alternative: 4 cells, insufficient evidence. 3 cells are in both populations, 0 only under synthetic-by-construction, 1 only under synthetic-alternative.\"},\"summary\":\"Podocyte under synthetic-by-construction: 3 cells, insufficient evidence; under synthetic-alternative: 4 cells, insufficient evidence. 3 cells are in both populations, 0 only under synthetic-by-construction, 1 only under synthetic-alternative.\",\"tool\":\"run_label_sensitivity_check\"}],\"plan\":{\"steps\":[{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"rationale\":\"The question asks whether podocyte LRP2/CUBN survives a stricter assignment.\",\"step_id\":\"step-1\",\"tool\":\"audit_population\"}],\"summary\":\"Audit LRP2 or CUBN presence in cells labelled Podocyte in SYN-01 under the default and nucleus-only conditions.\"},\"question\":\"Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?\",\"read_now\":\"obs-2\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one measure of one cell population across assignment conditions, per section and pooled over eligible sections: a gene's presence, a gene set's presence, or the co-expression score over the frozen exclusive marker pairs. Reports molecules kept, retention, nuclear-overlap share, both random-thinning expectations, neighbour-proximity shares, ranked evidence regions and the evidence label. Optionally scoped to an ROI box.\",\"name\":\"audit_population\",\"version\":\"2\"},{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"The required control for a claim about assignment sensitivity: compares an audit's observed values with what random molecule loss at a matched rate would give, cell-matched (each cell's own retention) and home-matched (the gene's retention in its home cell type), with the excess drop against each and the frozen verdict.\",\"name\":\"run_random_thinning_control\",\"version\":\"1\"},{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"label_rule_ids\":{\"description\":\"The two frozen label rules to compare; one should not use the finding's genes.\",\"items\":{\"type\":\"string\"},\"maxItems\":2,\"minItems\":2,\"title\":\"Label Rule Ids\",\"type\":\"array\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"LabelSensitivityArguments\",\"type\":\"object\"},\"description\":\"The required control for a claim about a population whose label rule involves the claim's genes: the same measure under two frozen label rules (by default NPHS1-anchored, which ignores LRP2 and CUBN, and full-panel), with cell counts under each, cells the rules disagree on, and each rule's evidence label.\",\"name\":\"run_label_sensitivity_check\",\"version\":\"1\"}]}"
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "FollowUpProposal": {
+       "additionalProperties": false,
+       "description": "One follow-up tool call as the agent model proposes it, before it is checked against the registry.",
+       "properties": {
+        "tool": {
+         "title": "Tool",
+         "type": "string"
+        },
+        "arguments": {
+         "additionalProperties": true,
+         "title": "Arguments",
+         "type": "object"
+        },
+        "cites_observation": {
+         "description": "The id of the observation that prompted this request, such as obs-1.",
+         "title": "Cites Observation",
+         "type": "string"
+        },
+        "reason": {
+         "description": "Why this observation calls for this tool, in one or two sentences.",
+         "title": "Reason",
+         "type": "string"
+        }
+       },
+       "required": [
+        "tool",
+        "arguments",
+        "cites_observation",
+        "reason"
+       ],
+       "title": "FollowUpProposal",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The agent model's structured output after reading one observation.",
+     "properties": {
+      "reading": {
+       "description": "What the agent reads in the observation, in one to three sentences.",
+       "title": "Reading",
+       "type": "string"
+      },
+      "requests": {
+       "description": "Follow-up tool calls; empty when the observation needs none.",
+       "items": {
+        "$ref": "#/$defs/FollowUpProposal"
+       },
+       "title": "Requests",
+       "type": "array"
+      },
+      "open_questions": {
+       "description": "Questions the evidence leaves open that the registry's tools cannot answer.",
+       "items": {
+        "type": "string"
+       },
+       "title": "Open Questions",
+       "type": "array"
+      }
+     },
+     "required": [
+      "reading",
+      "requests"
+     ],
+     "title": "FollowUpDecision",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "observations",
+     "version": "json",
+     "sha256": "72aea9de6f529c5336f299534da763c32c7795a7580c192087426178156f2412"
+    },
+    {
+     "name": "tool:audit_population",
+     "version": "2",
+     "sha256": "30f2338ea2f976706c2c3fd3bb23fd0db413cd74f64b5dc95a8ac4e1fb5b1e49"
+    },
+    {
+     "name": "tool:run_random_thinning_control",
+     "version": "1",
+     "sha256": "12cc69eaec6b72602e2615ac26771e9f603898ebd735e7c8fc859ead2e13f4d6"
+    },
+    {
+     "name": "tool:run_label_sensitivity_check",
+     "version": "1",
+     "sha256": "8ae2fb74e5c58e54d23ef4e8c14335ad6dfbde95151fda712bd3ffecda6c05ff"
+    }
+   ],
+   "response": {
+    "content": "{\"reading\": \"obs-2 is the control I asked for; it needs no further control.\", \"requests\": [], \"open_questions\": []}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "follow_up",
+   "cache_key": "dbad41075b4c7ea809160618e06e9ab964f11e51981e872a2c1b8857d233e7b2",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You are SpatialScout's investigating agent. A researcher approved a plan, and its tools have run. You now read one observation (a tool's result) and decide which follow-up tools, if any, it calls for. Rules:\n- Every follow-up must cite the observation that prompted it (its observation_id) and give the reason, naming what in that observation you are responding to.\n- Only tools in the registry can run, with arguments valid against their arguments_schema. To test the same result, reuse the cited observation's arguments exactly.\n- Required controls. Verification fails any claim that does not cite each control required of it: a random-thinning control for any claim about assignment sensitivity, and a label-sensitivity check for any claim about a population whose label rule involves the claim's genes, or decides membership against those genes' home cell type (a rule that ignores a gene still competes with that gene's home type if it can assign the cell to it instead). Read the label rules and the result's home cell types to decide which controls apply. Nobody runs a control for you.\n- Each tool call spends one of the investigation's tool calls; the remaining budget is given. Do not repeat a call that has already run.\n- List as open questions what the evidence leaves unsettled that these tools cannot answer.\nRespond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"budget\":{\"max_tool_calls\":12,\"tool_calls_left\":9,\"tool_calls_used\":3},\"observations\":[{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"fnd-2421322c0caca720\",\"observation_id\":\"obs-1\",\"origin\":\"plan\",\"result\":{\"dataset_id\":\"synthetic\",\"eligible_by_group\":{},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"finding_kind\":\"audit\",\"gene_pairs\":[],\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"leave_one_section_out\":[],\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"population\":{\"cell_type\":\"Podocyte\",\"label_rule_id\":\"synthetic-by-construction\"},\"ranking_rule\":\"150 x 150 µm windows on a grid anchored at (0, 0) in section coordinates, ranked by the result's molecules in the population excluded under nucleus_only; ties go to more default-condition molecules in the window, then section id, y0 and x0. Eligible sections only (every section when none is eligible); the top 10 windows with at least one excluded molecule are kept.\",\"roi\":null,\"schema_version\":\"1.0\",\"sections\":[{\"cells_labelled\":3,\"conditions\":[{\"cells_expressing\":1,\"cells_with_retained_molecule\":3,\"condition\":\"default\",\"excess_drop_cell_matched\":0.0,\"excess_drop_home_matched\":0.0,\"expectation_cell_matched\":0.3333333333333333,\"expectation_home_matched\":0.3333333333333333,\"missing_reasons\":{\"neighbour_proximity_share_excluded\":\"no molecules of the result are excluded under this condition\"},\"molecules\":4,\"neighbour_proximity_share_excluded\":null,\"neighbour_proximity_share_retained\":0.0,\"nuclear_overlap_share\":0.0,\"observed_value\":0.3333333333333333,\"pairs_scored\":null,\"retention\":1.0},{\"cells_expressing\":0,\"cells_with_retained_molecule\":3,\"condition\":\"nucleus_only\",\"excess_drop_cell_matched\":0.33203125,\"excess_drop_home_matched\":0.33148919700384766,\"expectation_cell_matched\":0.33203125,\"expectation_home_matched\":0.33148919700384766,\"missing_reasons\":{\"neighbour_proximity_share_retained\":\"no molecules of the result are kept under this condition\",\"nuclear_overlap_share\":\"no molecules kept under this condition\"},\"molecules\":0,\"neighbour_proximity_share_excluded\":0.0,\"neighbour_proximity_share_retained\":null,\"nuclear_overlap_share\":null,\"observed_value\":0.0,\"pairs_scored\":null,\"retention\":0.0}],\"eligible\":false,\"group\":\"Synthetic\",\"ineligible_reason\":\"3 cells labelled Podocyte; the population gate needs 20\",\"section_id\":\"SYN-01\"}],\"sections_left_out\":[],\"source_artifact_ids\":[]},\"summary\":\"SYN-01, nucleus_only: keeps 0 of 4 LRP2/CUBN molecules in the 3 cells labelled Podocyte (retention 0%, observed 0.0%, home-matched expectation 33.1%). Evidence label: insufficient evidence.\",\"tool\":\"audit_population\"},{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"ctl-3dd9a27d0989041e\",\"cites_observation_id\":\"obs-1\",\"observation_id\":\"obs-2\",\"origin\":\"follow_up\",\"reason\":\"The retention drop must be compared with what random molecule loss at the matched rate gives.\",\"request_id\":\"req-1\",\"result\":{\"cell_type\":\"Podocyte\",\"conditions_below_threshold\":[],\"control_id\":\"ctl-3dd9a27d0989041e\",\"control_kind\":\"random_thinning\",\"dataset_id\":\"synthetic\",\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"roi\":null,\"schema_version\":\"1.0\",\"sections\":[{\"cells_labelled\":3,\"conditions\":[{\"cells_expressing\":1,\"cells_with_retained_molecule\":3,\"condition\":\"default\",\"excess_drop_cell_matched\":0.0,\"excess_drop_home_matched\":0.0,\"expectation_cell_matched\":0.3333333333333333,\"expectation_home_matched\":0.3333333333333333,\"missing_reasons\":{\"neighbour_proximity_share_excluded\":\"no molecules of the result are excluded under this condition\"},\"molecules\":4,\"neighbour_proximity_share_excluded\":null,\"neighbour_proximity_share_retained\":0.0,\"nuclear_overlap_share\":0.0,\"observed_value\":0.3333333333333333,\"pairs_scored\":null,\"retention\":1.0},{\"cells_expressing\":0,\"cells_with_retained_molecule\":3,\"condition\":\"nucleus_only\",\"excess_drop_cell_matched\":0.33203125,\"excess_drop_home_matched\":0.33148919700384766,\"expectation_cell_matched\":0.33203125,\"expectation_home_matched\":0.33148919700384766,\"missing_reasons\":{\"neighbour_proximity_share_retained\":\"no molecules of the result are kept under this condition\",\"nuclear_overlap_share\":\"no molecules kept under this condition\"},\"molecules\":0,\"neighbour_proximity_share_excluded\":0.0,\"neighbour_proximity_share_retained\":null,\"nuclear_overlap_share\":null,\"observed_value\":0.0,\"pairs_scored\":null,\"retention\":0.0}],\"eligible\":false,\"group\":\"Synthetic\",\"ineligible_reason\":\"3 cells labelled Podocyte; the population gate needs 20\",\"section_id\":\"SYN-01\"}],\"threshold\":\"observed below the home-matched expectation x 2^-0.5 (an excess log2 drop above 0.5)\"},\"summary\":\"Random-thinning control for fnd-2421322c0caca720: default: observed n/a, retention n/a, home-matched expectation n/a, cell-matched n/a; nucleus_only: observed n/a, retention n/a, home-matched expectation n/a, cell-matched n/a. Below the threshold (observed below the home-matched expectation x 2^-0.5 (an excess log2 drop above 0.5)): no condition. Evidence label: insufficient evidence.\",\"tool\":\"run_random_thinning_control\"},{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"label_rule_ids\":[\"synthetic-by-construction\",\"synthetic-alternative\"],\"section_ids\":[\"SYN-01\"]},\"artifact_id\":\"ctl-2f074d16fadfc03e\",\"cites_observation_id\":\"obs-1\",\"observation_id\":\"obs-3\",\"origin\":\"follow_up\",\"reason\":\"The population is defined by a label rule; the result must be compared under a second rule.\",\"request_id\":\"req-2\",\"result\":{\"arms\":[{\"cells_labelled\":3,\"cells_labelled_by_section\":{\"SYN-01\":3},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-by-construction\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}]},{\"cells_labelled\":4,\"cells_labelled_by_section\":{\"SYN-01\":4},\"eligible_section_ids\":[],\"finding_id\":\"fnd-5b4b20406755ffaf\",\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-alternative\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}]}],\"cell_type\":\"Podocyte\",\"cells_in_both\":3,\"cells_only_first\":0,\"cells_only_second\":1,\"control_id\":\"ctl-2f074d16fadfc03e\",\"control_kind\":\"label_sensitivity\",\"dataset_id\":\"synthetic\",\"genes\":[\"LRP2\",\"CUBN\"],\"measure\":\"gene_set_share_expressing\",\"roi\":null,\"same_label\":true,\"schema_version\":\"1.0\",\"summary\":\"Podocyte under synthetic-by-construction: 3 cells, insufficient evidence; under synthetic-alternative: 4 cells, insufficient evidence. 3 cells are in both populations, 0 only under synthetic-by-construction, 1 only under synthetic-alternative.\"},\"summary\":\"Podocyte under synthetic-by-construction: 3 cells, insufficient evidence; under synthetic-alternative: 4 cells, insufficient evidence. 3 cells are in both populations, 0 only under synthetic-by-construction, 1 only under synthetic-alternative.\",\"tool\":\"run_label_sensitivity_check\"}],\"plan\":{\"steps\":[{\"arguments\":{\"cell_type\":\"Podocyte\",\"conditions\":[\"default\",\"nucleus_only\"],\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"section_ids\":[\"SYN-01\"]},\"rationale\":\"The question asks whether podocyte LRP2/CUBN survives a stricter assignment.\",\"step_id\":\"step-1\",\"tool\":\"audit_population\"}],\"summary\":\"Audit LRP2 or CUBN presence in cells labelled Podocyte in SYN-01 under the default and nucleus-only conditions.\"},\"question\":\"Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?\",\"read_now\":\"obs-3\",\"tools\":[{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"Audit one measure of one cell population across assignment conditions, per section and pooled over eligible sections: a gene's presence, a gene set's presence, or the co-expression score over the frozen exclusive marker pairs. Reports molecules kept, retention, nuclear-overlap share, both random-thinning expectations, neighbour-proximity shares, ranked evidence regions and the evidence label. Optionally scoped to an ROI box.\",\"name\":\"audit_population\",\"version\":\"2\"},{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"AuditPopulationArguments\",\"type\":\"object\"},\"description\":\"The required control for a claim about assignment sensitivity: compares an audit's observed values with what random molecule loss at a matched rate would give, cell-matched (each cell's own retention) and home-matched (the gene's retention in its home cell type), with the excess drop against each and the frozen verdict.\",\"name\":\"run_random_thinning_control\",\"version\":\"1\"},{\"arguments_schema\":{\"$defs\":{\"ConditionName\":{\"description\":\"An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).\",\"enum\":[\"default\",\"nucleus_only\",\"distance_cap_1um\",\"distance_cap_2um\",\"structure_constrained\"],\"title\":\"ConditionName\",\"type\":\"string\"},\"Region\":{\"additionalProperties\":false,\"description\":\"A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.\",\"properties\":{\"section_id\":{\"title\":\"Section Id\",\"type\":\"string\"},\"x0\":{\"title\":\"X0\",\"type\":\"number\"},\"x1\":{\"title\":\"X1\",\"type\":\"number\"},\"y0\":{\"title\":\"Y0\",\"type\":\"number\"},\"y1\":{\"title\":\"Y1\",\"type\":\"number\"}},\"required\":[\"section_id\",\"x0\",\"y0\",\"x1\",\"y1\"],\"title\":\"Region\",\"type\":\"object\"}},\"additionalProperties\":false,\"properties\":{\"cell_type\":{\"title\":\"Cell Type\",\"type\":\"string\"},\"conditions\":{\"items\":{\"$ref\":\"#/$defs/ConditionName\"},\"minItems\":2,\"title\":\"Conditions\",\"type\":\"array\"},\"genes\":{\"description\":\"One gene (share expressing) or several (presence of any). For the co-expression score, empty for every frozen exclusive marker pair, or one pair.\",\"items\":{\"type\":\"string\"},\"title\":\"Genes\",\"type\":\"array\"},\"label_rule_id\":{\"anyOf\":[{\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"The frozen label rule; the dataset's default when omitted.\",\"title\":\"Label Rule Id\"},\"label_rule_ids\":{\"description\":\"The two frozen label rules to compare; one should not use the finding's genes.\",\"items\":{\"type\":\"string\"},\"maxItems\":2,\"minItems\":2,\"title\":\"Label Rule Ids\",\"type\":\"array\"},\"measure\":{\"anyOf\":[{\"enum\":[\"share_expressing\",\"gene_set_share_expressing\",\"co_expression_score\"],\"type\":\"string\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"Inferred from the genes when omitted.\",\"title\":\"Measure\"},\"roi\":{\"anyOf\":[{\"$ref\":\"#/$defs/Region\"},{\"type\":\"null\"}],\"default\":null,\"description\":\"A box on one of the sections; the audit then covers only that box.\"},\"section_ids\":{\"items\":{\"type\":\"string\"},\"minItems\":1,\"title\":\"Section Ids\",\"type\":\"array\"}},\"required\":[\"section_ids\",\"cell_type\",\"conditions\"],\"title\":\"LabelSensitivityArguments\",\"type\":\"object\"},\"description\":\"The required control for a claim about a population whose label rule involves the claim's genes: the same measure under two frozen label rules (by default NPHS1-anchored, which ignores LRP2 and CUBN, and full-panel), with cell counts under each, cells the rules disagree on, and each rule's evidence label.\",\"name\":\"run_label_sensitivity_check\",\"version\":\"1\"}]}"
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "FollowUpProposal": {
+       "additionalProperties": false,
+       "description": "One follow-up tool call as the agent model proposes it, before it is checked against the registry.",
+       "properties": {
+        "tool": {
+         "title": "Tool",
+         "type": "string"
+        },
+        "arguments": {
+         "additionalProperties": true,
+         "title": "Arguments",
+         "type": "object"
+        },
+        "cites_observation": {
+         "description": "The id of the observation that prompted this request, such as obs-1.",
+         "title": "Cites Observation",
+         "type": "string"
+        },
+        "reason": {
+         "description": "Why this observation calls for this tool, in one or two sentences.",
+         "title": "Reason",
+         "type": "string"
+        }
+       },
+       "required": [
+        "tool",
+        "arguments",
+        "cites_observation",
+        "reason"
+       ],
+       "title": "FollowUpProposal",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The agent model's structured output after reading one observation.",
+     "properties": {
+      "reading": {
+       "description": "What the agent reads in the observation, in one to three sentences.",
+       "title": "Reading",
+       "type": "string"
+      },
+      "requests": {
+       "description": "Follow-up tool calls; empty when the observation needs none.",
+       "items": {
+        "$ref": "#/$defs/FollowUpProposal"
+       },
+       "title": "Requests",
+       "type": "array"
+      },
+      "open_questions": {
+       "description": "Questions the evidence leaves open that the registry's tools cannot answer.",
+       "items": {
+        "type": "string"
+       },
+       "title": "Open Questions",
+       "type": "array"
+      }
+     },
+     "required": [
+      "reading",
+      "requests"
+     ],
+     "title": "FollowUpDecision",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "observations",
+     "version": "json",
+     "sha256": "72aea9de6f529c5336f299534da763c32c7795a7580c192087426178156f2412"
+    },
+    {
+     "name": "tool:audit_population",
+     "version": "2",
+     "sha256": "30f2338ea2f976706c2c3fd3bb23fd0db413cd74f64b5dc95a8ac4e1fb5b1e49"
+    },
+    {
+     "name": "tool:run_random_thinning_control",
+     "version": "1",
+     "sha256": "12cc69eaec6b72602e2615ac26771e9f603898ebd735e7c8fc859ead2e13f4d6"
+    },
+    {
+     "name": "tool:run_label_sensitivity_check",
+     "version": "1",
+     "sha256": "8ae2fb74e5c58e54d23ef4e8c14335ad6dfbde95151fda712bd3ffecda6c05ff"
+    }
+   ],
+   "response": {
+    "content": "{\"reading\": \"obs-3 is the control I asked for; it needs no further control.\", \"requests\": [], \"open_questions\": []}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "claim_draft",
+   "cache_key": "02ded889ce15e09264c44b626bfb70c56222658826978e5f21c6aebc6197cb76",
+   "request": {
+    "provider": "baseten",
+    "model": "meta-models/muse-spark-open",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You write one claim about one finding for SpatialScout. Word it cautiously and scope it to the population: name its cell type label and its label rule, in the style of 'Co-expression persists under the tested restriction in cells labelled <cell type> by our <label rule> rule.' Never imply that the authors' labels are replicated, that a biological state is proven, or that a result is an artifact, robust, validated or significant. Use only numbers that appear in the finding or in its controls, and list every number the text uses in `cited`, with the field it comes from, written like sections[<section_id>].conditions[<condition>].<field>, pooled[<condition>].<field>, eligible_section_ids.count, or controls[<control_id>].<field> for a control. Write shares as percentages or fractions of the cited value. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"controls\":[{\"cell_type\":\"Podocyte\",\"conditions_below_threshold\":[],\"control_id\":\"ctl-3dd9a27d0989041e\",\"control_kind\":\"random_thinning\",\"dataset_id\":\"synthetic\",\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"roi\":null,\"schema_version\":\"1.0\",\"threshold\":\"observed below the home-matched expectation x 2^-0.5 (an excess log2 drop above 0.5)\"},{\"arms\":[{\"cells_labelled\":3,\"cells_labelled_by_section\":{\"SYN-01\":3},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-by-construction\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}]},{\"cells_labelled\":4,\"cells_labelled_by_section\":{\"SYN-01\":4},\"eligible_section_ids\":[],\"finding_id\":\"fnd-5b4b20406755ffaf\",\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"label_rule_id\":\"synthetic-alternative\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}]}],\"cell_type\":\"Podocyte\",\"cells_in_both\":3,\"cells_only_first\":0,\"cells_only_second\":1,\"control_id\":\"ctl-2f074d16fadfc03e\",\"control_kind\":\"label_sensitivity\",\"dataset_id\":\"synthetic\",\"genes\":[\"LRP2\",\"CUBN\"],\"measure\":\"gene_set_share_expressing\",\"roi\":null,\"same_label\":true,\"schema_version\":\"1.0\",\"summary\":\"Podocyte under synthetic-by-construction: 3 cells, insufficient evidence; under synthetic-alternative: 4 cells, insufficient evidence. 3 cells are in both populations, 0 only under synthetic-by-construction, 1 only under synthetic-alternative.\"}],\"finding\":{\"dataset_id\":\"synthetic\",\"eligible_by_group\":{},\"eligible_section_ids\":[],\"finding_id\":\"fnd-2421322c0caca720\",\"finding_kind\":\"audit\",\"gene_pairs\":[],\"genes\":[\"LRP2\",\"CUBN\"],\"label\":\"insufficient_evidence\",\"label_reason\":\"0 of 1 sections are eligible; an audit result needs at least 3. A section is eligible with at least 20 cells labelled Podocyte and at least 10 of the result's molecules in them under the default condition.\",\"leave_one_section_out\":[],\"marker_pairs\":{\"frozen_on\":\"2026-11-02\",\"pair_count\":40,\"path\":\"configs/exclusive_marker_pairs.json\",\"sha256\":\"e4360ff35f6a7fae620a9c5578db9d20146f869ee010fde54896a24cc8c711a6\",\"source_dataset\":\"GSE271188\",\"source_url\":\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE271188\"},\"measure\":\"gene_set_share_expressing\",\"pooled\":[{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"default\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null},{\"below_home_threshold\":null,\"cells\":0,\"condition\":\"nucleus_only\",\"default_molecules\":0,\"excess_drop_cell_matched\":null,\"excess_drop_home_matched\":null,\"expectation_cell_matched\":null,\"expectation_home_matched\":null,\"missing_reasons\":{\"observed_value\":\"no eligible sections\"},\"molecules\":0,\"observed_value\":null,\"retention\":null}],\"population\":{\"cell_type\":\"Podocyte\",\"label_rule_id\":\"synthetic-by-construction\"},\"ranking_rule\":\"150 x 150 µm windows on a grid anchored at (0, 0) in section coordinates, ranked by the result's molecules in the population excluded under nucleus_only; ties go to more default-condition molecules in the window, then section id, y0 and x0. Eligible sections only (every section when none is eligible); the top 10 windows with at least one excluded molecule are kept.\",\"roi\":null,\"rules\":{\"excess_log2_drop_threshold\":0.5,\"expectation_rule\":\"Closed form. Cell-matched p = 1 - (1 - r_c)^k with r_c the cell's retention over all its genes; home-matched p = 1 - (1 - rho)^k with rho the gene's retention in its home cell type, in that section, under the condition. Share: mean p; gene set: mean of 1 - prod(1 - p_g); pair: sum p_g p_h / sum (p_g + p_h - p_g p_h).\",\"home_cell_types\":{\"CUBN\":\"PT\",\"LRP2\":\"PT\"},\"home_label_rule_id\":\"synthetic-by-construction\",\"label_rule\":\"Under each stricter primary condition, compare the pooled observed value O with the pooled home-matched expectation E. Segmentation-sensitive: one condition has O < E x 2^-0.5 in the full pool and with each eligible section left out. Stable: no condition does, in the full pool or any leave-one-out. Otherwise, fewer than 3 eligible sections, or a gene with no home cell type: insufficient evidence.\",\"min_eligible_sections\":3,\"molecule_gate_min_molecules\":10,\"pooling_rule\":\"Ratio of sums over the eligible sections: observed = cells meeting the measure / cells of the population, expectation = sum of per-cell survival probabilities / cells; for the co-expression score, per pair the summed 'both' over the summed 'either' (and the same for the expectation's terms), averaged over the pairs any pooled population cell expresses under the default condition.\",\"population_gate_min_cells\":20,\"result_molecules_rule\":\"Molecules of the result's genes assigned to population cells under the default condition.\"},\"schema_version\":\"1.0\",\"sections\":[{\"cells_labelled\":3,\"conditions\":[{\"cells_expressing\":1,\"cells_with_retained_molecule\":3,\"condition\":\"default\",\"excess_drop_cell_matched\":0.0,\"excess_drop_home_matched\":0.0,\"expectation_cell_matched\":0.3333333333333333,\"expectation_home_matched\":0.3333333333333333,\"missing_reasons\":{\"neighbour_proximity_share_excluded\":\"no molecules of the result are excluded under this condition\"},\"molecules\":4,\"neighbour_proximity_share_excluded\":null,\"neighbour_proximity_share_retained\":0.0,\"nuclear_overlap_share\":0.0,\"observed_value\":0.3333333333333333,\"pairs_scored\":null,\"retention\":1.0},{\"cells_expressing\":0,\"cells_with_retained_molecule\":3,\"condition\":\"nucleus_only\",\"excess_drop_cell_matched\":0.33203125,\"excess_drop_home_matched\":0.33148919700384766,\"expectation_cell_matched\":0.33203125,\"expectation_home_matched\":0.33148919700384766,\"missing_reasons\":{\"neighbour_proximity_share_retained\":\"no molecules of the result are kept under this condition\",\"nuclear_overlap_share\":\"no molecules kept under this condition\"},\"molecules\":0,\"neighbour_proximity_share_excluded\":0.0,\"neighbour_proximity_share_retained\":null,\"nuclear_overlap_share\":null,\"observed_value\":0.0,\"pairs_scored\":null,\"retention\":0.0}],\"eligible\":false,\"group\":\"Synthetic\",\"ineligible_reason\":\"3 cells labelled Podocyte; the population gate needs 20\",\"section_id\":\"SYN-01\"}],\"sections_left_out\":[],\"source_artifact_ids\":[]},\"question\":\"Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?\"}"
+     }
+    ],
+    "response_schema": {
+     "$defs": {
+      "CitedNumber": {
+       "additionalProperties": false,
+       "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+       "properties": {
+        "value": {
+         "anyOf": [
+          {
+           "type": "integer"
+          },
+          {
+           "type": "number"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Value"
+        },
+        "source": {
+         "title": "Source",
+         "type": "string"
+        }
+       },
+       "required": [
+        "value",
+        "source"
+       ],
+       "title": "CitedNumber",
+       "type": "object"
+      }
+     },
+     "additionalProperties": false,
+     "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+     "properties": {
+      "text": {
+       "title": "Text",
+       "type": "string"
+      },
+      "cited": {
+       "additionalProperties": {
+        "$ref": "#/$defs/CitedNumber"
+       },
+       "title": "Cited",
+       "type": "object"
+      }
+     },
+     "required": [
+      "text",
+      "cited"
+     ],
+     "title": "ClaimDraft",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "artifact:audit_population",
+     "version": "2",
+     "sha256": "8caab3e549e61d7eafd39e923865c360b60ae6b151df45ea69ad641a7d689b8d"
+    },
+    {
+     "name": "control:ctl-3dd9a27d0989041e",
+     "version": "json",
+     "sha256": "84c4ffd5de6d35c7c2b750f21ca3293daabc74aae566993fae6baae5ccd3fc3a"
+    },
+    {
+     "name": "control:ctl-2f074d16fadfc03e",
+     "version": "json",
+     "sha256": "24a6e8f7d757c97154c255e02c795c2b31af40d69bcb7bc4944229178f1806fc"
+    }
+   ],
+   "response": {
+    "content": "{\"text\": \"In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 or CUBN molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). The label-sensitivity check labels 4 cells Podocyte under the synthetic-alternative rule, so the population depends on the label rule.\", \"cited\": {\"cells_labelled\": {\"value\": 3, \"source\": \"sections[SYN-01].cells_labelled\"}, \"molecules_default\": {\"value\": 4, \"source\": \"sections[SYN-01].conditions[default].molecules\"}, \"molecules_nucleus_only\": {\"value\": 0, \"source\": \"sections[SYN-01].conditions[nucleus_only].molecules\"}, \"retention_nucleus_only\": {\"value\": 0.0, \"source\": \"sections[SYN-01].conditions[nucleus_only].retention\"}, \"cells_labelled_other_rule\": {\"value\": 4, \"source\": \"controls[ctl-2f074d16fadfc03e].arms[synthetic-alternative].cells_labelled\"}}}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "baseten",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "2970ffc7cbaef17efdd433469f59aff28b0287da8007f02291e2e1ae83bff592",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":null,\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\"},\"claim_text\":\"In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 or CUBN molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). The label-sensitivity check labels 4 cells Podocyte under the synthetic-alternative rule, so the population depends on the label rule.\",\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing any gene across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "71ddef2507fa7ac2a519dd3d96365e56b343678e8d79a3aef997b3316b4d61f9"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "8692ffaed6659d67d4baf8d9f0b21c38a80e6b5eb045d8aafb30fa14a9ae6722"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"unclear\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "edc90a89eb9a0d3451f3229eb93e2e943877b217203c3860cfe07bf8be2f2275",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":\"the pooled observed value drops below the home-matched expectation x 2^-0.5 under at least one stricter condition\",\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\"},\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing any gene across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "ba717b298ad80239f7fdbd595a2198ab1f42395a442a3e67ee39ce052562dd4b"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "8692ffaed6659d67d4baf8d9f0b21c38a80e6b5eb045d8aafb30fa14a9ae6722"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"drops\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "5361a01f126c783312d5195811be0945e480f1ab2168d05ec38ea5b4ba80f22e",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":null,\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\"},\"claim_text\":\"In synthetic section SYN-01, nucleus-only assignment keeps 2 of the 4 LRP2 or CUBN molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). The label-sensitivity check labels 4 cells Podocyte under the synthetic-alternative rule, so the population depends on the label rule.\",\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing any gene across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "784da44e3dded0b77f3db7d852a60350eb03fa3ddb3ffe00593cbfabf80b3f06"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "8692ffaed6659d67d4baf8d9f0b21c38a80e6b5eb045d8aafb30fa14a9ae6722"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"unclear\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "c62f29be4d3c89abccd6378ab473707f099fc412e5cead6068756bf696a0bc03",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":null,\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\"},\"claim_text\":\"In GSE271188 section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 or CUBN molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). The label-sensitivity check labels 4 cells Podocyte under the GSE271188-alternative rule, so the population depends on the label rule.\",\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing any gene across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "59021a0ea75ac236aebccc6ff782eba5135be9d786b93a2df27f0386c3655557"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "8692ffaed6659d67d4baf8d9f0b21c38a80e6b5eb045d8aafb30fa14a9ae6722"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"unclear\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "ed690cbf969ca77ff430fc7fa3c6f860805b7b26e83819874c44a0f6db68b3d6",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":\"the pooled observed value holds at or above the home-matched expectation x 2^-0.5 under every stricter condition\",\"claim_states_neighbour_pattern\":\"in Panel B's section, excluded molecules lie closer to a cell of their gene's home type more often than retained molecules do\",\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\",\"CUBN\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"gene_set_share_expressing\"},\"computed_neighbour_proximity_shares\":{\"condition\":\"nucleus_only\",\"excluded\":0.0,\"meaning\":\"share of the result's molecules strictly closer to a cell of their gene's home type than to their own cell's centroid\",\"retained\":null,\"section_id\":\"SYN-01\"},\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing any gene across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "f74c52478a21e7795c921a38288f6f9de1b0a5b811d4d1f233e7746ffc3dd2e7"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "8692ffaed6659d67d4baf8d9f0b21c38a80e6b5eb045d8aafb30fa14a9ae6722"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"holds\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": true, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  }
+ ]
+}

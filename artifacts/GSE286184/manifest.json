@@ -1,0 +1,1158 @@
+{
+ "schema_version": "1.0",
+ "dataset_id": "GSE286184",
+ "title": "GSE286184: Xenium in situ profiling of human glomerular disease",
+ "description": "22 GEO Xenium samples of human kidney (Control 3, DKD 6, IgAN 4, MCD 4, MN 5; two IgAN samples hold identical content, see sections[].duplicate_of) with a 50-gene panel; molecule tables carry cell_id, overlaps_nucleus and nucleus_distance. No boundaries, images or labels.",
+ "synthetic": false,
+ "source_urls": [
+  "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE286184",
+  "https://pmc.ncbi.nlm.nih.gov/articles/PMC13586693/",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720409/suppl/GSM8720409_kidney_xenium_1_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720409/suppl/GSM8720409_kidney_xenium_1_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720409/suppl/GSM8720409_kidney_xenium_1_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720410/suppl/GSM8720410_kidney_xenium_2_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720410/suppl/GSM8720410_kidney_xenium_2_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720410/suppl/GSM8720410_kidney_xenium_2_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720411/suppl/GSM8720411_kidney_xenium_3_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720411/suppl/GSM8720411_kidney_xenium_3_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720411/suppl/GSM8720411_kidney_xenium_3_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720412/suppl/GSM8720412_kidney_xenium_4_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720412/suppl/GSM8720412_kidney_xenium_4_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720412/suppl/GSM8720412_kidney_xenium_4_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720413/suppl/GSM8720413_kidney_xenium_5_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720413/suppl/GSM8720413_kidney_xenium_5_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720413/suppl/GSM8720413_kidney_xenium_5_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720414/suppl/GSM8720414_kidney_xenium_6_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720414/suppl/GSM8720414_kidney_xenium_6_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720414/suppl/GSM8720414_kidney_xenium_6_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720415/suppl/GSM8720415_kidney_xenium_7_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720415/suppl/GSM8720415_kidney_xenium_7_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720415/suppl/GSM8720415_kidney_xenium_7_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720416/suppl/GSM8720416_kidney_xenium_8_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720416/suppl/GSM8720416_kidney_xenium_8_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720416/suppl/GSM8720416_kidney_xenium_8_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720417/suppl/GSM8720417_kidney_xenium_9_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720417/suppl/GSM8720417_kidney_xenium_9_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720417/suppl/GSM8720417_kidney_xenium_9_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720418/suppl/GSM8720418_kidney_xenium_10_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720418/suppl/GSM8720418_kidney_xenium_10_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720418/suppl/GSM8720418_kidney_xenium_10_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720419/suppl/GSM8720419_kidney_xenium_11_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720419/suppl/GSM8720419_kidney_xenium_11_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720419/suppl/GSM8720419_kidney_xenium_11_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720420/suppl/GSM8720420_kidney_xenium_12_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720420/suppl/GSM8720420_kidney_xenium_12_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720420/suppl/GSM8720420_kidney_xenium_12_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720421/suppl/GSM8720421_kidney_xenium_13_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720421/suppl/GSM8720421_kidney_xenium_13_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720421/suppl/GSM8720421_kidney_xenium_13_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720422/suppl/GSM8720422_kidney_xenium_14_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720422/suppl/GSM8720422_kidney_xenium_14_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720422/suppl/GSM8720422_kidney_xenium_14_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720423/suppl/GSM8720423_kidney_xenium_15_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720423/suppl/GSM8720423_kidney_xenium_15_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720423/suppl/GSM8720423_kidney_xenium_15_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720424/suppl/GSM8720424_kidney_xenium_16_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720424/suppl/GSM8720424_kidney_xenium_16_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720424/suppl/GSM8720424_kidney_xenium_16_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720425/suppl/GSM8720425_kidney_xenium_17_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720425/suppl/GSM8720425_kidney_xenium_17_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720425/suppl/GSM8720425_kidney_xenium_17_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720426/suppl/GSM8720426_kidney_xenium_18_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720426/suppl/GSM8720426_kidney_xenium_18_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720426/suppl/GSM8720426_kidney_xenium_18_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720427/suppl/GSM8720427_kidney_xenium_19_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720427/suppl/GSM8720427_kidney_xenium_19_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720427/suppl/GSM8720427_kidney_xenium_19_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720428/suppl/GSM8720428_kidney_xenium_20_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720428/suppl/GSM8720428_kidney_xenium_20_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720428/suppl/GSM8720428_kidney_xenium_20_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720429/suppl/GSM8720429_kidney_xenium_21_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720429/suppl/GSM8720429_kidney_xenium_21_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720429/suppl/GSM8720429_kidney_xenium_21_features.tsv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720430/suppl/GSM8720430_kidney_xenium_22_transcripts.parquet.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720430/suppl/GSM8720430_kidney_xenium_22_cells.csv.gz",
+  "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8720nnn/GSM8720430/suppl/GSM8720430_kidney_xenium_22_features.tsv.gz"
+ ],
+ "download_date": "2026-11-02",
+ "coordinate_units": "micrometre",
+ "panel": [
+  "ALDH1A2",
+  "AQP2",
+  "C3",
+  "CALCR",
+  "CD38",
+  "CD3D",
+  "CD4",
+  "CD68",
+  "CD8A",
+  "CLCN5",
+  "COL1A1",
+  "CUBN",
+  "DHFR",
+  "ETS1",
+  "FCGR3A",
+  "FKBP5",
+  "FN1",
+  "FOLR1",
+  "HLA-DRA",
+  "IL10RA",
+  "IL18",
+  "ISG20",
+  "ITGAX",
+  "JUN",
+  "KLF9",
+  "LAMC2",
+  "LRP2",
+  "MKI67",
+  "MS4A1",
+  "NPHS1",
+  "PARL",
+  "PDGFRB",
+  "PECAM1",
+  "POSTN",
+  "PTH2R",
+  "PTPRC",
+  "RHEX",
+  "SELENOT",
+  "SLC12A3",
+  "SLC4A1",
+  "SREBF1",
+  "STAT1",
+  "TGFB1",
+  "TNFAIP1",
+  "TNFAIP2",
+  "TNFSF10",
+  "UMOD",
+  "VCAM1",
+  "ZBTB16",
+  "ZFP36"
+ ],
+ "sections": [
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "extent": [
+    4.415,
+    31.335,
+    2675.714,
+    12278.748
+   ],
+   "name": "x1",
+   "molecules": 312523,
+   "cells": 15786,
+   "validation": {
+    "molecules_read": 339855,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 27114,
+    "not_in_panel": 218,
+    "molecules_kept": 312523,
+    "unassigned_molecules": 63173,
+    "unmatched_molecules": 0,
+    "cells_read": 15786,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 15786,
+    "cells_without_molecules": 667,
+    "cells_without_nucleus": 116
+   },
+   "content_sha256": "b0a1bb90ca961dba7dd61ec744d0c4f036c4977578699d855c6ab224897b857b",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "extent": [
+    5.507,
+    32.637,
+    3016.809,
+    13700.675
+   ],
+   "name": "x2",
+   "molecules": 281073,
+   "cells": 17935,
+   "validation": {
+    "molecules_read": 313158,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 31447,
+    "not_in_panel": 638,
+    "molecules_kept": 281073,
+    "unassigned_molecules": 48368,
+    "unmatched_molecules": 0,
+    "cells_read": 17935,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 17935,
+    "cells_without_molecules": 880,
+    "cells_without_nucleus": 174
+   },
+   "content_sha256": "0c7b2e86a3e5ffd6f47c07aa21bdd9f011fb1f9e3f39a7bdbc8ce619c72998e9",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720411",
+   "group": "DKD",
+   "extent": [
+    115.071,
+    0.15,
+    10261.682,
+    2879.895
+   ],
+   "name": "x3",
+   "molecules": 334675,
+   "cells": 34621,
+   "validation": {
+    "molecules_read": 380086,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 44930,
+    "not_in_panel": 481,
+    "molecules_kept": 334675,
+    "unassigned_molecules": 74499,
+    "unmatched_molecules": 0,
+    "cells_read": 34621,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 34621,
+    "cells_without_molecules": 3371,
+    "cells_without_nucleus": 372
+   },
+   "content_sha256": "6cf5eda3074d68252624c47ac1b34f4eb64161fd9edd327e56286aea071d7ed8",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720412",
+   "group": "DKD",
+   "extent": [
+    10.937,
+    12.624,
+    7250.132,
+    2903.974
+   ],
+   "name": "x4",
+   "molecules": 100256,
+   "cells": 13519,
+   "validation": {
+    "molecules_read": 116635,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 16178,
+    "not_in_panel": 201,
+    "molecules_kept": 100256,
+    "unassigned_molecules": 18721,
+    "unmatched_molecules": 0,
+    "cells_read": 13519,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 13519,
+    "cells_without_molecules": 1643,
+    "cells_without_nucleus": 187
+   },
+   "content_sha256": "ae7c017e7a74c833a3d6b1293ce1f74d5632ec62a6f8fd05aaf5455acac79f27",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720413",
+   "group": "DKD",
+   "extent": [
+    13.568,
+    23.142,
+    6042.809,
+    1492.103
+   ],
+   "name": "x5",
+   "molecules": 293476,
+   "cells": 20472,
+   "validation": {
+    "molecules_read": 325661,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 31879,
+    "not_in_panel": 306,
+    "molecules_kept": 293476,
+    "unassigned_molecules": 60434,
+    "unmatched_molecules": 0,
+    "cells_read": 20472,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 20472,
+    "cells_without_molecules": 1063,
+    "cells_without_nucleus": 75
+   },
+   "content_sha256": "37a72b21b582c4071a27f8a27637bf64909e87203a277411dea9c1801314e036",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720414",
+   "group": "Control",
+   "extent": [
+    2.947,
+    14.473,
+    5477.147,
+    10091.873
+   ],
+   "name": "x6",
+   "molecules": 250072,
+   "cells": 52225,
+   "validation": {
+    "molecules_read": 283484,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 32698,
+    "not_in_panel": 714,
+    "molecules_kept": 250072,
+    "unassigned_molecules": 51468,
+    "unmatched_molecules": 0,
+    "cells_read": 52225,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 52225,
+    "cells_without_molecules": 12017,
+    "cells_without_nucleus": 293
+   },
+   "content_sha256": "a8707504743066dc373b40c445d57b3b9f7ab0fb46965e7b271e45ba3f197dc8",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720415",
+   "group": "DKD",
+   "extent": [
+    23.767,
+    12.033,
+    2463.213,
+    9405.616
+   ],
+   "name": "x7",
+   "molecules": 171667,
+   "cells": 27155,
+   "validation": {
+    "molecules_read": 203244,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 30553,
+    "not_in_panel": 1024,
+    "molecules_kept": 171667,
+    "unassigned_molecules": 39033,
+    "unmatched_molecules": 0,
+    "cells_read": 27155,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 27155,
+    "cells_without_molecules": 6238,
+    "cells_without_nucleus": 175
+   },
+   "content_sha256": "7cb421ea6b4bc3a0264d55751631507aa10aa0606e3579f8317b4f5d7d16df3d",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720416",
+   "group": "DKD",
+   "extent": [
+    4.443,
+    6.899,
+    3039.412,
+    9410.216
+   ],
+   "name": "x8",
+   "molecules": 44985,
+   "cells": 13907,
+   "validation": {
+    "molecules_read": 58501,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 12824,
+    "not_in_panel": 692,
+    "molecules_kept": 44985,
+    "unassigned_molecules": 10137,
+    "unmatched_molecules": 0,
+    "cells_read": 13907,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 13907,
+    "cells_without_molecules": 4309,
+    "cells_without_nucleus": 202
+   },
+   "content_sha256": "cc3a6c2c3fa7719e3da65068491f27c2950d4176d048f23c736516159500bb61",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720417",
+   "group": "DKD",
+   "extent": [
+    4.324,
+    15.966,
+    3082.728,
+    12992.63
+   ],
+   "name": "x9",
+   "molecules": 419763,
+   "cells": 61683,
+   "validation": {
+    "molecules_read": 494049,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 72687,
+    "not_in_panel": 1599,
+    "molecules_kept": 419763,
+    "unassigned_molecules": 90735,
+    "unmatched_molecules": 0,
+    "cells_read": 61683,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 61683,
+    "cells_without_molecules": 8675,
+    "cells_without_nucleus": 570
+   },
+   "content_sha256": "e3a55279f0a3ebb5a11e0ba939627db9a1389f11ddd6980f514502b456d4bd6e",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720418",
+   "group": "IgAN",
+   "extent": [
+    3.125,
+    7.706,
+    1869.594,
+    12267.062
+   ],
+   "name": "x10",
+   "molecules": 831434,
+   "cells": 38973,
+   "validation": {
+    "molecules_read": 874869,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 43259,
+    "not_in_panel": 176,
+    "molecules_kept": 831434,
+    "unassigned_molecules": 139502,
+    "unmatched_molecules": 0,
+    "cells_read": 38973,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 38973,
+    "cells_without_molecules": 1392,
+    "cells_without_nucleus": 276
+   },
+   "content_sha256": "d9ba1ce73a617fe0c4a3a79ffd91cd2d79fc363196f193b149696cbfaa427d8f",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720419",
+   "group": "IgAN",
+   "extent": [
+    3.125,
+    7.706,
+    1869.594,
+    12267.062
+   ],
+   "name": "x11",
+   "molecules": 831434,
+   "cells": 38973,
+   "validation": {
+    "molecules_read": 874869,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 43259,
+    "not_in_panel": 176,
+    "molecules_kept": 831434,
+    "unassigned_molecules": 139502,
+    "unmatched_molecules": 0,
+    "cells_read": 38973,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 38973,
+    "cells_without_molecules": 1392,
+    "cells_without_nucleus": 276
+   },
+   "content_sha256": "d9ba1ce73a617fe0c4a3a79ffd91cd2d79fc363196f193b149696cbfaa427d8f",
+   "duplicate_of": "GSM8720418"
+  },
+  {
+   "section_id": "GSM8720420",
+   "group": "IgAN",
+   "extent": [
+    104.399,
+    56.719,
+    3017.266,
+    13000.703
+   ],
+   "name": "x12",
+   "molecules": 2516957,
+   "cells": 72994,
+   "validation": {
+    "molecules_read": 2643559,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 125828,
+    "not_in_panel": 774,
+    "molecules_kept": 2516957,
+    "unassigned_molecules": 439906,
+    "unmatched_molecules": 0,
+    "cells_read": 72994,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 72994,
+    "cells_without_molecules": 887,
+    "cells_without_nucleus": 303
+   },
+   "content_sha256": "5d9fd3d5bb5aa170cbac8c3b3ab7f7cb0552489b34dd88c43738f54cd5b0735f",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720421",
+   "group": "IgAN",
+   "extent": [
+    10.297,
+    14.844,
+    8462.891,
+    4979.938
+   ],
+   "name": "x13",
+   "molecules": 1140599,
+   "cells": 44801,
+   "validation": {
+    "molecules_read": 1195161,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 54312,
+    "not_in_panel": 250,
+    "molecules_kept": 1140599,
+    "unassigned_molecules": 177599,
+    "unmatched_molecules": 0,
+    "cells_read": 44801,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 44801,
+    "cells_without_molecules": 1526,
+    "cells_without_nucleus": 350
+   },
+   "content_sha256": "fa79b4014b755fb94675f593ac4ed71c8246598658de4014b61f54b52e38c53b",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720422",
+   "group": "MCD",
+   "extent": [
+    2.282,
+    9.422,
+    7849.719,
+    2940.531
+   ],
+   "name": "x14",
+   "molecules": 3308866,
+   "cells": 61589,
+   "validation": {
+    "molecules_read": 3468861,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 159538,
+    "not_in_panel": 457,
+    "molecules_kept": 3308866,
+    "unassigned_molecules": 647297,
+    "unmatched_molecules": 0,
+    "cells_read": 61589,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 61589,
+    "cells_without_molecules": 762,
+    "cells_without_nucleus": 609
+   },
+   "content_sha256": "0a09c0dd419b9450ace6ec48c8a09584ad7ffc85c0398717c033a12f668a6968",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720423",
+   "group": "MCD",
+   "extent": [
+    0.562,
+    5.03,
+    3688.427,
+    13714.766
+   ],
+   "name": "x15",
+   "molecules": 3737657,
+   "cells": 61598,
+   "validation": {
+    "molecules_read": 3928353,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 190216,
+    "not_in_panel": 480,
+    "molecules_kept": 3737657,
+    "unassigned_molecules": 732005,
+    "unmatched_molecules": 0,
+    "cells_read": 61598,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 61598,
+    "cells_without_molecules": 449,
+    "cells_without_nucleus": 931
+   },
+   "content_sha256": "5517af8d8b094eddd27ff365bb44ff05caf2c8117a0d6ae132b935cc0d40909f",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720424",
+   "group": "MCD",
+   "extent": [
+    12.016,
+    135.484,
+    6623.422,
+    2187.938
+   ],
+   "name": "x16",
+   "molecules": 866593,
+   "cells": 20202,
+   "validation": {
+    "molecules_read": 909425,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 42725,
+    "not_in_panel": 107,
+    "molecules_kept": 866593,
+    "unassigned_molecules": 177833,
+    "unmatched_molecules": 0,
+    "cells_read": 20202,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 20202,
+    "cells_without_molecules": 247,
+    "cells_without_nucleus": 117
+   },
+   "content_sha256": "dd95b6bd51f00197c106aa0e4e931b68ad6a77423532be302490ee6cbd827548",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720425",
+   "group": "MCD",
+   "extent": [
+    9.703,
+    21.797,
+    3015.0,
+    15900.859
+   ],
+   "name": "x17",
+   "molecules": 2401724,
+   "cells": 52176,
+   "validation": {
+    "molecules_read": 2524207,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 122332,
+    "not_in_panel": 151,
+    "molecules_kept": 2401724,
+    "unassigned_molecules": 383281,
+    "unmatched_molecules": 0,
+    "cells_read": 52176,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 52176,
+    "cells_without_molecules": 778,
+    "cells_without_nucleus": 589
+   },
+   "content_sha256": "79d89ee3a6b4ff3f963b58678d1eeb92d005b048066558195819f0c002e95287",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720426",
+   "group": "MN",
+   "extent": [
+    4.106,
+    2.161,
+    5442.781,
+    1489.913
+   ],
+   "name": "x18",
+   "molecules": 351062,
+   "cells": 11798,
+   "validation": {
+    "molecules_read": 368070,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 16931,
+    "not_in_panel": 77,
+    "molecules_kept": 351062,
+    "unassigned_molecules": 89067,
+    "unmatched_molecules": 0,
+    "cells_read": 11798,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 11798,
+    "cells_without_molecules": 398,
+    "cells_without_nucleus": 237
+   },
+   "content_sha256": "ad08ae0112d40f215cfc12ccbad07ea234272aa9105414e43b2e06426293df1d",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720427",
+   "group": "MN",
+   "extent": [
+    4.359,
+    92.345,
+    11444.289,
+    3597.438
+   ],
+   "name": "x19",
+   "molecules": 1094303,
+   "cells": 42263,
+   "validation": {
+    "molecules_read": 1141522,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 47060,
+    "not_in_panel": 159,
+    "molecules_kept": 1094303,
+    "unassigned_molecules": 225257,
+    "unmatched_molecules": 0,
+    "cells_read": 42263,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 42263,
+    "cells_without_molecules": 1621,
+    "cells_without_nucleus": 1121
+   },
+   "content_sha256": "5a52ae89da7cab00b01a4b795d0fb46fb81077685ae942e18ae3f885be7a29a1",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720428",
+   "group": "MN",
+   "extent": [
+    119.921,
+    92.663,
+    8443.344,
+    5101.969
+   ],
+   "name": "x20",
+   "molecules": 628348,
+   "cells": 19967,
+   "validation": {
+    "molecules_read": 657116,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 28697,
+    "not_in_panel": 71,
+    "molecules_kept": 628348,
+    "unassigned_molecules": 125003,
+    "unmatched_molecules": 0,
+    "cells_read": 19967,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 19967,
+    "cells_without_molecules": 628,
+    "cells_without_nucleus": 412
+   },
+   "content_sha256": "94dbf5088c91d6b1e6af6631adf4154d2de2d5ed3c35fb92368066e778005c36",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720429",
+   "group": "MN",
+   "extent": [
+    0.109,
+    1.5,
+    3062.391,
+    13718.953
+   ],
+   "name": "x21",
+   "molecules": 1937892,
+   "cells": 49095,
+   "validation": {
+    "molecules_read": 2019706,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 81433,
+    "not_in_panel": 381,
+    "molecules_kept": 1937892,
+    "unassigned_molecules": 356994,
+    "unmatched_molecules": 0,
+    "cells_read": 49095,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 49095,
+    "cells_without_molecules": 564,
+    "cells_without_nucleus": 251
+   },
+   "content_sha256": "f1a2fd1035bc935c42f9b8afe68823158832b60d5e6faaae3f0d335a29613f84",
+   "duplicate_of": null
+  },
+  {
+   "section_id": "GSM8720430",
+   "group": "MN",
+   "extent": [
+    52.678,
+    211.406,
+    3000.742,
+    12288.203
+   ],
+   "name": "x22",
+   "molecules": 781763,
+   "cells": 20340,
+   "validation": {
+    "molecules_read": 819868,
+    "malformed_molecules": 0,
+    "duplicate_molecules": 0,
+    "below_quality": 38008,
+    "not_in_panel": 97,
+    "molecules_kept": 781763,
+    "unassigned_molecules": 152097,
+    "unmatched_molecules": 0,
+    "cells_read": 20340,
+    "malformed_cells": 0,
+    "duplicate_cells": 0,
+    "cells_kept": 20340,
+    "cells_without_molecules": 470,
+    "cells_without_nucleus": 303
+   },
+   "content_sha256": "c979eb99d354fa86e49e3177ae053213b0ccf6d7adcc78c15bae83a34971a7c4",
+   "duplicate_of": null
+  }
+ ],
+ "files": [
+  {
+   "path": "GSM8720409/GSM8720409_kidney_xenium_1_transcripts.parquet.gz",
+   "sha256": "da6e397c0547b056ec27baba7f36a00dbee07aa44909d6d0720ac35712e0b411",
+   "bytes": 5746120
+  },
+  {
+   "path": "GSM8720409/GSM8720409_kidney_xenium_1_cells.csv.gz",
+   "sha256": "6e2647f9be216d1ab70efed5b852519106a56da1b6210089b0b9488ca0d02666",
+   "bytes": 871713
+  },
+  {
+   "path": "GSM8720409/GSM8720409_kidney_xenium_1_features.tsv.gz",
+   "sha256": "abcf7670cc02124fd928b5f1af82679aea9b4e56227d32ea818b8139f54ddc2f",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720410/GSM8720410_kidney_xenium_2_transcripts.parquet.gz",
+   "sha256": "1233e068bb246d5f8489f0276f1387521f97d01e588fa77b0b108c3883e57cc2",
+   "bytes": 5439678
+  },
+  {
+   "path": "GSM8720410/GSM8720410_kidney_xenium_2_cells.csv.gz",
+   "sha256": "c33b4fac9c3ca55334b08065e4a74e8cb020db594be08c314d6c062798ad4e35",
+   "bytes": 996648
+  },
+  {
+   "path": "GSM8720410/GSM8720410_kidney_xenium_2_features.tsv.gz",
+   "sha256": "2bf877825cedbe942ba3f508527b068a14a0111fedf77510365e64784ff308ed",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720411/GSM8720411_kidney_xenium_3_transcripts.parquet.gz",
+   "sha256": "e4bdb038a6ab7dd3b4d9ec72d887363ca195fd4fc74c6fe7197498fb42041f5e",
+   "bytes": 6704750
+  },
+  {
+   "path": "GSM8720411/GSM8720411_kidney_xenium_3_cells.csv.gz",
+   "sha256": "d1005e6361c169ec975ce7fa2dceef6b2e54256ea048408dc5fb906bcb30de5f",
+   "bytes": 1889536
+  },
+  {
+   "path": "GSM8720411/GSM8720411_kidney_xenium_3_features.tsv.gz",
+   "sha256": "3ec118fb762380548e59b4e976e257c048fa8af45ab0e25f1c84b71373a47d63",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720412/GSM8720412_kidney_xenium_4_transcripts.parquet.gz",
+   "sha256": "bf65590ce2d5e0ad2fb35c6cfd8ead4b7fc6827913fb9462f46af8fd62dd6f01",
+   "bytes": 2117800
+  },
+  {
+   "path": "GSM8720412/GSM8720412_kidney_xenium_4_cells.csv.gz",
+   "sha256": "3e1ef4874264410454d1355ad02ec1ce65c92f1923ac2ee7971c0f923cb05d8d",
+   "bytes": 743618
+  },
+  {
+   "path": "GSM8720412/GSM8720412_kidney_xenium_4_features.tsv.gz",
+   "sha256": "2f8a534ae24b5446ad610755b907014ee2306ff99eb837329f1a473836947278",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720413/GSM8720413_kidney_xenium_5_transcripts.parquet.gz",
+   "sha256": "380bc1237514b83f336f92c878ae7a65967bfbdb3af8ec5d65e9503acdfca13e",
+   "bytes": 5810255
+  },
+  {
+   "path": "GSM8720413/GSM8720413_kidney_xenium_5_cells.csv.gz",
+   "sha256": "6f6ecbff5c5b9d2b5e2450ab2dc2e454bb697ed79474635d7534e5fb73f96240",
+   "bytes": 1139654
+  },
+  {
+   "path": "GSM8720413/GSM8720413_kidney_xenium_5_features.tsv.gz",
+   "sha256": "8b24cdd1ff665af2a3266f4fd7b6f82c9ddfb9dc4fe089536d947a7b56889365",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720414/GSM8720414_kidney_xenium_6_transcripts.parquet.gz",
+   "sha256": "664e0919b3d40da873da86a584677edfd90f7f9228746faf9a4df6da63faaf97",
+   "bytes": 5158800
+  },
+  {
+   "path": "GSM8720414/GSM8720414_kidney_xenium_6_cells.csv.gz",
+   "sha256": "c4394e2c629e486425b4fc9f9e49d8af1b3ff6d9a149e4d09222992d7a5c4e2b",
+   "bytes": 2757987
+  },
+  {
+   "path": "GSM8720414/GSM8720414_kidney_xenium_6_features.tsv.gz",
+   "sha256": "9e2351e286233a050b0fffb536327db4496c52fa3709dab085dc6782049f9c6a",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720415/GSM8720415_kidney_xenium_7_transcripts.parquet.gz",
+   "sha256": "ad183bcbd5c94f8774a13669232efca350886df0f44bbb66e0353e3652567ee0",
+   "bytes": 3681010
+  },
+  {
+   "path": "GSM8720415/GSM8720415_kidney_xenium_7_cells.csv.gz",
+   "sha256": "5fcbcbfedc74e8e049a42859033db48f0f7b93d07983f5513dd9f8a27f63a743",
+   "bytes": 1464442
+  },
+  {
+   "path": "GSM8720415/GSM8720415_kidney_xenium_7_features.tsv.gz",
+   "sha256": "24f8e3b2b00510b72780bb31dbb78470f6591f7c210e68656a26f704beba08c3",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720416/GSM8720416_kidney_xenium_8_transcripts.parquet.gz",
+   "sha256": "dd59cdb73dec317f2ace6d134679ef39c0b20dd3385b071d3783620d281e83bd",
+   "bytes": 1152612
+  },
+  {
+   "path": "GSM8720416/GSM8720416_kidney_xenium_8_cells.csv.gz",
+   "sha256": "6ff3d6eb28e052c2c659b6da77e5820dad463a69e23959eb6f02b43ef4bec25d",
+   "bytes": 745647
+  },
+  {
+   "path": "GSM8720416/GSM8720416_kidney_xenium_8_features.tsv.gz",
+   "sha256": "1e0914264d4a6131213be6ce9cbb7366b597f2bb355c27227addbc36bab7c44e",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720417/GSM8720417_kidney_xenium_9_transcripts.parquet.gz",
+   "sha256": "b9d1eb9feb392ab21e61413c159f4fbae4c2306bc019f3cf555b6c2c105a0dcb",
+   "bytes": 8864635
+  },
+  {
+   "path": "GSM8720417/GSM8720417_kidney_xenium_9_cells.csv.gz",
+   "sha256": "4a5575ce59f6d40a546ca6266205421e092041b9ece52f2567575e7b682062d9",
+   "bytes": 3317595
+  },
+  {
+   "path": "GSM8720417/GSM8720417_kidney_xenium_9_features.tsv.gz",
+   "sha256": "276c672505a14cb8e05daf5507a4717514bd8409ee558900c6b181ab7405cc22",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720418/GSM8720418_kidney_xenium_10_transcripts.parquet.gz",
+   "sha256": "00770081fc799a45b6e9506ccf704aa42a573d90608b5243c41801ce9087240f",
+   "bytes": 9224761
+  },
+  {
+   "path": "GSM8720418/GSM8720418_kidney_xenium_10_cells.csv.gz",
+   "sha256": "b0e050da449c1a58b489d58c57ed7699db5866593e27e8229dd4b19a8663a9db",
+   "bytes": 2268438
+  },
+  {
+   "path": "GSM8720418/GSM8720418_kidney_xenium_10_features.tsv.gz",
+   "sha256": "92b94b5a420e1a6186856d1b61e031d3a794c605d83f999f0d31591ac57b7d6d",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720419/GSM8720419_kidney_xenium_11_transcripts.parquet.gz",
+   "sha256": "df4d9252e52d5f4e11344c9dfb0cd9a505fd3fb3b94b7bd1bc30e47f3bbd780b",
+   "bytes": 9224761
+  },
+  {
+   "path": "GSM8720419/GSM8720419_kidney_xenium_11_cells.csv.gz",
+   "sha256": "b0e050da449c1a58b489d58c57ed7699db5866593e27e8229dd4b19a8663a9db",
+   "bytes": 2268438
+  },
+  {
+   "path": "GSM8720419/GSM8720419_kidney_xenium_11_features.tsv.gz",
+   "sha256": "92b94b5a420e1a6186856d1b61e031d3a794c605d83f999f0d31591ac57b7d6d",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720420/GSM8720420_kidney_xenium_12_transcripts.parquet.gz",
+   "sha256": "d46d2818cfecf52123abb400b5fcd714a55a962a82b02cfbd0e57318a4130a9d",
+   "bytes": 27422295
+  },
+  {
+   "path": "GSM8720420/GSM8720420_kidney_xenium_12_cells.csv.gz",
+   "sha256": "03b10ade3cc7e6f76333015a9997322b8b95e2224f04d367306c668692c719d3",
+   "bytes": 4124553
+  },
+  {
+   "path": "GSM8720420/GSM8720420_kidney_xenium_12_features.tsv.gz",
+   "sha256": "8660d1898633f235fb9645296304350687b7e1a6f40e48f0560eb2dba2387b42",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720421/GSM8720421_kidney_xenium_13_transcripts.parquet.gz",
+   "sha256": "21a63f23416e7d855a09ed6bf6f005fed14d592f90fca66e566d221b2b5d26fd",
+   "bytes": 12577513
+  },
+  {
+   "path": "GSM8720421/GSM8720421_kidney_xenium_13_cells.csv.gz",
+   "sha256": "d57a6951be6116ad9f40df8491c76bc4dab5b8c4f6737be5e84f0a642b692864",
+   "bytes": 2530021
+  },
+  {
+   "path": "GSM8720421/GSM8720421_kidney_xenium_13_features.tsv.gz",
+   "sha256": "4da1c7092cc7ac7f65c9beb184dfeaeec5193e49e51dc78232e3c2948d3c62b8",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720422/GSM8720422_kidney_xenium_14_transcripts.parquet.gz",
+   "sha256": "63095e471995db5fa94e46090e348fe697e36696363843667fc12efa1aa1131e",
+   "bytes": 34225000
+  },
+  {
+   "path": "GSM8720422/GSM8720422_kidney_xenium_14_cells.csv.gz",
+   "sha256": "54948bf634a2b7ffd223206b4781a51ac5a5414dade79b399fe87ed2726087c6",
+   "bytes": 3610109
+  },
+  {
+   "path": "GSM8720422/GSM8720422_kidney_xenium_14_features.tsv.gz",
+   "sha256": "dd23a62c0358599c3791eda5b9afee9ceb36ecd8efa712f940e326ad5f9a547a",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720423/GSM8720423_kidney_xenium_15_transcripts.parquet.gz",
+   "sha256": "0cb2f43d7d319701160f18f5f018921979bacf06bd6ec2a2df047e0dfcfe486f",
+   "bytes": 39517014
+  },
+  {
+   "path": "GSM8720423/GSM8720423_kidney_xenium_15_cells.csv.gz",
+   "sha256": "7fd9076f4c691d8ad38a926d99bb51c9b4f1b92ed9c358ff3066f00122b8d3a0",
+   "bytes": 3570547
+  },
+  {
+   "path": "GSM8720423/GSM8720423_kidney_xenium_15_features.tsv.gz",
+   "sha256": "19532eb49b5e118f6911a428df7299eebe9e903a373481ba30ca453ba8c4b1d0",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720424/GSM8720424_kidney_xenium_16_transcripts.parquet.gz",
+   "sha256": "5470b6afdfd0d2db2981b763032dc263bb6595d31f0a1629210cff033a017896",
+   "bytes": 9378282
+  },
+  {
+   "path": "GSM8720424/GSM8720424_kidney_xenium_16_cells.csv.gz",
+   "sha256": "9f934d727adcce0bf6ce54eb7248ae7e5661ed69440c0e96d693124f7ea42873",
+   "bytes": 1186941
+  },
+  {
+   "path": "GSM8720424/GSM8720424_kidney_xenium_16_features.tsv.gz",
+   "sha256": "a959bfa4c2d3752f1ebb9042e69536563958417907550ff9ddb78d6a8991a2b8",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720425/GSM8720425_kidney_xenium_17_transcripts.parquet.gz",
+   "sha256": "24ca6cfdb6718a7a3370c8bb6a68c5fd6a6fc518332a98b272389f73bdefc97b",
+   "bytes": 25218328
+  },
+  {
+   "path": "GSM8720425/GSM8720425_kidney_xenium_17_cells.csv.gz",
+   "sha256": "eff25ebb73f8a4943e3cca85e2b1091fc1c653f416a60e526e03834145c15349",
+   "bytes": 3001138
+  },
+  {
+   "path": "GSM8720425/GSM8720425_kidney_xenium_17_features.tsv.gz",
+   "sha256": "fff148b826c1b61a08f6019ec633c0966fcb5b3a8d15b938b791d61c9cf1fdfe",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720426/GSM8720426_kidney_xenium_18_transcripts.parquet.gz",
+   "sha256": "e053c8d91ca48cac3a12194d08b70090f9eb53d115653dfda36ca9f4fb5e28b1",
+   "bytes": 3768776
+  },
+  {
+   "path": "GSM8720426/GSM8720426_kidney_xenium_18_cells.csv.gz",
+   "sha256": "f8fef513fa72cde28faec4a1b468468f15b985275f988f0f216fbef0fa146c2a",
+   "bytes": 712060
+  },
+  {
+   "path": "GSM8720426/GSM8720426_kidney_xenium_18_features.tsv.gz",
+   "sha256": "09e65005c9ef45f504cac51446b26012ba4c9914aea34046fd145ed168597db3",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720427/GSM8720427_kidney_xenium_19_transcripts.parquet.gz",
+   "sha256": "74f32ea20ebc81ea552c5125f1afd48efb51f4c5b220e6448029bb6817ef95aa",
+   "bytes": 11742288
+  },
+  {
+   "path": "GSM8720427/GSM8720427_kidney_xenium_19_cells.csv.gz",
+   "sha256": "3a06d0c8b6d484060f70e1d4c7daf795c8b72ce28d969a9e5522caa4d5fe0880",
+   "bytes": 2408001
+  },
+  {
+   "path": "GSM8720427/GSM8720427_kidney_xenium_19_features.tsv.gz",
+   "sha256": "d97bb4553a9a9696b059870fed2b62fe7131c22d0bcfc4d8bcacda998dce54a3",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720428/GSM8720428_kidney_xenium_20_transcripts.parquet.gz",
+   "sha256": "011b2126fe72b21c5f0656a6089017348db7fc492e34452093daac8f30ac1613",
+   "bytes": 6717386
+  },
+  {
+   "path": "GSM8720428/GSM8720428_kidney_xenium_20_cells.csv.gz",
+   "sha256": "19922b2c3bc6fafe88df3c725a9ab109865e5feedf8b94484f3c52f55dea7934",
+   "bytes": 1143856
+  },
+  {
+   "path": "GSM8720428/GSM8720428_kidney_xenium_20_features.tsv.gz",
+   "sha256": "ec44072a9ff62e7c7bc3dd26a1a66aeaa46631c1d943ca60d294514e89d28c07",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720429/GSM8720429_kidney_xenium_21_transcripts.parquet.gz",
+   "sha256": "cdf5995a851b898087c2572b0d3a770fc4d28c02361116db3a3868e51ae98ab3",
+   "bytes": 20776572
+  },
+  {
+   "path": "GSM8720429/GSM8720429_kidney_xenium_21_cells.csv.gz",
+   "sha256": "c848339c4de7c2b5fbc11e0b1bebb3d1b01e31df527aa8c4069019a76e6d246a",
+   "bytes": 2823752
+  },
+  {
+   "path": "GSM8720429/GSM8720429_kidney_xenium_21_features.tsv.gz",
+   "sha256": "9352a86af15903663c98a2babdc61ce6b612cbb8fca2d128c071fb8162d486e3",
+   "bytes": 3333
+  },
+  {
+   "path": "GSM8720430/GSM8720430_kidney_xenium_22_transcripts.parquet.gz",
+   "sha256": "0cae97a937634fab445c11563eabd8a90f34b184585c9dd7cbba2ae40ca4fdb1",
+   "bytes": 8510866
+  },
+  {
+   "path": "GSM8720430/GSM8720430_kidney_xenium_22_cells.csv.gz",
+   "sha256": "135e42c2058d0d8da0d8eeb2355253896d85e3d6f7fcabdaad162a01940147dd",
+   "bytes": 1164984
+  },
+  {
+   "path": "GSM8720430/GSM8720430_kidney_xenium_22_features.tsv.gz",
+   "sha256": "e101bf7b53717771624c0d0b108533b1b8ab3ecb18676255ab49662b68708ae6",
+   "bytes": 3333
+  }
+ ],
+ "donor_caveat": "GEO lists 22 samples; the paper reports 19 donors (Control 3, DKD 5, IgAN 4, MCD 3, MN 4). GEO does not say which sections share a donor; DKD, MCD and MN each hold one repeat-donor section, and samples with identical files are listed under distinct_sections. Sections are not independent donors, and donors are never inferred from expression.",
+ "filters": {
+  "min_qv": 20.0,
+  "panel_genes_only": true,
+  "description": "Molecules need qv >= 20 and a panel gene (control probes and codewords are removed). Malformed and duplicate records are removed and counted; molecules assigned to a cell missing from the cells table are kept as unassigned and counted. Per-section counts are in sections[].validation."
+ },
+ "label_rule_ids": [
+  "full-panel-v1",
+  "nphs1-anchored-v1"
+ ],
+ "citation": "Xenium in situ data from NCBI GEO series GSE286184 (22 human kidney sections: Control, DKD, IgAN, MCD, MN), https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE286184; associated paper https://pmc.ncbi.nlm.nih.gov/articles/PMC13586693/. Cell type labels are SpatialScout's own marker-rule labels, not the authors' annotation, which was not deposited."
+}

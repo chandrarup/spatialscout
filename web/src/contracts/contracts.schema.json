@@ -1,0 +1,7479 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpatialScoutContracts",
+  "type": "object",
+  "definitions": {
+    "AgentDecisionEvent": {
+      "additionalProperties": false,
+      "description": "Muse Spark 1.3 after reading one observation: what it read, the follow-ups it requested (each citing an\nobservation, with its status) and the questions it left open.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "agent_decision",
+          "default": "agent_decision",
+          "type": "string"
+        },
+        "observation_id": {
+          "type": "string"
+        },
+        "reading": {
+          "type": "string"
+        },
+        "requests": {
+          "items": {
+            "$ref": "#/definitions/FollowUpRequest"
+          },
+          "type": "array"
+        },
+        "open_questions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "tool_calls_used": {
+          "type": "integer"
+        },
+        "max_tool_calls": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "observation_id",
+        "reading",
+        "requests",
+        "open_questions",
+        "tool_calls_used",
+        "max_tool_calls"
+      ],
+      "title": "AgentDecisionEvent",
+      "type": "object"
+    },
+    "AuditConditionValue": {
+      "additionalProperties": false,
+      "description": "One section under one assignment condition.\n\n`molecules` counts the result's molecules in the population kept under the condition; retention divides it\nby the default condition's count. Each excess drop is its expectation minus the observed value.",
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "molecules": {
+          "type": "integer"
+        },
+        "retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nuclear_overlap_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cells_with_retained_molecule": {
+          "type": "integer"
+        },
+        "expectation_cell_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "expectation_home_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "excess_drop_cell_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "excess_drop_home_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "neighbour_proximity_share_excluded": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "neighbour_proximity_share_retained": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "cells_expressing": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Cells of the population that meet a presence measure under the condition (the observed value's numerator); null for the co-expression score."
+        },
+        "pairs_scored": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Co-expression score only: the marker pairs averaged."
+        }
+      },
+      "required": [
+        "condition",
+        "molecules",
+        "retention",
+        "observed_value",
+        "nuclear_overlap_share",
+        "cells_with_retained_molecule",
+        "expectation_cell_matched",
+        "expectation_home_matched",
+        "excess_drop_cell_matched",
+        "excess_drop_home_matched",
+        "neighbour_proximity_share_excluded",
+        "neighbour_proximity_share_retained",
+        "missing_reasons",
+        "cells_expressing",
+        "pairs_scored"
+      ],
+      "title": "AuditConditionValue",
+      "type": "object"
+    },
+    "AuditEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "seq": {
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "investigation_started",
+            "model_call",
+            "plan_proposed",
+            "plan_approved",
+            "plan_rejected",
+            "tool_call",
+            "tool_failed",
+            "agent_decision",
+            "budget_exhausted",
+            "claim_drafted",
+            "claim_rejected",
+            "claim_verified",
+            "claim_challenges_recorded",
+            "verdict_computed",
+            "review_decided",
+            "figure_failed",
+            "package_exported",
+            "error"
+          ],
+          "type": "string"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "prev_hash": {
+          "type": "string"
+        },
+        "entry_hash": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "seq",
+        "investigation_id",
+        "recorded_at",
+        "kind",
+        "payload",
+        "prev_hash",
+        "entry_hash"
+      ],
+      "title": "AuditEntry",
+      "type": "object"
+    },
+    "AuditIndex": {
+      "additionalProperties": false,
+      "description": "The committed audit results of a dataset, with the inputs they were computed from.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "generated_by": {
+          "type": "string"
+        },
+        "sections_counted": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "input_sha256": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "sha256 of each input artifact, by path.",
+          "type": "object"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/definitions/AuditIndexEntry"
+          },
+          "type": "array"
+        },
+        "section_disclosure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How many sections and donors the dataset holds; shown with every section count."
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "generated_by",
+        "sections_counted",
+        "sections_left_out",
+        "input_sha256",
+        "entries",
+        "section_disclosure"
+      ],
+      "title": "AuditIndex",
+      "type": "object"
+    },
+    "AuditIndexEntry": {
+      "additionalProperties": false,
+      "description": "One committed audit result, as the findings table lists it.",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "finding_path": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "measure": {
+          "type": "string"
+        },
+        "eligible_sections": {
+          "type": "integer"
+        },
+        "figure": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CompositeFigure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "random_thinning_control_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "random_thinning_control_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_sensitivity_control_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_sensitivity_control_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "finding_id",
+        "finding_path",
+        "label",
+        "label_rule_id",
+        "cell_type",
+        "genes",
+        "measure",
+        "eligible_sections",
+        "figure",
+        "random_thinning_control_id",
+        "random_thinning_control_path",
+        "label_sensitivity_control_id",
+        "label_sensitivity_control_path"
+      ],
+      "title": "AuditIndexEntry",
+      "type": "object"
+    },
+    "AuditMetrics": {
+      "additionalProperties": false,
+      "description": "Retention and excluded molecules for one scope of a section under one assignment condition.\n\nA scope is the whole section (cell_type and gene are null), one cell type (gene is null), or one gene\nwithin one cell type. Retention is the share of default-condition molecules the condition keeps; it is\nnull, with a reason, when the scope has no default-condition molecules.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "cell_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gene": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_molecules": {
+          "type": "integer"
+        },
+        "kept_molecules": {
+          "type": "integer"
+        },
+        "excluded_molecules": {
+          "type": "integer"
+        },
+        "retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retention_missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "section_id",
+        "condition",
+        "cell_type",
+        "gene",
+        "default_molecules",
+        "kept_molecules",
+        "excluded_molecules",
+        "retention",
+        "retention_missing_reason"
+      ],
+      "title": "AuditMetrics",
+      "type": "object"
+    },
+    "AuditResult": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "finding_kind": {
+          "const": "audit",
+          "default": "audit",
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "population": {
+          "$ref": "#/definitions/Population"
+        },
+        "genes": {
+          "description": "One gene, a gene set (presence of any), or every gene of the scored marker pairs.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "measure": {
+          "enum": [
+            "share_expressing",
+            "gene_set_share_expressing",
+            "co_expression_score"
+          ],
+          "type": "string"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/definitions/AuditSectionValues"
+          },
+          "type": "array"
+        },
+        "eligible_section_ids": {
+          "description": "Sections with at least 20 cells of the population and 10 of the result's molecules in them under the default condition; pooled values and the label use only these.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "exploratory_sections": {
+          "items": {
+            "$ref": "#/definitions/AuditSectionValues"
+          },
+          "type": "array"
+        },
+        "evidence_regions": {
+          "items": {
+            "$ref": "#/definitions/EvidenceRegion"
+          },
+          "type": "array"
+        },
+        "ranking_rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        },
+        "source_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "gene_pairs": {
+          "description": "Co-expression score only: the marker pairs it averages.",
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "marker_pairs": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MarkerPairsSource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pooled": {
+          "items": {
+            "$ref": "#/definitions/PooledConditionValue"
+          },
+          "type": "array"
+        },
+        "leave_one_section_out": {
+          "items": {
+            "$ref": "#/definitions/LeaveOneSectionOutVerdict"
+          },
+          "type": "array"
+        },
+        "eligible_by_group": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "rules": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AuditRules"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The box the result is scoped to (a cell is inside when its centroid is, and brings all its molecules); null for a whole-section result."
+        }
+      },
+      "required": [
+        "schema_version",
+        "finding_kind",
+        "finding_id",
+        "dataset_id",
+        "population",
+        "genes",
+        "measure",
+        "sections",
+        "eligible_section_ids",
+        "exploratory_sections",
+        "evidence_regions",
+        "ranking_rule",
+        "label",
+        "label_reason",
+        "source_artifact_ids",
+        "gene_pairs",
+        "marker_pairs",
+        "pooled",
+        "leave_one_section_out",
+        "eligible_by_group",
+        "sections_left_out",
+        "rules",
+        "roi"
+      ],
+      "title": "AuditResult",
+      "type": "object"
+    },
+    "AuditRules": {
+      "additionalProperties": false,
+      "description": "The frozen analysis rules a result was computed under, recorded with it.",
+      "properties": {
+        "population_gate_min_cells": {
+          "type": "integer"
+        },
+        "molecule_gate_min_molecules": {
+          "type": "integer"
+        },
+        "min_eligible_sections": {
+          "type": "integer"
+        },
+        "excess_log2_drop_threshold": {
+          "type": "number"
+        },
+        "home_label_rule_id": {
+          "type": "string"
+        },
+        "home_cell_types": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Each gene's home cell type from the full-panel marker map; null when it has none.",
+          "type": "object"
+        },
+        "result_molecules_rule": {
+          "type": "string"
+        },
+        "pooling_rule": {
+          "type": "string"
+        },
+        "label_rule": {
+          "type": "string"
+        },
+        "expectation_rule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "population_gate_min_cells",
+        "molecule_gate_min_molecules",
+        "min_eligible_sections",
+        "excess_log2_drop_threshold",
+        "home_label_rule_id",
+        "home_cell_types",
+        "result_molecules_rule",
+        "pooling_rule",
+        "label_rule",
+        "expectation_rule"
+      ],
+      "title": "AuditRules",
+      "type": "object"
+    },
+    "AuditSectionValues": {
+      "additionalProperties": false,
+      "description": "One section of an audit result. `cells_labelled` is the fixed population count: cells carrying the\nlabel under the default condition. A cell without retained molecules stays in every denominator.\n`cells_with_retained_molecule` (per condition) counts population cells that keep at least one molecule of any\ngene, reported separately from the fixed denominator.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "cells_labelled": {
+          "type": "integer"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/AuditConditionValue"
+          },
+          "type": "array"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "eligible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ineligible_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "section_id",
+        "cells_labelled",
+        "conditions",
+        "group",
+        "eligible",
+        "ineligible_reason"
+      ],
+      "title": "AuditSectionValues",
+      "type": "object"
+    },
+    "Budget": {
+      "additionalProperties": false,
+      "properties": {
+        "max_tool_calls": {
+          "default": 12,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_tool_calls"
+      ],
+      "title": "Budget",
+      "type": "object"
+    },
+    "BudgetExhaustedEvent": {
+      "additionalProperties": false,
+      "description": "The plan's tool-call budget is spent: the investigation drafts claims from the evidence it has and reports\nwhat it could not settle.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "budget_exhausted",
+          "default": "budget_exhausted",
+          "type": "string"
+        },
+        "tool_calls_used": {
+          "type": "integer"
+        },
+        "max_tool_calls": {
+          "type": "integer"
+        },
+        "open_questions": {
+          "items": {
+            "$ref": "#/definitions/OpenQuestion"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "tool_calls_used",
+        "max_tool_calls",
+        "open_questions"
+      ],
+      "title": "BudgetExhaustedEvent",
+      "type": "object"
+    },
+    "CacheInput": {
+      "additionalProperties": false,
+      "description": "A computed input a model request was built from. Part of the cache key, so a changed tool version\nor artifact invalidates the stored response.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "sha256"
+      ],
+      "title": "CacheInput",
+      "type": "object"
+    },
+    "CapabilityCheck": {
+      "additionalProperties": false,
+      "description": "One analysis and whether this dataset supports it, with the reason.",
+      "properties": {
+        "capability": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "supported",
+            "unavailable",
+            "descriptive_only"
+          ],
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "capability",
+        "status",
+        "reason"
+      ],
+      "title": "CapabilityCheck",
+      "type": "object"
+    },
+    "CapabilityReport": {
+      "additionalProperties": false,
+      "description": "For a dataset, which analyses are supported, unavailable or descriptive only, each with its reason.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/definitions/CapabilityCheck"
+          },
+          "type": "array"
+        },
+        "contrasts": {
+          "description": "The inference eligibility of every contrast the dataset allows.",
+          "items": {
+            "$ref": "#/definitions/ContrastEligibility"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "checks",
+        "contrasts"
+      ],
+      "title": "CapabilityReport",
+      "type": "object"
+    },
+    "CellColumns": {
+      "additionalProperties": false,
+      "properties": {
+        "cell_id": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "x": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "y": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "nucleus_radius": {
+          "description": "Radius of a circle with the nucleus's area: an approximation.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "cell_type_index": {
+          "description": "Index into RegionView.cell_types.",
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "cell_id",
+        "x",
+        "y",
+        "nucleus_radius",
+        "cell_type_index"
+      ],
+      "title": "CellColumns",
+      "type": "object"
+    },
+    "ChainCheckResult": {
+      "additionalProperties": false,
+      "description": "The outcome of checking an audit log's hash chain. `first_bad_seq` is the first entry that fails.",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "entries": {
+          "type": "integer"
+        },
+        "head_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "first_bad_seq": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "ok",
+        "entries",
+        "head_hash",
+        "first_bad_seq",
+        "reason"
+      ],
+      "title": "ChainCheckResult",
+      "type": "object"
+    },
+    "ChannelSet": {
+      "additionalProperties": false,
+      "description": "Every rendered channel of one section, in a fixed order.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "provenance": {
+          "const": "rendered from molecules",
+          "default": "rendered from molecules",
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/RenderedChannel"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "section_id",
+        "provenance",
+        "channels"
+      ],
+      "title": "ChannelSet",
+      "type": "object"
+    },
+    "ChatMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "CheckResult": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "structural",
+            "numerical",
+            "visual"
+          ],
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "disputed",
+            "unavailable"
+          ],
+          "type": "string"
+        },
+        "details": {
+          "type": "string"
+        },
+        "reasons": {
+          "description": "Every problem the check found; empty when it passed.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "status",
+        "details",
+        "reasons"
+      ],
+      "title": "CheckResult",
+      "type": "object"
+    },
+    "CitedNumber": {
+      "additionalProperties": false,
+      "description": "One number the claim's text uses, and the field of the cited finding it comes from.",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "source"
+      ],
+      "title": "CitedNumber",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "2.0",
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "version": {
+          "default": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "finding": {
+          "$ref": "#/definitions/FindingRef"
+        },
+        "text": {
+          "type": "string"
+        },
+        "cited": {
+          "additionalProperties": {
+            "$ref": "#/definitions/CitedNumber"
+          },
+          "type": "object"
+        },
+        "controls": {
+          "$ref": "#/definitions/ClaimControls"
+        },
+        "figure_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence_status": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "verification_status": {
+          "$ref": "#/definitions/VerificationStatus"
+        },
+        "review_status": {
+          "$ref": "#/definitions/ReviewStatus"
+        },
+        "injected": {
+          "$ref": "#/definitions/InjectedError"
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "enum": [
+                "holds",
+                "drops"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The direction the claim states, when it states one in structured form; else read from its text."
+        },
+        "neighbour_pattern": {
+          "anyOf": [
+            {
+              "enum": [
+                "excluded_nearer_home",
+                "excluded_not_nearer_home"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The neighbour pattern the claim states, if any."
+        }
+      },
+      "required": [
+        "schema_version",
+        "claim_id",
+        "version",
+        "investigation_id",
+        "dataset_id",
+        "finding",
+        "text",
+        "cited",
+        "controls",
+        "figure_id",
+        "evidence_status",
+        "verification_status",
+        "review_status",
+        "injected",
+        "direction",
+        "neighbour_pattern"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimChallenge": {
+      "additionalProperties": false,
+      "description": "One recorded injected variant of a claim and its recorded verification. `detected` is the recorded outcome:\ntrue when a check found a problem the original claim did not have (`new_reasons`), false for a miss.",
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/InjectedErrorKind"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        },
+        "verification": {
+          "$ref": "#/definitions/VerificationResult"
+        },
+        "changes": {
+          "items": {
+            "$ref": "#/definitions/FieldChange"
+          },
+          "type": "array"
+        },
+        "new_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "detected": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "claim",
+        "verification",
+        "changes",
+        "new_reasons",
+        "detected"
+      ],
+      "title": "ClaimChallenge",
+      "type": "object"
+    },
+    "ClaimChallenges": {
+      "additionalProperties": false,
+      "description": "The \"Challenge the verifier\" options of one claim: its injected variants, named only by error kind.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_version": {
+          "type": "integer"
+        },
+        "base_status": {
+          "$ref": "#/definitions/VerificationStatus"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/definitions/ClaimChallenge"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "claim_id",
+        "claim_version",
+        "base_status",
+        "variants"
+      ],
+      "title": "ClaimChallenges",
+      "type": "object"
+    },
+    "ClaimControls": {
+      "additionalProperties": false,
+      "description": "Ids of the controls the claim cites; a required control that is missing fails verification.",
+      "properties": {
+        "random_thinning": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_sensitivity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "random_thinning",
+        "label_sensitivity"
+      ],
+      "title": "ClaimControls",
+      "type": "object"
+    },
+    "ClaimDraft": {
+      "additionalProperties": false,
+      "description": "The claim-drafting model's structured output: the sentence and every number it uses.",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "cited": {
+          "additionalProperties": {
+            "$ref": "#/definitions/CitedNumber"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "text",
+        "cited"
+      ],
+      "title": "ClaimDraft",
+      "type": "object"
+    },
+    "ClaimDraftedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "claim_drafted",
+          "default": "claim_drafted",
+          "type": "string"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "claim"
+      ],
+      "title": "ClaimDraftedEvent",
+      "type": "object"
+    },
+    "ClaimRejectedEvent": {
+      "additionalProperties": false,
+      "description": "A claim draft that failed validation even after one redraft. No claim is made from it.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "claim_rejected",
+          "default": "claim_rejected",
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "problems": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "finding_id",
+        "problems"
+      ],
+      "title": "ClaimRejectedEvent",
+      "type": "object"
+    },
+    "ClaimVerifiedEvent": {
+      "additionalProperties": false,
+      "description": "A claim version after its three checks, with its verification status and every reason. An injected variant\ncarries `claim.injected.is_injected` and is always shown as injected.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "claim_verified",
+          "default": "claim_verified",
+          "type": "string"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        },
+        "verification": {
+          "$ref": "#/definitions/VerificationResult"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "claim",
+        "verification"
+      ],
+      "title": "ClaimVerifiedEvent",
+      "type": "object"
+    },
+    "CompositeFigure": {
+      "additionalProperties": false,
+      "description": "An audit result's two-panel figure: A, per-section observed values against both expectations across\nconditions; B, a 300 x 300 \u00b5m crop around its top-ranked evidence region.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "figure_id": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "path": {
+          "description": "PNG path relative to the dataset's artifact directory.",
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "crop": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Panel B's crop; null when the result has no evidence region."
+        },
+        "evidence_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "panel_a": {
+          "type": "string"
+        },
+        "panel_b": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "figure_id",
+        "finding_id",
+        "path",
+        "sha256",
+        "crop",
+        "evidence_rank",
+        "panel_a",
+        "panel_b"
+      ],
+      "title": "CompositeFigure",
+      "type": "object"
+    },
+    "ConditionEffect": {
+      "additionalProperties": false,
+      "description": "The difference between group means of the log2 values under one condition (disease minus control).",
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "effect": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "disease_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "control_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "enum": [
+                -1,
+                0,
+                1
+              ],
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "0 inside the near-zero band (\u00b10.1 log2)."
+        },
+        "valid": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Every section of both groups passes the molecule gate under the condition."
+        },
+        "invalid_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sections_used": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "condition",
+        "effect",
+        "missing_reason",
+        "disease_mean",
+        "control_mean",
+        "direction",
+        "valid",
+        "invalid_reason",
+        "sections_used"
+      ],
+      "title": "ConditionEffect",
+      "type": "object"
+    },
+    "ConditionName": {
+      "description": "An assignment condition: a rule that decides which molecules count toward a cell (ADR-0002).",
+      "enum": [
+        "default",
+        "nucleus_only",
+        "distance_cap_1um",
+        "distance_cap_2um",
+        "structure_constrained"
+      ],
+      "title": "ConditionName",
+      "type": "string"
+    },
+    "Contrast": {
+      "additionalProperties": false,
+      "description": "One disease group compared with the control group, for example DKD vs Control.",
+      "properties": {
+        "disease": {
+          "type": "string"
+        },
+        "control": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "disease",
+        "control"
+      ],
+      "title": "Contrast",
+      "type": "object"
+    },
+    "ContrastEligibility": {
+      "additionalProperties": false,
+      "description": "Whether one contrast's groups support statistical inference. In this release every contrast is\ndescriptive only, because GEO does not map sections to donors (ADR-0007). Donors are never inferred from\nexpression.",
+      "properties": {
+        "groups": {
+          "$ref": "#/definitions/Contrast"
+        },
+        "disease_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "control_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "disease_donors_published": {
+          "description": "Donors in the disease group, from the paper's published counts.",
+          "type": "integer"
+        },
+        "control_donors_published": {
+          "description": "Donors in the control group, from the paper's published counts.",
+          "type": "integer"
+        },
+        "donor_distinctness": {
+          "enum": [
+            "repeat_donor_in_group",
+            "conditionally_donor_distinct_unconfirmed",
+            "counts_do_not_reconcile"
+          ],
+          "type": "string"
+        },
+        "donor_distinctness_statement": {
+          "type": "string"
+        },
+        "inference_eligibility": {
+          "const": "descriptive_only",
+          "default": "descriptive_only",
+          "type": "string"
+        },
+        "inference_reason": {
+          "type": "string"
+        },
+        "excluded_section_ids": {
+          "description": "Sections of either group left out of the contrast, each named with its reason in inference_reason.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "groups",
+        "disease_section_ids",
+        "control_section_ids",
+        "disease_donors_published",
+        "control_donors_published",
+        "donor_distinctness",
+        "donor_distinctness_statement",
+        "inference_eligibility",
+        "inference_reason",
+        "excluded_section_ids"
+      ],
+      "title": "ContrastEligibility",
+      "type": "object"
+    },
+    "ContrastIndex": {
+      "additionalProperties": false,
+      "description": "The committed contrast results of a dataset, with their run configuration and inputs.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "generated_by": {
+          "type": "string"
+        },
+        "citation": {
+          "type": "string"
+        },
+        "section_disclosure": {
+          "type": "string"
+        },
+        "sections_counted": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "input_sha256": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "run_configuration": {
+          "$ref": "#/definitions/ContrastRunConfiguration"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/definitions/ContrastIndexEntry"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "generated_by",
+        "citation",
+        "section_disclosure",
+        "sections_counted",
+        "sections_left_out",
+        "input_sha256",
+        "run_configuration",
+        "entries"
+      ],
+      "title": "ContrastIndex",
+      "type": "object"
+    },
+    "ContrastIndexEntry": {
+      "additionalProperties": false,
+      "description": "One committed contrast result, as the findings table lists it.",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "finding_path": {
+          "type": "string"
+        },
+        "groups": {
+          "$ref": "#/definitions/Contrast"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "gene": {
+          "type": "string"
+        },
+        "disease_sections": {
+          "type": "integer"
+        },
+        "control_sections": {
+          "type": "integer"
+        },
+        "donor_distinctness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "figure": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CompositeFigure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "finding_id",
+        "finding_path",
+        "groups",
+        "label",
+        "label_rule_id",
+        "cell_type",
+        "gene",
+        "disease_sections",
+        "control_sections",
+        "donor_distinctness",
+        "figure"
+      ],
+      "title": "ContrastIndexEntry",
+      "type": "object"
+    },
+    "ContrastResult": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "finding_kind": {
+          "const": "contrast",
+          "default": "contrast",
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "groups": {
+          "$ref": "#/definitions/Contrast"
+        },
+        "population": {
+          "$ref": "#/definitions/Population"
+        },
+        "gene": {
+          "type": "string"
+        },
+        "per_section": {
+          "items": {
+            "$ref": "#/definitions/SectionLog2Value"
+          },
+          "type": "array"
+        },
+        "effects": {
+          "items": {
+            "$ref": "#/definitions/ConditionEffect"
+          },
+          "type": "array"
+        },
+        "leave_one_section_out": {
+          "items": {
+            "$ref": "#/definitions/LeaveOneSectionOut"
+          },
+          "type": "array"
+        },
+        "exploratory_effects": {
+          "items": {
+            "$ref": "#/definitions/ConditionEffect"
+          },
+          "type": "array"
+        },
+        "inference_eligibility": {
+          "const": "descriptive_only",
+          "default": "descriptive_only",
+          "type": "string"
+        },
+        "inference_reason": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        },
+        "source_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "donor_distinctness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "From the capability report, for example counts_do_not_reconcile."
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/definitions/ContrastSection"
+          },
+          "type": "array"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "valid_conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "exploratory_per_section": {
+          "description": "The exploratory condition's values, on sections with structure masks only; never in the label (ADR-0006).",
+          "items": {
+            "$ref": "#/definitions/SectionLog2Value"
+          },
+          "type": "array"
+        },
+        "evidence_regions": {
+          "items": {
+            "$ref": "#/definitions/EvidenceRegion"
+          },
+          "type": "array"
+        },
+        "ranking_rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rules": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ContrastRules"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "section_disclosure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How many sections and donors the dataset holds; shown with every section count."
+        }
+      },
+      "required": [
+        "schema_version",
+        "finding_kind",
+        "finding_id",
+        "dataset_id",
+        "groups",
+        "population",
+        "gene",
+        "per_section",
+        "effects",
+        "leave_one_section_out",
+        "exploratory_effects",
+        "inference_eligibility",
+        "inference_reason",
+        "label",
+        "label_reason",
+        "source_artifact_ids",
+        "donor_distinctness",
+        "sections",
+        "sections_left_out",
+        "valid_conditions",
+        "exploratory_per_section",
+        "evidence_regions",
+        "ranking_rule",
+        "rules",
+        "section_disclosure"
+      ],
+      "title": "ContrastResult",
+      "type": "object"
+    },
+    "ContrastRules": {
+      "additionalProperties": false,
+      "description": "The frozen contrast rules a result was computed under, recorded with it.",
+      "properties": {
+        "population_gate_min_cells": {
+          "type": "integer"
+        },
+        "molecule_gate_min_molecules": {
+          "type": "integer"
+        },
+        "near_zero_band_log2": {
+          "type": "number"
+        },
+        "max_stable_range_log2": {
+          "type": "number"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "normalisation": {
+          "type": "string"
+        },
+        "value_rule": {
+          "type": "string"
+        },
+        "effect_rule": {
+          "type": "string"
+        },
+        "gate_precedence": {
+          "type": "string"
+        },
+        "label_rule": {
+          "type": "string"
+        },
+        "primary_conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "exploratory_conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "population_gate_min_cells",
+        "molecule_gate_min_molecules",
+        "near_zero_band_log2",
+        "max_stable_range_log2",
+        "label_rule_id",
+        "normalisation",
+        "value_rule",
+        "effect_rule",
+        "gate_precedence",
+        "label_rule",
+        "primary_conditions",
+        "exploratory_conditions"
+      ],
+      "title": "ContrastRules",
+      "type": "object"
+    },
+    "ContrastRunConfiguration": {
+      "additionalProperties": false,
+      "description": "What a contrast batch ran: the frozen rules, conditions and the (cell type, gene) grid, fixed before computing.",
+      "properties": {
+        "rules": {
+          "$ref": "#/definitions/ContrastRules"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "grid": {
+          "description": "[label rule, cell type, gene] per result, per contrast.",
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "contrasts": {
+          "items": {
+            "$ref": "#/definitions/Contrast"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "rules",
+        "conditions",
+        "grid",
+        "contrasts"
+      ],
+      "title": "ContrastRunConfiguration",
+      "type": "object"
+    },
+    "ContrastSection": {
+      "additionalProperties": false,
+      "description": "One section of a contrast: its group and the fixed population count against the population gate.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "cells_labelled": {
+          "type": "integer"
+        },
+        "passes_population_gate": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "section_id",
+        "group",
+        "cells_labelled",
+        "passes_population_gate"
+      ],
+      "title": "ContrastSection",
+      "type": "object"
+    },
+    "DatasetFilters": {
+      "additionalProperties": false,
+      "description": "The quality and panel filters every validated molecule passed.",
+      "properties": {
+        "min_qv": {
+          "type": "number"
+        },
+        "panel_genes_only": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "min_qv",
+        "panel_genes_only",
+        "description"
+      ],
+      "title": "DatasetFilters",
+      "type": "object"
+    },
+    "DatasetManifest": {
+      "additionalProperties": false,
+      "description": "Provenance of a dataset: where it came from, its files, panel and sections.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "source_urls": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "download_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coordinate_units": {
+          "type": "string"
+        },
+        "panel": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/definitions/SectionInfo"
+          },
+          "type": "array"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/definitions/FileChecksum"
+          },
+          "type": "array"
+        },
+        "donor_caveat": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "filters": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/DatasetFilters"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label_rule_ids": {
+          "description": "Frozen label rules; the first is the default.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "citation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "title",
+        "description",
+        "synthetic",
+        "source_urls",
+        "download_date",
+        "coordinate_units",
+        "panel",
+        "sections",
+        "files",
+        "donor_caveat",
+        "filters",
+        "label_rule_ids",
+        "citation"
+      ],
+      "title": "DatasetManifest",
+      "type": "object"
+    },
+    "ErrorEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "error",
+          "default": "error",
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "code",
+        "message"
+      ],
+      "title": "ErrorEvent",
+      "type": "object"
+    },
+    "EventBase": {
+      "additionalProperties": false,
+      "description": "Fields every event carries. `seq` starts at 1 and increases by one per event within an\ninvestigation; `recorded_at_utc` is when the event was first recorded and never changes on replay.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc"
+      ],
+      "title": "EventBase",
+      "type": "object"
+    },
+    "EvidenceRegion": {
+      "additionalProperties": false,
+      "description": "A region ranked by the result's ranking rule as showing the molecules behind it (rank 1 is first).\n`score` is the ranking count: the result's molecules in the population excluded under `condition`.",
+      "properties": {
+        "rank": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ConditionName"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "excluded_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "default_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The result's molecules in the population in the window under the default condition."
+        }
+      },
+      "required": [
+        "rank",
+        "region",
+        "score",
+        "condition",
+        "excluded_molecules",
+        "default_molecules"
+      ],
+      "title": "EvidenceRegion",
+      "type": "object"
+    },
+    "EvidenceStatus": {
+      "description": "An evidence label. It says what the evidence supports, never whether a finding is biologically true.",
+      "enum": [
+        "stable",
+        "segmentation_sensitive",
+        "insufficient_evidence"
+      ],
+      "title": "EvidenceStatus",
+      "type": "string"
+    },
+    "FieldChange": {
+      "additionalProperties": false,
+      "description": "One field an injected error changed.",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "before": {},
+        "after": {}
+      },
+      "required": [
+        "field",
+        "before",
+        "after"
+      ],
+      "title": "FieldChange",
+      "type": "object"
+    },
+    "FileChecksum": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "title": "FileChecksum",
+      "type": "object"
+    },
+    "Finding": {
+      "discriminator": {
+        "mapping": {
+          "audit": "#/definitions/AuditResult",
+          "contrast": "#/definitions/ContrastResult"
+        },
+        "propertyName": "finding_kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/definitions/AuditResult"
+        },
+        {
+          "$ref": "#/definitions/ContrastResult"
+        }
+      ],
+      "title": "Finding"
+    },
+    "FindingKind": {
+      "enum": [
+        "audit",
+        "contrast"
+      ],
+      "type": "string",
+      "title": "FindingKind"
+    },
+    "FindingRef": {
+      "additionalProperties": false,
+      "description": "The one finding a claim cites.",
+      "properties": {
+        "finding_id": {
+          "type": "string"
+        },
+        "finding_kind": {
+          "enum": [
+            "audit",
+            "contrast"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "finding_kind"
+      ],
+      "title": "FindingRef",
+      "type": "object"
+    },
+    "FollowUpDecision": {
+      "additionalProperties": false,
+      "description": "The agent model's structured output after reading one observation.",
+      "properties": {
+        "reading": {
+          "description": "What the agent reads in the observation, in one to three sentences.",
+          "type": "string"
+        },
+        "requests": {
+          "description": "Follow-up tool calls; empty when the observation needs none.",
+          "items": {
+            "$ref": "#/definitions/FollowUpProposal"
+          },
+          "type": "array"
+        },
+        "open_questions": {
+          "description": "Questions the evidence leaves open that the registry's tools cannot answer.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "reading",
+        "requests",
+        "open_questions"
+      ],
+      "title": "FollowUpDecision",
+      "type": "object"
+    },
+    "FollowUpProposal": {
+      "additionalProperties": false,
+      "description": "One follow-up tool call as the agent model proposes it, before it is checked against the registry.",
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "cites_observation": {
+          "description": "The id of the observation that prompted this request, such as obs-1.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Why this observation calls for this tool, in one or two sentences.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "arguments",
+        "cites_observation",
+        "reason"
+      ],
+      "title": "FollowUpProposal",
+      "type": "object"
+    },
+    "FollowUpRequest": {
+      "additionalProperties": false,
+      "description": "A follow-up request as the orchestrator recorded it: accepted (and run), rejected (with the reason) or over\nbudget (not run, and reported as an open question).",
+      "properties": {
+        "request_id": {
+          "description": "req-<n>, numbered in the order the agent made its requests.",
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "cites_observation_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "over_budget"
+          ],
+          "type": "string"
+        },
+        "rejection_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "request_id",
+        "tool",
+        "arguments",
+        "cites_observation_id",
+        "reason",
+        "status",
+        "rejection_reason"
+      ],
+      "title": "FollowUpRequest",
+      "type": "object"
+    },
+    "GateStatus": {
+      "additionalProperties": false,
+      "description": "Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cells": {
+          "description": "Cells of the population whose centroid lies in the box.",
+          "type": "integer"
+        },
+        "molecules": {
+          "description": "Default-condition molecules of the genes assigned to those cells.",
+          "type": "integer"
+        },
+        "population_gate_min_cells": {
+          "type": "integer"
+        },
+        "molecule_gate_min_molecules": {
+          "type": "integer"
+        },
+        "passes_population_gate": {
+          "type": "boolean"
+        },
+        "passes_molecule_gate": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "section_id",
+        "roi",
+        "cell_type",
+        "genes",
+        "cells",
+        "molecules",
+        "population_gate_min_cells",
+        "molecule_gate_min_molecules",
+        "passes_population_gate",
+        "passes_molecule_gate",
+        "status"
+      ],
+      "title": "GateStatus",
+      "type": "object"
+    },
+    "HypothesisVerdict": {
+      "additionalProperties": false,
+      "description": "Every sub-claim's verdict, in the investigation's sections and under the controls its claims cite.",
+      "properties": {
+        "question": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "verdicts": {
+          "items": {
+            "$ref": "#/definitions/SubClaimVerdict"
+          },
+          "type": "array"
+        },
+        "rule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "scope",
+        "verdicts",
+        "rule"
+      ],
+      "title": "HypothesisVerdict",
+      "type": "object"
+    },
+    "InjectedError": {
+      "additionalProperties": false,
+      "description": "Whether this claim is a deliberately altered copy used to test verification. Always shown when true.",
+      "properties": {
+        "is_injected": {
+          "default": false,
+          "type": "boolean"
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/InjectedErrorKind"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "is_injected",
+        "kind"
+      ],
+      "title": "InjectedError",
+      "type": "object"
+    },
+    "InjectedErrorKind": {
+      "enum": [
+        "reversed_direction",
+        "wrong_section_count",
+        "wrong_dataset_reference",
+        "changed_effect",
+        "figure_label_mismatch",
+        "misstated_spatial_pattern",
+        "missing_required_control"
+      ],
+      "title": "InjectedErrorKind",
+      "type": "string"
+    },
+    "InvestigationEvent": {
+      "discriminator": {
+        "mapping": {
+          "agent_decision": "#/definitions/AgentDecisionEvent",
+          "budget_exhausted": "#/definitions/BudgetExhaustedEvent",
+          "claim_drafted": "#/definitions/ClaimDraftedEvent",
+          "claim_rejected": "#/definitions/ClaimRejectedEvent",
+          "claim_verified": "#/definitions/ClaimVerifiedEvent",
+          "error": "#/definitions/ErrorEvent",
+          "model_call": "#/definitions/ModelCallEvent",
+          "package_ready": "#/definitions/PackageReadyEvent",
+          "plan_approved": "#/definitions/PlanApprovedEvent",
+          "plan_proposed": "#/definitions/PlanProposedEvent",
+          "plan_rejected": "#/definitions/PlanRejectedEvent",
+          "review_decided": "#/definitions/ReviewDecidedEvent",
+          "tool_failed": "#/definitions/ToolFailedEvent",
+          "tool_finished": "#/definitions/ToolFinishedEvent",
+          "tool_started": "#/definitions/ToolStartedEvent",
+          "verdict": "#/definitions/VerdictEvent"
+        },
+        "propertyName": "type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/definitions/PlanProposedEvent"
+        },
+        {
+          "$ref": "#/definitions/PlanApprovedEvent"
+        },
+        {
+          "$ref": "#/definitions/PlanRejectedEvent"
+        },
+        {
+          "$ref": "#/definitions/ToolStartedEvent"
+        },
+        {
+          "$ref": "#/definitions/ToolFinishedEvent"
+        },
+        {
+          "$ref": "#/definitions/ToolFailedEvent"
+        },
+        {
+          "$ref": "#/definitions/AgentDecisionEvent"
+        },
+        {
+          "$ref": "#/definitions/BudgetExhaustedEvent"
+        },
+        {
+          "$ref": "#/definitions/ClaimDraftedEvent"
+        },
+        {
+          "$ref": "#/definitions/ClaimRejectedEvent"
+        },
+        {
+          "$ref": "#/definitions/ClaimVerifiedEvent"
+        },
+        {
+          "$ref": "#/definitions/VerdictEvent"
+        },
+        {
+          "$ref": "#/definitions/ReviewDecidedEvent"
+        },
+        {
+          "$ref": "#/definitions/PackageReadyEvent"
+        },
+        {
+          "$ref": "#/definitions/ModelCallEvent"
+        },
+        {
+          "$ref": "#/definitions/ErrorEvent"
+        }
+      ],
+      "title": "InvestigationEvent"
+    },
+    "InvestigationSnapshot": {
+      "additionalProperties": false,
+      "description": "The current state of one investigation, including every event emitted so far.",
+      "properties": {
+        "investigation_id": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/InvestigationStatus"
+        },
+        "run_mode": {
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "replay": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReplayInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Plan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/definitions/Claim"
+          },
+          "type": "array"
+        },
+        "package": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PackageInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "events": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "agent_decision": "#/definitions/AgentDecisionEvent",
+                "budget_exhausted": "#/definitions/BudgetExhaustedEvent",
+                "claim_drafted": "#/definitions/ClaimDraftedEvent",
+                "claim_rejected": "#/definitions/ClaimRejectedEvent",
+                "claim_verified": "#/definitions/ClaimVerifiedEvent",
+                "error": "#/definitions/ErrorEvent",
+                "model_call": "#/definitions/ModelCallEvent",
+                "package_ready": "#/definitions/PackageReadyEvent",
+                "plan_approved": "#/definitions/PlanApprovedEvent",
+                "plan_proposed": "#/definitions/PlanProposedEvent",
+                "plan_rejected": "#/definitions/PlanRejectedEvent",
+                "review_decided": "#/definitions/ReviewDecidedEvent",
+                "tool_failed": "#/definitions/ToolFailedEvent",
+                "tool_finished": "#/definitions/ToolFinishedEvent",
+                "tool_started": "#/definitions/ToolStartedEvent",
+                "verdict": "#/definitions/VerdictEvent"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/definitions/PlanProposedEvent"
+              },
+              {
+                "$ref": "#/definitions/PlanApprovedEvent"
+              },
+              {
+                "$ref": "#/definitions/PlanRejectedEvent"
+              },
+              {
+                "$ref": "#/definitions/ToolStartedEvent"
+              },
+              {
+                "$ref": "#/definitions/ToolFinishedEvent"
+              },
+              {
+                "$ref": "#/definitions/ToolFailedEvent"
+              },
+              {
+                "$ref": "#/definitions/AgentDecisionEvent"
+              },
+              {
+                "$ref": "#/definitions/BudgetExhaustedEvent"
+              },
+              {
+                "$ref": "#/definitions/ClaimDraftedEvent"
+              },
+              {
+                "$ref": "#/definitions/ClaimRejectedEvent"
+              },
+              {
+                "$ref": "#/definitions/ClaimVerifiedEvent"
+              },
+              {
+                "$ref": "#/definitions/VerdictEvent"
+              },
+              {
+                "$ref": "#/definitions/ReviewDecidedEvent"
+              },
+              {
+                "$ref": "#/definitions/PackageReadyEvent"
+              },
+              {
+                "$ref": "#/definitions/ModelCallEvent"
+              },
+              {
+                "$ref": "#/definitions/ErrorEvent"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "approved_plan_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "regions": {
+          "description": "Regions the researcher drew in the viewer, kept as context.",
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "investigation_id",
+        "question",
+        "status",
+        "run_mode",
+        "replay",
+        "dataset_id",
+        "plan",
+        "claims",
+        "package",
+        "events",
+        "approved_plan_hash",
+        "regions"
+      ],
+      "title": "InvestigationSnapshot",
+      "type": "object"
+    },
+    "InvestigationState": {
+      "additionalProperties": false,
+      "description": "state.json in the investigation's directory; events.jsonl beside it holds every event.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "run_mode": {
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/InvestigationStatus"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "replay": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReplayInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approved_plan_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "created_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "updated_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "approved_at_utc": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "finished_at_utc": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "last_seq": {
+          "default": 0,
+          "type": "integer"
+        },
+        "regions": {
+          "description": "Regions the researcher drew in the viewer, kept as context.",
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "investigation_id",
+        "question",
+        "run_mode",
+        "status",
+        "dataset_id",
+        "replay",
+        "approved_plan_hash",
+        "created_at_utc",
+        "updated_at_utc",
+        "approved_at_utc",
+        "finished_at_utc",
+        "last_seq",
+        "regions"
+      ],
+      "title": "InvestigationState",
+      "type": "object"
+    },
+    "InvestigationStatus": {
+      "enum": [
+        "planning",
+        "awaiting_approval",
+        "running",
+        "complete",
+        "failed",
+        "rejected"
+      ],
+      "title": "InvestigationStatus",
+      "type": "string"
+    },
+    "KpmpChannel": {
+      "additionalProperties": false,
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "display_max": {
+          "description": "The raw intensity shown at full brightness.",
+          "type": "number"
+        },
+        "tiles": {
+          "items": {
+            "$ref": "#/definitions/KpmpTile"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "channel_id",
+        "marker",
+        "label",
+        "description",
+        "display_max",
+        "tiles"
+      ],
+      "title": "KpmpChannel",
+      "type": "object"
+    },
+    "KpmpManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "participants": {
+          "items": {
+            "$ref": "#/definitions/KpmpParticipant"
+          },
+          "type": "array"
+        },
+        "nucleus_threshold": {
+          "$ref": "#/definitions/ProteinThreshold"
+        },
+        "thresholds": {
+          "items": {
+            "$ref": "#/definitions/ProteinThreshold"
+          },
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/definitions/KpmpResultEntry"
+          },
+          "type": "array"
+        },
+        "display_rule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "participants",
+        "nucleus_threshold",
+        "thresholds",
+        "results",
+        "display_rule"
+      ],
+      "title": "KpmpManifest",
+      "type": "object"
+    },
+    "KpmpParticipant": {
+      "additionalProperties": false,
+      "properties": {
+        "participant_id": {
+          "type": "string"
+        },
+        "panel_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "extent": {
+          "$ref": "#/definitions/Region"
+        },
+        "pixel_size_um": {
+          "type": "number"
+        },
+        "cells": {
+          "type": "integer"
+        },
+        "mask_coverage": {
+          "description": "Share of the image's pixels inside a segmentation label.",
+          "type": "number"
+        },
+        "median_cell_area_um2": {
+          "type": "number"
+        },
+        "mask_note": {
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/KpmpChannel"
+          },
+          "type": "array"
+        },
+        "clinical": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Clinical values from downloaded KPMP files only; empty when none is downloaded.",
+          "type": "object"
+        },
+        "clinical_note": {
+          "type": "string"
+        },
+        "source_files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "participant_id",
+        "panel_id",
+        "role",
+        "title",
+        "extent",
+        "pixel_size_um",
+        "cells",
+        "mask_coverage",
+        "median_cell_area_um2",
+        "mask_note",
+        "channels",
+        "clinical",
+        "clinical_note",
+        "source_files"
+      ],
+      "title": "KpmpParticipant",
+      "type": "object"
+    },
+    "KpmpResultEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "participant_id": {
+          "type": "string"
+        },
+        "population_marker": {
+          "type": "string"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "participant_id",
+        "population_marker",
+        "marker",
+        "label",
+        "path"
+      ],
+      "title": "KpmpResultEntry",
+      "type": "object"
+    },
+    "KpmpTile": {
+      "additionalProperties": false,
+      "description": "One display image of a channel: a horizontal strip of the participant's image, placed by its bounds (\u00b5m).",
+      "properties": {
+        "path": {
+          "description": "Under the artifacts directory; served at /api/kpmp/files/<path>.",
+          "type": "string"
+        },
+        "bounds": {
+          "$ref": "#/definitions/Region"
+        }
+      },
+      "required": [
+        "path",
+        "bounds"
+      ],
+      "title": "KpmpTile",
+      "type": "object"
+    },
+    "LabelCounts": {
+      "additionalProperties": false,
+      "description": "One section's cells counted by cell type label under each rule, and the cells whose label differs.",
+      "properties": {
+        "cells": {
+          "type": "integer"
+        },
+        "cell_types": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "description": "Per label rule id, cells per cell type label.",
+          "type": "object"
+        },
+        "differing_cells": {
+          "type": "integer"
+        },
+        "differing": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Cells per 'first-rule label -> second-rule label' change.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "cells",
+        "cell_types",
+        "differing_cells",
+        "differing"
+      ],
+      "title": "LabelCounts",
+      "type": "object"
+    },
+    "LabelRule": {
+      "additionalProperties": false,
+      "description": "A frozen, named rule that assigns cell type labels from marker counts under the default condition.",
+      "properties": {
+        "label_rule_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "markers": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": "Marker genes per cell type, in tie-break order.",
+          "type": "object"
+        },
+        "ignored_genes": {
+          "description": "Genes the rule never reads when it decides membership.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "score_threshold": {
+          "description": "A cell's top marker score (count / gene scale) must reach this.",
+          "type": "number"
+        },
+        "min_molecules": {
+          "description": "A cell with fewer default molecules is labelled 'Low quality'.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label_rule_id",
+        "description",
+        "markers",
+        "ignored_genes",
+        "score_threshold",
+        "min_molecules"
+      ],
+      "title": "LabelRule",
+      "type": "object"
+    },
+    "LabelRuleArm": {
+      "additionalProperties": false,
+      "description": "The measure under one label rule.",
+      "properties": {
+        "label_rule_id": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "cells_labelled": {
+          "description": "Cells of the population summed over every counted section.",
+          "type": "integer"
+        },
+        "cells_labelled_by_section": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "eligible_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pooled": {
+          "items": {
+            "$ref": "#/definitions/PooledConditionValue"
+          },
+          "type": "array"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "label_rule_id",
+        "finding_id",
+        "cells_labelled",
+        "cells_labelled_by_section",
+        "eligible_section_ids",
+        "pooled",
+        "label",
+        "label_reason"
+      ],
+      "title": "LabelRuleArm",
+      "type": "object"
+    },
+    "LabelRuleSet": {
+      "additionalProperties": false,
+      "description": "The frozen label rules of a dataset, the gene scales they use, and per-section label counts.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/definitions/LabelRule"
+          },
+          "type": "array"
+        },
+        "default_label_rule_id": {
+          "type": "string"
+        },
+        "gene_scales": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "Mean default molecules of each gene per expressing cell, pooled over the scale sections.",
+          "type": "object"
+        },
+        "gene_scale_sections": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections": {
+          "additionalProperties": {
+            "$ref": "#/definitions/LabelCounts"
+          },
+          "type": "object"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "citation": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "rules",
+        "default_label_rule_id",
+        "gene_scales",
+        "gene_scale_sections",
+        "sections",
+        "notes",
+        "citation"
+      ],
+      "title": "LabelRuleSet",
+      "type": "object"
+    },
+    "LabelSensitivityCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "control_kind": {
+          "const": "label_sensitivity",
+          "default": "label_sensitivity",
+          "type": "string"
+        },
+        "control_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "measure": {
+          "type": "string"
+        },
+        "arms": {
+          "items": {
+            "$ref": "#/definitions/LabelRuleArm"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "cells_in_both": {
+          "description": "Cells labelled with the population under both rules.",
+          "type": "integer"
+        },
+        "cells_only_first": {
+          "type": "integer"
+        },
+        "cells_only_second": {
+          "type": "integer"
+        },
+        "same_label": {
+          "description": "Both rules give the same evidence label.",
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "schema_version",
+        "control_kind",
+        "control_id",
+        "dataset_id",
+        "cell_type",
+        "genes",
+        "measure",
+        "arms",
+        "cells_in_both",
+        "cells_only_first",
+        "cells_only_second",
+        "same_label",
+        "summary",
+        "roi"
+      ],
+      "title": "LabelSensitivityCheck",
+      "type": "object"
+    },
+    "LeaveOneSectionOut": {
+      "additionalProperties": false,
+      "description": "The effect recomputed without one section, and whether its direction survives.",
+      "properties": {
+        "left_out_section_id": {
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "effect": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "direction_kept": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "enum": [
+                -1,
+                0,
+                1
+              ],
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "left_out_section_id",
+        "condition",
+        "effect",
+        "direction_kept",
+        "direction"
+      ],
+      "title": "LeaveOneSectionOut",
+      "type": "object"
+    },
+    "LeaveOneSectionOutVerdict": {
+      "additionalProperties": false,
+      "description": "The audit verdict with one eligible section left out: which stricter conditions fall below the threshold.",
+      "properties": {
+        "left_out_section_id": {
+          "type": "string"
+        },
+        "conditions_below_threshold": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/EvidenceStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "stable or segmentation_sensitive; null when an expectation is missing."
+        }
+      },
+      "required": [
+        "left_out_section_id",
+        "conditions_below_threshold",
+        "verdict"
+      ],
+      "title": "LeaveOneSectionOutVerdict",
+      "type": "object"
+    },
+    "LeftOutSection": {
+      "additionalProperties": false,
+      "description": "A section of the dataset the result does not count, with the reason (for example a duplicate).",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "section_id",
+        "reason"
+      ],
+      "title": "LeftOutSection",
+      "type": "object"
+    },
+    "MarkerPairsSource": {
+      "additionalProperties": false,
+      "description": "The frozen exclusive-marker-pair artifact a result used, with the checksum of its file bytes.",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "frozen_on": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pair_count": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "frozen_on",
+        "source_dataset",
+        "source_url",
+        "pair_count"
+      ],
+      "title": "MarkerPairsSource",
+      "type": "object"
+    },
+    "ModeInfo": {
+      "additionalProperties": false,
+      "description": "How the server answers questions. Live runs arrive with ticket 03.",
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "default_run_mode": {
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "available_run_modes": {
+          "items": {
+            "enum": [
+              "immutable_replay",
+              "cached_tool_rerun",
+              "live"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "recordings": {
+          "items": {
+            "$ref": "#/definitions/ReplayInfo"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "default_run_mode",
+        "available_run_modes",
+        "recordings"
+      ],
+      "title": "ModeInfo",
+      "type": "object"
+    },
+    "ModelCallEvent": {
+      "additionalProperties": false,
+      "description": "Telemetry for one model call: provider, model, purpose, latency, tokens, estimated cost, whether the\nresponse was live or stored, and the run mode. Never carries keys or prompt text.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "model_call",
+          "default": "model_call",
+          "type": "string"
+        },
+        "call": {
+          "$ref": "#/definitions/ModelCallRecord"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "call"
+      ],
+      "title": "ModelCallEvent",
+      "type": "object"
+    },
+    "ModelCallRecord": {
+      "additionalProperties": false,
+      "description": "One model call as the audit log records it and the telemetry pills show it, including whether its\nresponse was live (`source: live`) or stored (`source: replay`).",
+      "properties": {
+        "call_id": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "provider": {
+          "enum": [
+            "meta",
+            "baseten",
+            "fireworks"
+          ],
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "cache_key": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "live",
+            "replay",
+            "cache"
+          ],
+          "type": "string"
+        },
+        "recording_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "started_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "latency_ms": {
+          "type": "integer"
+        },
+        "finish_reason": {
+          "type": "string"
+        },
+        "usage": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TokenUsage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "estimated_cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Spend charged to the live budget; null for stored responses."
+        },
+        "run_mode": {
+          "anyOf": [
+            {
+              "enum": [
+                "immutable_replay",
+                "cached_tool_rerun",
+                "live"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "served_by": {
+          "anyOf": [
+            {
+              "enum": [
+                "meta",
+                "baseten",
+                "fireworks"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The provider that answered; differs from `provider` after failover."
+        },
+        "failover_from": {
+          "anyOf": [
+            {
+              "enum": [
+                "meta",
+                "baseten",
+                "fireworks"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when the call produced no usable response."
+        }
+      },
+      "required": [
+        "call_id",
+        "purpose",
+        "provider",
+        "model",
+        "cache_key",
+        "source",
+        "recording_id",
+        "started_at",
+        "latency_ms",
+        "finish_reason",
+        "usage",
+        "estimated_cost_usd",
+        "run_mode",
+        "served_by",
+        "failover_from",
+        "error_code"
+      ],
+      "title": "ModelCallRecord",
+      "type": "object"
+    },
+    "ModelRequest": {
+      "additionalProperties": false,
+      "description": "Everything sent to a provider. Its content hash keys the cache and the replay (ADR-0003),\nso it must never contain ids, timestamps or other run-specific values.",
+      "properties": {
+        "provider": {
+          "enum": [
+            "meta",
+            "baseten",
+            "fireworks"
+          ],
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/definitions/ChatMessage"
+          },
+          "type": "array"
+        },
+        "response_schema": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "max_tokens": {
+          "default": 4000,
+          "description": "Every model here reasons before answering; a small cap returns empty content.",
+          "minimum": 2000,
+          "type": "integer"
+        },
+        "reasoning_effort": {
+          "default": "low",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "type": "string"
+        },
+        "api": {
+          "default": "chat_completions",
+          "enum": [
+            "chat_completions",
+            "responses",
+            "sam_segmentation",
+            "asr_transcribe"
+          ],
+          "type": "string"
+        },
+        "keywords": {
+          "description": "Muse Voice Transcribe: terms to bias recognition toward, such as panel gene names. Left out of the cache key when empty, so requests stored before this field existed keep their keys.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "messages",
+        "response_schema",
+        "max_tokens",
+        "reasoning_effort",
+        "api",
+        "keywords"
+      ],
+      "title": "ModelRequest",
+      "type": "object"
+    },
+    "ModelResponse": {
+      "additionalProperties": false,
+      "description": "What a provider returned. `finish_reason` is \"length\" when the token cap cut the answer short, on either\nendpoint. `served_by` names the provider that answered when it differs from the requested one (failover).",
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "finish_reason": {
+          "type": "string"
+        },
+        "usage": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TokenUsage"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "served_by": {
+          "anyOf": [
+            {
+              "enum": [
+                "meta",
+                "baseten",
+                "fireworks"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "events": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1: the streamed response events, kept so a stored response is parsed exactly as a live one."
+        },
+        "audio_duration_ms": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "content",
+        "finish_reason",
+        "usage",
+        "served_by",
+        "events",
+        "audio_duration_ms"
+      ],
+      "title": "ModelResponse",
+      "type": "object"
+    },
+    "MoleculeColumns": {
+      "additionalProperties": false,
+      "description": "One entry per molecule, column by column, so a whole section ships compactly.",
+      "properties": {
+        "x": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "y": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "gene_index": {
+          "description": "Index into RegionView.genes.",
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "cell_index": {
+          "description": "Index into the cell columns; -1 for an unassigned molecule.",
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "included": {
+          "additionalProperties": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "description": "Per condition, 1 if the molecule counts toward its cell under that condition, else 0.",
+          "propertyNames": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "gene_index",
+        "cell_index",
+        "included"
+      ],
+      "title": "MoleculeColumns",
+      "type": "object"
+    },
+    "OpenQuestion": {
+      "additionalProperties": false,
+      "description": "Something the investigation could not settle: a follow-up the budget did not allow, an observation the agent\nnever read because the budget ran out, or a question the agent raised.",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "over_budget_request",
+            "unread_observation",
+            "agent"
+          ],
+          "type": "string"
+        },
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "text",
+        "source",
+        "observation_id",
+        "request_id"
+      ],
+      "title": "OpenQuestion",
+      "type": "object"
+    },
+    "OutlineMeasures": {
+      "additionalProperties": false,
+      "description": "One candidate outline of a seed (the seed box, the convex hull of its NPHS1 clusters, or the SAM 3.1\noutline) measured the same way, so what SAM adds over the cruder shapes is visible.\n\n- `seed_box_coverage`: the share of the seed box's area the shape covers.\n- `retention`: the structure-constrained condition with this shape as the only structure, over default\n  molecules whose molecule or cell centroid lies inside it: the share kept.\n- PECAM1 (endothelium) and PDGFRB (mesangium) consistency: each gene's molecule density inside the shape over\n  its density in the rest of the seed's crop, and the share of the crop's molecules of the gene inside.\n  Glomerular tufts carry both; neither gene seeded the box.",
+      "properties": {
+        "shape": {
+          "enum": [
+            "seed_box",
+            "convex_hull",
+            "sam_outline"
+          ],
+          "type": "string"
+        },
+        "area_um2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seed_box_coverage": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_molecules": {
+          "type": "integer"
+        },
+        "kept_molecules": {
+          "type": "integer"
+        },
+        "retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pecam1_enrichment": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pdgfrb_enrichment": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pecam1_share_inside": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pdgfrb_share_inside": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "shape",
+        "area_um2",
+        "seed_box_coverage",
+        "default_molecules",
+        "kept_molecules",
+        "retention",
+        "pecam1_enrichment",
+        "pdgfrb_enrichment",
+        "pecam1_share_inside",
+        "pdgfrb_share_inside",
+        "missing_reasons"
+      ],
+      "title": "OutlineMeasures",
+      "type": "object"
+    },
+    "PackageInfo": {
+      "additionalProperties": false,
+      "description": "What the UI needs to offer an evidence package for download.",
+      "properties": {
+        "package_id": {
+          "type": "string"
+        },
+        "download_url": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "audit_log": {
+          "$ref": "#/definitions/ChainCheckResult"
+        },
+        "review_state": {
+          "enum": [
+            "work_in_progress",
+            "reviewed"
+          ],
+          "type": "string"
+        },
+        "open_questions": {
+          "items": {
+            "$ref": "#/definitions/OpenQuestion"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "package_id",
+        "download_url",
+        "created_at",
+        "files",
+        "audit_log",
+        "review_state",
+        "open_questions"
+      ],
+      "title": "PackageInfo",
+      "type": "object"
+    },
+    "PackageManifest": {
+      "additionalProperties": false,
+      "description": "manifest.json inside the evidence package: what it contains and how it was produced.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "package_id": {
+          "type": "string"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "run_mode": {
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "replay": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ReplayInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "question": {
+          "type": "string"
+        },
+        "dataset": {
+          "$ref": "#/definitions/DatasetManifest"
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plan_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "files": {
+          "items": {
+            "$ref": "#/definitions/FileChecksum"
+          },
+          "type": "array"
+        },
+        "audit_log": {
+          "$ref": "#/definitions/ChainCheckResult"
+        },
+        "review_state": {
+          "enum": [
+            "work_in_progress",
+            "reviewed"
+          ],
+          "type": "string"
+        },
+        "claims": {
+          "type": "integer"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "open_questions": {
+          "description": "What the investigation could not settle within its budget.",
+          "items": {
+            "$ref": "#/definitions/OpenQuestion"
+          },
+          "type": "array"
+        },
+        "reviews": {
+          "default": 0,
+          "description": "Review decisions recorded so far (reviews.json).",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "package_id",
+        "investigation_id",
+        "created_at",
+        "run_mode",
+        "replay",
+        "question",
+        "dataset",
+        "plan_id",
+        "plan_hash",
+        "files",
+        "audit_log",
+        "review_state",
+        "claims",
+        "notes",
+        "open_questions",
+        "reviews"
+      ],
+      "title": "PackageManifest",
+      "type": "object"
+    },
+    "PackageReadyEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "package_ready",
+          "default": "package_ready",
+          "type": "string"
+        },
+        "package": {
+          "$ref": "#/definitions/PackageInfo"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "package"
+      ],
+      "title": "PackageReadyEvent",
+      "type": "object"
+    },
+    "PackedCellColumns": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "cell_id": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "x": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "y": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "nucleus_radius": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "cell_type_index": {
+          "$ref": "#/definitions/PackedColumn"
+        }
+      },
+      "required": [
+        "count",
+        "cell_id",
+        "x",
+        "y",
+        "nucleus_radius",
+        "cell_type_index"
+      ],
+      "title": "PackedCellColumns",
+      "type": "object"
+    },
+    "PackedColumn": {
+      "additionalProperties": false,
+      "description": "One column as a base64 string of little-endian values, decoded straight into a typed array.",
+      "properties": {
+        "dtype": {
+          "enum": [
+            "float32",
+            "uint8",
+            "int32"
+          ],
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dtype",
+        "data"
+      ],
+      "title": "PackedColumn",
+      "type": "object"
+    },
+    "PackedMoleculeColumns": {
+      "additionalProperties": false,
+      "description": "Every molecule of the view, one typed column each.",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "x": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "y": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "gene_index": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "cell_index": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "inclusion_bits": {
+          "$ref": "#/definitions/PackedColumn"
+        },
+        "condition_bits": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "count",
+        "x",
+        "y",
+        "gene_index",
+        "cell_index",
+        "inclusion_bits",
+        "condition_bits"
+      ],
+      "title": "PackedMoleculeColumns",
+      "type": "object"
+    },
+    "PackedRegionView": {
+      "additionalProperties": false,
+      "description": "A region view in typed columns, compact enough to ship and draw a whole section of several hundred\nthousand molecules at once.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "base64-little-endian-v1",
+          "default": "base64-little-endian-v1",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "section_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cell_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "molecules": {
+          "$ref": "#/definitions/PackedMoleculeColumns"
+        },
+        "cells": {
+          "$ref": "#/definitions/PackedCellColumns"
+        },
+        "structures": {
+          "items": {
+            "$ref": "#/definitions/StructureMask"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "encoding",
+        "dataset_id",
+        "section_id",
+        "section_name",
+        "group",
+        "synthetic",
+        "region",
+        "label_rule_id",
+        "genes",
+        "cell_types",
+        "molecules",
+        "cells",
+        "structures",
+        "notes"
+      ],
+      "title": "PackedRegionView",
+      "type": "object"
+    },
+    "Plan": {
+      "additionalProperties": false,
+      "description": "The ordered tool steps proposed for a question; frozen once approved (its hash is then recorded).",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "plan_id": {
+          "type": "string"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "contrast": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Contrast"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/definitions/PlanStep"
+          },
+          "type": "array"
+        },
+        "sub_claims": {
+          "items": {
+            "$ref": "#/definitions/SubClaim"
+          },
+          "type": "array"
+        },
+        "budget": {
+          "$ref": "#/definitions/Budget"
+        },
+        "proposed_by": {
+          "type": "string"
+        },
+        "status": {
+          "default": "proposed",
+          "enum": [
+            "proposed",
+            "approved",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        "approved_at_utc": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "plan_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "sha256 of the proposed plan's canonical JSON, set at approval."
+        }
+      },
+      "required": [
+        "schema_version",
+        "plan_id",
+        "investigation_id",
+        "question",
+        "dataset_id",
+        "summary",
+        "contrast",
+        "cell_types",
+        "conditions",
+        "steps",
+        "sub_claims",
+        "budget",
+        "proposed_by",
+        "status",
+        "approved_at_utc",
+        "plan_hash"
+      ],
+      "title": "Plan",
+      "type": "object"
+    },
+    "PlanApprovedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "plan_approved",
+          "default": "plan_approved",
+          "type": "string"
+        },
+        "plan_id": {
+          "type": "string"
+        },
+        "plan_hash": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "plan_id",
+        "plan_hash"
+      ],
+      "title": "PlanApprovedEvent",
+      "type": "object"
+    },
+    "PlanProposal": {
+      "additionalProperties": false,
+      "description": "The planner model's structured output, before it is checked against the tool registry.",
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "contrast": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Contrast"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/definitions/ProposedStep"
+          },
+          "type": "array"
+        },
+        "sub_claims": {
+          "description": "The question split into testable sub-claims, each with the hypothesis's prediction.",
+          "items": {
+            "$ref": "#/definitions/SubClaim"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "summary",
+        "contrast",
+        "cell_types",
+        "conditions",
+        "steps",
+        "sub_claims"
+      ],
+      "title": "PlanProposal",
+      "type": "object"
+    },
+    "PlanProposedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "plan_proposed",
+          "default": "plan_proposed",
+          "type": "string"
+        },
+        "plan": {
+          "$ref": "#/definitions/Plan"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "plan"
+      ],
+      "title": "PlanProposedEvent",
+      "type": "object"
+    },
+    "PlanRejectedEvent": {
+      "additionalProperties": false,
+      "description": "A plan turned down. By the validator: it names a tool outside the registry, invalid arguments or an analysis\nthe capability report does not support; the planner gets one re-plan. By the researcher: the investigation ends\nand nothing runs.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "plan_rejected",
+          "default": "plan_rejected",
+          "type": "string"
+        },
+        "by": {
+          "enum": [
+            "validator",
+            "researcher"
+          ],
+          "type": "string"
+        },
+        "attempt": {
+          "description": "1 for the first proposal, 2 for the re-plan.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "tools": {
+          "description": "The tools the rejected proposal named.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "by",
+        "attempt",
+        "reason",
+        "tools",
+        "plan_id"
+      ],
+      "title": "PlanRejectedEvent",
+      "type": "object"
+    },
+    "PlanStep": {
+      "additionalProperties": false,
+      "properties": {
+        "step_id": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "rationale": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "step_id",
+        "tool",
+        "arguments",
+        "rationale"
+      ],
+      "title": "PlanStep",
+      "type": "object"
+    },
+    "PooledConditionValue": {
+      "additionalProperties": false,
+      "description": "One condition pooled over the eligible sections, by the result's pooling rule (ratio of sums).",
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "cells": {
+          "type": "integer"
+        },
+        "molecules": {
+          "type": "integer"
+        },
+        "default_molecules": {
+          "type": "integer"
+        },
+        "retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectation_cell_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectation_home_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excess_drop_cell_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excess_drop_home_matched": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "below_home_threshold": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Observed below the home-matched expectation times 2^-0.5 (an excess log2 drop above 0.5)."
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "condition",
+        "cells",
+        "molecules",
+        "default_molecules",
+        "retention",
+        "observed_value",
+        "expectation_cell_matched",
+        "expectation_home_matched",
+        "excess_drop_cell_matched",
+        "excess_drop_home_matched",
+        "below_home_threshold",
+        "missing_reasons"
+      ],
+      "title": "PooledConditionValue",
+      "type": "object"
+    },
+    "Population": {
+      "additionalProperties": false,
+      "description": "The cells a result is about: a cell type under a frozen label rule, fixed under the default condition.",
+      "properties": {
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "label_rule_id",
+        "cell_type"
+      ],
+      "title": "Population",
+      "type": "object"
+    },
+    "ProposedStep": {
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "rationale": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "arguments",
+        "rationale"
+      ],
+      "title": "ProposedStep",
+      "type": "object"
+    },
+    "ProteinAuditResult": {
+      "additionalProperties": false,
+      "description": "How the share of one marker's positive cells in a population behaves across measurement conditions, for one\nparticipant, over the whole image or a region. One participant against another is descriptive only.",
+      "properties": {
+        "result_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "participant_id": {
+          "type": "string"
+        },
+        "role": {
+          "description": "'healthy reference' or 'diseased'.",
+          "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "population": {
+          "description": "The population, frozen under the whole-cell condition, for example 'Podocalyxin+ cells'.",
+          "type": "string"
+        },
+        "population_marker": {
+          "type": "string"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "home": {
+          "description": "The marker's home cells, for example 'LRP2+ cells that are not Podocalyxin+'.",
+          "type": "string"
+        },
+        "population_cells": {
+          "type": "integer"
+        },
+        "home_cells": {
+          "type": "integer"
+        },
+        "thresholds": {
+          "items": {
+            "$ref": "#/definitions/ProteinThreshold"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ProteinConditionRow"
+          },
+          "type": "array"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        },
+        "inference": {
+          "type": "string"
+        },
+        "rules": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "cell_table_checksum": {
+          "description": "sha256 of the per-cell table the result was computed from.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "result_id",
+        "dataset_id",
+        "participant_id",
+        "role",
+        "roi",
+        "population",
+        "population_marker",
+        "marker",
+        "home",
+        "population_cells",
+        "home_cells",
+        "thresholds",
+        "conditions",
+        "label",
+        "label_reason",
+        "inference",
+        "rules",
+        "cell_table_checksum"
+      ],
+      "title": "ProteinAuditResult",
+      "type": "object"
+    },
+    "ProteinConditionRow": {
+      "additionalProperties": false,
+      "description": "The result under one measurement condition. Population cells with no pixel kept count as not positive.",
+      "properties": {
+        "condition": {
+          "type": "string"
+        },
+        "positive_cells": {
+          "description": "Population cells whose mean of the marker under this condition is at or above its threshold.",
+          "type": "integer"
+        },
+        "observed_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Random-pixel-loss expectation: the mean over population cells of the probability that a random subset of the cell's pixels, as large as this condition keeps, has a mean at or above the threshold."
+        },
+        "pixel_retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Population pixels kept under this condition / population pixels of the whole cells."
+        },
+        "excluded_cells": {
+          "description": "Population cells positive for the marker as whole cells but not under this condition.",
+          "type": "integer"
+        },
+        "retained_cells": {
+          "description": "Population cells positive for the marker as whole cells and under this condition.",
+          "type": "integer"
+        },
+        "bordering_home_share_excluded": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Share of the excluded cells that border a home cell."
+        },
+        "bordering_home_share_retained": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Share of the retained cells that border a home cell."
+        },
+        "reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Why a value is null.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "condition",
+        "positive_cells",
+        "observed_share",
+        "expected_share",
+        "pixel_retention",
+        "excluded_cells",
+        "retained_cells",
+        "bordering_home_share_excluded",
+        "bordering_home_share_retained",
+        "reasons"
+      ],
+      "title": "ProteinConditionRow",
+      "type": "object"
+    },
+    "ProteinThreshold": {
+      "additionalProperties": false,
+      "description": "A frozen positivity threshold on a marker's per-cell mean intensity.",
+      "properties": {
+        "marker": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "source_participant_id": {
+          "description": "The participant whose cells the threshold was derived from.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "marker",
+        "value",
+        "rule",
+        "source_participant_id"
+      ],
+      "title": "ProteinThreshold",
+      "type": "object"
+    },
+    "RandomThinningControl": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "control_kind": {
+          "const": "random_thinning",
+          "default": "random_thinning",
+          "type": "string"
+        },
+        "control_id": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "measure": {
+          "type": "string"
+        },
+        "eligible_section_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pooled": {
+          "items": {
+            "$ref": "#/definitions/PooledConditionValue"
+          },
+          "type": "array"
+        },
+        "sections": {
+          "description": "Every section's values; only eligible ones are pooled.",
+          "items": {
+            "$ref": "#/definitions/AuditSectionValues"
+          },
+          "type": "array"
+        },
+        "threshold": {
+          "description": "The frozen audit threshold the verdict uses.",
+          "type": "string"
+        },
+        "conditions_below_threshold": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "schema_version",
+        "control_kind",
+        "control_id",
+        "finding_id",
+        "dataset_id",
+        "label_rule_id",
+        "cell_type",
+        "genes",
+        "measure",
+        "eligible_section_ids",
+        "pooled",
+        "sections",
+        "threshold",
+        "conditions_below_threshold",
+        "label",
+        "label_reason",
+        "roi"
+      ],
+      "title": "RandomThinningControl",
+      "type": "object"
+    },
+    "RecordedBoxes": {
+      "additionalProperties": false,
+      "description": "Boxes on a section whose SAM 3.1 box-prompt response is stored, so a cached tool rerun can outline them\nwithout a model call. Any other box needs a live run.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "boxes": {
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "section_id",
+        "boxes"
+      ],
+      "title": "RecordedBoxes",
+      "type": "object"
+    },
+    "RecordedCall": {
+      "additionalProperties": false,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "cache_key": {
+          "type": "string"
+        },
+        "request": {
+          "$ref": "#/definitions/ModelRequest"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/definitions/CacheInput"
+          },
+          "type": "array"
+        },
+        "response": {
+          "$ref": "#/definitions/ModelResponse"
+        },
+        "latency_ms": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "purpose",
+        "cache_key",
+        "request",
+        "inputs",
+        "response",
+        "latency_ms"
+      ],
+      "title": "RecordedCall",
+      "type": "object"
+    },
+    "Recording": {
+      "additionalProperties": false,
+      "description": "A recorded investigation's model responses, replayed by content hash of each request.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "info": {
+          "$ref": "#/definitions/ReplayInfo"
+        },
+        "calls": {
+          "items": {
+            "$ref": "#/definitions/RecordedCall"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "info",
+        "calls"
+      ],
+      "title": "Recording",
+      "type": "object"
+    },
+    "Region": {
+      "additionalProperties": false,
+      "description": "A rectangular window of a section, in micrometres, that the viewer shows and a claim can point to.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "x0": {
+          "type": "number"
+        },
+        "y0": {
+          "type": "number"
+        },
+        "x1": {
+          "type": "number"
+        },
+        "y1": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "section_id",
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "Region",
+      "type": "object"
+    },
+    "RegionView": {
+      "additionalProperties": false,
+      "description": "Everything the viewer draws for one region of a section, in micrometres.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cell_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "molecules": {
+          "$ref": "#/definitions/MoleculeColumns"
+        },
+        "cells": {
+          "$ref": "#/definitions/CellColumns"
+        },
+        "structures": {
+          "items": {
+            "$ref": "#/definitions/StructureMask"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "section_id",
+        "synthetic",
+        "region",
+        "label_rule_id",
+        "genes",
+        "cell_types",
+        "molecules",
+        "cells",
+        "structures",
+        "notes"
+      ],
+      "title": "RegionView",
+      "type": "object"
+    },
+    "RenderedChannel": {
+      "additionalProperties": false,
+      "description": "One channel of a section: which molecules (or nuclei) it draws, and whether the section has any.",
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "molecules",
+            "nuclei"
+          ],
+          "type": "string"
+        },
+        "genes": {
+          "description": "The genes whose molecules the channel draws; empty for the nuclei channel.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        },
+        "count": {
+          "description": "Molecules of the channel's genes in the section, assigned or not; for nuclei, cells with a detected nucleus.",
+          "type": "integer"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "missing_genes": {
+          "description": "The channel's genes with no molecule in the section.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "unavailable_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "channel_id",
+        "label",
+        "source",
+        "genes",
+        "description",
+        "count",
+        "available",
+        "missing_genes",
+        "unavailable_reason"
+      ],
+      "title": "RenderedChannel",
+      "type": "object"
+    },
+    "ReplayInfo": {
+      "additionalProperties": false,
+      "description": "What the replay banner shows about the recording being played.",
+      "properties": {
+        "recording_id": {
+          "type": "string"
+        },
+        "recorded_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "origin": {
+          "description": "live: recorded from real model calls; hand_authored: written for tests without calling a model.",
+          "enum": [
+            "live",
+            "hand_authored"
+          ],
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The dataset the recorded investigation ran on; the server's default when null."
+        }
+      },
+      "required": [
+        "recording_id",
+        "recorded_at",
+        "origin",
+        "question",
+        "note",
+        "dataset_id"
+      ],
+      "title": "ReplayInfo",
+      "type": "object"
+    },
+    "ReviewDecidedEvent": {
+      "additionalProperties": false,
+      "description": "The researcher's decision on one claim version, and the claim with its new review status.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "review_decided",
+          "default": "review_decided",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/definitions/ReviewDecision"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "decision",
+        "claim"
+      ],
+      "title": "ReviewDecidedEvent",
+      "type": "object"
+    },
+    "ReviewDecision": {
+      "additionalProperties": false,
+      "description": "The researcher's decision on one claim version; voice decisions need confirmation.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "decision_id": {
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_version": {
+          "type": "integer"
+        },
+        "decision": {
+          "enum": [
+            "accepted_for_follow_up",
+            "needs_investigation",
+            "unresolved"
+          ],
+          "type": "string"
+        },
+        "reviewer": {
+          "type": "string"
+        },
+        "decided_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "via": {
+          "enum": [
+            "click",
+            "voice"
+          ],
+          "type": "string"
+        },
+        "confirmed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "decision_id",
+        "claim_id",
+        "claim_version",
+        "decision",
+        "reviewer",
+        "decided_at_utc",
+        "via",
+        "confirmed"
+      ],
+      "title": "ReviewDecision",
+      "type": "object"
+    },
+    "ReviewRequest": {
+      "additionalProperties": false,
+      "description": "A review decision as the client sends it; the server adds the claim version, the time and the id.",
+      "properties": {
+        "decision": {
+          "enum": [
+            "accepted_for_follow_up",
+            "needs_investigation",
+            "unresolved"
+          ],
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string"
+        },
+        "via": {
+          "default": "click",
+          "enum": [
+            "click",
+            "voice"
+          ],
+          "type": "string"
+        },
+        "confirmed": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "decision",
+        "reviewer",
+        "via",
+        "confirmed"
+      ],
+      "title": "ReviewRequest",
+      "type": "object"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "unreviewed",
+        "accepted_for_follow_up",
+        "needs_investigation",
+        "unresolved"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "RunMode": {
+      "enum": [
+        "immutable_replay",
+        "cached_tool_rerun",
+        "live"
+      ],
+      "type": "string",
+      "title": "RunMode"
+    },
+    "SectionAudit": {
+      "additionalProperties": false,
+      "description": "The output artifact of the `audit_section` tool.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "metrics": {
+          "items": {
+            "$ref": "#/definitions/AuditMetrics"
+          },
+          "type": "array"
+        },
+        "excluded_molecule_ids": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "propertyNames": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "dataset_id",
+        "section_id",
+        "conditions",
+        "metrics",
+        "excluded_molecule_ids"
+      ],
+      "title": "SectionAudit",
+      "type": "object"
+    },
+    "SectionInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "extent": {
+          "description": "Bounding box in micrometres: x0, y0, x1, y1.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The section's name in its source, for example x2."
+        },
+        "molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Molecules in the validated table."
+        },
+        "cells": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Cells in the validated table."
+        },
+        "validation": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SectionValidation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "content_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "sha256 of the decompressed raw molecule and cell files."
+        },
+        "duplicate_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An earlier section whose raw files hold identical content; analyses count only the earlier one."
+        }
+      },
+      "required": [
+        "section_id",
+        "group",
+        "extent",
+        "name",
+        "molecules",
+        "cells",
+        "validation",
+        "content_sha256",
+        "duplicate_of"
+      ],
+      "title": "SectionInfo",
+      "type": "object"
+    },
+    "SectionLog2Value": {
+      "additionalProperties": false,
+      "description": "One section's library-size-normalised value, log2(CP10K + 1), under one condition.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/definitions/ConditionName"
+        },
+        "library_size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "log2_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "gene_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Molecules of the gene in the population kept under the condition."
+        },
+        "passes_molecule_gate": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "section_id",
+        "group",
+        "condition",
+        "library_size",
+        "log2_value",
+        "missing_reason",
+        "gene_molecules",
+        "passes_molecule_gate"
+      ],
+      "title": "SectionLog2Value",
+      "type": "object"
+    },
+    "SectionValidation": {
+      "additionalProperties": false,
+      "description": "What validation did to one section's raw records. Nothing is dropped silently: every molecule read is\nkept or counted under exactly one reason, in this order: malformed, duplicate, below quality, not in panel.",
+      "properties": {
+        "molecules_read": {
+          "type": "integer"
+        },
+        "malformed_molecules": {
+          "description": "No gene, a non-finite position, quality or nucleus distance, or a nucleus flag other than 0 or 1.",
+          "type": "integer"
+        },
+        "duplicate_molecules": {
+          "description": "A repeated transcript id; the first record is kept.",
+          "type": "integer"
+        },
+        "below_quality": {
+          "description": "Quality score under the dataset's threshold.",
+          "type": "integer"
+        },
+        "not_in_panel": {
+          "description": "A control probe or codeword, not a panel gene.",
+          "type": "integer"
+        },
+        "molecules_kept": {
+          "type": "integer"
+        },
+        "unassigned_molecules": {
+          "description": "Kept molecules the instrument assigned to no cell.",
+          "type": "integer"
+        },
+        "unmatched_molecules": {
+          "description": "Kept molecules assigned to a cell id missing from the cells table; kept, counted as unassigned.",
+          "type": "integer"
+        },
+        "cells_read": {
+          "type": "integer"
+        },
+        "malformed_cells": {
+          "description": "No id, or a non-finite centroid or cell area.",
+          "type": "integer"
+        },
+        "duplicate_cells": {
+          "description": "A repeated cell id; the first record is kept.",
+          "type": "integer"
+        },
+        "cells_kept": {
+          "type": "integer"
+        },
+        "cells_without_molecules": {
+          "description": "Kept cells with no kept molecule; they stay in every denominator.",
+          "type": "integer"
+        },
+        "cells_without_nucleus": {
+          "default": 0,
+          "description": "Kept cells with no detected nucleus (empty nucleus_area).",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "molecules_read",
+        "malformed_molecules",
+        "duplicate_molecules",
+        "below_quality",
+        "not_in_panel",
+        "molecules_kept",
+        "unassigned_molecules",
+        "unmatched_molecules",
+        "cells_read",
+        "malformed_cells",
+        "duplicate_cells",
+        "cells_kept",
+        "cells_without_molecules",
+        "cells_without_nucleus"
+      ],
+      "title": "SectionValidation",
+      "type": "object"
+    },
+    "StartInvestigationRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "run_mode": {
+          "default": "cached_tool_rerun",
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "dataset_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The dataset to investigate; the server's default when omitted. A recording names its own."
+        },
+        "regions": {
+          "description": "Regions the researcher drew in the dual-section viewer (one per section), kept with the investigation as context and shown beside its verdicts. Each must lie on a section of the investigated dataset. They do not scope the analysis or reach any model prompt. Ignored by immutable replay, which returns a recorded investigation.",
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "maxItems": 2,
+          "type": "array"
+        }
+      },
+      "required": [
+        "question",
+        "run_mode",
+        "dataset_id",
+        "regions"
+      ],
+      "title": "StartInvestigationRequest",
+      "type": "object"
+    },
+    "StructureMask": {
+      "additionalProperties": false,
+      "description": "The outline of one structure in section coordinates (micrometres), as a closed polygon.\n\n`source` says where the outline came from: drawn by construction in a synthetic fixture, or proposed\nby SAM 3.1 from a box prompt (ADR-0005), which the UI must label as a proposal.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "structure_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "glomerulus",
+          "type": "string"
+        },
+        "outline": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "source": {
+          "enum": [
+            "synthetic",
+            "sam-3.1"
+          ],
+          "type": "string"
+        },
+        "mask_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1 outlines: the version of the finder's frozen rules."
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1 outlines: the structure-finder run that proposed it."
+        },
+        "seed_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1 outlines: the seed box it was prompted with."
+        }
+      },
+      "required": [
+        "schema_version",
+        "structure_id",
+        "section_id",
+        "kind",
+        "outline",
+        "source",
+        "mask_version",
+        "run_id",
+        "seed_id"
+      ],
+      "title": "StructureMask",
+      "type": "object"
+    },
+    "StructureProposal": {
+      "additionalProperties": false,
+      "description": "What SAM 3.1 proposed for one seed. Empty, fragmented and rejected proposals are kept, never forced:\n- outlined: one connected piece that passes the geometric checks;\n- fragmented: several pieces; the largest is outlined and the count recorded;\n- empty: no mask came back, or it has no pixels;\n- rejected: a geometric check failed (see the run's `rejection_rule`), or the seed was never sent.",
+      "properties": {
+        "seed": {
+          "$ref": "#/definitions/StructureSeed"
+        },
+        "status": {
+          "enum": [
+            "outlined",
+            "fragmented",
+            "empty",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "structure_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The structure mask built from it; null when it is empty or rejected."
+        },
+        "fragments": {
+          "default": 0,
+          "type": "integer"
+        },
+        "crop_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The image it was sent in, by index into the run's crops."
+        },
+        "comparisons": {
+          "items": {
+            "$ref": "#/definitions/OutlineMeasures"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "seed",
+        "status",
+        "reason",
+        "structure_id",
+        "fragments",
+        "crop_index",
+        "comparisons"
+      ],
+      "title": "StructureProposal",
+      "type": "object"
+    },
+    "StructureRun": {
+      "additionalProperties": false,
+      "description": "One run of the structure finder on one section: the images sent to SAM 3.1, what came back for every seed,\nand the outlines kept. Exploratory (ADR-0006): the outlines feed only the structure-constrained condition,\nwhich never enters an evidence label.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "mask_version": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "run_mode": {
+          "enum": [
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "badge": {
+          "const": "SAM 3.1 proposal (exploratory)",
+          "default": "SAM 3.1 proposal (exploratory)",
+          "type": "string"
+        },
+        "seeding_rule": {
+          "type": "string"
+        },
+        "rendering_rule": {
+          "type": "string"
+        },
+        "rejection_rule": {
+          "type": "string"
+        },
+        "images_sent": {
+          "type": "integer"
+        },
+        "estimated_cost_usd": {
+          "description": "Live spend for a live run; for a stored run, what the same images cost at list price.",
+          "type": "number"
+        },
+        "crops": {
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
+        },
+        "proposals": {
+          "items": {
+            "$ref": "#/definitions/StructureProposal"
+          },
+          "type": "array"
+        },
+        "structures": {
+          "items": {
+            "$ref": "#/definitions/StructureMask"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "run_id",
+        "mask_version",
+        "dataset_id",
+        "section_id",
+        "model",
+        "run_mode",
+        "badge",
+        "seeding_rule",
+        "rendering_rule",
+        "rejection_rule",
+        "images_sent",
+        "estimated_cost_usd",
+        "crops",
+        "proposals",
+        "structures"
+      ],
+      "title": "StructureRun",
+      "type": "object"
+    },
+    "StructureSeed": {
+      "additionalProperties": false,
+      "description": "One box prompt: merged NPHS1 clusters (one per glomerulus, padded), or a box the researcher drew.\nNPHS1 seeds the box, so it is never used to judge the outline.",
+      "properties": {
+        "seed_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "nphs1_clusters",
+            "user_box"
+          ],
+          "type": "string"
+        },
+        "box": {
+          "$ref": "#/definitions/Region"
+        },
+        "nphs1_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "NPHS1 molecules in the merged clusters; null for a user box."
+        },
+        "clusters_merged": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "NPHS1 clusters merged into this seed; null for a user box."
+        }
+      },
+      "required": [
+        "seed_id",
+        "section_id",
+        "origin",
+        "box",
+        "nphs1_molecules",
+        "clusters_merged"
+      ],
+      "title": "StructureSeed",
+      "type": "object"
+    },
+    "SubClaim": {
+      "additionalProperties": false,
+      "description": "One testable part of the question: a population, its genes, and what the hypothesis predicts under stricter\nassignment conditions. A prediction, never an outcome.",
+      "properties": {
+        "text": {
+          "description": "The sub-claim as a question-scoped statement, for example 'podocyte LRP2/CUBN presence persists'.",
+          "type": "string"
+        },
+        "cell_type": {
+          "description": "A cell type label from the dataset's label rules.",
+          "type": "string"
+        },
+        "genes": {
+          "description": "Panel genes the sub-claim is about.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "predicted": {
+          "description": "What the researcher's hypothesis predicts: 'holds' (the signal stays when assignment is stricter, as real cell content would) or 'drops' (it falls beyond random thinning, as admixture from neighbours would).",
+          "enum": [
+            "holds",
+            "drops"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "cell_type",
+        "genes",
+        "predicted"
+      ],
+      "title": "SubClaim",
+      "type": "object"
+    },
+    "SubClaimVerdict": {
+      "additionalProperties": false,
+      "properties": {
+        "sub_claim": {
+          "$ref": "#/definitions/SubClaim"
+        },
+        "verdict": {
+          "enum": [
+            "confirmed",
+            "refuted",
+            "inconclusive"
+          ],
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "claim_ids": {
+          "description": "The verified claim versions the verdict rests on.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "dataset_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sub_claim",
+        "verdict",
+        "reason",
+        "claim_ids",
+        "dataset_id"
+      ],
+      "title": "SubClaimVerdict",
+      "type": "object"
+    },
+    "TokenUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "prompt_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "completion_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reasoning_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "prompt_tokens",
+        "completion_tokens",
+        "reasoning_tokens"
+      ],
+      "title": "TokenUsage",
+      "type": "object"
+    },
+    "ToolFailedEvent": {
+      "additionalProperties": false,
+      "description": "A tool call that raised instead of returning an artifact. The failure is itself an observation the agent reads.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_failed",
+          "default": "tool_failed",
+          "type": "string"
+        },
+        "step_id": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "observation_id": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "step_id",
+        "tool",
+        "observation_id",
+        "error"
+      ],
+      "title": "ToolFailedEvent",
+      "type": "object"
+    },
+    "ToolFinishedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_finished",
+          "default": "tool_finished",
+          "type": "string"
+        },
+        "step_id": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/EvidenceStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The artifact's computed evidence label, when it has one."
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "step_id",
+        "tool",
+        "artifact_id",
+        "summary",
+        "observation_id",
+        "label"
+      ],
+      "title": "ToolFinishedEvent",
+      "type": "object"
+    },
+    "ToolSpec": {
+      "additionalProperties": false,
+      "description": "A tool as the planner sees it in the registry.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "arguments_schema": {
+          "additionalProperties": true,
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "description",
+        "arguments_schema"
+      ],
+      "title": "ToolSpec",
+      "type": "object"
+    },
+    "ToolStartedEvent": {
+      "additionalProperties": false,
+      "description": "A tool call starting. A plan step has no request; a follow-up names its request and the observation it cites.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_started",
+          "default": "tool_started",
+          "type": "string"
+        },
+        "step_id": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The observation this call will produce."
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cites_observation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A plan step's rationale, or the agent's reason for a follow-up."
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "step_id",
+        "tool",
+        "arguments",
+        "observation_id",
+        "request_id",
+        "cites_observation_id",
+        "reason"
+      ],
+      "title": "ToolStartedEvent",
+      "type": "object"
+    },
+    "Transcription": {
+      "additionalProperties": false,
+      "description": "What Muse Voice Transcribe heard. Nothing runs on it until the researcher confirms the edited text.",
+      "properties": {
+        "transcript": {
+          "type": "string"
+        },
+        "run_mode": {
+          "description": "`cached_tool_rerun` serves a stored response; `live` made a fresh call.",
+          "enum": [
+            "immutable_replay",
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "live",
+            "replay",
+            "cache"
+          ],
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "keywords": {
+          "description": "The panel genes recognition was biased toward.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "audio_duration_ms": {
+          "description": "The clip's length, read from its WAV header.",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "transcript",
+        "run_mode",
+        "source",
+        "model",
+        "keywords",
+        "audio_duration_ms",
+        "latency_ms"
+      ],
+      "title": "Transcription",
+      "type": "object"
+    },
+    "VerdictEvent": {
+      "additionalProperties": false,
+      "description": "Each sub-claim's verdict, derived by the frozen rule from the verified claims once verification ends.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "verdict",
+          "default": "verdict",
+          "type": "string"
+        },
+        "verdict": {
+          "$ref": "#/definitions/HypothesisVerdict"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "verdict"
+      ],
+      "title": "VerdictEvent",
+      "type": "object"
+    },
+    "VerificationResult": {
+      "additionalProperties": false,
+      "description": "Every check run on one claim version, and the verification status they add up to.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_version": {
+          "type": "integer"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/definitions/CheckResult"
+          },
+          "type": "array"
+        },
+        "verification_status": {
+          "$ref": "#/definitions/VerificationStatus"
+        },
+        "finding_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "figure": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CompositeFigure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The composite figure the visual check read."
+        },
+        "visual": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/VisualAnswer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tolerances": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "The declared tolerances of the numerical check.",
+          "type": "object"
+        },
+        "recomputed": {
+          "additionalProperties": true,
+          "description": "Each cited source's independently recomputed value.",
+          "type": "object"
+        },
+        "in_validated_summary": {
+          "default": false,
+          "description": "False for a failed claim: it stays in history only.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "claim_id",
+        "claim_version",
+        "checks",
+        "verification_status",
+        "finding_id",
+        "figure",
+        "visual",
+        "tolerances",
+        "recomputed",
+        "in_validated_summary"
+      ],
+      "title": "VerificationResult",
+      "type": "object"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "pending",
+        "verified",
+        "failed",
+        "disputed",
+        "unavailable"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    },
+    "VisualAnswer": {
+      "additionalProperties": false,
+      "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+      "properties": {
+        "panel_a_direction": {
+          "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+          "enum": [
+            "holds",
+            "drops",
+            "unclear"
+          ],
+          "type": "string"
+        },
+        "panel_a_matches_claim": {
+          "description": "Panel A's direction is the direction the claim states.",
+          "type": "boolean"
+        },
+        "single_section_drives_panel_a": {
+          "description": "One section's line alone accounts for Panel A's pooled direction.",
+          "type": "boolean"
+        },
+        "panel_b_matches_claim": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none."
+        },
+        "explanation": {
+          "description": "One or two sentences on what the panels show.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "panel_a_direction",
+        "panel_a_matches_claim",
+        "single_section_drives_panel_a",
+        "panel_b_matches_claim",
+        "explanation"
+      ],
+      "title": "VisualAnswer",
+      "type": "object"
+    }
+  }
+}

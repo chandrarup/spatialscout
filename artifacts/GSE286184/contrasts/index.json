@@ -1,0 +1,3059 @@
+{
+ "schema_version": "1.0",
+ "dataset_id": "GSE286184",
+ "generated_by": "spatialscout contrasts (src/spatialscout/engine/contrast_batch.py)",
+ "citation": "Xenium in situ data from NCBI GEO series GSE286184 (22 human kidney sections: Control, DKD, IgAN, MCD, MN), https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE286184; associated paper https://pmc.ncbi.nlm.nih.gov/articles/PMC13586693/. Cell type labels are SpatialScout's own marker-rule labels, not the authors' annotation, which was not deposited.",
+ "section_disclosure": "22 sections from 19 donors (published counts; GEO does not map sections to donors), 21 distinct (GSM8720419 duplicates GSM8720418). Sections are not independent donors.",
+ "sections_counted": [
+  "GSM8720409",
+  "GSM8720410",
+  "GSM8720411",
+  "GSM8720412",
+  "GSM8720413",
+  "GSM8720414",
+  "GSM8720415",
+  "GSM8720416",
+  "GSM8720417",
+  "GSM8720418",
+  "GSM8720420",
+  "GSM8720421",
+  "GSM8720422",
+  "GSM8720423",
+  "GSM8720424",
+  "GSM8720425",
+  "GSM8720426",
+  "GSM8720427",
+  "GSM8720428",
+  "GSM8720429",
+  "GSM8720430"
+ ],
+ "sections_left_out": [
+  {
+   "section_id": "GSM8720419",
+   "reason": "duplicate_of GSM8720418"
+  }
+ ],
+ "input_sha256": {
+  "artifacts/GSE286184/label_rules.json": "6e53e2cccdfecec9d0eb224288604ad5440ee46c90015565207739ccfb45675a",
+  "artifacts/GSE286184/manifest.json": "d65a02d11e263f70429fba98edf8109fde83c073deb453934d0aa5d333eb9930",
+  "artifacts/GSE286184/capability_report.json": "eb3c3f919c537bbc2226b8830137c2f8edcf8b941ccdaa9ad8eed95dfb57145e",
+  "artifacts/GSE286184/structures/GSM8720409.json": "bf43f060124dbc4a9f72c8db6e5347fe7dfa8a7a87246389d46efa4ed785f9a2",
+  "artifacts/GSE286184/structures/GSM8720410.json": "0604bfd1ad83eaae8d5871a0a3988ac6f3653889a3fa5a0767a64a65f445b3bf",
+  "artifacts/GSE286184/structures/GSM8720411.json": "8e33ce3f0d7117951780e121c6bb4eaacae08bbd3fdd5bef18c6b88f1bdec1af",
+  "artifacts/GSE286184/structures/GSM8720412.json": "bbe3402226a0b2c8211e59c0601bbc254dd20c139f5b8d3d8e1bd3493d143390",
+  "artifacts/GSE286184/structures/GSM8720413.json": "b83b79da0720cd5026e2819c72527548fb23c182c9bb6de62921e00640ee36c9"
+ },
+ "run_configuration": {
+  "rules": {
+   "population_gate_min_cells": 20,
+   "molecule_gate_min_molecules": 10,
+   "near_zero_band_log2": 0.1,
+   "max_stable_range_log2": 0.5,
+   "label_rule_id": "full-panel-v1 + nphs1-anchored-v1",
+   "normalisation": "Library size: the pseudobulk total of the population (molecules of every gene in its cells) in that section under that condition.",
+   "value_rule": "log2(CP10K + 1), with CP10K = 10,000 x the gene's molecules in the population / the library size.",
+   "effect_rule": "Mean of the disease group's per-section log2 values minus the mean of the control group's, per condition.",
+   "gate_precedence": "1. Every section of both groups must have at least 20 cells of the population, else insufficient evidence. 2. A condition is valid only if every section has at least 10 of the gene's molecules in the population under it. 3. The default condition and at least one stricter primary condition must be valid, else insufficient evidence.",
+   "label_rule": "A direction within \u00b10.1 log2 is none. A reversal is two valid conditions with opposite non-zero directions. Stable: at least two valid primary conditions, no reversal, an effect range of at most 0.5 log2, and leaving out any one section never gives an opposite non-zero direction in any valid condition. Segmentation-sensitive: a reversal or a range above 0.5, with the default effect's direction kept whichever section is left out. Otherwise insufficient evidence. The exploratory condition never enters the label.",
+   "primary_conditions": [
+    "default",
+    "nucleus_only",
+    "distance_cap_1um",
+    "distance_cap_2um"
+   ],
+   "exploratory_conditions": [
+    "structure_constrained"
+   ]
+  },
+  "conditions": [
+   "default",
+   "nucleus_only",
+   "distance_cap_1um",
+   "distance_cap_2um",
+   "structure_constrained"
+  ],
+  "grid": [
+   [
+    "nphs1-anchored-v1",
+    "Podocyte",
+    "NPHS1"
+   ],
+   [
+    "nphs1-anchored-v1",
+    "Podocyte",
+    "LRP2"
+   ],
+   [
+    "nphs1-anchored-v1",
+    "Podocyte",
+    "CUBN"
+   ],
+   [
+    "full-panel-v1",
+    "PEC",
+    "ALDH1A2"
+   ],
+   [
+    "full-panel-v1",
+    "PT",
+    "LRP2"
+   ],
+   [
+    "full-panel-v1",
+    "PT",
+    "CUBN"
+   ],
+   [
+    "full-panel-v1",
+    "TAL",
+    "UMOD"
+   ],
+   [
+    "full-panel-v1",
+    "DCT",
+    "SLC12A3"
+   ],
+   [
+    "full-panel-v1",
+    "PC",
+    "AQP2"
+   ],
+   [
+    "full-panel-v1",
+    "IC",
+    "SLC4A1"
+   ],
+   [
+    "full-panel-v1",
+    "Endothelial",
+    "PECAM1"
+   ],
+   [
+    "full-panel-v1",
+    "Mesangial/Pericyte",
+    "PDGFRB"
+   ],
+   [
+    "full-panel-v1",
+    "Fibroblast",
+    "COL1A1"
+   ],
+   [
+    "full-panel-v1",
+    "T cell",
+    "CD3D"
+   ],
+   [
+    "full-panel-v1",
+    "T cell",
+    "CD8A"
+   ],
+   [
+    "full-panel-v1",
+    "B cell",
+    "MS4A1"
+   ],
+   [
+    "full-panel-v1",
+    "Myeloid",
+    "CD68"
+   ],
+   [
+    "full-panel-v1",
+    "Myeloid",
+    "ITGAX"
+   ],
+   [
+    "full-panel-v1",
+    "T cell",
+    "UMOD"
+   ],
+   [
+    "full-panel-v1",
+    "B cell",
+    "UMOD"
+   ],
+   [
+    "full-panel-v1",
+    "Myeloid",
+    "UMOD"
+   ]
+  ],
+  "contrasts": [
+   {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   {
+    "disease": "MN",
+    "control": "Control"
+   }
+  ]
+ },
+ "entries": [
+  {
+   "slug": "dkd-vs-control-podocyte-nphs1-nphs1-anchored-v1",
+   "title": "NPHS1 in Podocyte cells, DKD vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-1fcecd314f62ec6a",
+   "finding_path": "contrasts/dkd-vs-control-podocyte-nphs1-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "NPHS1",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-670ad3906794fd23",
+    "finding_id": "fnd-1fcecd314f62ec6a",
+    "path": "contrasts/figures/fnd-1fcecd314f62ec6a.png",
+    "sha256": "561ade8bf31da7670d8eb1b78cc02fd74fd22ebbd3232a333bf0467239a1ff08",
+    "crop": {
+     "section_id": "GSM8720410",
+     "x0": 675.0,
+     "y0": 11625.0,
+     "x1": 975.0,
+     "y1": 11925.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of NPHS1 in Podocyte cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720410 around evidence region rank 1: 71 retained and 28 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-podocyte-lrp2-nphs1-anchored-v1",
+   "title": "LRP2 in Podocyte cells, DKD vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-9535cc36b95c41ff",
+   "finding_path": "contrasts/dkd-vs-control-podocyte-lrp2-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "LRP2",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-f5da8c822777a3de",
+    "finding_id": "fnd-9535cc36b95c41ff",
+    "path": "contrasts/figures/fnd-9535cc36b95c41ff.png",
+    "sha256": "78ddaa8787275179a4c4e2b6a59eaf068657fb47e8100fd620d82e4b19474212",
+    "crop": {
+     "section_id": "GSM8720411",
+     "x0": 6525.0,
+     "y0": 1125.0,
+     "x1": 6825.0,
+     "y1": 1425.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in Podocyte cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720411 around evidence region rank 1: 3 retained and 8 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-podocyte-cubn-nphs1-anchored-v1",
+   "title": "CUBN in Podocyte cells, DKD vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-922d8550fa774282",
+   "finding_path": "contrasts/dkd-vs-control-podocyte-cubn-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "CUBN",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-d8a407189ed55b56",
+    "finding_id": "fnd-922d8550fa774282",
+    "path": "contrasts/figures/fnd-922d8550fa774282.png",
+    "sha256": "7720c28f175a71380db4c70039a84c56301281505e97b5f20aa5e56c321376c5",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 3675.0,
+     "y0": 825.0,
+     "x1": 3975.0,
+     "y1": 1125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in Podocyte cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 19 retained and 12 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-pec-aldh1a2-full-panel-v1",
+   "title": "ALDH1A2 in PEC cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-fb849090eb2a3898",
+   "finding_path": "contrasts/dkd-vs-control-pec-aldh1a2-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PEC",
+   "gene": "ALDH1A2",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-b961060b989f0778",
+    "finding_id": "fnd-fb849090eb2a3898",
+    "path": "contrasts/figures/fnd-fb849090eb2a3898.png",
+    "sha256": "a0269eb59e0370052bed6b705a5c2022a83676c078955947a160d85911dfca0a",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 3525.0,
+     "y0": 525.0,
+     "x1": 3825.0,
+     "y1": 825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ALDH1A2 in PEC cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 21 retained and 26 excluded (yellow) molecules of the result in PEC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-pt-lrp2-full-panel-v1",
+   "title": "LRP2 in PT cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-18b46f264c0c6b1e",
+   "finding_path": "contrasts/dkd-vs-control-pt-lrp2-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "LRP2",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-32d99d2c0f457fac",
+    "finding_id": "fnd-18b46f264c0c6b1e",
+    "path": "contrasts/figures/fnd-18b46f264c0c6b1e.png",
+    "sha256": "7f816656f4c5a386818e2cd0eb83e80e77e88d22b36c8adfdf12826f6c71b206",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 4425.0,
+     "y0": 825.0,
+     "x1": 4725.0,
+     "y1": 1125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in PT cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 327 retained and 264 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-pt-cubn-full-panel-v1",
+   "title": "CUBN in PT cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-6749cf70018fca21",
+   "finding_path": "contrasts/dkd-vs-control-pt-cubn-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "CUBN",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-5b0f682b96fdb737",
+    "finding_id": "fnd-6749cf70018fca21",
+    "path": "contrasts/figures/fnd-6749cf70018fca21.png",
+    "sha256": "b00c1ce9549bc18da4db2277215ff7426b09e23c951f5f7b017b2f8de4b9402c",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 4425.0,
+     "y0": 825.0,
+     "x1": 4725.0,
+     "y1": 1125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in PT cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 270 retained and 374 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-tal-umod-full-panel-v1",
+   "title": "UMOD in TAL cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-f4eb8765fe6c1e83",
+   "finding_path": "contrasts/dkd-vs-control-tal-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "TAL",
+   "gene": "UMOD",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-63e473defddd59ce",
+    "finding_id": "fnd-f4eb8765fe6c1e83",
+    "path": "contrasts/figures/fnd-f4eb8765fe6c1e83.png",
+    "sha256": "4cef95a7b83efdc081bed9ed3fee38095b92d04c68b61b75dc56834e909682a6",
+    "crop": {
+     "section_id": "GSM8720410",
+     "x0": 1425.0,
+     "y0": 2625.0,
+     "x1": 1725.0,
+     "y1": 2925.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in TAL cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720410 around evidence region rank 1: 1985 retained and 4000 excluded (yellow) molecules of the result in TAL cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-dct-slc12a3-full-panel-v1",
+   "title": "SLC12A3 in DCT cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-a3e28520f9b98567",
+   "finding_path": "contrasts/dkd-vs-control-dct-slc12a3-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "DCT",
+   "gene": "SLC12A3",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-8961ff5a4ff09409",
+    "finding_id": "fnd-a3e28520f9b98567",
+    "path": "contrasts/figures/fnd-a3e28520f9b98567.png",
+    "sha256": "b0067abd48d0c47f08ea64ff57de139bab7975020d3fc70ae48c8c8a076bd811",
+    "crop": {
+     "section_id": "GSM8720409",
+     "x0": 1875.0,
+     "y0": 4425.0,
+     "x1": 2175.0,
+     "y1": 4725.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC12A3 in DCT cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720409 around evidence region rank 1: 254 retained and 409 excluded (yellow) molecules of the result in DCT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-pc-aqp2-full-panel-v1",
+   "title": "AQP2 in PC cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-5794d8dd0c740c18",
+   "finding_path": "contrasts/dkd-vs-control-pc-aqp2-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PC",
+   "gene": "AQP2",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-9e8181d937dcaab1",
+    "finding_id": "fnd-5794d8dd0c740c18",
+    "path": "contrasts/figures/fnd-5794d8dd0c740c18.png",
+    "sha256": "b94383c7453b812fe24d614343ac97cda7e87dff45ba0605408d2fc2a22a03cc",
+    "crop": {
+     "section_id": "GSM8720409",
+     "x0": 1575.0,
+     "y0": 4725.0,
+     "x1": 1875.0,
+     "y1": 5025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of AQP2 in PC cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720409 around evidence region rank 1: 983 retained and 1044 excluded (yellow) molecules of the result in PC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-ic-slc4a1-full-panel-v1",
+   "title": "SLC4A1 in IC cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-80c59a91bc114b50",
+   "finding_path": "contrasts/dkd-vs-control-ic-slc4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "IC",
+   "gene": "SLC4A1",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-32c50b091aa389f6",
+    "finding_id": "fnd-80c59a91bc114b50",
+    "path": "contrasts/figures/fnd-80c59a91bc114b50.png",
+    "sha256": "119f1dc7c1714cd583a0a83569a92242b4e126957a11323a643af4ae3d1c600f",
+    "crop": {
+     "section_id": "GSM8720410",
+     "x0": 1575.0,
+     "y0": 3825.0,
+     "x1": 1875.0,
+     "y1": 4125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC4A1 in IC cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720410 around evidence region rank 1: 57 retained and 144 excluded (yellow) molecules of the result in IC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-endothelial-pecam1-full-panel-v1",
+   "title": "PECAM1 in Endothelial cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-35eca766a0512f2e",
+   "finding_path": "contrasts/dkd-vs-control-endothelial-pecam1-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Endothelial",
+   "gene": "PECAM1",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-669c8a52a2d45db1",
+    "finding_id": "fnd-35eca766a0512f2e",
+    "path": "contrasts/figures/fnd-35eca766a0512f2e.png",
+    "sha256": "c4d6558445d496854017179053c43847d57decea447ff378f4360cbd44c708f8",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 4275.0,
+     "y0": 675.0,
+     "x1": 4575.0,
+     "y1": 975.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PECAM1 in Endothelial cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 215 retained and 142 excluded (yellow) molecules of the result in Endothelial cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1",
+   "title": "PDGFRB in Mesangial/Pericyte cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-963b8786f0c45df2",
+   "finding_path": "contrasts/dkd-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Mesangial/Pericyte",
+   "gene": "PDGFRB",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-9b6cbc9df2114ee8",
+    "finding_id": "fnd-963b8786f0c45df2",
+    "path": "contrasts/figures/fnd-963b8786f0c45df2.png",
+    "sha256": "425782ecb69ec0f6df4178c1ce6320176ff490f9c0f01b3662e3a2240583fcab",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 3225.0,
+     "y0": 225.0,
+     "x1": 3525.0,
+     "y1": 525.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PDGFRB in Mesangial/Pericyte cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 121 retained and 71 excluded (yellow) molecules of the result in Mesangial/Pericyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-fibroblast-col1a1-full-panel-v1",
+   "title": "COL1A1 in Fibroblast cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-48abdce4cca330be",
+   "finding_path": "contrasts/dkd-vs-control-fibroblast-col1a1-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Fibroblast",
+   "gene": "COL1A1",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-9c0a6a00b1b205e9",
+    "finding_id": "fnd-48abdce4cca330be",
+    "path": "contrasts/figures/fnd-48abdce4cca330be.png",
+    "sha256": "cf45a0f4765af051245726d768135c6398d084cd47b9d658d7e93e19cf072f28",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 3825.0,
+     "y0": 375.0,
+     "x1": 4125.0,
+     "y1": 675.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of COL1A1 in Fibroblast cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 381 retained and 441 excluded (yellow) molecules of the result in Fibroblast cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-t-cell-cd3d-full-panel-v1",
+   "title": "CD3D in T cell cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-4ba078ab668b51bd",
+   "finding_path": "contrasts/dkd-vs-control-t-cell-cd3d-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD3D",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-28bd4f1864e4cdb5",
+    "finding_id": "fnd-4ba078ab668b51bd",
+    "path": "contrasts/figures/fnd-4ba078ab668b51bd.png",
+    "sha256": "3dfe0ed1082b04e1fffc53ce189d9cd314637ddfe9776daca030b9c4b9512e4a",
+    "crop": {
+     "section_id": "GSM8720414",
+     "x0": 2475.0,
+     "y0": 7725.0,
+     "x1": 2775.0,
+     "y1": 8025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD3D in T cell cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720414 around evidence region rank 1: 16 retained and 13 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-t-cell-cd8a-full-panel-v1",
+   "title": "CD8A in T cell cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-32e85e054f1a1339",
+   "finding_path": "contrasts/dkd-vs-control-t-cell-cd8a-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD8A",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-ca0abcaad660e9f3",
+    "finding_id": "fnd-32e85e054f1a1339",
+    "path": "contrasts/figures/fnd-32e85e054f1a1339.png",
+    "sha256": "4a1c24f8f1a1865a4749275204c3599f9ae5694f9b51a865be716efdf7f2e505",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 2475.0,
+     "y0": 525.0,
+     "x1": 2775.0,
+     "y1": 825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD8A in T cell cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 21 retained and 13 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-b-cell-ms4a1-full-panel-v1",
+   "title": "MS4A1 in B cell cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-683c7278454aa952",
+   "finding_path": "contrasts/dkd-vs-control-b-cell-ms4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "MS4A1",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-c6ffd18c31fcbc91",
+    "finding_id": "fnd-683c7278454aa952",
+    "path": "contrasts/figures/fnd-683c7278454aa952.png",
+    "sha256": "8f090695c6cf09e35527b6b95bea992d01e45b88e79a8f231d860aef0170e3e9",
+    "crop": {
+     "section_id": "GSM8720412",
+     "x0": 4725.0,
+     "y0": 2025.0,
+     "x1": 5025.0,
+     "y1": 2325.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of MS4A1 in B cell cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720412 around evidence region rank 1: 60 retained and 11 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-myeloid-cd68-full-panel-v1",
+   "title": "CD68 in Myeloid cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-da045a74d3b98c59",
+   "finding_path": "contrasts/dkd-vs-control-myeloid-cd68-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "CD68",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-b1e49c92079ca2b1",
+    "finding_id": "fnd-da045a74d3b98c59",
+    "path": "contrasts/figures/fnd-da045a74d3b98c59.png",
+    "sha256": "7e1ccd41e06bedc57995a0f35fa652b61ba769287e4e4cbb4a2bd394d04bfd5e",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 2475.0,
+     "y0": 525.0,
+     "x1": 2775.0,
+     "y1": 825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD68 in Myeloid cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 57 retained and 107 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-myeloid-itgax-full-panel-v1",
+   "title": "ITGAX in Myeloid cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-c9d6fca76b8bce3c",
+   "finding_path": "contrasts/dkd-vs-control-myeloid-itgax-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "ITGAX",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-e86af832a7bf512c",
+    "finding_id": "fnd-c9d6fca76b8bce3c",
+    "path": "contrasts/figures/fnd-c9d6fca76b8bce3c.png",
+    "sha256": "315b6d63c936e84b1eaab3c7edfa8e1dedc86869d4ec7f2219e2642a0c2ee3b8",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 2475.0,
+     "y0": 525.0,
+     "x1": 2775.0,
+     "y1": 825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ITGAX in Myeloid cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 72 retained and 23 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-t-cell-umod-full-panel-v1",
+   "title": "UMOD in T cell cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-19f3de142edb5909",
+   "finding_path": "contrasts/dkd-vs-control-t-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "UMOD",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-1ea6e0e8a46684ed",
+    "finding_id": "fnd-19f3de142edb5909",
+    "path": "contrasts/figures/fnd-19f3de142edb5909.png",
+    "sha256": "1fadfc0987b8186d6836d8b02bcafc5e3ed053f5fa615293c50b15c2b766cd0b",
+    "crop": {
+     "section_id": "GSM8720410",
+     "x0": 1425.0,
+     "y0": 3525.0,
+     "x1": 1725.0,
+     "y1": 3825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in T cell cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720410 around evidence region rank 1: 3 retained and 16 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-b-cell-umod-full-panel-v1",
+   "title": "UMOD in B cell cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-f04fde0fbff88ff6",
+   "finding_path": "contrasts/dkd-vs-control-b-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "UMOD",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-f1ce3513f8ea0f83",
+    "finding_id": "fnd-f04fde0fbff88ff6",
+    "path": "contrasts/figures/fnd-f04fde0fbff88ff6.png",
+    "sha256": "0d1c3c78b3ca3034b8ee5406ed97f6eca193f4710d535d3d5029cd6fd97a106e",
+    "crop": {
+     "section_id": "GSM8720410",
+     "x0": 1425.0,
+     "y0": 3525.0,
+     "x1": 1725.0,
+     "y1": 3825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in B cell cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720410 around evidence region rank 1: 4 retained and 10 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "dkd-vs-control-myeloid-umod-full-panel-v1",
+   "title": "UMOD in Myeloid cells, DKD vs Control (full-panel-v1)",
+   "finding_id": "fnd-d1eab3a83e6ffac0",
+   "finding_path": "contrasts/dkd-vs-control-myeloid-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "DKD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "UMOD",
+   "disease_sections": 6,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-e7bc6917b0044714",
+    "finding_id": "fnd-d1eab3a83e6ffac0",
+    "path": "contrasts/figures/fnd-d1eab3a83e6ffac0.png",
+    "sha256": "0a267cd9cf7beeede27c6c4e437a1d4c49b87b51852879225a2ddc87fb61d4f8",
+    "crop": {
+     "section_id": "GSM8720413",
+     "x0": 4275.0,
+     "y0": 675.0,
+     "x1": 4575.0,
+     "y1": 975.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in Myeloid cells for Control (n=3), DKD (n=6) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720413 around evidence region rank 1: 8 retained and 34 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-podocyte-nphs1-nphs1-anchored-v1",
+   "title": "NPHS1 in Podocyte cells, IgAN vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-0e3c4fc68e03de9c",
+   "finding_path": "contrasts/igan-vs-control-podocyte-nphs1-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "NPHS1",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-ac2b9eccb42f2b28",
+    "finding_id": "fnd-0e3c4fc68e03de9c",
+    "path": "contrasts/figures/fnd-0e3c4fc68e03de9c.png",
+    "sha256": "94020d931efaa007ea9c3776ad1c8e099d9bc1b828a2aa30f886d8bca871e246",
+    "crop": {
+     "section_id": "GSM8720421",
+     "x0": 5175.0,
+     "y0": 2325.0,
+     "x1": 5475.0,
+     "y1": 2625.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of NPHS1 in Podocyte cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 544 retained and 289 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-podocyte-lrp2-nphs1-anchored-v1",
+   "title": "LRP2 in Podocyte cells, IgAN vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-adf3de88edc5ade6",
+   "finding_path": "contrasts/igan-vs-control-podocyte-lrp2-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "LRP2",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-fd64eb42c7fc38f0",
+    "finding_id": "fnd-adf3de88edc5ade6",
+    "path": "contrasts/figures/fnd-adf3de88edc5ade6.png",
+    "sha256": "2fcaf2f391bb941cf913b0e21b1820bc499cf5a907313e4f53c7fa084c4495ce",
+    "crop": {
+     "section_id": "GSM8720421",
+     "x0": 6375.0,
+     "y0": 1275.0,
+     "x1": 6675.0,
+     "y1": 1575.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in Podocyte cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 25 retained and 14 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-podocyte-cubn-nphs1-anchored-v1",
+   "title": "CUBN in Podocyte cells, IgAN vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-680b2cd6a3f1933e",
+   "finding_path": "contrasts/igan-vs-control-podocyte-cubn-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "CUBN",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-4febbe167d52a3b0",
+    "finding_id": "fnd-680b2cd6a3f1933e",
+    "path": "contrasts/figures/fnd-680b2cd6a3f1933e.png",
+    "sha256": "e94f1397276bc3d8ba80f7e697c4798265a5729bc506598525f6fcffc7b21f85",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 1875.0,
+     "y0": 6225.0,
+     "x1": 2175.0,
+     "y1": 6525.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in Podocyte cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 83 retained and 48 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-pec-aldh1a2-full-panel-v1",
+   "title": "ALDH1A2 in PEC cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-65c553f929d10a35",
+   "finding_path": "contrasts/igan-vs-control-pec-aldh1a2-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PEC",
+   "gene": "ALDH1A2",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-237aa6bc1e53a6e0",
+    "finding_id": "fnd-65c553f929d10a35",
+    "path": "contrasts/figures/fnd-65c553f929d10a35.png",
+    "sha256": "296d4b7bf7eaff41fb2e41e8dcc9bd30579be7340fcdd2c5076221e1764e1b65",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 1875.0,
+     "y0": 11175.0,
+     "x1": 2175.0,
+     "y1": 11475.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ALDH1A2 in PEC cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 165 retained and 164 excluded (yellow) molecules of the result in PEC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-pt-lrp2-full-panel-v1",
+   "title": "LRP2 in PT cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-a7c7c4636c342746",
+   "finding_path": "contrasts/igan-vs-control-pt-lrp2-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "LRP2",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-2330db85dc3fa32c",
+    "finding_id": "fnd-a7c7c4636c342746",
+    "path": "contrasts/figures/fnd-a7c7c4636c342746.png",
+    "sha256": "995e2ecaae13ee285b03b049d3b157f4b179a59b98d779e36863f06221847069",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 1275.0,
+     "y0": 9975.0,
+     "x1": 1575.0,
+     "y1": 10275.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in PT cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 487 retained and 413 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-pt-cubn-full-panel-v1",
+   "title": "CUBN in PT cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-bbdf1af929e84693",
+   "finding_path": "contrasts/igan-vs-control-pt-cubn-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "CUBN",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-7baacdba43dfa114",
+    "finding_id": "fnd-bbdf1af929e84693",
+    "path": "contrasts/figures/fnd-bbdf1af929e84693.png",
+    "sha256": "15bb6a1a846e2a5b887c5c9411ef0d36f352c6af29e671223bed2aa5cddc6b90",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 6675.0,
+     "x1": 2325.0,
+     "y1": 6975.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in PT cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 530 retained and 590 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-tal-umod-full-panel-v1",
+   "title": "UMOD in TAL cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-bfd308486a074087",
+   "finding_path": "contrasts/igan-vs-control-tal-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "TAL",
+   "gene": "UMOD",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-313da1de1bbfd025",
+    "finding_id": "fnd-bfd308486a074087",
+    "path": "contrasts/figures/fnd-bfd308486a074087.png",
+    "sha256": "37398afddacee9fba66fda4cc58fe410152971d4da28c9a00169f2807547a564",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2175.0,
+     "y0": 5325.0,
+     "x1": 2475.0,
+     "y1": 5625.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in TAL cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 2087 retained and 5808 excluded (yellow) molecules of the result in TAL cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-dct-slc12a3-full-panel-v1",
+   "title": "SLC12A3 in DCT cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-2159a05719e96f51",
+   "finding_path": "contrasts/igan-vs-control-dct-slc12a3-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "DCT",
+   "gene": "SLC12A3",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-3d24a28f35bad1a2",
+    "finding_id": "fnd-2159a05719e96f51",
+    "path": "contrasts/figures/fnd-2159a05719e96f51.png",
+    "sha256": "0a0f10efcf31f43c9442804128c2ef401258f5af15f3a1be4f0b9565d18aba50",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 11775.0,
+     "x1": 2325.0,
+     "y1": 12075.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC12A3 in DCT cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 3319 retained and 5213 excluded (yellow) molecules of the result in DCT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-pc-aqp2-full-panel-v1",
+   "title": "AQP2 in PC cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-bf14cb2d71776e27",
+   "finding_path": "contrasts/igan-vs-control-pc-aqp2-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PC",
+   "gene": "AQP2",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-93cbc42a9cd7548e",
+    "finding_id": "fnd-bf14cb2d71776e27",
+    "path": "contrasts/figures/fnd-bf14cb2d71776e27.png",
+    "sha256": "7d3d6e0714a2f2112ae1c18b87b66676ca3cddde526855bba41239068d5cbf5b",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 975.0,
+     "y0": 3075.0,
+     "x1": 1275.0,
+     "y1": 3375.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of AQP2 in PC cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 3286 retained and 4502 excluded (yellow) molecules of the result in PC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-ic-slc4a1-full-panel-v1",
+   "title": "SLC4A1 in IC cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-d07b38424931f023",
+   "finding_path": "contrasts/igan-vs-control-ic-slc4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "IC",
+   "gene": "SLC4A1",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-14c810a879904955",
+    "finding_id": "fnd-d07b38424931f023",
+    "path": "contrasts/figures/fnd-d07b38424931f023.png",
+    "sha256": "b7487729bba88fc67dc2249d66d2c3546713ee46fb596825812c25f710348959",
+    "crop": {
+     "section_id": "GSM8720421",
+     "x0": 3075.0,
+     "y0": 3225.0,
+     "x1": 3375.0,
+     "y1": 3525.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC4A1 in IC cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 911 retained and 1472 excluded (yellow) molecules of the result in IC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-endothelial-pecam1-full-panel-v1",
+   "title": "PECAM1 in Endothelial cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-c881868ca63c24e3",
+   "finding_path": "contrasts/igan-vs-control-endothelial-pecam1-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Endothelial",
+   "gene": "PECAM1",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-38eb315b8392a18d",
+    "finding_id": "fnd-c881868ca63c24e3",
+    "path": "contrasts/figures/fnd-c881868ca63c24e3.png",
+    "sha256": "eafb0b7af4f180f78d70cbfa525f8dff946da2e43e4d9cf8902cba94d68f39a1",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 1275.0,
+     "y0": 5175.0,
+     "x1": 1575.0,
+     "y1": 5475.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PECAM1 in Endothelial cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 639 retained and 564 excluded (yellow) molecules of the result in Endothelial cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1",
+   "title": "PDGFRB in Mesangial/Pericyte cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-c57ad861d80755ff",
+   "finding_path": "contrasts/igan-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Mesangial/Pericyte",
+   "gene": "PDGFRB",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-218a3dc553373c32",
+    "finding_id": "fnd-c57ad861d80755ff",
+    "path": "contrasts/figures/fnd-c57ad861d80755ff.png",
+    "sha256": "f7c77d7d48cf2c7c0be6f6c57d964ea3ab5a9337543ba792e80f1665d4713a0a",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 5775.0,
+     "x1": 2325.0,
+     "y1": 6075.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PDGFRB in Mesangial/Pericyte cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 418 retained and 259 excluded (yellow) molecules of the result in Mesangial/Pericyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-fibroblast-col1a1-full-panel-v1",
+   "title": "COL1A1 in Fibroblast cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-ac47a31f22f3bb36",
+   "finding_path": "contrasts/igan-vs-control-fibroblast-col1a1-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Fibroblast",
+   "gene": "COL1A1",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-8dca7f987631522e",
+    "finding_id": "fnd-ac47a31f22f3bb36",
+    "path": "contrasts/figures/fnd-ac47a31f22f3bb36.png",
+    "sha256": "930f12ebd2b7647847071e3d16910d3b346d7e68a7eb12137cfa11ce0f99da11",
+    "crop": {
+     "section_id": "GSM8720421",
+     "x0": 3075.0,
+     "y0": 3525.0,
+     "x1": 3375.0,
+     "y1": 3825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of COL1A1 in Fibroblast cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 775 retained and 1134 excluded (yellow) molecules of the result in Fibroblast cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-t-cell-cd3d-full-panel-v1",
+   "title": "CD3D in T cell cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-93f5929eddcf6b03",
+   "finding_path": "contrasts/igan-vs-control-t-cell-cd3d-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD3D",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-477a8d13ab393fe2",
+    "finding_id": "fnd-93f5929eddcf6b03",
+    "path": "contrasts/figures/fnd-93f5929eddcf6b03.png",
+    "sha256": "1ef40c2d1093633313efbc4696e9eb4e98b7c903d56b69035eecf670d5c8789c",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 5475.0,
+     "x1": 2325.0,
+     "y1": 5775.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD3D in T cell cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 258 retained and 162 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-t-cell-cd8a-full-panel-v1",
+   "title": "CD8A in T cell cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-2731ac13706dee5f",
+   "finding_path": "contrasts/igan-vs-control-t-cell-cd8a-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD8A",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-b37a4bae6bbb7e75",
+    "finding_id": "fnd-2731ac13706dee5f",
+    "path": "contrasts/figures/fnd-2731ac13706dee5f.png",
+    "sha256": "838e215e9808bb2a61adbeaa9010c6147802b8d665f9c306f87b743b65fccb2e",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 5475.0,
+     "x1": 2325.0,
+     "y1": 5775.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD8A in T cell cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 167 retained and 111 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-b-cell-ms4a1-full-panel-v1",
+   "title": "MS4A1 in B cell cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-a44e218736ab6504",
+   "finding_path": "contrasts/igan-vs-control-b-cell-ms4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "MS4A1",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-f127537216f41509",
+    "finding_id": "fnd-a44e218736ab6504",
+    "path": "contrasts/figures/fnd-a44e218736ab6504.png",
+    "sha256": "175257ef99a8ab95193b9bd8f35848f8732a95d08a38b9a2b0a587856b7867d1",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 4425.0,
+     "x1": 2325.0,
+     "y1": 4725.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of MS4A1 in B cell cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 746 retained and 213 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-myeloid-cd68-full-panel-v1",
+   "title": "CD68 in Myeloid cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-6c4df63749e22abc",
+   "finding_path": "contrasts/igan-vs-control-myeloid-cd68-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "CD68",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-f0a0be0c4dcb8d71",
+    "finding_id": "fnd-6c4df63749e22abc",
+    "path": "contrasts/figures/fnd-6c4df63749e22abc.png",
+    "sha256": "7852321a07d843b7d7d61e4b5ed2bc5d7414be4b836ce757fb68c8fcf87e6a42",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 1875.0,
+     "y0": 10725.0,
+     "x1": 2175.0,
+     "y1": 11025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD68 in Myeloid cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 353 retained and 1352 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-myeloid-itgax-full-panel-v1",
+   "title": "ITGAX in Myeloid cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-80d55f622c7cb096",
+   "finding_path": "contrasts/igan-vs-control-myeloid-itgax-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "ITGAX",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-1976c5bf72cf4919",
+    "finding_id": "fnd-80d55f622c7cb096",
+    "path": "contrasts/figures/fnd-80d55f622c7cb096.png",
+    "sha256": "d3e0ffd7d63365c3c93f066b0cd0146afcea668b6988f4da0778aff245ce33d3",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2325.0,
+     "y0": 11925.0,
+     "x1": 2625.0,
+     "y1": 12225.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ITGAX in Myeloid cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 244 retained and 139 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-t-cell-umod-full-panel-v1",
+   "title": "UMOD in T cell cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-d4e46e6daf9446d5",
+   "finding_path": "contrasts/igan-vs-control-t-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "UMOD",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-75a7419f1f7c1c10",
+    "finding_id": "fnd-d4e46e6daf9446d5",
+    "path": "contrasts/figures/fnd-d4e46e6daf9446d5.png",
+    "sha256": "868744bcc4e9dab1be7626c2772ca15dae193bfa5b5feee77e4b5570391ccbf5",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2175.0,
+     "y0": 6225.0,
+     "x1": 2475.0,
+     "y1": 6525.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in T cell cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 6 retained and 54 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-b-cell-umod-full-panel-v1",
+   "title": "UMOD in B cell cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-1d8d78cf7911d9cf",
+   "finding_path": "contrasts/igan-vs-control-b-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "UMOD",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-80cf4aa23f81bb52",
+    "finding_id": "fnd-1d8d78cf7911d9cf",
+    "path": "contrasts/figures/fnd-1d8d78cf7911d9cf.png",
+    "sha256": "90e21aedf19990d040ad81f989b73d59ff80c2d3809573da4138152c73dc5f69",
+    "crop": {
+     "section_id": "GSM8720410",
+     "x0": 1425.0,
+     "y0": 3525.0,
+     "x1": 1725.0,
+     "y1": 3825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in B cell cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720410 around evidence region rank 1: 4 retained and 10 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "igan-vs-control-myeloid-umod-full-panel-v1",
+   "title": "UMOD in Myeloid cells, IgAN vs Control (full-panel-v1)",
+   "finding_id": "fnd-1e6f4294b2765ba3",
+   "finding_path": "contrasts/igan-vs-control-myeloid-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "IgAN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "UMOD",
+   "disease_sections": 3,
+   "control_sections": 3,
+   "donor_distinctness": "counts_do_not_reconcile",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-8ced2393dfd51492",
+    "finding_id": "fnd-1e6f4294b2765ba3",
+    "path": "contrasts/figures/fnd-1e6f4294b2765ba3.png",
+    "sha256": "4eb9980890d73d181e5f6891748941147f016ec6a07721f9a8564ed6fa5bbd5a",
+    "crop": {
+     "section_id": "GSM8720420",
+     "x0": 2025.0,
+     "y0": 5025.0,
+     "x1": 2325.0,
+     "y1": 5325.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in Myeloid cells for Control (n=3), IgAN (n=3) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 33 retained and 125 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-podocyte-nphs1-nphs1-anchored-v1",
+   "title": "NPHS1 in Podocyte cells, MCD vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-e1cacc574284ae10",
+   "finding_path": "contrasts/mcd-vs-control-podocyte-nphs1-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "NPHS1",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-91cdc8273f7f6949",
+    "finding_id": "fnd-e1cacc574284ae10",
+    "path": "contrasts/figures/fnd-e1cacc574284ae10.png",
+    "sha256": "9e9ed8fda9bb4fb37f1e962fbdf75ddf39f82e33c284c355c088b9904e3309c9",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 675.0,
+     "y0": 975.0,
+     "x1": 975.0,
+     "y1": 1275.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of NPHS1 in Podocyte cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 200 retained and 262 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-podocyte-lrp2-nphs1-anchored-v1",
+   "title": "LRP2 in Podocyte cells, MCD vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-247676633b51e4fd",
+   "finding_path": "contrasts/mcd-vs-control-podocyte-lrp2-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "LRP2",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-453e2f7f2f329451",
+    "finding_id": "fnd-247676633b51e4fd",
+    "path": "contrasts/figures/fnd-247676633b51e4fd.png",
+    "sha256": "a3c4ed987fa5140d2d32f398dea6ad33acb5095197f04d6bd15ca6c1caa2772b",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 3075.0,
+     "y0": 7125.0,
+     "x1": 3375.0,
+     "y1": 7425.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in Podocyte cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-podocyte-cubn-nphs1-anchored-v1",
+   "title": "CUBN in Podocyte cells, MCD vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-a84552a95db2e009",
+   "finding_path": "contrasts/mcd-vs-control-podocyte-cubn-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "CUBN",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-6d0cf6ee778d4529",
+    "finding_id": "fnd-a84552a95db2e009",
+    "path": "contrasts/figures/fnd-a84552a95db2e009.png",
+    "sha256": "d500fbb605b34441aac6ea118cefb949ddea303ac78f5f1c9f6bf7cc60ea1ee8",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 3075.0,
+     "y0": 7125.0,
+     "x1": 3375.0,
+     "y1": 7425.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in Podocyte cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-pec-aldh1a2-full-panel-v1",
+   "title": "ALDH1A2 in PEC cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-679fdb099c4e3c1a",
+   "finding_path": "contrasts/mcd-vs-control-pec-aldh1a2-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PEC",
+   "gene": "ALDH1A2",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-9d3bfc42f87858f1",
+    "finding_id": "fnd-679fdb099c4e3c1a",
+    "path": "contrasts/figures/fnd-679fdb099c4e3c1a.png",
+    "sha256": "48b5bbeffc1c0f297ef368dfad5c97898635f95987c6851fc5813e999ec471ed",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 2475.0,
+     "y0": 1425.0,
+     "x1": 2775.0,
+     "y1": 1725.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ALDH1A2 in PEC cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 84 retained and 72 excluded (yellow) molecules of the result in PEC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-pt-lrp2-full-panel-v1",
+   "title": "LRP2 in PT cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-e42209b3a1043533",
+   "finding_path": "contrasts/mcd-vs-control-pt-lrp2-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "LRP2",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-69c5d5ea6c571331",
+    "finding_id": "fnd-e42209b3a1043533",
+    "path": "contrasts/figures/fnd-e42209b3a1043533.png",
+    "sha256": "2e3a2229e241c207cd3733f961a1b9e568136242a53135ceb05253d96637697f",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 1575.0,
+     "y0": 1725.0,
+     "x1": 1875.0,
+     "y1": 2025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in PT cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 900 retained and 784 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-pt-cubn-full-panel-v1",
+   "title": "CUBN in PT cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-d8e987b9b5828e2d",
+   "finding_path": "contrasts/mcd-vs-control-pt-cubn-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "CUBN",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-466d703062712b48",
+    "finding_id": "fnd-d8e987b9b5828e2d",
+    "path": "contrasts/figures/fnd-d8e987b9b5828e2d.png",
+    "sha256": "55b55026bd5491ad1eb4300a7df9b82f6a89b386de943093666b11236322591e",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 225.0,
+     "y0": 12675.0,
+     "x1": 525.0,
+     "y1": 12975.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in PT cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 1397 retained and 1971 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-tal-umod-full-panel-v1",
+   "title": "UMOD in TAL cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-c0bd76b6083257a0",
+   "finding_path": "contrasts/mcd-vs-control-tal-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "TAL",
+   "gene": "UMOD",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-34e5f7779e9d58ea",
+    "finding_id": "fnd-c0bd76b6083257a0",
+    "path": "contrasts/figures/fnd-c0bd76b6083257a0.png",
+    "sha256": "6f6da90f16ee59517909751e47476fe18f79f1944937aa464159badd8b2bc90f",
+    "crop": {
+     "section_id": "GSM8720422",
+     "x0": 6225.0,
+     "y0": 1725.0,
+     "x1": 6525.0,
+     "y1": 2025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in TAL cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720422 around evidence region rank 1: 9802 retained and 25669 excluded (yellow) molecules of the result in TAL cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-dct-slc12a3-full-panel-v1",
+   "title": "SLC12A3 in DCT cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-92677733636e53b1",
+   "finding_path": "contrasts/mcd-vs-control-dct-slc12a3-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "DCT",
+   "gene": "SLC12A3",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-1951c04c0745961a",
+    "finding_id": "fnd-92677733636e53b1",
+    "path": "contrasts/figures/fnd-92677733636e53b1.png",
+    "sha256": "01e72f4380633d71d569445b9780d1b9d0618cdf5b257db14697fc523954f86e",
+    "crop": {
+     "section_id": "GSM8720422",
+     "x0": 4125.0,
+     "y0": 825.0,
+     "x1": 4425.0,
+     "y1": 1125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC12A3 in DCT cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720422 around evidence region rank 1: 3095 retained and 3451 excluded (yellow) molecules of the result in DCT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-pc-aqp2-full-panel-v1",
+   "title": "AQP2 in PC cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-a972a53048c79e8d",
+   "finding_path": "contrasts/mcd-vs-control-pc-aqp2-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PC",
+   "gene": "AQP2",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-02d21f50fe297d72",
+    "finding_id": "fnd-a972a53048c79e8d",
+    "path": "contrasts/figures/fnd-a972a53048c79e8d.png",
+    "sha256": "0010e269b8ba4a3a968f0d32d49af61062cc6d4cc9ed68687e3d19e9b13e9b57",
+    "crop": {
+     "section_id": "GSM8720422",
+     "x0": 1725.0,
+     "y0": 2025.0,
+     "x1": 2025.0,
+     "y1": 2325.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of AQP2 in PC cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720422 around evidence region rank 1: 4539 retained and 5625 excluded (yellow) molecules of the result in PC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-ic-slc4a1-full-panel-v1",
+   "title": "SLC4A1 in IC cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-ef0d5361bb401148",
+   "finding_path": "contrasts/mcd-vs-control-ic-slc4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "IC",
+   "gene": "SLC4A1",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-2e036a58b6b20ace",
+    "finding_id": "fnd-ef0d5361bb401148",
+    "path": "contrasts/figures/fnd-ef0d5361bb401148.png",
+    "sha256": "d278f7d1aeb4137457cc360104397e95142de6fd3b55bb989ad203296ce5540d",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 2925.0,
+     "y0": 5175.0,
+     "x1": 3225.0,
+     "y1": 5475.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC4A1 in IC cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 1019 retained and 1892 excluded (yellow) molecules of the result in IC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-endothelial-pecam1-full-panel-v1",
+   "title": "PECAM1 in Endothelial cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-7dc87e46f804c75f",
+   "finding_path": "contrasts/mcd-vs-control-endothelial-pecam1-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Endothelial",
+   "gene": "PECAM1",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-4e83ad41f48e907e",
+    "finding_id": "fnd-7dc87e46f804c75f",
+    "path": "contrasts/figures/fnd-7dc87e46f804c75f.png",
+    "sha256": "1753aa067142a55195aa2dfb5defba11694abc8c93cb8e1684831435dfee283e",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 2175.0,
+     "y0": 1125.0,
+     "x1": 2475.0,
+     "y1": 1425.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PECAM1 in Endothelial cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 451 retained and 370 excluded (yellow) molecules of the result in Endothelial cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1",
+   "title": "PDGFRB in Mesangial/Pericyte cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-30a31d176be66f40",
+   "finding_path": "contrasts/mcd-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Mesangial/Pericyte",
+   "gene": "PDGFRB",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-1a9bd8f1edbb8d07",
+    "finding_id": "fnd-30a31d176be66f40",
+    "path": "contrasts/figures/fnd-30a31d176be66f40.png",
+    "sha256": "cbbff32d9123928bd9f6557e9af618419192d06953750d6607d1add0e7635498",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 2175.0,
+     "y0": 1125.0,
+     "x1": 2475.0,
+     "y1": 1425.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PDGFRB in Mesangial/Pericyte cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 231 retained and 134 excluded (yellow) molecules of the result in Mesangial/Pericyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-fibroblast-col1a1-full-panel-v1",
+   "title": "COL1A1 in Fibroblast cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-8008df94101c4664",
+   "finding_path": "contrasts/mcd-vs-control-fibroblast-col1a1-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Fibroblast",
+   "gene": "COL1A1",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-cbffdb9e2fbdb25c",
+    "finding_id": "fnd-8008df94101c4664",
+    "path": "contrasts/figures/fnd-8008df94101c4664.png",
+    "sha256": "b8da161365d346bac99bedda3bef1f0f0fd41d5dd238f9d3b7ea9862b957df9a",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 4875.0,
+     "y0": 1425.0,
+     "x1": 5175.0,
+     "y1": 1725.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of COL1A1 in Fibroblast cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 371 retained and 435 excluded (yellow) molecules of the result in Fibroblast cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-t-cell-cd3d-full-panel-v1",
+   "title": "CD3D in T cell cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-a369af47f576db6a",
+   "finding_path": "contrasts/mcd-vs-control-t-cell-cd3d-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD3D",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-48c1d145ebd5b156",
+    "finding_id": "fnd-a369af47f576db6a",
+    "path": "contrasts/figures/fnd-a369af47f576db6a.png",
+    "sha256": "1512cf362a80a9ffd9d2af0fb4c167099ba4cecf5059b558c2046deb6d3b4007",
+    "crop": {
+     "section_id": "GSM8720414",
+     "x0": 2475.0,
+     "y0": 7725.0,
+     "x1": 2775.0,
+     "y1": 8025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD3D in T cell cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720414 around evidence region rank 1: 16 retained and 13 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-t-cell-cd8a-full-panel-v1",
+   "title": "CD8A in T cell cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-c7f40508e784baf4",
+   "finding_path": "contrasts/mcd-vs-control-t-cell-cd8a-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD8A",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-cec9a32a869f2760",
+    "finding_id": "fnd-c7f40508e784baf4",
+    "path": "contrasts/figures/fnd-c7f40508e784baf4.png",
+    "sha256": "2d6954d1dc4e8a65fca4b8db93ceed001b57c5352a8f553cc6b67a8ef46b7e66",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 4575.0,
+     "y0": 525.0,
+     "x1": 4875.0,
+     "y1": 825.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD8A in T cell cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 22 retained and 13 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-b-cell-ms4a1-full-panel-v1",
+   "title": "MS4A1 in B cell cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-54bbc6550fcdf686",
+   "finding_path": "contrasts/mcd-vs-control-b-cell-ms4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "MS4A1",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-4564dedc0dbcf22b",
+    "finding_id": "fnd-54bbc6550fcdf686",
+    "path": "contrasts/figures/fnd-54bbc6550fcdf686.png",
+    "sha256": "c56d9593cad08038bcffe0fb562ee547bc7d75d64528326d151f099e9de15dc4",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 3225.0,
+     "y0": 6225.0,
+     "x1": 3525.0,
+     "y1": 6525.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of MS4A1 in B cell cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 5 retained and 4 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-myeloid-cd68-full-panel-v1",
+   "title": "CD68 in Myeloid cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-11c594a63a87ac03",
+   "finding_path": "contrasts/mcd-vs-control-myeloid-cd68-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "CD68",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-2bd2b11d2ca0d0da",
+    "finding_id": "fnd-11c594a63a87ac03",
+    "path": "contrasts/figures/fnd-11c594a63a87ac03.png",
+    "sha256": "92ddc91830f7c0733cc84e70f51d42d4abf79a81635a89d6ac237c39ae0ce114",
+    "crop": {
+     "section_id": "GSM8720424",
+     "x0": 1425.0,
+     "y0": 975.0,
+     "x1": 1725.0,
+     "y1": 1275.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD68 in Myeloid cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 61 retained and 154 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-myeloid-itgax-full-panel-v1",
+   "title": "ITGAX in Myeloid cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-f138372cac8c088a",
+   "finding_path": "contrasts/mcd-vs-control-myeloid-itgax-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "ITGAX",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-faa981c155857332",
+    "finding_id": "fnd-f138372cac8c088a",
+    "path": "contrasts/figures/fnd-f138372cac8c088a.png",
+    "sha256": "3b0a85d00cfb41312b1c9a4b03eef958349a3270b020de0562b4ecf69b20946e",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 3075.0,
+     "y0": 6075.0,
+     "x1": 3375.0,
+     "y1": 6375.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ITGAX in Myeloid cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 99 retained and 26 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-t-cell-umod-full-panel-v1",
+   "title": "UMOD in T cell cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-a485dbca72395ded",
+   "finding_path": "contrasts/mcd-vs-control-t-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "UMOD",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-b4a610ca076e3162",
+    "finding_id": "fnd-a485dbca72395ded",
+    "path": "contrasts/figures/fnd-a485dbca72395ded.png",
+    "sha256": "0481250d1b115fad557908ce89d2652374b04394183a2b9e8b15a89214565808",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 1275.0,
+     "y0": 8625.0,
+     "x1": 1575.0,
+     "y1": 8925.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in T cell cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 13 retained and 40 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-b-cell-umod-full-panel-v1",
+   "title": "UMOD in B cell cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-0aecca0dc56a39e3",
+   "finding_path": "contrasts/mcd-vs-control-b-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "UMOD",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-2ba82b6e7e43b20d",
+    "finding_id": "fnd-0aecca0dc56a39e3",
+    "path": "contrasts/figures/fnd-0aecca0dc56a39e3.png",
+    "sha256": "415ba272dac497cf58171c55ea7c69294f0ce8203f845c6412df8ca5bbc5cd5a",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 1425.0,
+     "y0": 8025.0,
+     "x1": 1725.0,
+     "y1": 8325.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in B cell cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 5 retained and 16 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mcd-vs-control-myeloid-umod-full-panel-v1",
+   "title": "UMOD in Myeloid cells, MCD vs Control (full-panel-v1)",
+   "finding_id": "fnd-aec903147cf0b416",
+   "finding_path": "contrasts/mcd-vs-control-myeloid-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MCD",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "UMOD",
+   "disease_sections": 4,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-3380b78c6caf0cb0",
+    "finding_id": "fnd-aec903147cf0b416",
+    "path": "contrasts/figures/fnd-aec903147cf0b416.png",
+    "sha256": "e098885eff289be55ae6d9d28dbe5691b0680e738add64b6fc0c4151d2c00a64",
+    "crop": {
+     "section_id": "GSM8720423",
+     "x0": 2925.0,
+     "y0": 6825.0,
+     "x1": 3225.0,
+     "y1": 7125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in Myeloid cells for Control (n=3), MCD (n=4) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 51 retained and 153 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-podocyte-nphs1-nphs1-anchored-v1",
+   "title": "NPHS1 in Podocyte cells, MN vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-db382faa7c4ab40a",
+   "finding_path": "contrasts/mn-vs-control-podocyte-nphs1-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "NPHS1",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-c9d8ba1d167a559f",
+    "finding_id": "fnd-db382faa7c4ab40a",
+    "path": "contrasts/figures/fnd-db382faa7c4ab40a.png",
+    "sha256": "9dea2c58b5d4c8750d9fdfad45c22e6be8a8c92c8b3fdc2c41b6cde017228f00",
+    "crop": {
+     "section_id": "GSM8720430",
+     "x0": 1575.0,
+     "y0": 6825.0,
+     "x1": 1875.0,
+     "y1": 7125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of NPHS1 in Podocyte cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 132 retained and 219 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-podocyte-lrp2-nphs1-anchored-v1",
+   "title": "LRP2 in Podocyte cells, MN vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-0856e35abf37ed30",
+   "finding_path": "contrasts/mn-vs-control-podocyte-lrp2-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "LRP2",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-40d591474a69e7dc",
+    "finding_id": "fnd-0856e35abf37ed30",
+    "path": "contrasts/figures/fnd-0856e35abf37ed30.png",
+    "sha256": "938091251934b9da2c853fea88feb14ea08affde492a82db3c8f5dfab8061c1a",
+    "crop": {
+     "section_id": "GSM8720430",
+     "x0": 1275.0,
+     "y0": 5325.0,
+     "x1": 1575.0,
+     "y1": 5625.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in Podocyte cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 47 retained and 29 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-podocyte-cubn-nphs1-anchored-v1",
+   "title": "CUBN in Podocyte cells, MN vs Control (nphs1-anchored-v1)",
+   "finding_id": "fnd-0b052e640209d93b",
+   "finding_path": "contrasts/mn-vs-control-podocyte-cubn-nphs1-anchored-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "nphs1-anchored-v1",
+   "cell_type": "Podocyte",
+   "gene": "CUBN",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-7186b09cc873a789",
+    "finding_id": "fnd-0b052e640209d93b",
+    "path": "contrasts/figures/fnd-0b052e640209d93b.png",
+    "sha256": "a065652e5088f08689477b224afa8dd713fffbf593190c248c0b1f9671e17e26",
+    "crop": {
+     "section_id": "GSM8720430",
+     "x0": 1125.0,
+     "y0": 6975.0,
+     "x1": 1425.0,
+     "y1": 7275.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in Podocyte cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 53 retained and 59 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-pec-aldh1a2-full-panel-v1",
+   "title": "ALDH1A2 in PEC cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-6e597c35ec5d746b",
+   "finding_path": "contrasts/mn-vs-control-pec-aldh1a2-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PEC",
+   "gene": "ALDH1A2",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-8b6ab7d0a2c05361",
+    "finding_id": "fnd-6e597c35ec5d746b",
+    "path": "contrasts/figures/fnd-6e597c35ec5d746b.png",
+    "sha256": "437b8f3bcb0d19c12445a92bdca19b8353a5b8660d20e7f162b28183a3ef5ef5",
+    "crop": {
+     "section_id": "GSM8720430",
+     "x0": 2325.0,
+     "y0": 11775.0,
+     "x1": 2625.0,
+     "y1": 12075.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ALDH1A2 in PEC cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 5 retained and 25 excluded (yellow) molecules of the result in PEC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-pt-lrp2-full-panel-v1",
+   "title": "LRP2 in PT cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-e855f48fc0babd2c",
+   "finding_path": "contrasts/mn-vs-control-pt-lrp2-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "LRP2",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-368d3f3888bf3374",
+    "finding_id": "fnd-e855f48fc0babd2c",
+    "path": "contrasts/figures/fnd-e855f48fc0babd2c.png",
+    "sha256": "1e4199f094f78eaf3082d360108ac64165679cb205de162380fae0a6c4b9eae8",
+    "crop": {
+     "section_id": "GSM8720430",
+     "x0": 1875.0,
+     "y0": 8775.0,
+     "x1": 2175.0,
+     "y1": 9075.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of LRP2 in PT cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 474 retained and 297 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-pt-cubn-full-panel-v1",
+   "title": "CUBN in PT cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-cca1d0bf18d772a5",
+   "finding_path": "contrasts/mn-vs-control-pt-cubn-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PT",
+   "gene": "CUBN",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-87c3c812380979e2",
+    "finding_id": "fnd-cca1d0bf18d772a5",
+    "path": "contrasts/figures/fnd-cca1d0bf18d772a5.png",
+    "sha256": "f6c24be7e7d740b18fe9d8712ab7c551dd89a448826df318890389058507faaf",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 2325.0,
+     "y0": 1875.0,
+     "x1": 2625.0,
+     "y1": 2175.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CUBN in PT cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 687 retained and 1195 excluded (yellow) molecules of the result in PT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-tal-umod-full-panel-v1",
+   "title": "UMOD in TAL cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-cae0dddb175cf6d3",
+   "finding_path": "contrasts/mn-vs-control-tal-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "TAL",
+   "gene": "UMOD",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-2a1b1248739b14ca",
+    "finding_id": "fnd-cae0dddb175cf6d3",
+    "path": "contrasts/figures/fnd-cae0dddb175cf6d3.png",
+    "sha256": "4778b0a5f96f776290bcf224131a2c5521c7342b1562ae47074747f0e842a427",
+    "crop": {
+     "section_id": "GSM8720426",
+     "x0": 2025.0,
+     "y0": 75.0,
+     "x1": 2325.0,
+     "y1": 375.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in TAL cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720426 around evidence region rank 1: 2852 retained and 8078 excluded (yellow) molecules of the result in TAL cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-dct-slc12a3-full-panel-v1",
+   "title": "SLC12A3 in DCT cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-bd3f9555d25b86d9",
+   "finding_path": "contrasts/mn-vs-control-dct-slc12a3-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "DCT",
+   "gene": "SLC12A3",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-d07e3ecdbe6867f2",
+    "finding_id": "fnd-bd3f9555d25b86d9",
+    "path": "contrasts/figures/fnd-bd3f9555d25b86d9.png",
+    "sha256": "84f5c73c0cc387fe3c8f523c27eaedbbf72ad6ec9b8535e60e8a84efe48a176a",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 2025.0,
+     "y0": 3975.0,
+     "x1": 2325.0,
+     "y1": 4275.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC12A3 in DCT cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 2715 retained and 3115 excluded (yellow) molecules of the result in DCT cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-pc-aqp2-full-panel-v1",
+   "title": "AQP2 in PC cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-a1d144eebe4a002c",
+   "finding_path": "contrasts/mn-vs-control-pc-aqp2-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "PC",
+   "gene": "AQP2",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-b05b400ac6e8255f",
+    "finding_id": "fnd-a1d144eebe4a002c",
+    "path": "contrasts/figures/fnd-a1d144eebe4a002c.png",
+    "sha256": "794f7309aad68e59b4579123c6e364f8701c968aa291262d7bcedf7822a0d7f0",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 375.0,
+     "y0": 11475.0,
+     "x1": 675.0,
+     "y1": 11775.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of AQP2 in PC cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 1793 retained and 2624 excluded (yellow) molecules of the result in PC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-ic-slc4a1-full-panel-v1",
+   "title": "SLC4A1 in IC cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-73bd67ea2c69816d",
+   "finding_path": "contrasts/mn-vs-control-ic-slc4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "IC",
+   "gene": "SLC4A1",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-35fcc79ddbfde189",
+    "finding_id": "fnd-73bd67ea2c69816d",
+    "path": "contrasts/figures/fnd-73bd67ea2c69816d.png",
+    "sha256": "46834fd5c7f9fe244fe56c0a9c83bf6359162393d65872e87f452d2796b8ba32",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 2025.0,
+     "y0": 75.0,
+     "x1": 2325.0,
+     "y1": 375.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of SLC4A1 in IC cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 555 retained and 1289 excluded (yellow) molecules of the result in IC cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-endothelial-pecam1-full-panel-v1",
+   "title": "PECAM1 in Endothelial cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-d2953c12c60bdae9",
+   "finding_path": "contrasts/mn-vs-control-endothelial-pecam1-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Endothelial",
+   "gene": "PECAM1",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-d363b581b9efa6e0",
+    "finding_id": "fnd-d2953c12c60bdae9",
+    "path": "contrasts/figures/fnd-d2953c12c60bdae9.png",
+    "sha256": "5ceee9654a06839fb2dd747157481f948d394378043717e2e564a75b1816c33e",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 1575.0,
+     "y0": 7575.0,
+     "x1": 1875.0,
+     "y1": 7875.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PECAM1 in Endothelial cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 554 retained and 421 excluded (yellow) molecules of the result in Endothelial cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1",
+   "title": "PDGFRB in Mesangial/Pericyte cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-b416ba7349fac0b5",
+   "finding_path": "contrasts/mn-vs-control-mesangial-pericyte-pdgfrb-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Mesangial/Pericyte",
+   "gene": "PDGFRB",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-c9880d92de1874fb",
+    "finding_id": "fnd-b416ba7349fac0b5",
+    "path": "contrasts/figures/fnd-b416ba7349fac0b5.png",
+    "sha256": "434ab4e4d16fe2a80060307269ef4eff336abd1050b5d4734ecc16b5a78dfc68",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 1725.0,
+     "y0": 4875.0,
+     "x1": 2025.0,
+     "y1": 5175.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of PDGFRB in Mesangial/Pericyte cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 149 retained and 88 excluded (yellow) molecules of the result in Mesangial/Pericyte cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-fibroblast-col1a1-full-panel-v1",
+   "title": "COL1A1 in Fibroblast cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-fd516a26cbeeb5b8",
+   "finding_path": "contrasts/mn-vs-control-fibroblast-col1a1-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Fibroblast",
+   "gene": "COL1A1",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-aa166fc2f9ebfa86",
+    "finding_id": "fnd-fd516a26cbeeb5b8",
+    "path": "contrasts/figures/fnd-fd516a26cbeeb5b8.png",
+    "sha256": "f8b8b348869b66f0a8241e3a20c2076f402111fe194b8f9069033062a0a1efd3",
+    "crop": {
+     "section_id": "GSM8720430",
+     "x0": 1275.0,
+     "y0": 5925.0,
+     "x1": 1575.0,
+     "y1": 6225.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of COL1A1 in Fibroblast cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 207 retained and 293 excluded (yellow) molecules of the result in Fibroblast cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-t-cell-cd3d-full-panel-v1",
+   "title": "CD3D in T cell cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-2d7b43e17415a3f5",
+   "finding_path": "contrasts/mn-vs-control-t-cell-cd3d-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD3D",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-f8931fb92e7d99d3",
+    "finding_id": "fnd-2d7b43e17415a3f5",
+    "path": "contrasts/figures/fnd-2d7b43e17415a3f5.png",
+    "sha256": "34a90ee94e767da8c3e853e569be964b5921eafc296c1c26a04bee70b88f681d",
+    "crop": {
+     "section_id": "GSM8720414",
+     "x0": 2475.0,
+     "y0": 7725.0,
+     "x1": 2775.0,
+     "y1": 8025.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD3D in T cell cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720414 around evidence region rank 1: 16 retained and 13 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-t-cell-cd8a-full-panel-v1",
+   "title": "CD8A in T cell cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-312ce458043efae6",
+   "finding_path": "contrasts/mn-vs-control-t-cell-cd8a-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "CD8A",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-74abb287f5d1cb5d",
+    "finding_id": "fnd-312ce458043efae6",
+    "path": "contrasts/figures/fnd-312ce458043efae6.png",
+    "sha256": "1c596d46869aafd2701b4d3da3d03ee66ffa66a798e89ccfcf5bd136d3554898",
+    "crop": {
+     "section_id": "GSM8720427",
+     "x0": 3675.0,
+     "y0": 2175.0,
+     "x1": 3975.0,
+     "y1": 2475.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD8A in T cell cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720427 around evidence region rank 1: 20 retained and 13 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-b-cell-ms4a1-full-panel-v1",
+   "title": "MS4A1 in B cell cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-db653e01a5590817",
+   "finding_path": "contrasts/mn-vs-control-b-cell-ms4a1-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "MS4A1",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-75821740d1a0c27f",
+    "finding_id": "fnd-db653e01a5590817",
+    "path": "contrasts/figures/fnd-db653e01a5590817.png",
+    "sha256": "2f5dd7860e13692a52e75c4ac7659db3bd846a363cf2bed80f9ebab17bd06789",
+    "crop": {
+     "section_id": "GSM8720427",
+     "x0": 3675.0,
+     "y0": 2175.0,
+     "x1": 3975.0,
+     "y1": 2475.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of MS4A1 in B cell cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720427 around evidence region rank 1: 148 retained and 30 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-myeloid-cd68-full-panel-v1",
+   "title": "CD68 in Myeloid cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-b58a2985502259dd",
+   "finding_path": "contrasts/mn-vs-control-myeloid-cd68-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "CD68",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-0fc16d8d1e061a65",
+    "finding_id": "fnd-b58a2985502259dd",
+    "path": "contrasts/figures/fnd-b58a2985502259dd.png",
+    "sha256": "3bb8d2e7341d591404fc93acff9fe7212c5fd016e21e88574765b7b510cf2724",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 2025.0,
+     "y0": 975.0,
+     "x1": 2325.0,
+     "y1": 1275.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of CD68 in Myeloid cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 93 retained and 172 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-myeloid-itgax-full-panel-v1",
+   "title": "ITGAX in Myeloid cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-8f265da6ac48d668",
+   "finding_path": "contrasts/mn-vs-control-myeloid-itgax-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "ITGAX",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-fbcf635355b62020",
+    "finding_id": "fnd-8f265da6ac48d668",
+    "path": "contrasts/figures/fnd-8f265da6ac48d668.png",
+    "sha256": "8676b2edc37e373673ce168c2156a2ef1ab5e6b07e5333d6425e585887c28d7f",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 2025.0,
+     "y0": 4575.0,
+     "x1": 2325.0,
+     "y1": 4875.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of ITGAX in Myeloid cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 51 retained and 22 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-t-cell-umod-full-panel-v1",
+   "title": "UMOD in T cell cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-b26c093018bb8256",
+   "finding_path": "contrasts/mn-vs-control-t-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "T cell",
+   "gene": "UMOD",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-08a414a132f22490",
+    "finding_id": "fnd-b26c093018bb8256",
+    "path": "contrasts/figures/fnd-b26c093018bb8256.png",
+    "sha256": "c27a1ae0a2ae90863af0561df2a948f8913f911713a3e1593d70d67a0eb2393a",
+    "crop": {
+     "section_id": "GSM8720428",
+     "x0": 6975.0,
+     "y0": 3825.0,
+     "x1": 7275.0,
+     "y1": 4125.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in T cell cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720428 around evidence region rank 1: 21 retained and 28 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-b-cell-umod-full-panel-v1",
+   "title": "UMOD in B cell cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-4f749d1246bc66b6",
+   "finding_path": "contrasts/mn-vs-control-b-cell-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "stable",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "B cell",
+   "gene": "UMOD",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-514386ca9c12b8c9",
+    "finding_id": "fnd-4f749d1246bc66b6",
+    "path": "contrasts/figures/fnd-4f749d1246bc66b6.png",
+    "sha256": "a579a809269a474e54a170a66983886eb81bf1b3c7f573a3a6900f5f0ef341e7",
+    "crop": {
+     "section_id": "GSM8720426",
+     "x0": 3075.0,
+     "y0": 375.0,
+     "x1": 3375.0,
+     "y1": 675.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in B cell cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720426 around evidence region rank 1: 6 retained and 31 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
+   }
+  },
+  {
+   "slug": "mn-vs-control-myeloid-umod-full-panel-v1",
+   "title": "UMOD in Myeloid cells, MN vs Control (full-panel-v1)",
+   "finding_id": "fnd-65f58bef65718f3a",
+   "finding_path": "contrasts/mn-vs-control-myeloid-umod-full-panel-v1.json",
+   "groups": {
+    "disease": "MN",
+    "control": "Control"
+   },
+   "label": "insufficient_evidence",
+   "label_rule_id": "full-panel-v1",
+   "cell_type": "Myeloid",
+   "gene": "UMOD",
+   "disease_sections": 5,
+   "control_sections": 3,
+   "donor_distinctness": "repeat_donor_in_group",
+   "figure": {
+    "schema_version": "1.0",
+    "figure_id": "fig-bcbcd69a0a8c6c44",
+    "finding_id": "fnd-65f58bef65718f3a",
+    "path": "contrasts/figures/fnd-65f58bef65718f3a.png",
+    "sha256": "ad0f6d3b095d14ce2b6300cf2a2296774a2f1dcd59f32d13bb94d22727d46e1b",
+    "crop": {
+     "section_id": "GSM8720429",
+     "x0": 2325.0,
+     "y0": 3225.0,
+     "x1": 2625.0,
+     "y1": 3525.0
+    },
+    "evidence_rank": 1,
+    "panel_a": "Per-section log2(CP10K + 1) of UMOD in Myeloid cells for Control (n=3), MN (n=5) under default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m, with group means and the effect per condition. The structure-constrained column is an exploratory SAM 3.1 proposal on sections with outlines only; it never sets the label.",
+    "panel_b": "300 x 300 \u00b5m crop of GSM8720429 around evidence region rank 1: 15 retained and 59 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
+   }
+  }
+ ]
+}

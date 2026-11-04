@@ -1,6 +1,6 @@
 # SpatialScout
 
-SpatialScout investigates which spatial-transcriptomics findings in kidney tissue still hold when the rule for assigning RNA molecules to cells changes. It turns a researcher's question into a checked, reviewable evidence package.
+SpatialScout investigates which spatial-transcriptomics results in kidney tissue still hold when the rule for assigning RNA molecules to cells changes. It turns a researcher's question into a checked, reviewable evidence package.
 
 ## Tissue data
 
@@ -24,9 +24,17 @@ _Avoid_: transcript, read, spot, dot
 A cell found by the instrument's own segmentation, with a centroid and a nucleus.
 _Avoid_: segment, object
 
+**Label rule**:
+A frozen, named rule that assigns cell type labels from marker counts under the default condition.
+_Avoid_: classifier, annotation method
+
 **Cell type label**:
-SpatialScout's marker-based label for a cell, assigned once and frozen for every assignment condition.
+The cell type a label rule assigns to a cell, frozen for every assignment condition.
 _Avoid_: cluster, annotation (as a noun for the label)
+
+**Home cell type**:
+The cell type a marker gene marks, used as the reference for how that gene's molecules sit inside cells.
+_Avoid_: source cell, origin
 
 **Structure**:
 A multicellular anatomical unit of the tissue, such as a glomerulus.
@@ -40,6 +48,10 @@ _Avoid_: segmentation, polygon (as the domain term)
 A rectangular window of a section that the viewer shows and a claim can point to.
 _Avoid_: ROI, tile, field of view
 
+**Evidence region**:
+A region ranked by a stated rule as showing the molecules behind a finding.
+_Avoid_: hotspot, best region
+
 ## Assignment audit
 
 **Assignment**:
@@ -47,8 +59,16 @@ The mapping of molecules to cells.
 _Avoid_: segmentation (SpatialScout does not re-segment)
 
 **Assignment condition**:
-A rule that decides which molecules count toward a cell: default, nucleus-only, distance cap, or structure-constrained.
+A rule that decides which molecules count toward a cell.
 _Avoid_: segmentation method, pipeline, correction
+
+**Primary condition**:
+An assignment condition that evidence labels are computed over: default, nucleus-only, or a distance cap.
+_Avoid_: main condition
+
+**Exploratory condition**:
+An assignment condition reported beside the primary conditions but never used in an evidence label; here, the structure-constrained condition.
+_Avoid_: experimental condition, beta
 
 **Default condition**:
 The instrument's own molecule-to-cell assignment, used unchanged.
@@ -71,38 +91,70 @@ For a set of exclusive marker pairs, the average share of cells expressing eithe
 _Avoid_: contamination rate, purity
 
 **Exclusive marker pair**:
-Two genes that mark different cell types and rarely occur in the same nucleus in a reference.
+Two genes that mark different cell types and rarely occur in the same nucleus of the frozen single-nucleus reference.
 _Avoid_: mutually exclusive markers
 
+**Random-thinning expectation**:
+The value a measure would take if a condition removed molecules at random at a matched rate: the cell's own retention (cell-matched) or the gene's retention in its home cell type (home-matched).
+_Avoid_: null model, permutation baseline
+
+**Excess drop**:
+A random-thinning expectation minus the observed value; large when a condition removes more of a signal than random molecule loss explains.
+_Avoid_: artifact score, leakage score
+
+**Neighbour-proximity share**:
+The share of a gene's molecules that lie closer to a cell of the gene's home type than to their own cell's centroid.
+_Avoid_: boundary score
+
 ## Findings and evidence
+
+**Finding**:
+A computed result a claim can cite: an audit result or a contrast result.
+_Avoid_: hit, signal, target, DE gene
+
+**Audit result**:
+How a measure of one cell population (a gene's presence, a gene set's presence or a co-expression score) behaves across assignment conditions, per section, with its random-thinning expectations.
+_Avoid_: descriptive finding, QC metric
 
 **Contrast**:
 The comparison of one disease group with the control group, for example DKD vs Control.
 _Avoid_: comparison, test
 
-**Finding**:
-The disease-vs-control effect for one gene in one cell type, estimated under every assignment condition.
-_Avoid_: hit, signal, target, DE gene
+**Contrast result**:
+The disease-vs-control effect for one gene in one cell type under every assignment condition, with per-section values.
+_Avoid_: differential expression, DE result
 
 **Effect**:
-A finding's log2 fold change under one assignment condition.
+A contrast result's log2 ratio of group means under one assignment condition.
 _Avoid_: score, delta
+
+**Inference eligibility**:
+Whether a contrast's groups support statistical inference; in this release every contrast is descriptive only.
+_Avoid_: significance, power
 
 **Evidence label**:
 What the evidence supports about a finding: stable, segmentation-sensitive or insufficient evidence. It says nothing about biological truth.
 _Avoid_: robust, artifact, newly revealed, significant
 
 **Stable**:
-The effect keeps its direction and stays within the frozen range across every valid condition, and survives leaving out any one section.
+The finding holds across every valid primary condition by the frozen rules, including when any one section is left out.
 _Avoid_: robust, validated, real
 
 **Segmentation-sensitive**:
-The effect reverses or moves beyond the frozen range between valid conditions.
+The finding reverses, moves beyond the frozen range, or drops beyond its random-thinning expectation between valid primary conditions.
 _Avoid_: artifact, false positive, fake
 
 **Insufficient evidence**:
-Too few molecules, cells, sections or valid conditions to label the finding.
+Too few cells, molecules, sections or valid primary conditions to label the finding.
 _Avoid_: not significant, failed
+
+**Label-sensitivity check**:
+The comparison of a finding under two label rules, one of which does not use the finding's own genes.
+_Avoid_: robustness check, ablation
+
+**Required control**:
+A check a claim must cite before it can be verified: a random-thinning control for claims about assignment sensitivity, and a label-sensitivity check for claims about a population whose label rule involves the claim's genes or decides membership against those genes' home cell type.
+_Avoid_: optional check, sanity check
 
 ## Investigation
 
@@ -111,28 +163,48 @@ What the researcher asks SpatialScout, typed or spoken.
 _Avoid_: query, prompt
 
 **Capability report**:
-For a dataset, which analyses are supported, failed or unavailable, each with its reason.
+For a dataset, which analyses are supported, unavailable or descriptive only, each with its reason.
 _Avoid_: data check, validation report
+
+**Transcript**:
+The editable text of a spoken question, which the researcher confirms before anything runs. Never used for RNA molecules.
+_Avoid_: caption, dictation
 
 **Plan**:
 The ordered tool steps proposed for a question, limited to what the capability report supports; frozen once approved.
 _Avoid_: DAG, workflow, pipeline
 
 **Investigation**:
-One run from a question through plan, tool calls, claims and verification to an evidence package.
+One persisted run from a question through plan, tool calls, claims and verification to an evidence package.
 _Avoid_: session, job, analysis run
 
 **Tool**:
 A deterministic analysis operation the agent may call from a fixed registry.
 _Avoid_: function, skill, MCP tool (as the domain term)
 
+**Observation**:
+A tool's result as the agent receives it, which a follow-up request must cite.
+_Avoid_: output, response
+
 **Claim**:
-A sentence about a finding plus the numbers and evidence it cites, carrying separate evidence, verification and review statuses.
+A sentence about a finding plus the numbers, controls and figure it cites, carrying separate evidence, verification and review statuses.
 _Avoid_: hypothesis, statement, result
+
+**Composite figure**:
+A claim's two-panel figure: per-section values across conditions, and a tissue crop of its top evidence region.
+_Avoid_: plot, chart (for the whole figure)
 
 **Verification**:
 The structural, numerical and visual checks run on a claim.
 _Avoid_: validation, fact-check
+
+**Sub-claim**:
+One testable part of a question: a cell type, its genes, and whether the researcher's hypothesis predicts the signal holds or drops under stricter assignment. A prediction, never an outcome.
+_Avoid_: hypothesis (for the part), expectation
+
+**Verdict**:
+Confirmed, refuted or inconclusive for one sub-claim, derived by a frozen rule from its verified claims' evidence labels. Like an evidence label, it is scoped to the sections, regions and controls behind it and says nothing about biological truth.
+_Avoid_: proof, validated, artifact, true positive
 
 **Disputed**:
 A claim whose visual check disagrees with its figure; it stays visible and flagged for review.
@@ -147,21 +219,29 @@ The researcher's decision on a claim: accept for follow-up, request more investi
 _Avoid_: sign-off, approval
 
 **Plan approval**:
-The researcher's go-ahead that freezes a plan.
+The researcher's go-ahead that freezes a plan; approving again changes nothing.
 _Avoid_: sign-off
 
 **Audit log**:
-The append-only, hash-linked record of every tool call, model call and decision in an investigation. Edits are detectable, not prevented.
+The append-only, hash-linked record of every tool call, model call and decision in an investigation. Edits are detectable relative to an exported head hash, not prevented.
 _Avoid_: audit trail, provenance chain, tamper-proof log
 
 **Evidence package**:
-The export of an investigation: claims, figures, audit log and the instructions to replay or rerun it.
+The export of an investigation: claims, figures, audit log with its head hash, and the instructions to replay or rerun it.
 _Avoid_: report, bundle, notebook (the notebook is one part)
 
-**Replay**:
-Playback of a recorded investigation from stored model responses, always labelled as a replay.
-_Avoid_: demo mode, offline mode, cached mode
+**Run mode**:
+How an investigation's events were produced: immutable replay, cached tool rerun or live run. Always shown.
+_Avoid_: demo mode, offline mode
 
-**Live mode**:
-An investigation that makes real model calls.
-_Avoid_: online mode, real mode
+**Immutable replay**:
+Playback of a recorded investigation's events verbatim, with their original timestamps.
+_Avoid_: replay mode, cached mode
+
+**Cached tool rerun**:
+Re-execution of the deterministic tools on current artifacts, with stored model responses.
+_Avoid_: warm run, re-execution
+
+**Live run**:
+An investigation that makes fresh model calls under the spend budget.
+_Avoid_: live mode, real mode, online mode

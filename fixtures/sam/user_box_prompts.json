@@ -1,0 +1,10 @@
+{
+ "note": "Boxes whose SAM 3.1 box-prompt response is recorded in user_boxes.json by scripts/record_sam_box.py. The GSE286184 boxes are glomerulus seed boxes (padded NPHS1 clusters) from each section's committed structure-finder run, rounded to whole micrometres.",
+ "boxes": [
+  {"section_id": "SYN-01", "x0": 25.0, "y0": 40.0, "x1": 95.0, "y1": 110.0},
+  {"section_id": "GSM8720410", "x0": 1471.0, "y0": 1261.0, "x1": 1663.0, "y1": 1443.0},
+  {"section_id": "GSM8720410", "x0": 1753.0, "y0": 1828.0, "x1": 1893.0, "y1": 2001.0},
+  {"section_id": "GSM8720411", "x0": 2946.0, "y0": 952.0, "x1": 3073.0, "y1": 1158.0},
+  {"section_id": "GSM8720411", "x0": 4120.0, "y0": 820.0, "x1": 4242.0, "y1": 934.0}
+ ]
+}

@@ -2,6 +2,8 @@
 
 Researched 2026-11-02 for the Meta Global AI Developer Hackathon (submissions due 2026-11-04, 9:00 PM ET).
 
+> **Correction (Nov 2, after review):** the judging weights are official. They appear in the Official Rules on the event waiver page; see `hackathon-and-partners.md` §2. Statements below that call them unverified or third-party are superseded.
+
 ## How to read this
 
 - **Verified (Y)** means the fact is stated in an official Meta source (dev.meta.ai docs, Meta GitHub repos, Meta's Hugging Face repos, Meta model cards) as fetched on 2026-11-02. **UNVERIFIED** means no official source stated it.

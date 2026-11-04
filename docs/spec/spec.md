@@ -1,138 +1,264 @@
-# Spec: SpatialScout hackathon build (draft for validation)
+# Spec: SpatialScout hackathon build (revision 2)
 
+> **Published Nov 2 2026 as [#1](https://github.com/chandrarup/spatialscout/issues/1); the issue is canonical for scope.** This file is the snapshot at publication; tickets are its sub-issues, indexed in `docs/spec/tickets.md`.
 
-> Spec for the Meta Global AI Developer Hackathon build (submissions due Nov 4 2026, 9:00 PM ET). Vocabulary follows `GLOSSARY.md`; decisions follow `docs/adr/0001`–`0005`; facts come from `docs/research/` (provider smoke tests, data readiness, spikes). Sources it reconciles: `spatialscout_prd_srs_spec.md` (demo choreography, partner integrations) and `docs/product/build-whitepaper-v2.md` (scientific contracts, which win on conflict).
+> Spec for the Meta Global AI Developer Hackathon build (submissions due Nov 4 2026, 9:00 PM ET).
+>
+> - **Vocabulary** follows `GLOSSARY.md`; **decisions** follow `docs/adr/0001`–`0007`; **facts** come from `docs/research/`.
+> - **Revision 2** adopts the agent directive's Section 4 (`docs/spec/reviews/agent-directive-winning-upgrades.md`) and the reviewer's required changes (`docs/spec/reviews/plan-review.md`). `docs/spec/review-response.md` traces each one.
+> - **Sources**: the old root PRD is superseded for execution. Build whitepaper v2 wins on scientific conflicts.
 
 ## Problem Statement
 
-A kidney researcher looking at a spatial-transcriptomics atlas wants to know which disease-vs-control differences deserve months of follow-up. Every one of those differences depends on how the instrument assigned RNA molecules to cells, and assignment errors can manufacture or hide a "disease signature" (Mitchel et al., Nature Genetics 2026). Today the researcher either trusts the default assignment or writes one-off scripts to probe it. There is no workspace where they can ask a question, see whether the answer changes when the assignment rule changes, check that the claims written about it are numerically and visually right, and hand a reproducible record to their PI.
+A kidney researcher looking at a spatial-transcriptomics atlas wants to know which reported cell states and disease differences deserve months of follow-up. Every one of them depends on how the instrument assigned RNA molecules to cells, and assignment errors can manufacture or hide a signal (Mitchel et al., Nature Genetics 2026).
 
-The judges of the Meta hackathon need to see this working on real data within a few minutes, from a public URL that keeps working during judging (Nov 4–8) even when model credits run out.
+Today the researcher either trusts the default assignment or writes one-off scripts. There is no workspace where they can:
+
+- ask a question
+- see whether the answer changes when the assignment rule changes
+- check that change against what random molecule loss alone would produce
+- confirm that the claims written about it match their numbers and figures
+- hand a reproducible record to their PI
+
+The judges need to see this working on real data within a few minutes, from a public URL that keeps working during judging (Nov 4–8), when model credits may already have lapsed. They also need to see why an agent is needed at all: its reasoning and its vision must do work a static dashboard cannot.
 
 ## Solution
 
-SpatialScout is a web workspace backed by an agent built on Meta's models. The researcher asks a question by typing or speaking ("Do podocytes in DKD really express tubular endocytosis genes, or is that segmentation?"). Muse Wonder reads the dataset's capability report and proposes a plan restricted to supported tools; the researcher approves it. Deterministic tools run the assignment audit across conditions (default, nucleus-only, distance cap, structure-constrained), compute findings per section, and label each one stable, segmentation-sensitive or insufficient evidence. SAM 3.1 delineates glomeruli on an image rendered from the RNA itself, so the structure-constrained condition and the viewer can use them.
+SpatialScout is an assignment-sensitivity investigation workspace backed by an agent built on Meta's models.
 
-A split-screen viewer shows a real GSE286184 section at full resolution: every molecule as a point, cells and glomeruli outlined, and the molecules a stricter condition excludes lit up in yellow, with retention shown beside every number. Claims are drafted in parallel by Muse Spark Open on Baseten, then verified: numbers are recomputed by an independent path, and Muse Spark 1.3 reads each claim's figure to check direction and counts. A clearly labelled injected error is caught on screen. The researcher records a review decision and exports an evidence package (claims, figures, hash-linked audit log, notebook and replay instructions). The public URL plays a labelled replay of a recorded live investigation; live mode is gated.
+**Ask and plan.** The researcher asks a question, typed or spoken: "Do the podocytes this atlas calls 'endocytic' really carry LRP2 and CUBN, or is that segmentation?" Muse Wonder reads the dataset's capability report and proposes a plan limited to supported tools. The researcher approves it.
 
-The hero question is real and citable: the GSE286184 authors reclassified podocytes co-expressing LRP2/CUBN as a new "Podocyte endocytosis" state. In the spike that signal survived nucleus-only assignment, while a few other findings (for example UMOD in B cells) were segmentation-sensitive and most podocyte-level comparisons had insufficient evidence. The demo tells whatever story the final pipeline computes.
+**Audit.** Deterministic tools audit the four primary assignment conditions: default, nucleus-only, and distance caps of 1 and 2 µm.
+
+**Choose the controls.** Muse Spark 1.3 reads each observation and decides which controls it needs, citing why:
+
+- a random-thinning control, to test whether a drop exceeds what molecule loss explains
+- a label-sensitivity check, to test whether the result depends on how the cells were labelled
+
+Verification fails any claim that lacks a required control, so the agent's choices carry weight and are never cosmetic.
+
+**Inspect the tissue.** The viewer flies to the top-ranked evidence region of a real GSE286184 section and shows:
+
+- every molecule
+- nuclei by cell type label
+- excluded molecules in yellow
+- a split slider between conditions
+- retention and the thinning expectation beside every number
+- SAM 3.1 glomerulus outlines, drawn on an image made from the RNA itself, as a layer badged exploratory
+
+**Draft.** Claims are drafted in parallel by Muse Spark Open on Baseten.
+
+**Verify.** Every claim is verified three ways:
+
+- **Structurally**: references, counts and required controls.
+- **Numerically**: an independent recompute of every cited number.
+- **Visually**: Muse Spark 1.3 reads a two-panel figure. Panel A is a per-section chart. Panel B is the tissue crop. The model checks both against the claim.
+
+**Challenge the verifier.** A judge can open "Challenge the verifier" on a claim card and swap in recorded injected errors, to see what the checks actually caught.
+
+**Review and export.** The researcher records a review decision and exports an evidence package: claims, figures, a hash-linked audit log anchored by its head hash, a notebook, and replay instructions.
+
+**Public URL.** It plays a labelled, immutable replay of a recorded live investigation. Live runs are gated.
+
+**The hero question.** It is a descriptive audit of a published cell state, not a disease contrast. The GSE286184 authors reclassified podocytes co-expressing LRP2/CUBN as "Podocyte endocytosis". Disease contrasts (DKD, IgAN, MCD and MN vs Control) are descriptive in this release, because the 22 sections come from 19 donors with no published mapping (ADR-0007). The demo tells whatever story the frozen pipeline computes; no outcome is written in advance (ADR-0001).
 
 ## User Stories
 
 ### Asking and planning
-1. As a researcher, I want to type a question about a gene, cell type and disease, so that I can start an investigation without writing code.
-2. As a researcher, I want to hold a button and speak my question, so that I can ask while my hands are busy at the bench.
-3. As a researcher, I want to see and edit the transcript of what I said before it is used, so that a misheard gene name never drives an analysis.
-4. As a researcher, I want one-click example questions, so that I can see what SpatialScout can answer on this dataset.
-5. As a researcher, I want to see the dataset's capability report before a plan is proposed, so that I know which analyses are supported, failed or unavailable and why.
-6. As a researcher, I want the planner to propose only steps the capability report supports, so that I am never shown an analysis the data cannot back.
-7. As a researcher, I want the plan to state the contrast, cell types, assignment conditions, tools and budget, so that I know exactly what will run.
-8. As a researcher, I want to approve or reject the plan, so that nothing runs without my go-ahead.
-9. As a researcher, I want an approved plan to be frozen, so that later follow-ups cannot silently change the primary analysis.
-10. As a researcher, I want follow-up steps that change the contrast to be recorded as a separate exploratory branch, so that adaptive analysis is never mistaken for the pre-specified one.
-11. As a researcher, I want the investigation to stop at its tool-call budget and return what it has plus open questions, so that the agent cannot run analyses until a favourable result appears.
+
+1. As a researcher, I want to type a question about a gene, cell population and condition, so that I can start an investigation without code.
+2. As a researcher, I want to hold a button and speak my question, so that I can ask hands-free.
+3. As a researcher, I want to edit and confirm the transcript before it is used, so that a misheard gene never drives an analysis.
+4. As a researcher, I want one-click example questions, so that I can see what this dataset supports.
+5. As a researcher, I want the capability report shown before any plan, so that I know what is supported, unavailable and why.
+6. As a researcher, I want every contrast's inference eligibility shown, so that I never read a descriptive comparison as an inferential one.
+7. As a researcher, I want the planner limited to supported tools, so that I am never shown an analysis the data cannot back.
+8. As a researcher, I want the plan to state the population, genes, conditions, tools and budget, so that I know exactly what will run.
+9. As a researcher, I want to approve or reject the plan, and approving twice must never run it twice, so that nothing runs without my go-ahead.
+10. As a researcher, I want an approved plan frozen, with any contrast-changing follow-up recorded as an exploratory branch, so that adaptive analysis is never mistaken for the pre-specified one.
+11. As a researcher, I want the investigation to stop at its 12-call budget and return what it has plus open questions, so that the agent cannot fish for a favourable result.
+
+### Watching the agent reason
+
+12. As a researcher, I want to see each tool observation the agent receives, so that I can follow its reasoning.
+13. As a researcher, I want to see which control the agent chose next and the observation it cited, so that I can judge whether its scientific reflexes are sound.
+14. As a researcher, I want the agent to test a drop in co-expression against a random-thinning expectation, so that molecule loss is not mistaken for admixture.
+15. As a researcher, I want the agent to check whether a result depends on the cell type label rule, so that a population selected on the genes it measures is caught.
+16. As a researcher, I want a claim that skipped a required control to fail verification, so that the agent is accountable for its choices.
 
 ### Seeing the tissue
-12. As a researcher, I want to open a real section and see every molecule as a point coloured by gene, so that I can inspect the raw evidence.
-13. As a researcher, I want to see cells as nuclei with their cell type labels, so that I can tell which cell a molecule was assigned to.
-14. As a researcher, I want glomeruli outlined on the section, so that I can orient myself in kidney anatomy.
-15. As a researcher, I want to compare the default condition with a stricter condition side by side or with a split slider, so that I can see what changes.
-16. As a researcher, I want excluded molecules highlighted, so that I can see exactly which molecules a stricter condition drops.
-17. As a researcher, I want retention shown next to every audit number, so that dropping molecules never looks like a free improvement.
-18. As a researcher, I want to filter the view to a few genes, so that the region I care about is not buried in other molecules.
-19. As a researcher, I want to click a finding and have the viewer fly to a region that shows its evidence, so that every number links to tissue.
-20. As a researcher, I want pan and zoom to stay smooth on a whole section, so that inspection feels immediate.
-21. As a researcher, I want approximate cell outlines labelled as approximations, so that I do not mistake them for measured boundaries.
+
+17. As a researcher, I want a real section with every molecule coloured by gene and nuclei by cell type label, so that I can inspect raw evidence.
+18. As a researcher, I want to compare default with a stricter condition through a split slider, so that I can see exactly what changes.
+19. As a researcher, I want excluded molecules highlighted in yellow, so that I can see which molecules a condition drops.
+20. As a researcher, I want retention and the thinning expectation beside every audit number, so that dropping molecules never looks like a free improvement.
+21. As a researcher, I want clicking a finding to fly the viewer into its top-ranked evidence region with the gene filter locked, so that every number links to tissue in one click.
+22. As a researcher, I want the ranking rule shown and the ability to step to ranks 2 and 3, so that the first region does not read as cherry-picked.
+23. As a researcher, I want glomerulus outlines from SAM 3.1 shown as an exploratory layer, so that I can orient myself without mistaking them for validated anatomy.
+24. As a researcher, I want each outline compared with its seed box and a geometric baseline, with coverage and retention beside tuft-gene consistency, so that I can judge what SAM adds.
+25. As a researcher, I want approximate cell outlines labelled as approximations, so that I do not mistake them for measured boundaries.
+26. As a researcher, I want pan and zoom to stay smooth on a whole section, so that inspection feels immediate.
 
 ### Assignment audit
-22. As a researcher, I want molecules counted under default, nucleus-only, distance-cap and structure-constrained conditions, so that I can see how sensitive each result is to assignment.
-23. As a researcher, I want a co-expression score for frozen exclusive marker pairs per section and cell type, so that I have a proxy for admixture.
-24. As a researcher, I want the co-expression score reported with coverage and the number of eligible pairs, so that I can judge how much to trust it.
-25. As a researcher, I want cell type labels assigned once and frozen across conditions, so that a changed result is attributable to assignment, not relabelling.
-26. As a researcher, I want a per-molecule record of which conditions include it, so that excluded molecules can be traced.
-27. As a researcher, I want the structure-constrained condition to exclude molecules that sit on the other side of a glomerulus outline from their cell, so that structures act as hard boundaries.
-28. As a researcher, I want a condition that cannot be computed to be reported as unavailable, so that a missing input never counts as evidence against a finding.
 
-### Findings and evidence labels
-29. As a researcher, I want findings computed per section and cell type for every contrast the data supports, so that sections, not cells, are the unit of replication.
-30. As a researcher, I want each finding's effect, uncertainty and per-section values under every condition, so that I can see the whole picture.
-31. As a researcher, I want each finding labelled stable, segmentation-sensitive or insufficient evidence by frozen rules, so that labels are consistent and explainable.
-32. As a researcher, I want count gates (molecules and cells per section) applied before labelling, so that sparse comparisons are called insufficient rather than sensitive.
-33. As a researcher, I want a leave-one-section-out check, so that no single section can drive a label.
-34. As a researcher, I want the limitation that 22 sections come from 19 donors disclosed wherever sections are counted, so that I do not over-read replication.
-35. As a researcher, I want significance reported separately from evidence labels, so that "stable" is never confused with "significant" or "true".
-36. As a researcher, I want to sort and filter findings by label, cell type and gene, so that I can find the ones that matter.
-37. As a researcher, I want to see the published "Podocyte endocytosis" signal audited, so that I can judge a real claim from the dataset's own paper.
+27. As a researcher, I want molecules counted under default, nucleus-only and distance-cap conditions, so that I can see how sensitive a result is to assignment.
+28. As a researcher, I want populations fixed under the default condition, so that a cell losing all its molecules does not vanish from the denominator.
+29. As a researcher, I want a co-expression score over exclusive marker pairs frozen from a single-nucleus reference, so that the admixture proxy was not tuned on the data it scores.
+30. As a researcher, I want both a cell-matched and a home-matched thinning expectation, so that a gene whose mRNA is naturally cytoplasmic is not mistaken for admixture.
+31. As a researcher, I want the share of excluded molecules lying closer to a neighbouring home-type cell than to their own cell, beside the same share for retained molecules, so that the spatial pattern behind an exclusion is measured, not eyeballed.
+32. As a researcher, I want the hero result reported under both the full-panel and the NPHS1-anchored label rules, so that I can see whether the population's definition drives it.
+33. As a researcher, I want a condition that cannot be computed reported as unavailable, so that a missing input never counts as evidence.
+
+### Disease contrasts
+
+34. As a researcher, I want per-section values and effects for each disease vs Control under every primary condition, so that I can see the whole picture.
+35. As a researcher, I want contrasts labelled by the same frozen rules as audits, so that labels are consistent and explainable.
+36. As a researcher, I want no p-values or confidence intervals that assume independent sections, so that pseudo-replication is never presented as evidence.
+37. As a researcher, I want the 22-sections-from-19-donors limitation disclosed wherever sections are counted, so that I do not over-read replication.
 
 ### Claims and verification
-38. As a researcher, I want the agent to write each claim as a sentence citing its numbers, so that I can read results in plain language.
-39. As a researcher, I want claims drafted in parallel, so that many findings are covered quickly.
-40. As a researcher, I want every claim to carry separate evidence, verification and review statuses, so that a numerically correct claim is not mistaken for an approved one.
-41. As a researcher, I want each claim's numbers recomputed from the stored molecules by an independent path, so that a model cannot invent a number.
-42. As a researcher, I want each claim's figure inspected by a vision model for direction and section counts, so that a sentence cannot contradict its plot.
-43. As a researcher, I want a claim whose figure disagrees to be marked disputed and opened for review, so that I decide, not the model.
-44. As a researcher, I want a claim that fails a numerical or structural check blocked from the validated summary but kept in the history, so that errors are visible but contained.
-45. As a researcher, I want corrections to create a new claim version, so that history is never rewritten.
-46. As a researcher, I want a labelled injected error demonstrated and caught, so that I can see verification working.
-47. As a researcher, I want measured detection and false-rejection rates for verification on a benchmark of valid and injected claims, so that I know how far to trust it.
+
+38. As a researcher, I want each claim written as a sentence that cites its numbers in cautious wording, so that I can read results without over-reading them.
+39. As a researcher, I want claims drafted in parallel, so that many results are covered quickly.
+40. As a researcher, I want separate evidence, verification and review statuses on every claim, so that a numerically correct claim is not mistaken for an approved one.
+41. As a researcher, I want every cited number recomputed by an independent code path, so that a model cannot invent a number.
+42. As a researcher, I want the vision model to check the claim against both a statistical chart and the tissue crop, so that a sentence cannot contradict its evidence in either form.
+43. As a researcher, I want a figure disagreement to mark the claim disputed and open it for review, so that I decide, not the model.
+44. As a researcher, I want numerical or structural failures blocked from the validated summary but kept in history, and corrections to create new versions, so that errors are visible but contained.
+45. As a judge, I want to inject any recorded error kind into a claim and see the verifier's recorded outcome, including misses, so that I can probe verification myself.
+46. As a researcher, I want measured detection and false-rejection rates on a benchmark of valid and injected claims, so that I know how far to trust verification.
 
 ### Review, audit and export
-48. As a PI, I want to accept a claim for follow-up, request more investigation, or leave it unresolved, so that the final decision is mine and recorded.
-49. As a PI, I want voice review decisions to require confirmation, so that a stray utterance cannot approve a claim.
-50. As a PI, I want every tool call, model call and decision in an append-only, hash-linked audit log, so that edits to the history are detectable.
-51. As a PI, I want the audit log to say whether each model response was live or replayed, so that I know what was actually computed today.
-52. As a PI, I want to export an evidence package with claims, figures, audit log and a notebook, so that I can reproduce and share the work.
-53. As a PI, I want the notebook to re-run the numerical verification from the exported artifacts, so that reproduction does not depend on SpatialScout running.
-54. As a PI, I want separate instructions for a full rerun from raw GEO data, so that replay and computational reproducibility are not conflated.
-55. As a PI, I want work-in-progress exports to show their review state, so that an unreviewed package is never mistaken for a final one.
 
-### Judges and the public URL
-56. As a judge, I want the public URL to play a complete investigation without failing, so that I can evaluate the demo during judging.
-57. As a judge, I want replays clearly labelled as replays, with the recording time, so that I know what I am seeing.
-58. As a judge, I want live telemetry showing which Meta model and which provider handled each step, so that I can see the Meta tooling at work.
-59. As a judge, I want the golden path to finish in under three minutes, so that the demo fits a short video.
-60. As a judge, I want a README that separates implemented features from the roadmap and reports measured numbers, so that I can trust what I read.
-61. As an operator, I want live mode behind a passcode and a daily spend budget enforced in the backend, so that a public URL cannot run up an uncapped bill.
-62. As an operator, I want every model call cached by a content hash of its request, so that repeated runs cost nothing and replay is exact.
-63. As an operator, I want a provider failover for open-weights calls, so that a Baseten outage does not break claim drafting.
-64. As an operator, I want each model call's provider, model, latency, tokens, estimated cost and cache status recorded, so that cost reporting comes from logs, not promises.
-65. As an operator, I want the batch audit across all 22 sections runnable as one command, locally or fanned out on Modal, so that whitepaper tables are regenerated from code.
-66. As a developer, I want one source of truth for the data contracts with generated TypeScript types, so that backend and frontend cannot drift.
+47. As a PI, I want to accept, ask for more investigation or leave unresolved, by click or confirmed voice, so that the final decision is mine and recorded.
+48. As a PI, I want every tool call, model call and decision in an append-only, hash-linked audit log whose head hash is exported, so that edits relative to that anchor are detectable.
+49. As a PI, I want the run mode of every model response recorded, so that I know what was computed live, rerun with stored responses, or replayed.
+50. As a PI, I want an evidence package with claims, figures, audit log and a notebook that re-runs the numerical checks, so that reproduction does not depend on SpatialScout running.
+51. As a PI, I want separate instructions for a full rerun from raw GEO data, so that replay and computational reproducibility are not conflated.
+52. As a PI, I want work-in-progress exports to show their review state, so that an unreviewed package is never mistaken for a final one.
+
+### Judges, operators and developers
+
+53. As a judge, I want the public URL to play a complete investigation without failing, labelled as an immutable replay with its recording time, so that I can evaluate it during judging.
+54. As a judge, I want telemetry showing which Meta model and provider handled each step, so that I can see the Meta tooling at work.
+55. As a judge, I want the golden path to finish in under three minutes, so that it fits a short video.
+56. As a judge, I want a README separating implemented features from the roadmap, with only measured numbers, so that I can trust what I read.
+57. As an operator, I want live runs behind a passcode and a file-locked daily budget, so that a public URL cannot overspend even with parallel calls.
+58. As an operator, I want model calls cached by a key that includes tool version and artifact checksum, so that a stale response never serves changed inputs.
+59. As an operator, I want investigations persisted with ordered events and reconnection from the last event, so that a refresh or Modal's 150-second request limit never loses work.
+60. As an operator, I want failover from Baseten to Fireworks for open-weights calls, so that one outage does not break drafting.
+61. As an operator, I want the batch audit across all 22 sections runnable as one command, locally or on Modal, so that tables regenerate from code.
+62. As a developer, I want one source of truth for contracts with generated TypeScript types, so that backend and frontend cannot drift.
 
 ## Implementation Decisions
 
-### Modules (deep modules, one Python package plus one web app)
+### Modules (deep modules: one Python package plus one web app)
 
-- **Dataset store.** Loads GSE286184 sections from raw GEO files into validated columnar tables of molecules and cells, writes a dataset manifest (source URLs, download date, file checksums, panel, section-to-group mapping, donor caveat, coordinate units) and a capability report. Filters molecules to `qv ≥ 20` and panel genes; counts, never silently drops, unmatched records. Interface: load a dataset by id; get its manifest and capability report; get one section's molecules and cells.
-- **Analysis engine.** All deterministic science behind a small set of tool operations: assign cell type labels (frozen marker rule, from default counts, pooled gene scales from control sections); compute assignment conditions per molecule; audit a section (retention, co-expression score with coverage, excluded-molecule flags); compute findings for a contrast (pseudobulk per section × cell type × condition, PyDESeq2 effects with intervals, count gates, leave-one-section-out, evidence labels); build a region view; render a finding figure; recompute a claim's numbers by an independent path. Every condition is a molecule subset, so counts stay integers and PyDESeq2 is valid (ADR-0002).
-- **Structure finder.** Renders a gene-agnostic image of a section from nucleus positions and sizes; seeds one box per glomerulus from merged NPHS1 molecule clusters; asks SAM 3.1 for masks via box prompts; converts box-local masks to section-coordinate outlines; reports PECAM1/PDGFRB consistency per mask. Stores outlines as artifacts (ADR-0005).
-- **Model gateway.** One client for every model call: Meta Model API (chat completions and responses for Muse Wonder and Muse Spark 1.3, responses for SAM 3.1, ASR for Muse Voice Transcribe), Baseten and Fireworks (Muse Spark Open, OpenAI-compatible). Content-hash cache, record and replay sources, budget guard and passcode for live mode, failover from Baseten to Fireworks for open-weights calls, Pydantic validation of every structured output, and a telemetry event per call. Reasoning models need generous `max_tokens` and `reasoning_effort: low` by default (spike finding).
-- **Investigation orchestrator.** A bounded state machine: question → capability report → plan (Muse Wonder, schema-constrained, checked against the tool registry and capability report, one re-plan allowed) → plan approval → tool execution (deterministic tools; Muse Spark 1.3 may request follow-up tool calls that cite an observation, within a 12-call budget) → finding selection → parallel claim drafting (Muse Spark Open) → verification → review → export. Emits typed investigation events.
-- **Verifier.** Structural checks (schema, dataset and finding references, contrast direction, section counts), numerical checks (independent recompute within declared tolerances), visual checks (Muse Spark 1.3 reads the figure and returns higher group, points per group, single-point dependence). Numerical or structural failure blocks a claim from the validated summary; visual disagreement marks it disputed; an unavailable check stays unavailable. An error injector derives injected errors from real claims (reversed direction, wrong section count, wrong dataset reference, changed effect, figure-label mismatch), always flagged as injected.
-- **Audit log.** Append-only entries per investigation; each entry's hash covers its canonical content plus the previous hash; a chain check; live-or-replayed flag per model call. Described as tamper-evident, never tamper-proof.
-- **Evidence package exporter.** A zip with claims, findings, figures, audit log, replay manifest, raw-rerun instructions and a generated notebook that re-runs the numerical verification from the exported artifacts.
-- **HTTP API.** FastAPI. Start an investigation, approve a plan, stream investigation events over SSE, fetch a region view (columnar, compact), submit a voice clip (WAV) for transcription, record a review decision, export a package, list and play recorded investigations. Serves the built web app (ADR-0004).
-- **Web app.** React, TypeScript, Vite, Tailwind, deck.gl. Question bar with push-to-talk and editable transcript; capability report and plan stepper with approve; telemetry pills per provider; split viewer (molecules, nuclei, glomerulus outlines, excluded molecules in yellow, retention badges, gene filter, fly-to-region); findings table with labels; claim cards with verification panel (figure plus the vision critique); review controls; audit log ticker; export button; replay banner.
+- **Dataset store.**
+  - Loads GSE286184 sections into validated molecule and cell tables, filtered to `qv ≥ 20` and panel genes. Unmatched records are counted, never dropped silently.
+  - Writes the dataset manifest and the capability report. The report includes each contrast's inference eligibility.
+  - Freezes two cell type label rules (see Frozen rules).
+- **Analysis engine.** All deterministic science sits behind tool operations:
+  - compute assignment conditions per molecule
+  - audit a population: retention, nuclear overlap, observed value, both thinning expectations, excess drop, neighbour-proximity share, evidence regions
+  - run the random-thinning control
+  - run the label-sensitivity check
+  - compute a descriptive disease contrast
+  - label results by the frozen rules
+  - build a region view
+  - render a composite figure
+  - recompute any claim's cited numbers by an independent path
+- **Structure finder (exploratory).** Builds SAM 3.1 glomerulus outlines from box prompts on a gene-agnostic nucleus image, seeded from merged NPHS1 clusters.
+  - Compares each outline with its seed box and a convex-hull baseline.
+  - Allows empty, fragmented or rejected proposals.
+  - Versions every mask (ADR-0005, narrowed by ADR-0006).
+- **Model gateway.** One client for Meta (Wonder, Spark 1.3, SAM 3.1, Voice Transcribe), Baseten and Fireworks (Muse Spark Open). It provides:
+  - a content-addressed cache
+  - run-mode sources
+  - local Pydantic validation with one bounded repair
+  - a passcode and a file-locked budget reservation for live runs
+  - failover
+  - per-call telemetry
+- **Investigation orchestrator.** A bounded state machine that persists `state.json` and `events.jsonl` (with a monotonic `seq`) per investigation and runs independently of any HTTP connection. The steps:
+  1. question
+  2. capability report
+  3. plan (Wonder, schema-constrained, checked against the registry and capability report; one re-plan)
+  4. idempotent approval
+  5. tool execution
+  6. agent-chosen follow-ups (Spark 1.3, 12-call budget, each citing an observation)
+  7. parallel claim drafting (Spark Open)
+  8. verification
+  9. review
+  10. export
+- **Verifier.** Runs structural, numerical and visual checks:
+  - Structural checks include required controls.
+  - The numerical check is an independent recompute of every cited number.
+  - The visual check is Spark 1.3 reading both figure panels.
+
+  It also hosts the error injector and the benchmark runner.
+- **Audit log.** Append-only and hash-linked, with a chain check. The head hash is exported in the package manifest; the golden path's head hash is also committed to the repo. Integrity is described as detecting edits relative to that anchor.
+- **Evidence package exporter.** Writes claims, findings, composite figures, the audit log with its head hash, the run mode, a replay manifest, raw-rerun instructions, and a notebook that re-runs the numerical verification.
+- **HTTP API.** FastAPI. Endpoints:
+  - start an investigation
+  - approve (idempotent)
+  - stream events with `after_seq`
+  - fetch a region view
+  - transcribe WAV
+  - record a review decision
+  - export
+  - list and play investigations
+
+  It also serves the built web app (ADR-0004).
+- **Web app.** React, TypeScript, Vite, Tailwind, deck.gl. Components:
+  - question bar with push-to-talk
+  - capability report
+  - plan stepper with approve
+  - agent reasoning timeline: observation → chosen control → result
+  - telemetry pills
+  - split viewer with fly-to-evidence and rank stepping
+  - exploratory SAM layer
+  - findings table
+  - claim cards with the verification panel and "Challenge the verifier"
+  - review controls
+  - audit ticker
+  - export
+  - run-mode banner
 
 ### Contracts
 
-Pydantic models are the single source of truth; JSON Schema is generated from them and TypeScript types from that. Every artifact has a schema version and an immutable id; changing a parameter produces a new run. Key types: DatasetManifest, CapabilityReport, AssignmentCondition, RegionView, AuditMetrics, Finding (effects per condition, gates, label), Claim, VerificationResult (per check: status, details), Plan and PlanStep, InvestigationEvent (a discriminated union), AuditEntry, ReviewDecision, ModelCallRecord.
+Pydantic models are the single source of truth; JSON Schema and TypeScript types are generated from them. Every artifact has a schema version and an immutable id.
 
-Claim shape (from the build whitepaper v2, adjusted by the spikes):
+**Finding** is a discriminated union on `finding_kind`:
+
+- **`audit`: an audit result.**
+  - **Population:** label rule id, cell type and fixed counts.
+  - **Genes or gene pair.**
+  - **Per section and condition:**
+    - observed value and retention
+    - nuclear-overlap share
+    - cell-matched and home-matched thinning expectations, with the excess drop against each
+    - cells with at least one retained molecule
+    - neighbour-proximity share for excluded and for retained molecules
+  - **Evidence regions,** with the ranking rule.
+  - **Label,** plus the exploratory condition's values kept apart.
+- **`contrast`: a contrast result.**
+  - **Disease and control groups.**
+  - **Per section and condition:** library-size-normalised log2 values.
+  - **Per condition:** effect.
+  - **Leave-one-section-out influence.**
+  - **`inference_eligibility`:** `descriptive_only` plus its reason.
+  - **Label,** plus the exploratory condition's values kept apart.
+
+Claim shape:
 
 ```json
 {
-  "schema_version": "1.0",
-  "claim_id": "clm-…",
-  "version": 1,
-  "investigation_id": "inv-…",
-  "dataset_id": "GSE286184",
-  "contrast": {"disease": "DKD", "control": "Control"},
-  "cell_type": "Podocyte",
-  "gene": "LRP2",
+  "schema_version": "2.0",
+  "claim_id": "clm-…", "version": 1, "investigation_id": "inv-…", "dataset_id": "GSE286184",
+  "finding": {"finding_id": "fnd-…", "finding_kind": "audit | contrast"},
   "text": "…",
-  "cited": {"effect_default": 0.0, "effect_by_condition": {"nucleus_only": 0.0}, "n_sections": {"DKD": 6, "Control": 3}},
-  "finding_id": "fnd-…",
+  "cited": {"…": "every number the text uses, with its source field"},
+  "controls": {"random_thinning": "ctl-… | null", "label_sensitivity": "ctl-… | null"},
   "figure_id": "fig-…",
   "evidence_status": "stable | segmentation_sensitive | insufficient_evidence",
   "verification_status": "pending | verified | failed | disputed | unavailable",
@@ -141,76 +267,191 @@ Claim shape (from the build whitepaper v2, adjusted by the spikes):
 }
 ```
 
-Missing values stay null with a reason; a missing p-value never becomes zero.
+Investigation state: `state.json` holds status, `run_mode`, approved-plan hash and timestamps. `events.jsonl` holds one event per line, with a monotonic `seq` and its original `recorded_at_utc`. Missing values stay null with a reason.
 
-### Frozen analysis rules (primary analysis; sensitivity grid reported separately)
+### Frozen analysis rules
 
-- Primary contrast: DKD (6 sections) vs Control (3 sections). IgAN, MCD and MN vs Control are computed with the same code and shown if they pass gates.
-- Conditions: default; nucleus-only; distance caps of 1 µm and 2 µm (non-nuclear molecules within the cap kept); structure-constrained (from glomerulus outlines).
-- Count gate: every section needs ≥ 10 molecules of the gene in the cell type and ≥ 20 cells of the type; otherwise insufficient evidence.
-- Labels: stable when the direction agrees across valid conditions, the log2 effect range is ≤ 0.5, and leave-one-section-out keeps the direction; segmentation-sensitive on a reversal or range > 0.5; else insufficient evidence. The 0.5 threshold is a design choice, frozen before the primary run.
-- Sections are the replication unit. GEO does not map sections to donors (22 sections, 19 donors); this is disclosed in the capability report and the README.
-- Exclusive marker pairs are chosen from the single-nucleus reference (GSE271188) or a development section, then frozen before evaluation.
+Write once, frozen before the primary run, and record them in every result. They supersede the spike's exploratory thresholds.
 
-### Model jobs (every model has a real job)
+- **Label rules.**
+  - The *full-panel rule* is the spike's one-or-two-markers-per-compartment argmax rule, applied to default counts with gene scales pooled from control sections.
+  - The *NPHS1-anchored podocyte rule* decides podocyte membership without LRP2 or CUBN. It is the primary rule for the hero population.
+
+  Both are reported for hero results (the label-sensitivity check). Neither is free of selection bias: the anchored rule can admit proximal-tubule cells carrying stray NPHS1. The panel contains no NPHS2, PODXL or WT1.
+- **Conditions.**
+  - *Primary* conditions are default, nucleus-only, and distance caps of 1 and 2 µm (non-nuclear molecules within the cap are kept).
+  - The *exploratory* condition is structure-constrained, built from SAM 3.1 outlines. It is reported beside the primary conditions and never enters a label (ADR-0006).
+- **Fixed populations.** Cells are labelled once under the default condition, and every condition is computed over the same cells. A cell with no retained molecules is non-expressing and stays in the denominator.
+- **Gate precedence.** A section passes the *population gate* with at least 20 cells of the population, and the *molecule gate* with at least 10 of the result's molecules in that population. The gates apply in this order.
+  - **Contrast results**, where every section is a replicate:
+    1. Every section of both groups must pass the population gate. If any fails, the result is insufficient evidence.
+    2. A condition is valid only if every section passes the molecule gate under it.
+    3. The default condition plus at least one stricter primary condition must be valid. If not, the result is insufficient evidence.
+  - **Audit results**, which ask how one population behaves, not how groups differ:
+    1. A section is eligible when it passes the population gate and the molecule gate under the default condition.
+    2. At least 3 sections must be eligible. If fewer are, the result is insufficient evidence.
+    3. Every condition is computed over the same eligible sections, drawn from all 22 sections with a breakdown by group. The eligible sections are listed in the result.
+
+    Stricter conditions are not molecule-gated, because what they retain is the measurement and the thinning expectation already accounts for low counts.
+- **Near-zero band.** A value within ±0.1 (log2 units) has no direction. A reversal needs two valid conditions with opposite non-zero directions.
+- **Contrast labels.**
+  - **Stable:** at least two valid primary conditions, no reversal, and an effect range of at most 0.5 log2. Leaving out any one section must never produce an opposite non-zero direction in any valid condition.
+  - **Segmentation-sensitive:** a reversal or a range above 0.5, with the default effect stable under leave-one-section-out.
+  - **Insufficient evidence:** anything else.
+- **Audit labels.** Use the home-matched expectation *E* and the observed value *O*, pooled over the eligible sections, under each stricter primary condition.
+  - **Segmentation-sensitive:** in at least one such condition, *O* < *E* × 2^−0.5 (an excess log2 drop above 0.5), and this holds when any one eligible section is left out.
+  - **Stable:** every such condition has *O* ≥ *E* × 2^−0.5, and this holds when any one eligible section is left out.
+  - **Insufficient evidence:** anything else, including fewer than 3 eligible sections or a gene with no home cell type.
+- **Thinning expectations (closed form).** For cell *c* with *k* default molecules of gene *g*:
+  - **Retention probabilities:**
+    - *cell-matched:* p = 1 − (1 − r_c)^k, where r_c is the cell's retention
+    - *home-matched:* p = 1 − (1 − ρ_{g,κ})^k, where ρ_{g,κ} is gene *g*'s retention in its home cell type under condition κ, in that section
+  - **Expected values:**
+    - share expressing: the mean of *p* over the fixed population
+    - gene set (for example LRP2 or CUBN): 1 − Π(1 − p_g)
+    - pair co-expression: Σ p_g·p_h / Σ(p_g + p_h − p_g·p_h)
+  - **Excess drop:** expectation minus observed.
+- **Contrast effects.**
+  - **Normalisation:** library size, as the pseudobulk total of the population in that section and condition.
+  - **Value:** log2(CP10K + 1).
+  - **Effect:** the difference between group means.
+
+  There are no p-values or confidence intervals in this release (ADR-0007). Inferential tests and their multiple-testing family move to the roadmap, pending donor metadata.
+- **Exclusive marker pairs** come from the frozen artifact `configs/exclusive_marker_pairs.json`, built from GSE271188 control donors before any Xenium evaluation.
+
+### Verification scope
+
+**Structural checks:**
+
+- schema validity
+- the dataset and finding references resolve
+- section counts match
+- required controls are present:
+  - a home-matched thinning control for any claim about assignment sensitivity
+  - a label-sensitivity check for any claim about a population whose label rule involves the claim's genes, or decides membership against those genes' home cell type (the NPHS1-anchored podocyte rule competes with proximal tubule, the home type of LRP2/CUBN)
+
+**Numerical check.** An independent code path recomputes every cited number from the stored molecule tables, within declared tolerances:
+
+- population counts
+- per-section molecule sums
+- retention
+- observed values
+- both expectations
+- neighbour-proximity shares
+- contrast effects
+- direction
+
+No fitted model is involved, so every cited number is reproducible.
+
+**Visual check.** Muse Spark 1.3 reads the composite figure and returns, against a schema:
+
+- whether Panel A's direction matches the claim
+- whether a single section drives Panel A
+- whether Panel B shows the neighbour pattern the claim states
+
+The Panel B answer is backed by the computed neighbour-proximity shares, so the question is never one the image answers by construction. A visual check is a consistency check, not ground truth.
+
+**Outcomes.**
+
+- A failed structural or numerical check blocks the claim from the validated summary.
+- A visual disagreement marks it disputed.
+- An unavailable check stays unavailable.
+- A correction creates a new version.
+
+**Error injector kinds:** reversed direction, wrong section count, wrong dataset reference, changed effect, figure-label mismatch, misstated spatial pattern, missing required control.
+
+### Run modes
+
+- **`immutable_replay`** streams a recorded `events.jsonl` verbatim, with its original timestamps.
+- **`cached_tool_rerun`** re-executes the deterministic tools on current artifacts and serves stored model responses. The cache key is a hash of provider, model, inputs, response schema version, tool version and artifact checksum.
+- **`live`** makes fresh model calls under the passcode and a file-locked daily budget reservation.
+
+The banner and the audit log always state the mode (ADR-0003).
+
+### Model jobs (every model does real work)
 
 | Model / platform | Job |
 | --- | --- |
-| Muse Wonder (`muse-wonder-1.0`, Meta API) | Schema-constrained plan limited to the capability report |
-| Muse Spark 1.3 (`muse-spark-1.3`, Meta API) | Follow-up tool calls; claim explanations; figure verification by vision |
-| SAM 3.1 (`sam-3.1`, Meta API) | Glomerulus outlines from box prompts on RNA-derived images |
-| Muse Voice Transcribe (`muse-voice-transcribe-1.0`, Meta API) | Push-to-talk questions and confirmed review decisions |
-| Muse Spark Open on Baseten (`meta-models/muse-spark-open`) | Parallel claim drafting per finding |
+| Muse Wonder (`muse-wonder-1.0`) | Schema-constrained plan limited to the capability report |
+| Muse Spark 1.3 (`muse-spark-1.3`) | Reads observations and chooses follow-up controls with cited reasons; explains; verifies both figure panels by vision |
+| SAM 3.1 (`sam-3.1`) | Exploratory glomerulus outlines from box prompts on RNA-derived images |
+| Muse Voice Transcribe (`muse-voice-transcribe-1.0`) | Push-to-talk questions and confirmed review decisions |
+| Muse Spark Open on Baseten (`meta-models/muse-spark-open`) | Parallel claim drafting |
 | Muse Spark Open on Fireworks (`accounts/fireworks/models/muse-spark-open`) | Failover for open-weights calls |
-| Modal | Hosting the single deployable; batch audit across 22 sections with `.map()` |
+| Modal | Hosting with Volume-backed investigation state; batch audit with `.map()` |
 
 ### Specific interactions
 
-- Voice: the browser records PCM and encodes 16-bit mono WAV at 16 kHz itself; the backend forwards it to `/v1/asr/transcribe` (WAV only, per Meta docs). The transcript is editable and must be confirmed.
-- Replay: the gateway serves stored responses; the orchestrator re-emits recorded events with their original relative timing, optionally sped up. The replay banner shows the recording time.
-- The region view ships molecules as compact columns (positions, gene index, cell index, per-condition inclusion bits), so a whole section (about 300k molecules) renders at once.
+- **Claim wording.** Claims use cautious, population-scoped wording, for example: "Co-expression persists under the tested restriction in cells labelled by our marker rule." They never imply replication of the authors' labels or proof of a biological state.
+- **Voice.** The browser records PCM and encodes 16-bit mono WAV at 16 kHz itself. The transcript is editable and must be confirmed.
+- **Region view.** It ships molecules as compact columns: positions, gene index, cell index and per-condition inclusion bits. A whole section of about 300k molecules renders at once. Fly-to-evidence animates over about 800 ms.
+- **Long investigations.** Each SSE connection closes before Modal's 150-second limit, and the client reconnects with `after_seq`.
 
 ## Testing Decisions
 
-- A good test checks behaviour through a public interface with an expected value from an independent source (a hand-built example, a worked calculation), never by re-running the implementation's own logic.
-- **Seam 1: the analysis engine's public operations.** Tests use tiny hand-built molecule and cell tables whose answers are known by construction: a molecule in a podocyte's expansion zone excluded by nucleus-only; retention and co-expression scores computed by hand; pseudobulk sums; count gates; label thresholds including a reversal; leave-one-section-out; the independent recompute agreeing with the engine and catching each injected error kind.
-- **Seam 2: the HTTP/SSE API.** FastAPI's test client with the model gateway in replay mode over a recorded-response fixture: a question yields the expected event sequence; plan approval gates execution; an injected error ends failed or disputed; the audit log chain verifies; the export contains the expected parts; live mode is refused without the passcode or over budget.
-- No UI unit tests. One Playwright smoke run of the replayed golden path against the deployed URL at the end.
-- Model quality is measured by the verification benchmark (at least 20 valid and 20 injected claims, a held-out subset), not by unit tests.
-- Prior art: none in the repo yet; `spikes/` holds reference computations that seam-1 tests may borrow worked examples from.
+- **What makes a good test:** it checks behaviour through a public interface, against an expected value from an independent source (a hand-built example or a worked calculation). It never re-runs the implementation's own logic.
+- **Seam 1: the analysis engine's public operations,** on tiny hand-built tables with answers known by construction:
+  - expansion-zone exclusion
+  - retention and the co-expression score
+  - fixed-population denominators
+  - both thinning expectations against worked examples, cross-checked by a seeded Monte Carlo simulation
+  - the neighbour-proximity share
+  - evidence-region ranking
+  - both label rules, including a cell whose label differs between them
+  - every gate-precedence and label case, including near-zero effects
+  - the independent recompute agreeing with the engine and catching every deterministic error kind
+  - SAM mask placement, on a recorded response
+  - the exploratory condition never changing a label
+- **Seam 2: the HTTP/SSE API,** through FastAPI's test client with recorded model responses:
+  - the question-to-package event sequence
+  - refresh at approval, duplicate approval and reconnect with `after_seq`
+  - agent-chosen controls in the hero run
+  - a skipped control ending in a structural failure
+  - an injected error ending failed or disputed
+  - budget and passcode refusal, including concurrent reservations
+  - export contents and the chain check
+- **No UI unit tests.** One Playwright smoke run of the immutable replay against the deployed URL, at the end.
+- **Model quality** is measured by the verification benchmark (at least 20 valid and 20 injected claims, with a held-out subset), not by unit tests.
+- **Prior art:** `spikes/` holds reference computations whose worked examples seam-1 tests may borrow. The spikes' labels themselves are not imported.
 
 ## Out of Scope
 
-- Fine-tuning SAM 3.1 (no 3.1 training recipe; gated weights) and SAM tile-video stitching (unverified ID stability across seams).
-- Re-segmentation or published correction tools (Proseg, Cellpose-SAM, cellAdmix, 2DE).
-- Datasets other than GSE286184: Visium, lupus nephritis, mouse, 10x preview kidney.
-- Lupus-nephritis framing; the cohort is DKD, IgAN, MCD and MN.
-- A urine-biomarker bridge beyond, at most, one VCAM1 card labelled as a candidate tissue association (VCAM1 is the only Stanley 2020 protein confirmed in the panel).
-- Serving a Muse Glimmer LoRA live (an on-demand deployment costs about $8/hour). An offline-evaluated LoRA is a stretch goal only after everything else ships.
-- Arbitrary code execution by the agent, multi-user collaboration, accounts.
-- Clinical use: outputs are research hypotheses, never diagnoses or patient-level predictions.
+- Inferential statistics (p-values, confidence intervals, multiple-testing control) and PyDESeq2 fits for disease contrasts, pending verified donor metadata (ADR-0007).
+- Anatomical accuracy claims for SAM outlines; SAM 3.1 fine-tuning; tile-video stitching.
+- Re-segmentation or correction tools (Proseg, Cellpose-SAM, cellAdmix, 2DE).
+- Datasets other than GSE286184 and its single-nucleus reference; lupus-nephritis framing.
+- A urine-biomarker bridge beyond, at most, one VCAM1 card labelled as a candidate tissue association.
+- Live Muse Glimmer LoRA serving; the offline agreement study is a stretch goal after ticket 12.
+- Arbitrary code execution by the agent; accounts; clinical use (outputs are research hypotheses only).
 
 ## Further Notes
 
 ### Demo storyboard (about 2.5 minutes, written from computed outputs)
 
-1. Hook: a 2026 kidney atlas reports "Podocyte endocytosis". Biology, or where the instrument drew the cell edges?
-2. The researcher asks by voice; the editable transcript appears; Muse Wonder proposes a plan limited to what the capability report supports; approve.
-3. The viewer flies from the whole biopsy strip into a glomerulus outlined by SAM 3.1 from an image made of RNA; the split slider shows default vs nucleus-only, excluded molecules in yellow, retention beside every number.
-4. Findings: the podocyte LRP2/CUBN signal labelled with whatever the pipeline computes, a segmentation-sensitive finding clicked to fly to its evidence, and the honest count of insufficient-evidence comparisons.
-5. Claims drafted in parallel on Baseten; a labelled injected error caught by Muse Spark 1.3 reading the figure, critique on screen.
-6. Review decision, evidence package export, audit log chain verified. Telemetry shows every Meta model and partner used.
+1. **Hook.** A 2026 kidney atlas reports "Podocyte endocytosis". Is it biology, or where the instrument drew the cell edges?
+2. **Ask and plan.** The researcher asks, by voice if ticket 08 has landed. Muse Wonder proposes a plan limited to what the capability report supports, and the researcher approves it.
+3. **The agent reasons.** The audit returns. Muse Spark 1.3 notes the retention drop and chooses the random-thinning control and the label-sensitivity check, citing what it saw. Their results appear in the reasoning timeline.
+4. **The tissue.** The viewer flies into the top-ranked evidence region, with the ranking rule shown. The split slider moves from default to nucleus-only; excluded molecules light yellow, with the expectation beside the observed value. SAM 3.1 outlines appear as an exploratory layer.
+5. **Draft and verify.** Claims are drafted in parallel on Baseten. Muse Spark 1.3 checks the chart and the tissue crop. A judge opens "Challenge the verifier" and sees the recorded outcome of an injected error.
+6. **Review and export.** A review decision is recorded, the package is exported, and the head hash is shown. Telemetry shows every Meta model and partner used.
 
 ### Schedule and human-only steps
 
-- Nov 2: walking skeleton deployed on replay; real-data audit and findings.
-- Nov 3: agent loop, verification and benchmark, structure outlines, voice, export; record the golden-path investigation live.
-- Nov 4: polish; the user records the demo video late morning; code freeze about 1 PM CT; repo made public; submit by about 5 PM CT; push nothing after 8 PM CT (a repository change after the deadline marks the project late).
-- Muse Code was not used to build this; the submission must not claim it.
+- **Nov 2:** walking skeleton with persisted investigations; real data and label rules; marker pairs frozen.
+- **Nov 3:** audit with controls, the agent loop on audit results, verification, review and export, then contrasts and the enhancements. Record the golden path live.
+- **Nov 4:**
+  - Polish in the morning, and record the demo video late morning (this needs you).
+  - Freeze code at about 1 PM CT and make the repo public.
+  - Submit by about 5 PM CT.
+  - Push nothing after 8 PM CT: a repository change after the deadline marks the project late.
+- **Muse Code** was not used, and the submission must not claim it.
 
 ### Risks
 
-- Model credits lapse during judging: replay by default (ADR-0003).
-- Sparse podocyte counts: count gates and insufficient-evidence labels (spike 1).
-- Donor mapping unknown: disclosed; leave-one-section-out.
-- SAM outlines imperfect: shown as SAM proposals with tuft-gene consistency, used as one named condition, never as validation.
+| Risk | Mitigation |
+| --- | --- |
+| Credits lapse during judging | Immutable replay by default (ADR-0003) |
+| Sparse podocyte counts | Gate precedence and insufficient-evidence labels |
+| Unknown donor mapping | Descriptive contrasts (ADR-0007) |
+| Imperfect SAM outlines | Exploratory, compared with baselines, never labelled (ADR-0006) |
+| Location-dependent molecule loss | The home-matched thinning expectation |

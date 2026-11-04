@@ -33,6 +33,7 @@ Gotchas:
 
 - **All of them are reasoning models.** With `max_tokens: 200` every model spent the whole budget on reasoning and returned empty content (`finish_reason: length`). Use a generous `max_tokens` (2,000+) and `reasoning_effort: "low"` for routine calls. `reasoning_effort` is accepted by all four.
 - Baseten and Fireworks expose the chain of thought in `message.reasoning_content`; Meta does not.
+- A valid JSON response in one smoke call shows compatibility for that request, not a guarantee. Baseten's docs do not promise a JSON mode, and Meta guarantees schema conformance only for `response_format`/`text.format` outputs, not tool-call arguments. Validate every structured output locally, with one bounded repair attempt.
 
 ## SAM 3.1 (live, synthetic image)
 
