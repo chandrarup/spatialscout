@@ -23,3 +23,21 @@ def test_a_sections_rendered_channels_count_every_molecule_of_their_genes(client
 
 def test_channels_of_an_unknown_section_are_not_found(client):
     assert client.get("/api/sections/NOPE/channels").status_code == 404
+
+
+def test_the_recorded_boxes_of_a_section_each_replay_a_sam_outline_with_no_model_call(client):
+    response = client.get("/api/sections/SYN-01/sam-boxes")
+
+    assert response.status_code == 200, response.text
+    boxes = response.json()["boxes"]
+    assert {"section_id": "SYN-01", "x0": 25.0, "y0": 40.0, "x1": 95.0, "y1": 110.0} in boxes
+    for box in boxes:
+        outline = client.post("/api/sections/SYN-01/sam-outline", json=box)
+        assert outline.status_code == 200, outline.text
+        assert outline.json()["badge"] == "SAM 3.1 proposal (exploratory)"
+
+
+def test_a_section_with_no_recorded_box_lists_none(client):
+    response = client.get("/api/sections/NOPE/sam-boxes")
+
+    assert response.status_code == 200 and response.json() == {"section_id": "NOPE", "boxes": []}

@@ -11,14 +11,26 @@ import asyncio
 from datetime import UTC, datetime
 from pathlib import Path
 
-from spatialscout.contracts import Region
+from spatialscout.api.structure_routes import recorded_boxes
+from spatialscout.contracts import Recording
 from spatialscout.data import DatasetStore
 from spatialscout.engine.structure_finder import outline_box, recording_info, recording_path
-from spatialscout.gateway import LIST_PRICES, ApiKeys, LiveClient, LiveSource, ModelGateway, RecordingWriter, SpendLedger
+from spatialscout.gateway import (
+    LIST_PRICES,
+    ApiKeys,
+    LiveClient,
+    LiveSource,
+    ModelGateway,
+    RecordingWriter,
+    ReplaySource,
+    SpendLedger,
+    StoredResponseMissing,
+)
 from spatialscout.settings import Settings
 
-# SYN-01's glomerulus (radius 33 µm around (60, 75)), enclosed; the seam-2 test draws the same box.
-BOXES = [Region(section_id="SYN-01", x0=25.0, y0=40.0, x1=95.0, y1=110.0)]
+# fixtures/sam/user_box_prompts.json: SYN-01's glomerulus (radius 33 µm around (60, 75)), enclosed, which the seam-2
+# test draws, and glomerulus seed boxes on the default dual-viewer pair (Control x2, DKD x3), which the viewer offers
+# as recorded boxes. Boxes already recorded replay from the file, so re-running only pays for new ones.
 
 
 async def main(env_file: Path | None) -> None:
@@ -35,13 +47,22 @@ async def main(env_file: Path | None) -> None:
     recorder = RecordingWriter(path, recording_info("user_boxes"))
     gateway = ModelGateway(LiveSource(client, "sam-user_boxes"), clock, run_mode="live", recorder=recorder)
     try:
-        for box in BOXES:
-            run = await outline_box(store.load_section(box.section_id), box, gateway, "live")
+        for box in recorded_boxes(settings.fixtures_dir):
+            section = store.load_section(box.section_id)
+            if path.is_file():
+                stored = ModelGateway(ReplaySource(Recording.model_validate_json(path.read_text(encoding="utf-8"))), clock, run_mode="cached_tool_rerun")
+                try:
+                    await outline_box(section, box, stored, "cached_tool_rerun")
+                    print(f"{box.section_id} {box.x0},{box.y0}-{box.x1},{box.y1}: already recorded")
+                    continue
+                except StoredResponseMissing:
+                    pass
+            run = await outline_box(section, box, gateway, "live")
             statuses = [p.status for p in run.proposals]
             print(f"{box.section_id} {box.x0},{box.y0}-{box.x1},{box.y1}: {statuses}, {run.images_sent} image, ${run.estimated_cost_usd:.4f}")
     finally:
         await client.aclose()
-    print(f"recorded {len(BOXES)} responses in {path}")
+    print(f"recorded responses in {path}")
 
 
 if __name__ == "__main__":

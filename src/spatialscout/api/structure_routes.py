@@ -1,12 +1,13 @@
 """SAM 3.1 outlines (exploratory, ADR-0006): a section's committed structure-finder run, and a box the researcher
 drew sent to SAM 3.1 as its box prompt (draft revision 3). The UI wires the box route in later."""
 
+import json
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Header, HTTPException, Request
 
 from ..agent import utc_now
-from ..contracts import Recording, Region, StructureRun
+from ..contracts import RecordedBoxes, Recording, Region, StructureRun
 from ..data import DatasetStore, SectionNotIngested, UnknownSection
 from ..engine.structure_finder import outline_box, recording_path
 from ..gateway import GatewayError, LiveRunRefused, LiveSource, ModelGateway, ProviderError, ReplaySource, StoredResponseMissing
@@ -16,6 +17,15 @@ from ..settings import Settings
 router = APIRouter()
 
 USER_BOXES = "user_boxes"  # fixtures/sam/user_boxes.json: stored responses for drawn boxes
+USER_BOX_PROMPTS = "user_box_prompts"  # fixtures/sam/user_box_prompts.json: the boxes those responses answer
+
+
+def recorded_boxes(fixtures_dir) -> list[Region]:
+    """Every box whose SAM 3.1 response is stored, from the list `scripts/record_sam_box.py` records."""
+    path = recording_path(fixtures_dir, USER_BOX_PROMPTS)
+    if not path.is_file():
+        return []
+    return [Region.model_validate(box) for box in json.loads(path.read_text(encoding="utf-8"))["boxes"]]
 
 
 def _problem(status: int, code: str, message: str) -> HTTPException:
@@ -31,6 +41,14 @@ async def structure_run(section_id: str, request: Request) -> StructureRun:
     if run is None:
         raise _problem(404, "no_structure_run", f"Section {section_id} has no SAM 3.1 outlines.")
     return run
+
+
+@router.get("/sections/{section_id}/sam-boxes")
+async def sam_boxes(section_id: str, request: Request) -> RecordedBoxes:
+    """Boxes on the section whose SAM 3.1 response is stored, so a cached tool rerun can outline them; any other
+    box needs a live run."""
+    settings: Settings = request.app.state.settings
+    return RecordedBoxes(section_id=section_id, boxes=[b for b in recorded_boxes(settings.fixtures_dir) if b.section_id == section_id])
 
 
 @router.post("/sections/{section_id}/sam-outline")
