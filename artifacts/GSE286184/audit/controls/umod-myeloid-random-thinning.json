@@ -1,8 +1,8 @@
 {
  "schema_version": "1.0",
  "control_kind": "random_thinning",
- "control_id": "ctl-97c84c829270ba9c",
- "finding_id": "fnd-6e0887c014d581fc",
+ "control_id": "ctl-c3f37e6a0943beb9",
+ "finding_id": "fnd-e8ad16ea9f9793c0",
  "dataset_id": "GSE286184",
  "label_rule_id": "full-panel-v1",
  "cell_type": "Myeloid",

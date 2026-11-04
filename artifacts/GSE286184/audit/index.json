@@ -40,7 +40,7 @@
   {
    "slug": "hero-podocyte-lrp2-cubn",
    "title": "Podocytes with LRP2 or CUBN (NPHS1-anchored rule)",
-   "finding_id": "fnd-f857d842c980f51e",
+   "finding_id": "fnd-cbda44f7cec0b272",
    "finding_path": "audit/hero-podocyte-lrp2-cubn.json",
    "label": "stable",
    "label_rule_id": "nphs1-anchored-v1",
@@ -53,10 +53,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-dce7bfe910e71a6c",
-    "finding_id": "fnd-f857d842c980f51e",
-    "path": "audit/figures/fnd-f857d842c980f51e.png",
-    "sha256": "37318f424125c1b198ae6876fccadeb915f46ac7fa866ba4592512715eac232e",
+    "figure_id": "fig-c19257bc2a6f7db5",
+    "finding_id": "fnd-cbda44f7cec0b272",
+    "path": "audit/figures/fnd-cbda44f7cec0b272.png",
+    "sha256": "fcc58b5a8dc55d8104ebc703fa233a6167224d0d08dfe7b8ec07aae7d62528f9",
     "crop": {
      "section_id": "GSM8720423",
      "x0": 3075.0,
@@ -68,15 +68,15 @@
     "panel_a": "Per-section observed share of cells expressing any gene across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 101 retained and 128 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-9bb7c29534ecd6c5",
+   "random_thinning_control_id": "ctl-47e0dc9d4930ae9a",
    "random_thinning_control_path": "audit/controls/hero-podocyte-lrp2-cubn-random-thinning.json",
-   "label_sensitivity_control_id": "ctl-0ffa6995bd569b68",
+   "label_sensitivity_control_id": "ctl-f40f899d2a968a7d",
    "label_sensitivity_control_path": "audit/controls/hero-podocyte-lrp2-cubn-label-sensitivity.json"
   },
   {
    "slug": "hero-podocyte-lrp2-cubn-full-panel",
    "title": "Podocytes with LRP2 or CUBN (full-panel rule)",
-   "finding_id": "fnd-700bc14033326d20",
+   "finding_id": "fnd-2a796e0ff5e5798c",
    "finding_path": "audit/hero-podocyte-lrp2-cubn-full-panel.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -89,10 +89,10 @@
    "eligible_sections": 18,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-81f2c9172df6ef04",
-    "finding_id": "fnd-700bc14033326d20",
-    "path": "audit/figures/fnd-700bc14033326d20.png",
-    "sha256": "e62a18b84ce06fe7655ecb8b06cce3a8a7976b07546e99feb973ce57aebf658f",
+    "figure_id": "fig-1efe8f13ac690005",
+    "finding_id": "fnd-2a796e0ff5e5798c",
+    "path": "audit/figures/fnd-2a796e0ff5e5798c.png",
+    "sha256": "a10b9d48c1184c23f3d2a411e2db2bb06817fc73eed73c3b169feb9ae95bd984",
     "crop": {
      "section_id": "GSM8720424",
      "x0": 375.0,
@@ -104,7 +104,7 @@
     "panel_a": "Per-section observed share of cells expressing any gene across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 27 retained and 35 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-f148f303b58ec31d",
+   "random_thinning_control_id": "ctl-42ce83c1f2aee9a5",
    "random_thinning_control_path": "audit/controls/hero-podocyte-lrp2-cubn-full-panel-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -112,7 +112,7 @@
   {
    "slug": "umod-b-cell",
    "title": "UMOD in B cells",
-   "finding_id": "fnd-550da1d32a261941",
+   "finding_id": "fnd-a5fb5babebf3ec08",
    "finding_path": "audit/umod-b-cell.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -124,10 +124,10 @@
    "eligible_sections": 19,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-108493aa52fe8d15",
-    "finding_id": "fnd-550da1d32a261941",
-    "path": "audit/figures/fnd-550da1d32a261941.png",
-    "sha256": "bee9da63bb9ca77ff597065b4b0108afca46619c85eea47fe186f20b7b799ded",
+    "figure_id": "fig-0e3104f647ea8342",
+    "finding_id": "fnd-a5fb5babebf3ec08",
+    "path": "audit/figures/fnd-a5fb5babebf3ec08.png",
+    "sha256": "ead8568da72f6609f5c4a4d7b455977ee7170d56501e4819a9ba0a5c6b5333ee",
     "crop": {
      "section_id": "GSM8720426",
      "x0": 3075.0,
@@ -139,7 +139,7 @@
     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720426 around evidence region rank 1: 6 retained and 31 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-4debf9fbd3600524",
+   "random_thinning_control_id": "ctl-2607664d4f9eaeb9",
    "random_thinning_control_path": "audit/controls/umod-b-cell-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -147,7 +147,7 @@
   {
    "slug": "umod-t-cell",
    "title": "UMOD in T cells",
-   "finding_id": "fnd-fd42e2a621766524",
+   "finding_id": "fnd-a6066ffa4ad91c68",
    "finding_path": "audit/umod-t-cell.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -159,10 +159,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-3a5681be0c1a0c3b",
-    "finding_id": "fnd-fd42e2a621766524",
-    "path": "audit/figures/fnd-fd42e2a621766524.png",
-    "sha256": "4876da02f4079b8e4ce1300a3ed731d8b41b0d115c35cdebc2217bac9ec3121a",
+    "figure_id": "fig-66d6e11d08f94372",
+    "finding_id": "fnd-a6066ffa4ad91c68",
+    "path": "audit/figures/fnd-a6066ffa4ad91c68.png",
+    "sha256": "d38380b1d5c63235c7e61c13d3014b93dda26fcdb4848eff46a4d1b4bd035400",
     "crop": {
      "section_id": "GSM8720420",
      "x0": 2175.0,
@@ -174,7 +174,7 @@
     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 6 retained and 54 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-a9f702aff69920d1",
+   "random_thinning_control_id": "ctl-b99fc8afdce94fd3",
    "random_thinning_control_path": "audit/controls/umod-t-cell-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -182,7 +182,7 @@
   {
    "slug": "umod-myeloid",
    "title": "UMOD in myeloid cells",
-   "finding_id": "fnd-6e0887c014d581fc",
+   "finding_id": "fnd-e8ad16ea9f9793c0",
    "finding_path": "audit/umod-myeloid.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -194,10 +194,10 @@
    "eligible_sections": 20,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-94030ac1ad3f6822",
-    "finding_id": "fnd-6e0887c014d581fc",
-    "path": "audit/figures/fnd-6e0887c014d581fc.png",
-    "sha256": "107c72e687bf5035222b26f6555fdc99f9df21a38c3bd00b70c9eeccf08023d5",
+    "figure_id": "fig-5b076c931acd1dd4",
+    "finding_id": "fnd-e8ad16ea9f9793c0",
+    "path": "audit/figures/fnd-e8ad16ea9f9793c0.png",
+    "sha256": "09ed0f84048d5e15be6a269ac2fb19d94259a3e85c1f1f4bf4646d3f2251d7bf",
     "crop": {
      "section_id": "GSM8720423",
      "x0": 2925.0,
@@ -209,7 +209,7 @@
     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 20 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 51 retained and 153 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-97c84c829270ba9c",
+   "random_thinning_control_id": "ctl-c3f37e6a0943beb9",
    "random_thinning_control_path": "audit/controls/umod-myeloid-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -217,7 +217,7 @@
   {
    "slug": "podocyte-nphs1",
    "title": "NPHS1 in podocytes (NPHS1-anchored rule)",
-   "finding_id": "fnd-5765735961e9d224",
+   "finding_id": "fnd-690f7e1b8be76841",
    "finding_path": "audit/podocyte-nphs1.json",
    "label": "stable",
    "label_rule_id": "nphs1-anchored-v1",
@@ -229,10 +229,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-5ef9af04815f2ffc",
-    "finding_id": "fnd-5765735961e9d224",
-    "path": "audit/figures/fnd-5765735961e9d224.png",
-    "sha256": "e52da773df8a48c346b92b10594df942b8362c90d854e5e48cb9db1fb74eb729",
+    "figure_id": "fig-2ffcf61e7a403396",
+    "finding_id": "fnd-690f7e1b8be76841",
+    "path": "audit/figures/fnd-690f7e1b8be76841.png",
+    "sha256": "5ea139396212d40986c221a8fbfdabbf52138ef7d17d98bd43220de3c6355b35",
     "crop": {
      "section_id": "GSM8720424",
      "x0": 675.0,
@@ -244,7 +244,7 @@
     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 200 retained and 262 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-d0f04d56379089c6",
+   "random_thinning_control_id": "ctl-9cf1ea284d39c327",
    "random_thinning_control_path": "audit/controls/podocyte-nphs1-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -252,7 +252,7 @@
   {
    "slug": "podocyte-lrp2",
    "title": "LRP2 in podocytes (NPHS1-anchored rule)",
-   "finding_id": "fnd-b7f0f6e7a43d222f",
+   "finding_id": "fnd-e61f50733fa8acf4",
    "finding_path": "audit/podocyte-lrp2.json",
    "label": "stable",
    "label_rule_id": "nphs1-anchored-v1",
@@ -264,10 +264,10 @@
    "eligible_sections": 19,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-b324cc7c31242b38",
-    "finding_id": "fnd-b7f0f6e7a43d222f",
-    "path": "audit/figures/fnd-b7f0f6e7a43d222f.png",
-    "sha256": "f5f485eda598c617a8320aaf93da1b4b1c38a9daf69377ea3e283a9a9a8412d7",
+    "figure_id": "fig-f99f72553e86db05",
+    "finding_id": "fnd-e61f50733fa8acf4",
+    "path": "audit/figures/fnd-e61f50733fa8acf4.png",
+    "sha256": "1163c4d6c9f093b2f5b1f8140f5ff0553b978cb1b22a55d3116859e0fbb45ce1",
     "crop": {
      "section_id": "GSM8720423",
      "x0": 3075.0,
@@ -279,7 +279,7 @@
     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 19 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 61 retained and 46 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-be3cad9b0330e517",
+   "random_thinning_control_id": "ctl-db64e596678af9a2",
    "random_thinning_control_path": "audit/controls/podocyte-lrp2-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -287,7 +287,7 @@
   {
    "slug": "podocyte-cubn",
    "title": "CUBN in podocytes (NPHS1-anchored rule)",
-   "finding_id": "fnd-bf7f49db1b84a5fe",
+   "finding_id": "fnd-b071b0dd3e2e4702",
    "finding_path": "audit/podocyte-cubn.json",
    "label": "stable",
    "label_rule_id": "nphs1-anchored-v1",
@@ -299,10 +299,10 @@
    "eligible_sections": 18,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-17f4a9d25b267825",
-    "finding_id": "fnd-bf7f49db1b84a5fe",
-    "path": "audit/figures/fnd-bf7f49db1b84a5fe.png",
-    "sha256": "e9c327e8e8b34361c7cd302ed199c374789e1574e8a534af30cb2445f38608d4",
+    "figure_id": "fig-62dcd3693350dbd8",
+    "finding_id": "fnd-b071b0dd3e2e4702",
+    "path": "audit/figures/fnd-b071b0dd3e2e4702.png",
+    "sha256": "aca9ad18d62f44f74eaabb4f3e454cfa7c436c395479c63df3b252f50e147f32",
     "crop": {
      "section_id": "GSM8720423",
      "x0": 3075.0,
@@ -314,7 +314,7 @@
     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 18 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 40 retained and 82 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-627dd51464c08010",
+   "random_thinning_control_id": "ctl-a3485f5abeebb71c",
    "random_thinning_control_path": "audit/controls/podocyte-cubn-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -322,7 +322,7 @@
   {
    "slug": "coexpression-podocyte",
    "title": "Co-expression score in Podocyte cells",
-   "finding_id": "fnd-f9decc823d1eec25",
+   "finding_id": "fnd-b54e237b653204d8",
    "finding_path": "audit/coexpression-podocyte.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -347,10 +347,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-9bfbd86da3f569b4",
-    "finding_id": "fnd-f9decc823d1eec25",
-    "path": "audit/figures/fnd-f9decc823d1eec25.png",
-    "sha256": "dc674abdf2a0115dec3d836c21dbad630e18f71a213aa7d4d47c255eba802348",
+    "figure_id": "fig-80138ca03ac6359f",
+    "finding_id": "fnd-b54e237b653204d8",
+    "path": "audit/figures/fnd-b54e237b653204d8.png",
+    "sha256": "559261a582796b22bd9498720ee8639739f57fde890e093493f15dab239e27e1",
     "crop": {
      "section_id": "GSM8720424",
      "x0": 375.0,
@@ -362,7 +362,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 81 retained and 110 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-dc45c689e8e1b42c",
+   "random_thinning_control_id": "ctl-b84c97a8b010aef5",
    "random_thinning_control_path": "audit/controls/coexpression-podocyte-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -370,7 +370,7 @@
   {
    "slug": "coexpression-pec",
    "title": "Co-expression score in PEC cells",
-   "finding_id": "fnd-6582979f985510cc",
+   "finding_id": "fnd-9e6984c0fa85b2df",
    "finding_path": "audit/coexpression-pec.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -395,10 +395,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-6b11e7aa4e96d05b",
-    "finding_id": "fnd-6582979f985510cc",
-    "path": "audit/figures/fnd-6582979f985510cc.png",
-    "sha256": "5e7306da183f65b80b58e4a9c2a091c684a8e4f7b9a45b02112867f4f8a0650c",
+    "figure_id": "fig-b3e9f75e5d45be3c",
+    "finding_id": "fnd-9e6984c0fa85b2df",
+    "path": "audit/figures/fnd-9e6984c0fa85b2df.png",
+    "sha256": "e59684f55b063a8534b67f0a7aa343dec227caa128443bcab41c864813c5a09f",
     "crop": {
      "section_id": "GSM8720424",
      "x0": 2475.0,
@@ -410,7 +410,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720424 around evidence region rank 1: 67 retained and 192 excluded (yellow) molecules of the result in PEC cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-186618374d101cc4",
+   "random_thinning_control_id": "ctl-1b99928034bd6c32",
    "random_thinning_control_path": "audit/controls/coexpression-pec-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -418,7 +418,7 @@
   {
    "slug": "coexpression-pt",
    "title": "Co-expression score in PT cells",
-   "finding_id": "fnd-51bb003581415e7f",
+   "finding_id": "fnd-fcbf1f557657e699",
    "finding_path": "audit/coexpression-pt.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -443,10 +443,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-fde209cfed4f0a3f",
-    "finding_id": "fnd-51bb003581415e7f",
-    "path": "audit/figures/fnd-51bb003581415e7f.png",
-    "sha256": "03023b0654f862728e78e05df4425e5e84562ebbfdf2443bdbe4c619e742eb89",
+    "figure_id": "fig-6b318d2266c2ed2c",
+    "finding_id": "fnd-fcbf1f557657e699",
+    "path": "audit/figures/fnd-fcbf1f557657e699.png",
+    "sha256": "d6f4383f525de1b91183c89fba94af382a02fed607deabbb62df9b9083f1053d",
     "crop": {
      "section_id": "GSM8720423",
      "x0": 1425.0,
@@ -458,7 +458,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720423 around evidence region rank 1: 369 retained and 914 excluded (yellow) molecules of the result in PT cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-bdec4d7e65644c19",
+   "random_thinning_control_id": "ctl-1d61282b318e9313",
    "random_thinning_control_path": "audit/controls/coexpression-pt-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -466,7 +466,7 @@
   {
    "slug": "coexpression-tal",
    "title": "Co-expression score in TAL cells",
-   "finding_id": "fnd-79d81c37f3c723d8",
+   "finding_id": "fnd-1645045b46c1a9fa",
    "finding_path": "audit/coexpression-tal.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -491,10 +491,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-bf2ba388e00f5241",
-    "finding_id": "fnd-79d81c37f3c723d8",
-    "path": "audit/figures/fnd-79d81c37f3c723d8.png",
-    "sha256": "13b7b2c4150eef781b7f6681c952a3d6219612e10696c1e003e961cc3a96ffa9",
+    "figure_id": "fig-6d6f34c71d4782c6",
+    "finding_id": "fnd-1645045b46c1a9fa",
+    "path": "audit/figures/fnd-1645045b46c1a9fa.png",
+    "sha256": "18e8ea65204c7689d18772cd15415f211b250a80d362bb3b09cfb11039c4916b",
     "crop": {
      "section_id": "GSM8720425",
      "x0": 1875.0,
@@ -506,7 +506,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720425 around evidence region rank 1: 227 retained and 389 excluded (yellow) molecules of the result in TAL cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-014c7462b8f10636",
+   "random_thinning_control_id": "ctl-247d27531f8095b9",
    "random_thinning_control_path": "audit/controls/coexpression-tal-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -514,7 +514,7 @@
   {
    "slug": "coexpression-dct",
    "title": "Co-expression score in DCT cells",
-   "finding_id": "fnd-e921e41e165644de",
+   "finding_id": "fnd-2b79ac7eecb7348c",
    "finding_path": "audit/coexpression-dct.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -539,10 +539,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-c8210b692e4c5a8c",
-    "finding_id": "fnd-e921e41e165644de",
-    "path": "audit/figures/fnd-e921e41e165644de.png",
-    "sha256": "24a2aa393c93713f85cd9200a93eca3b1da0ccd6d3ad96135dd3fd86819ea445",
+    "figure_id": "fig-64ac37e33283e95f",
+    "finding_id": "fnd-2b79ac7eecb7348c",
+    "path": "audit/figures/fnd-2b79ac7eecb7348c.png",
+    "sha256": "0fad45410ff615998c66b277c6653da9f5d7d10d0493fe62d7c2e49dbe2a8956",
     "crop": {
      "section_id": "GSM8720421",
      "x0": 6075.0,
@@ -554,7 +554,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 282 retained and 1081 excluded (yellow) molecules of the result in DCT cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-8937ecf375765054",
+   "random_thinning_control_id": "ctl-38bbf606962b9b07",
    "random_thinning_control_path": "audit/controls/coexpression-dct-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -562,7 +562,7 @@
   {
    "slug": "coexpression-pc",
    "title": "Co-expression score in PC cells",
-   "finding_id": "fnd-2e36de137f4e9393",
+   "finding_id": "fnd-f26612daf35e4d02",
    "finding_path": "audit/coexpression-pc.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -587,10 +587,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-a2fc851d0fa933c8",
-    "finding_id": "fnd-2e36de137f4e9393",
-    "path": "audit/figures/fnd-2e36de137f4e9393.png",
-    "sha256": "a405ef84c0f4494c0931df0ac381caf8412abd8e2972f43313cec21609c27547",
+    "figure_id": "fig-22f0622dc98171b7",
+    "finding_id": "fnd-f26612daf35e4d02",
+    "path": "audit/figures/fnd-f26612daf35e4d02.png",
+    "sha256": "4b29d3c08b34a54420ab124bd0b51794b73b8736a6ada6b2a53ddfd439665a9e",
     "crop": {
      "section_id": "GSM8720422",
      "x0": 1725.0,
@@ -602,7 +602,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720422 around evidence region rank 1: 338 retained and 567 excluded (yellow) molecules of the result in PC cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-80f6d086ca1f9ccd",
+   "random_thinning_control_id": "ctl-3f6e780c3d5933a2",
    "random_thinning_control_path": "audit/controls/coexpression-pc-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -610,7 +610,7 @@
   {
    "slug": "coexpression-ic",
    "title": "Co-expression score in IC cells",
-   "finding_id": "fnd-453b3f3a6e20bdfb",
+   "finding_id": "fnd-c8c4fd8f0a0ad74c",
    "finding_path": "audit/coexpression-ic.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -635,10 +635,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-81426acf8a9ac074",
-    "finding_id": "fnd-453b3f3a6e20bdfb",
-    "path": "audit/figures/fnd-453b3f3a6e20bdfb.png",
-    "sha256": "26978ba5d7366d9a2b73e6b626c676e53a092bc73d5bd6cedd6802c26705ef37",
+    "figure_id": "fig-cdd88e1fc27ed803",
+    "finding_id": "fnd-c8c4fd8f0a0ad74c",
+    "path": "audit/figures/fnd-c8c4fd8f0a0ad74c.png",
+    "sha256": "8349145e720dc2475e07aaa81194ae5ea0ff921d62b7ac3f74fd3deb0e61e7ea",
     "crop": {
      "section_id": "GSM8720421",
      "x0": 5025.0,
@@ -650,7 +650,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 221 retained and 536 excluded (yellow) molecules of the result in IC cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-2049e30b2e92967b",
+   "random_thinning_control_id": "ctl-ec744415cae200e9",
    "random_thinning_control_path": "audit/controls/coexpression-ic-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -658,7 +658,7 @@
   {
    "slug": "coexpression-endothelial",
    "title": "Co-expression score in Endothelial cells",
-   "finding_id": "fnd-a4d6eed53118c398",
+   "finding_id": "fnd-8bcb24712ec08cc2",
    "finding_path": "audit/coexpression-endothelial.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -683,10 +683,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-20164160780da9ed",
-    "finding_id": "fnd-a4d6eed53118c398",
-    "path": "audit/figures/fnd-a4d6eed53118c398.png",
-    "sha256": "d66f2755d7bddbb402a3bca4de3166c515a58f0b08b4b3e69492970d22c69eea",
+    "figure_id": "fig-79a23298cfa5ef95",
+    "finding_id": "fnd-8bcb24712ec08cc2",
+    "path": "audit/figures/fnd-8bcb24712ec08cc2.png",
+    "sha256": "2adcdef0c7c628a7f8296d8a6e3d348638eca42c057e44838ec30caa0784a34c",
     "crop": {
      "section_id": "GSM8720425",
      "x0": 2175.0,
@@ -698,7 +698,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720425 around evidence region rank 1: 160 retained and 220 excluded (yellow) molecules of the result in Endothelial cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-5e36ce5ec06e62df",
+   "random_thinning_control_id": "ctl-399eb332d806afb3",
    "random_thinning_control_path": "audit/controls/coexpression-endothelial-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -706,7 +706,7 @@
   {
    "slug": "coexpression-mesangial-pericyte",
    "title": "Co-expression score in Mesangial/Pericyte cells",
-   "finding_id": "fnd-7ed3d1d16767fe06",
+   "finding_id": "fnd-f0b0880502a12847",
    "finding_path": "audit/coexpression-mesangial-pericyte.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -731,10 +731,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-7d570762d857dd8c",
-    "finding_id": "fnd-7ed3d1d16767fe06",
-    "path": "audit/figures/fnd-7ed3d1d16767fe06.png",
-    "sha256": "0a9bc79646d19b3cf36199eb19928de62fba61605632afec11d51df5972a765a",
+    "figure_id": "fig-0fe69927b9b2c3d2",
+    "finding_id": "fnd-f0b0880502a12847",
+    "path": "audit/figures/fnd-f0b0880502a12847.png",
+    "sha256": "d9f40060832c935547242aea028980af23af93f3a802585c926d9fbd4b8a34d6",
     "crop": {
      "section_id": "GSM8720421",
      "x0": 6075.0,
@@ -746,7 +746,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720421 around evidence region rank 1: 122 retained and 181 excluded (yellow) molecules of the result in Mesangial/Pericyte cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-77c121df1c1eab8c",
+   "random_thinning_control_id": "ctl-febd6306731cef72",
    "random_thinning_control_path": "audit/controls/coexpression-mesangial-pericyte-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -754,7 +754,7 @@
   {
    "slug": "coexpression-fibroblast",
    "title": "Co-expression score in Fibroblast cells",
-   "finding_id": "fnd-bfbc217c9b870e1d",
+   "finding_id": "fnd-c23955f9cdc2f1c6",
    "finding_path": "audit/coexpression-fibroblast.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -779,10 +779,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-8b1b0555647dbf89",
-    "finding_id": "fnd-bfbc217c9b870e1d",
-    "path": "audit/figures/fnd-bfbc217c9b870e1d.png",
-    "sha256": "c5e09ed0d95f0c88d73a4b32eae52aea644741b4bf923cce0d26bc0988bab497",
+    "figure_id": "fig-2f0befd4ecd30a55",
+    "finding_id": "fnd-c23955f9cdc2f1c6",
+    "path": "audit/figures/fnd-c23955f9cdc2f1c6.png",
+    "sha256": "87eebe8341fc92833d5ab638c69d3589a9b023a1369a560db9e0993aa309d7a0",
     "crop": {
      "section_id": "GSM8720430",
      "x0": 1275.0,
@@ -794,7 +794,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720430 around evidence region rank 1: 159 retained and 178 excluded (yellow) molecules of the result in Fibroblast cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-c6756b4c332177b8",
+   "random_thinning_control_id": "ctl-159355b3cc6b4110",
    "random_thinning_control_path": "audit/controls/coexpression-fibroblast-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -802,7 +802,7 @@
   {
    "slug": "coexpression-t-cell",
    "title": "Co-expression score in T cell cells",
-   "finding_id": "fnd-e425521ebcbf7063",
+   "finding_id": "fnd-e66d4dffa14bd2aa",
    "finding_path": "audit/coexpression-t-cell.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -827,10 +827,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-3f2a77ffe8c96040",
-    "finding_id": "fnd-e425521ebcbf7063",
-    "path": "audit/figures/fnd-e425521ebcbf7063.png",
-    "sha256": "df9242da6a8a6b62ffa85be3a1660520e75daff9d0442a746bc76f5c2034ea79",
+    "figure_id": "fig-b5cc7be7aa3ef714",
+    "finding_id": "fnd-e66d4dffa14bd2aa",
+    "path": "audit/figures/fnd-e66d4dffa14bd2aa.png",
+    "sha256": "51ea3578d0075ab2b0bd0d740f9723734d6a5e7ca44f326277f68648d61aae00",
     "crop": {
      "section_id": "GSM8720420",
      "x0": 2025.0,
@@ -842,7 +842,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 199 retained and 141 excluded (yellow) molecules of the result in T cell cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-5a298b61c0144820",
+   "random_thinning_control_id": "ctl-bfaf564849f222de",
    "random_thinning_control_path": "audit/controls/coexpression-t-cell-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -850,7 +850,7 @@
   {
    "slug": "coexpression-b-cell",
    "title": "Co-expression score in B cell cells",
-   "finding_id": "fnd-781c20cd95d1910f",
+   "finding_id": "fnd-59e7a2c8af1b77b8",
    "finding_path": "audit/coexpression-b-cell.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -875,10 +875,10 @@
    "eligible_sections": 20,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-be485092bb1de1cf",
-    "finding_id": "fnd-781c20cd95d1910f",
-    "path": "audit/figures/fnd-781c20cd95d1910f.png",
-    "sha256": "0e372c658fb4bf78ee0ec096e0924d5dcff2e4d993b6d3cd9388ee56c04e5f6e",
+    "figure_id": "fig-991a7a4b5a3552ad",
+    "finding_id": "fnd-59e7a2c8af1b77b8",
+    "path": "audit/figures/fnd-59e7a2c8af1b77b8.png",
+    "sha256": "15961d96f654ec9f599a490312b72ff97bf3d54ae94ef308658090c7bc372d21",
     "crop": {
      "section_id": "GSM8720420",
      "x0": 2025.0,
@@ -890,7 +890,7 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 20 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 255 retained and 167 excluded (yellow) molecules of the result in B cell cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-299951abb88533e1",
+   "random_thinning_control_id": "ctl-c029cc8f5826fc4c",
    "random_thinning_control_path": "audit/controls/coexpression-b-cell-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
@@ -898,7 +898,7 @@
   {
    "slug": "coexpression-myeloid",
    "title": "Co-expression score in Myeloid cells",
-   "finding_id": "fnd-6cdd664781e14004",
+   "finding_id": "fnd-da81c00af4b6bfa6",
    "finding_path": "audit/coexpression-myeloid.json",
    "label": "stable",
    "label_rule_id": "full-panel-v1",
@@ -923,10 +923,10 @@
    "eligible_sections": 21,
    "figure": {
     "schema_version": "1.0",
-    "figure_id": "fig-b43abb257c122647",
-    "finding_id": "fnd-6cdd664781e14004",
-    "path": "audit/figures/fnd-6cdd664781e14004.png",
-    "sha256": "74ae6b3956348f40a264e411d38f4ef9ef6e54a809c0f15b67139fc7a3e7e50e",
+    "figure_id": "fig-6d551886ac68a295",
+    "finding_id": "fnd-da81c00af4b6bfa6",
+    "path": "audit/figures/fnd-da81c00af4b6bfa6.png",
+    "sha256": "dea1c0ad0153bd9482ee6aa197db46a74ebf326f1fe6622b91ddd4c33a99a8fb",
     "crop": {
      "section_id": "GSM8720420",
      "x0": 1275.0,
@@ -938,10 +938,11 @@
     "panel_a": "Per-section observed co-expression score across default, nucleus-only, cap 1 \u00b5m, cap 2 \u00b5m for 21 eligible of 21 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
     "panel_b": "300 x 300 \u00b5m crop of GSM8720420 around evidence region rank 1: 303 retained and 533 excluded (yellow) molecules of the result in Myeloid cells under nucleus_only."
    },
-   "random_thinning_control_id": "ctl-460fc0c3cb4f9c81",
+   "random_thinning_control_id": "ctl-c0771c6f91b2372b",
    "random_thinning_control_path": "audit/controls/coexpression-myeloid-random-thinning.json",
    "label_sensitivity_control_id": null,
    "label_sensitivity_control_path": null
   }
- ]
+ ],
+ "section_disclosure": "22 sections from 19 donors (published counts; GEO does not map sections to donors), 21 distinct (GSM8720419 duplicates GSM8720418). Sections are not independent donors."
 }

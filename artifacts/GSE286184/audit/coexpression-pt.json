@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "finding_kind": "audit",
- "finding_id": "fnd-51bb003581415e7f",
+ "finding_id": "fnd-fcbf1f557657e699",
  "dataset_id": "GSE286184",
  "population": {
   "label_rule_id": "full-panel-v1",
@@ -1708,7 +1708,142 @@
   "GSM8720429",
   "GSM8720430"
  ],
- "exploratory_sections": [],
+ "exploratory_sections": [
+  {
+   "section_id": "GSM8720409",
+   "cells_labelled": 3559,
+   "conditions": [
+    {
+     "condition": "structure_constrained",
+     "molecules": 5203,
+     "retention": 0.9996157540826128,
+     "observed_value": 0.030619206086517758,
+     "nuclear_overlap_share": 0.40918700749567555,
+     "cells_with_retained_molecule": 3559,
+     "expectation_cell_matched": 0.03062499752610216,
+     "expectation_home_matched": 0.030737226003888746,
+     "excess_drop_cell_matched": 5.7914395844016475e-06,
+     "excess_drop_home_matched": 0.00011801991737098866,
+     "neighbour_proximity_share_excluded": 0.0,
+     "neighbour_proximity_share_retained": 0.05054776090716894,
+     "missing_reasons": {},
+     "cells_expressing": null,
+     "pairs_scored": 40
+    }
+   ],
+   "group": "Control",
+   "eligible": true,
+   "ineligible_reason": null
+  },
+  {
+   "section_id": "GSM8720410",
+   "cells_labelled": 3115,
+   "conditions": [
+    {
+     "condition": "structure_constrained",
+     "molecules": 3495,
+     "retention": 0.9980011422044546,
+     "observed_value": 0.03975178171825444,
+     "nuclear_overlap_share": 0.5622317596566524,
+     "cells_with_retained_molecule": 3115,
+     "expectation_cell_matched": 0.03965433251247802,
+     "expectation_home_matched": 0.03986117437401056,
+     "excess_drop_cell_matched": -9.744920577642313e-05,
+     "excess_drop_home_matched": 0.0001093926557561159,
+     "neighbour_proximity_share_excluded": 0.0,
+     "neighbour_proximity_share_retained": 0.0351931330472103,
+     "missing_reasons": {},
+     "cells_expressing": null,
+     "pairs_scored": 40
+    }
+   ],
+   "group": "Control",
+   "eligible": true,
+   "ineligible_reason": null
+  },
+  {
+   "section_id": "GSM8720411",
+   "cells_labelled": 2957,
+   "conditions": [
+    {
+     "condition": "structure_constrained",
+     "molecules": 2649,
+     "retention": 1.0,
+     "observed_value": 0.019530087313085316,
+     "nuclear_overlap_share": 0.47565118912797283,
+     "cells_with_retained_molecule": 2957,
+     "expectation_cell_matched": 0.019530087313085316,
+     "expectation_home_matched": 0.019519970450344096,
+     "excess_drop_cell_matched": 0.0,
+     "excess_drop_home_matched": -1.0116862741219729e-05,
+     "neighbour_proximity_share_excluded": null,
+     "neighbour_proximity_share_retained": 0.035107587768969425,
+     "missing_reasons": {
+      "neighbour_proximity_share_excluded": "no molecules of the result are excluded under this condition"
+     },
+     "cells_expressing": null,
+     "pairs_scored": 40
+    }
+   ],
+   "group": "DKD",
+   "eligible": true,
+   "ineligible_reason": null
+  },
+  {
+   "section_id": "GSM8720412",
+   "cells_labelled": 1819,
+   "conditions": [
+    {
+     "condition": "structure_constrained",
+     "molecules": 1493,
+     "retention": 0.9979946524064172,
+     "observed_value": 0.03361362640208462,
+     "nuclear_overlap_share": 0.6784996651038178,
+     "cells_with_retained_molecule": 1819,
+     "expectation_cell_matched": 0.033664629014298876,
+     "expectation_home_matched": 0.033669042148038994,
+     "excess_drop_cell_matched": 5.1002612214252896e-05,
+     "excess_drop_home_matched": 5.541574595437082e-05,
+     "neighbour_proximity_share_excluded": 0.0,
+     "neighbour_proximity_share_retained": 0.012726054922973878,
+     "missing_reasons": {},
+     "cells_expressing": null,
+     "pairs_scored": 40
+    }
+   ],
+   "group": "DKD",
+   "eligible": true,
+   "ineligible_reason": null
+  },
+  {
+   "section_id": "GSM8720413",
+   "cells_labelled": 2195,
+   "conditions": [
+    {
+     "condition": "structure_constrained",
+     "molecules": 1774,
+     "retention": 1.0,
+     "observed_value": 0.03319959240530948,
+     "nuclear_overlap_share": 0.4633596392333709,
+     "cells_with_retained_molecule": 2195,
+     "expectation_cell_matched": 0.03319959240530948,
+     "expectation_home_matched": 0.03318442147516169,
+     "excess_drop_cell_matched": 0.0,
+     "excess_drop_home_matched": -1.5170930147787032e-05,
+     "neighbour_proximity_share_excluded": null,
+     "neighbour_proximity_share_retained": 0.023111612175873732,
+     "missing_reasons": {
+      "neighbour_proximity_share_excluded": "no molecules of the result are excluded under this condition"
+     },
+     "cells_expressing": null,
+     "pairs_scored": 40
+    }
+   ],
+   "group": "DKD",
+   "eligible": true,
+   "ineligible_reason": null
+  }
+ ],
  "evidence_regions": [
   {
    "rank": 1,

@@ -1,8 +1,8 @@
 {
  "schema_version": "1.0",
  "control_kind": "random_thinning",
- "control_id": "ctl-9bb7c29534ecd6c5",
- "finding_id": "fnd-f857d842c980f51e",
+ "control_id": "ctl-47e0dc9d4930ae9a",
+ "finding_id": "fnd-cbda44f7cec0b272",
  "dataset_id": "GSE286184",
  "label_rule_id": "nphs1-anchored-v1",
  "cell_type": "Podocyte",
