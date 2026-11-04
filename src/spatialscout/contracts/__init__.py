@@ -115,6 +115,7 @@ from .model_call import (
 )
 from .package import PackageInfo, PackageManifest
 from .plan import Budget, Plan, PlanProposal, PlanStep, ProposedStep, ToolSpec
+from .protein import ProteinAuditResult, ProteinConditionRow, ProteinThreshold
 from .region import (
     CellColumns,
     MoleculeColumns,

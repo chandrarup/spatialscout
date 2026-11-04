@@ -7,11 +7,18 @@ import math
 import numpy as np
 import pytest
 
+import pandas as pd
+
+from spatialscout.contracts import ProteinThreshold, Region
 from spatialscout.engine.protein import (
     MEASUREMENT_CONDITIONS,
+    adjacent_pairs,
     cell_means,
     channel_index_by_marker,
     measure_cells,
+    otsu_threshold,
+    protein_audit,
+    random_pixel_loss_probability,
 )
 
 PX = 0.5  # µm per pixel in these hand-built images
@@ -87,3 +94,96 @@ def test_channels_are_found_by_marker_name_not_position():
     key_0159 = "﻿Channel,Marker\n1,DAPI\n32,CD31\n45,UMOD\n"
     assert channel_index_by_marker(key_0118) == {"DAPI": 0, "CD31": 28, "UMOD": 41}
     assert channel_index_by_marker(key_0159) == {"DAPI": 0, "CD31": 31, "UMOD": 44}
+
+
+def test_otsu_threshold_splits_two_groups_of_cell_means():
+    """Means of 10 and 200, fifty each: every split between them separates the groups equally well, and the rule
+    takes the first, so the threshold is 11 (the class at or above it holds the 200s)."""
+    values = np.array([10.0] * 50 + [200.0] * 50)
+    assert otsu_threshold(values) == 11.0
+
+
+def test_cells_separated_by_a_one_pixel_gap_border_each_other():
+    """Cells 1 and 2 are one background pixel apart, so they border (reach 2 px); cell 3 is four pixels from cell 2."""
+    labels = np.zeros((3, 12), dtype=np.int32)
+    labels[:, 0:3] = 1
+    labels[:, 4:6] = 2
+    labels[:, 10:12] = 3
+    assert adjacent_pairs(labels).tolist() == [[1, 2]]
+
+
+def single_channel_table(n: int, kept: int, total: float, total_sq: float, kept_sum: float) -> pd.DataFrame:
+    row = {"cell_id": 1, "x_um": 0.0, "y_um": 0.0, "pixels__whole_cell": n, "pixels__eroded_1px": kept,
+           "M__whole_cell__sum": total, "M__whole_cell__sumsq": total_sq, "M__eroded_1px__sum": kept_sum}
+    return pd.DataFrame([row])
+
+
+def test_random_pixel_loss_probability_in_closed_form():
+    """A 4-pixel cell with values 0, 0, 10, 10: mean 5 and population variance 25. Keeping 2 random pixels, the kept
+    mean has variance 25 / 2 x (4 - 2) / (4 - 1) = 8.33 around 5, so it reaches a threshold of 5 with probability
+    0.5 and a threshold of 5 + sqrt(8.33) with probability 1 - Phi(1) = 0.1587. Keeping no pixel gives 0."""
+    table = single_channel_table(4, 2, 20.0, 200.0, 10.0)
+    assert random_pixel_loss_probability(table, "M", "eroded_1px", 5.0)[0] == pytest.approx(0.5)
+    assert random_pixel_loss_probability(table, "M", "eroded_1px", 5.0 + math.sqrt(25 / 3))[0] == pytest.approx(0.158655, abs=1e-5)
+    assert random_pixel_loss_probability(table, "M", "whole_cell", 5.0)[0] == 1.0
+    assert random_pixel_loss_probability(single_channel_table(4, 0, 20.0, 200.0, 0.0), "M", "eroded_1px", 5.0)[0] == 0.0
+
+
+def audit_table() -> tuple[pd.DataFrame, np.ndarray]:
+    """25 population cells (P = 200) and 5 home cells (P = 0, M = 100), every cell 10 px of uniform intensity.
+
+    - Cells 1-10 (x = 1..10 µm): M = 100 as whole cells, but their 5 eroded pixels hold no M. Each borders a home cell.
+    - Cells 11-20 (x = 101..110 µm): M = 100 everywhere, 5 eroded pixels kept. They border nothing.
+    - Cells 21-25 (x = 201..205 µm): no M.
+    Eroded 2 px and nucleus region keep every pixel, so nothing changes under them.
+    """
+    rows = []
+    for cell in range(1, 31):
+        population = cell <= 25
+        m_whole = 100.0 if cell <= 20 or cell > 25 else 0.0
+        m_eroded = 0.0 if cell <= 10 else m_whole
+        x = {0: 1.0, 1: 101.0, 2: 201.0}[(cell - 1) // 10] + (cell - 1) % 10 if population else 500.0 + cell
+        row = {"cell_id": cell, "x_um": x, "y_um": 5.0, "pixels__whole_cell": 10, "pixels__eroded_1px": 5,
+               "pixels__eroded_2px": 10, "pixels__nucleus_region": 10}
+        for channel, whole, eroded in (("P", 200.0 if population else 0.0, 200.0 if population else 0.0), ("M", m_whole, m_eroded)):
+            for condition, pixels, value in (("whole_cell", 10, whole), ("eroded_1px", 5, eroded), ("eroded_2px", 10, whole), ("nucleus_region", 10, whole)):
+                row[f"{channel}__{condition}__sum"] = value * pixels
+                row[f"{channel}__{condition}__sumsq"] = value * value * pixels
+        rows.append(row)
+    pairs = np.array([[cell, 26 + (cell - 1) % 5] for cell in range(1, 11)])
+    return pd.DataFrame(rows), pairs
+
+
+THRESHOLDS = [ProteinThreshold(marker=m, value=50.0, rule="test", source_participant_id="ref") for m in ("P", "M")]
+
+
+def test_protein_audit_reports_observed_expected_retention_and_bordering_shares():
+    """Eroded 1 px: 10 of 25 population cells stay M+ (0.4). Every whole-cell M+ cell has zero variance and keeps
+    pixels, so the random-pixel-loss expectation is 20 / 25 = 0.8. Retention 125 / 250 = 0.5. The 10 excluded cells
+    all border a home cell, the 10 retained cells none. 0.4 < 0.8 x 2^-0.5, so the result is segmentation-sensitive."""
+    table, pairs = audit_table()
+    result = protein_audit(table, pairs, participant_id="p1", role="diseased", population_marker="P", marker="M",
+                           thresholds=THRESHOLDS, cell_table_checksum="abc")
+    rows = {r.condition: r for r in result.conditions}
+    assert result.population_cells == 25 and result.home_cells == 5
+    assert rows["whole_cell"].observed_share == pytest.approx(0.8) and rows["whole_cell"].expected_share == pytest.approx(0.8)
+    eroded = rows["eroded_1px"]
+    assert (eroded.positive_cells, eroded.observed_share, eroded.expected_share) == (10, pytest.approx(0.4), pytest.approx(0.8))
+    assert eroded.pixel_retention == pytest.approx(0.5)
+    assert (eroded.excluded_cells, eroded.retained_cells) == (10, 10)
+    assert (eroded.bordering_home_share_excluded, eroded.bordering_home_share_retained) == (1.0, 0.0)
+    assert rows["nucleus_region"].excluded_cells == 0 and rows["nucleus_region"].bordering_home_share_excluded is None
+    assert result.label.value == "segmentation_sensitive"
+    assert result.population == "P+ cells" and result.home == "M+ cells that are not P+"
+
+
+def test_a_region_with_too_few_population_cells_is_insufficient_evidence():
+    """A box around cells 11-20 holds 10 population cells, under the 20-cell population gate."""
+    table, pairs = audit_table()
+    box = Region(section_id="p1", x0=100.0, y0=0.0, x1=120.0, y1=10.0)
+    result = protein_audit(table, pairs, participant_id="p1", role="diseased", population_marker="P", marker="M",
+                           thresholds=THRESHOLDS, cell_table_checksum="abc", roi=box)
+    assert result.population_cells == 10
+    assert result.label.value == "insufficient_evidence"
+    assert "20" in result.label_reason
+    assert result.roi == box
