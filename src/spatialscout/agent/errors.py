@@ -13,6 +13,20 @@ class PlanInvalid(InvestigationError):
     code = "plan_invalid"
 
 
+class DatasetUnavailable(InvestigationError):
+    code = "dataset_unavailable"
+
+
+class PlanUnsupported(InvestigationError):
+    """The planner's proposal failed the registry and capability checks twice; the investigation reports the limitation."""
+
+    code = "plan_unsupported"
+
+
+class ToolCallInvalid(ValueError):
+    """A tool call the registry, its arguments contract or the dataset cannot back."""
+
+
 class UnknownInvestigation(KeyError):
     """No investigation with this id exists in the investigations directory."""
 

@@ -52,7 +52,8 @@ def test_a_question_without_stored_responses_fails_instead_of_calling_a_model(cl
 
 # Every model call is streamed as a model_call telemetry event just before the event that uses its response.
 FULL_SEQUENCE = [
-    "model_call", "plan_proposed", "plan_approved", "tool_started", "tool_finished", "model_call", "claim_drafted", "package_ready",
+    "model_call", "plan_proposed", "plan_approved", "tool_started", "tool_finished", "model_call", "agent_decision", "model_call",
+    "claim_drafted", "package_ready",
 ]
 
 
@@ -69,7 +70,7 @@ def test_an_approved_plan_streams_through_to_an_evidence_package(client):
     events = read_events(client, investigation_id)
 
     assert [event["type"] for event in events] == FULL_SEQUENCE
-    assert [event["seq"] for event in events] == [1, 2, 3, 4, 5, 6, 7, 8]
+    assert [event["seq"] for event in events] == list(range(1, 11))
     assert client.get(f"/api/investigations/{investigation_id}").json()["status"] == "complete"
 
 
@@ -120,7 +121,7 @@ def test_reconnecting_mid_execution_with_after_seq_delivers_exactly_the_missing_
     before_drop = read_events(client, investigation_id, until={"tool_started"})
     after_reconnect = read_events(client, investigation_id, after_seq=before_drop[-1]["seq"])
 
-    assert [event["seq"] for event in before_drop + after_reconnect] == [1, 2, 3, 4, 5, 6, 7, 8]
+    assert [event["seq"] for event in before_drop + after_reconnect] == list(range(1, 11))
     assert [event["type"] for event in before_drop + after_reconnect] == FULL_SEQUENCE
 
 

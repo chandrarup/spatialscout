@@ -15,6 +15,7 @@ from ..contracts import (
     Claim,
     DatasetManifest,
     FileChecksum,
+    OpenQuestion,
     PackageManifest,
     Plan,
     ReplayInfo,
@@ -38,6 +39,7 @@ def build_package(
     claims: list[Claim],
     audit_log_text: str,
     created_at: datetime,
+    open_questions: list[OpenQuestion] | None = None,
 ) -> PackageManifest:
     """Write the package zip to `path` and return its manifest."""
     contents = {
@@ -60,6 +62,7 @@ def build_package(
         review_state="work_in_progress" if unreviewed or not claims else "reviewed",
         claims=len(claims),
         notes=_notes(replay, claims, dataset),
+        open_questions=open_questions or [],
     )
     contents[MANIFEST_FILE] = manifest.model_dump_json(indent=2).encode("utf-8")
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:

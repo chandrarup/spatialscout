@@ -26,7 +26,8 @@ def test_a_changed_tool_version_misses_the_stored_plan(tmp_path, monkeypatch):
 
 def test_a_changed_artifact_misses_the_stored_claim_draft(tmp_path):
     """Move one LRP2 molecule of a podocyte onto its nucleus: the audit result's checksum changes, so the
-    plan (built from the unchanged capability report) still replays but the claim draft does not."""
+    plan (built from the unchanged capability report) still replays but the agent's follow-up, which reads the
+    changed observation, does not."""
     fixtures = tmp_path / "fixtures"
     shutil.copytree(REPO / "fixtures", fixtures)
     molecules = fixtures / "synthetic" / "SYN-01" / "molecules.csv"
@@ -45,5 +46,5 @@ def test_a_changed_artifact_misses_the_stored_claim_draft(tmp_path):
         events = read_events(client, investigation_id)
 
     calls = [(e["call"]["purpose"], e["call"]["error_code"]) for e in events if e["type"] == "model_call"]
-    assert calls == [("plan", None), ("claim_draft", "replay_miss")]
+    assert calls == [("plan", None), ("follow_up", "replay_miss")]
     assert (events[-1]["type"], events[-1]["code"]) == ("error", "replay_miss")

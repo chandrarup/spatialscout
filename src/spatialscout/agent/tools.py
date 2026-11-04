@@ -3,6 +3,11 @@
 Add a tool by defining its arguments contract, a run function over a `ToolContext`, and a one-line summary,
 then register it. A tool's `version` is part of every cache key built from its outputs, so bump it whenever
 its behaviour changes.
+
+Each tool names the capability-report entry it needs. A plan may use only plannable tools; the controls are
+follow-up only, chosen by the agent after it reads an observation, never scheduled in advance or run on its behalf.
+Before any tool runs, its arguments are validated against its contract and against the dataset (sections, genes,
+label rules), whether a plan step or a follow-up names it.
 """
 
 from collections.abc import Callable, Sequence
@@ -13,8 +18,10 @@ from pydantic import Field, ValidationError, field_validator, model_validator
 
 from ..contracts import (
     AuditResult,
+    CapabilityReport,
     ConditionName,
     Contract,
+    DatasetManifest,
     LabelSensitivityCheck,
     Plan,
     PlanProposal,
@@ -28,7 +35,7 @@ from ..contracts import (
 from ..contracts.plan import Budget
 from ..data import FULL_PANEL_RULE, NPHS1_ANCHORED_RULE, DatasetStore
 from ..engine import IMPLEMENTED_CONDITIONS, audit_population, label_sensitivity_check, random_thinning_control
-from .errors import PlanInvalid
+from .errors import PlanInvalid, ToolCallInvalid
 
 
 @dataclass(frozen=True)
@@ -44,6 +51,9 @@ class Tool:
     arguments: type[Contract]
     run: Callable[[Any, ToolContext], Contract]
     summarize: Callable[[Any], str]
+    capability: str = "assignment_audit"
+    plannable: bool = True
+    computes_contrast: bool = False
 
     def spec(self) -> ToolSpec:
         return ToolSpec(name=self.name, version=self.version, description=self.description, arguments_schema=self.arguments.model_json_schema())
@@ -193,6 +203,7 @@ RUN_RANDOM_THINNING_CONTROL = Tool(
     arguments=AuditPopulationArguments,
     run=_run_random_thinning_control,
     summarize=_summarize_control,
+    plannable=False,
 )
 
 
@@ -236,33 +247,95 @@ RUN_LABEL_SENSITIVITY_CHECK = Tool(
     arguments=LabelSensitivityArguments,
     run=_run_label_sensitivity_check,
     summarize=_summarize_label_check,
+    plannable=False,
 )
+
+
+def dataset_problems(arguments: Contract, dataset: DatasetManifest) -> list[str]:
+    """What in validated arguments the dataset cannot back: unknown sections, genes outside the panel, unknown label
+    rules, or an ROI on a section the call does not name."""
+    problems = []
+    known = {s.section_id for s in dataset.sections}
+    for section_id in getattr(arguments, "section_ids", None) or []:
+        if section_id not in known:
+            problems.append(f"{dataset.dataset_id} has no section {section_id!r}")
+    for gene in getattr(arguments, "genes", None) or []:
+        if gene not in dataset.panel:
+            problems.append(f"{gene!r} is not in the {dataset.dataset_id} panel")
+    rules = [r for r in [getattr(arguments, "label_rule_id", None), *(getattr(arguments, "label_rule_ids", None) or [])] if r]
+    for rule in rules:
+        if rule not in dataset.label_rule_ids:
+            problems.append(f"{dataset.dataset_id} has no label rule {rule!r} (it has {', '.join(dataset.label_rule_ids)})")
+    if len(set(getattr(arguments, "label_rule_ids", None) or [])) == 1:
+        problems.append("the label-sensitivity check needs two different label rules")
+    roi = getattr(arguments, "roi", None)
+    if roi is not None and roi.section_id not in known:
+        problems.append(f"the ROI is on {roi.section_id!r}, which {dataset.dataset_id} does not have")
+    return problems
 
 
 class ToolRegistry:
     def __init__(self, tools: Sequence[Tool]) -> None:
         self._tools = {tool.name: tool for tool in tools}
 
-    def specs(self) -> list[ToolSpec]:
-        return [tool.spec() for tool in self._tools.values()]
+    def specs(self, plannable_only: bool = False) -> list[ToolSpec]:
+        return [tool.spec() for tool in self._tools.values() if tool.plannable or not plannable_only]
 
     def get(self, name: str) -> Tool:
         if name not in self._tools:
             raise PlanInvalid(f"the plan names a tool that is not in the registry: {name!r}")
         return self._tools[name]
 
-    def plan_from(self, proposal: PlanProposal, *, investigation_id: str, question: str, dataset_id: str, proposed_by: str) -> Plan:
-        """Check every proposed step against the registry and turn the proposal into a plan to approve."""
+    def validate_call(self, name: str, arguments: dict[str, Any], report: CapabilityReport, dataset: DatasetManifest) -> tuple[Tool, Contract]:
+        """The tool and its validated arguments, or ToolCallInvalid with every reason it cannot run on this dataset."""
+        if name not in self._tools:
+            raise ToolCallInvalid(f"{name!r} is not a tool in the registry ({', '.join(self._tools)})")
+        tool = self._tools[name]
+        if not report.supports(tool.capability):
+            raise ToolCallInvalid(f"{name} needs {tool.capability}, which the capability report does not mark as supported")
+        try:
+            validated = tool.arguments.model_validate(arguments)
+        except ValidationError as error:
+            first = error.errors()[0]
+            where = ".".join(str(p) for p in first["loc"]) or "arguments"
+            raise ToolCallInvalid(f"{name} has invalid arguments: {where}: {first['msg']}") from error
+        problems = dataset_problems(validated, dataset)
+        if problems:
+            raise ToolCallInvalid(f"{name}: " + "; ".join(problems))
+        return tool, validated
+
+    def plan_from(
+        self,
+        proposal: PlanProposal,
+        *,
+        investigation_id: str,
+        question: str,
+        dataset_id: str,
+        proposed_by: str,
+        report: CapabilityReport,
+        dataset: DatasetManifest,
+    ) -> Plan:
+        """Check every proposed step against the registry, the capability report and the dataset, and turn the
+        proposal into a plan to approve. Raises PlanInvalid with the first reason it cannot be approved."""
+        budget = Budget()
+        if not proposal.steps:
+            raise PlanInvalid("the plan has no steps")
+        if len(proposal.steps) > budget.max_tool_calls:
+            raise PlanInvalid(f"the plan has {len(proposal.steps)} steps, more than its {budget.max_tool_calls}-call budget")
         steps = []
         for index, step in enumerate(proposal.steps, start=1):
-            tool = self.get(step.tool)
+            tool = self._tools.get(step.tool)
+            if tool is None:
+                raise PlanInvalid(f"step {index} names {step.tool!r}, which is not a tool in the registry")
+            if not tool.plannable:
+                raise PlanInvalid(f"step {index} names {step.tool!r}, a control the agent chooses after reading an observation, not a plan step")
             try:
-                tool.arguments.model_validate(step.arguments)
-            except ValidationError as error:
-                raise PlanInvalid(f"step {index} ({step.tool}) has invalid arguments: {error.errors()[0]['msg']}") from error
+                self.validate_call(step.tool, step.arguments, report, dataset)
+            except ToolCallInvalid as error:
+                raise PlanInvalid(f"step {index}: {error}") from error
             steps.append(PlanStep(step_id=f"step-{index}", tool=step.tool, arguments=step.arguments, rationale=step.rationale))
-        if not steps:
-            raise PlanInvalid("the plan has no steps")
+        if proposal.contrast is not None and not any(self._tools[s.tool].computes_contrast for s in steps):
+            raise PlanInvalid("the plan names a contrast, but none of its steps computes one")
         return Plan(
             plan_id=new_id("pln"),
             investigation_id=investigation_id,
@@ -273,7 +346,7 @@ class ToolRegistry:
             cell_types=proposal.cell_types,
             conditions=proposal.conditions,
             steps=steps,
-            budget=Budget(),
+            budget=budget,
             proposed_by=proposed_by,
         )
 

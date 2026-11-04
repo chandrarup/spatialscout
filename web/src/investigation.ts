@@ -53,8 +53,16 @@ export function applyEvent(view: InvestigationView, event: InvestigationEvent): 
         status: "running",
         plan: next.plan && { ...next.plan, status: "approved", plan_hash: event.plan_hash, approved_at_utc: event.recorded_at_utc },
       };
+    case "plan_rejected":
+      return event.by === "researcher"
+        ? { ...next, status: "rejected", plan: next.plan && { ...next.plan, status: "rejected" } }
+        : next;
     case "tool_started":
     case "tool_finished":
+    case "tool_failed":
+    case "agent_decision":
+    case "budget_exhausted":
+    case "claim_rejected":
     case "model_call":
       return next;
     case "claim_drafted":
