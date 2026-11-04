@@ -1564,6 +1564,41 @@
       "title": "ClaimVerifiedEvent",
       "type": "object"
     },
+    "CoMention": {
+      "additionalProperties": false,
+      "description": "A deterministic count over the fetched records: how many mention every term group in title or abstract.",
+      "properties": {
+        "term_groups": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "records_searched": {
+          "type": "integer"
+        },
+        "records_mentioning_all": {
+          "type": "integer"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "term_groups",
+        "records_searched",
+        "records_mentioning_all",
+        "record_ids"
+      ],
+      "title": "CoMention",
+      "type": "object"
+    },
     "CompositeFigure": {
       "additionalProperties": false,
       "description": "An audit result's two-panel figure: A, per-section observed values against both expectations across\nconditions; B, a 300 x 300 \u00b5m crop around its top-ranked evidence region.",
@@ -2425,6 +2460,28 @@
         "citation"
       ],
       "title": "DatasetManifest",
+      "type": "object"
+    },
+    "DispatchProposal": {
+      "additionalProperties": false,
+      "description": "The dispatcher's answer: the sub-agents to start, at most eight.",
+      "properties": {
+        "summary": {
+          "description": "One sentence on what the lab will do and why.",
+          "type": "string"
+        },
+        "tasks": {
+          "items": {
+            "$ref": "#/definitions/LabTaskProposal"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "summary",
+        "tasks"
+      ],
+      "title": "DispatchProposal",
       "type": "object"
     },
     "ErrorEvent": {
@@ -3557,6 +3614,283 @@
       "title": "KpmpTile",
       "type": "object"
     },
+    "LabEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "type": "integer"
+        },
+        "at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "lab_started",
+            "dispatched",
+            "task_rejected",
+            "subagent_started",
+            "model_call",
+            "subagent_finished",
+            "subagent_failed",
+            "lab_finished"
+          ],
+          "type": "string"
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "agent": {
+          "anyOf": [
+            {
+              "enum": [
+                "literature",
+                "protein_crosscheck",
+                "publication_figure"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "type": "string"
+        },
+        "call": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ModelCallRecord"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "seq",
+        "at_utc",
+        "type",
+        "task_id",
+        "agent",
+        "text",
+        "call"
+      ],
+      "title": "LabEvent",
+      "type": "object"
+    },
+    "LabReport": {
+      "additionalProperties": false,
+      "description": "The written analysis, assembled deterministically from the verdict, the claims, their controls and the lab's\nartifacts. Next steps are suggestions, each tied to the artifact it comes from.",
+      "properties": {
+        "what_happened": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "why": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "next_steps": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "what_happened",
+        "why",
+        "next_steps"
+      ],
+      "title": "LabReport",
+      "type": "object"
+    },
+    "LabRun": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "live",
+            "replay",
+            "hand_authored"
+          ],
+          "type": "string"
+        },
+        "started_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "finished_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "dispatch_summary": {
+          "type": "string"
+        },
+        "tasks": {
+          "items": {
+            "$ref": "#/definitions/LabTask"
+          },
+          "type": "array"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/definitions/LabEvent"
+          },
+          "type": "array"
+        },
+        "literature": {
+          "items": {
+            "$ref": "#/definitions/LiteratureReview"
+          },
+          "type": "array"
+        },
+        "protein": {
+          "items": {
+            "$ref": "#/definitions/ProteinCrossCheck"
+          },
+          "type": "array"
+        },
+        "figures": {
+          "items": {
+            "$ref": "#/definitions/PublicationFigure"
+          },
+          "type": "array"
+        },
+        "report": {
+          "$ref": "#/definitions/LabReport"
+        }
+      },
+      "required": [
+        "schema_version",
+        "investigation_id",
+        "question",
+        "origin",
+        "started_at_utc",
+        "finished_at_utc",
+        "dispatch_summary",
+        "tasks",
+        "events",
+        "literature",
+        "protein",
+        "figures",
+        "report"
+      ],
+      "title": "LabRun",
+      "type": "object"
+    },
+    "LabTask": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "agent": {
+          "enum": [
+            "literature",
+            "protein_crosscheck",
+            "publication_figure"
+          ],
+          "type": "string"
+        },
+        "sub_claim": {
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "query": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "task_id",
+        "agent",
+        "sub_claim",
+        "reason",
+        "query"
+      ],
+      "title": "LabTask",
+      "type": "object"
+    },
+    "LabTaskProposal": {
+      "additionalProperties": false,
+      "description": "One sub-agent the dispatcher asks for, about one sub-claim of the verdict.",
+      "properties": {
+        "agent": {
+          "enum": [
+            "literature",
+            "protein_crosscheck",
+            "publication_figure"
+          ],
+          "type": "string"
+        },
+        "sub_claim": {
+          "description": "Index of the sub-claim in the verdict, from 0.",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "reason": {
+          "description": "One sentence: why this sub-agent, for this sub-claim.",
+          "type": "string"
+        },
+        "query": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Literature only: a Europe PMC query (boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human')."
+        }
+      },
+      "required": [
+        "agent",
+        "sub_claim",
+        "reason",
+        "query"
+      ],
+      "title": "LabTaskProposal",
+      "type": "object"
+    },
     "LabelCounts": {
       "additionalProperties": false,
       "description": "One section's cells counted by cell type label under each rule, and the cells whose label differs.",
@@ -3948,6 +4282,217 @@
         "reason"
       ],
       "title": "LeftOutSection",
+      "type": "object"
+    },
+    "LiteratureDigest": {
+      "additionalProperties": false,
+      "description": "Muse Spark's reading of the fetched records about one sub-claim.",
+      "properties": {
+        "statements": {
+          "items": {
+            "$ref": "#/definitions/LiteratureStatementDraft"
+          },
+          "type": "array"
+        },
+        "gap": {
+          "description": "One sentence: what these records do not address about the sub-claim.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statements",
+        "gap"
+      ],
+      "title": "LiteratureDigest",
+      "type": "object"
+    },
+    "LiteratureRecord": {
+      "additionalProperties": false,
+      "description": "One record exactly as Europe PMC returned it (abstract cut to 1,500 characters).",
+      "properties": {
+        "record_id": {
+          "description": "'PMID:<n>' when the record has a PubMed id, else '<source>:<id>'.",
+          "type": "string"
+        },
+        "pmid": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "doi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "title": {
+          "type": "string"
+        },
+        "journal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "first_author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "abstract": {
+          "default": "",
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "pmid",
+        "doi",
+        "title",
+        "journal",
+        "year",
+        "first_author",
+        "abstract",
+        "url"
+      ],
+      "title": "LiteratureRecord",
+      "type": "object"
+    },
+    "LiteratureReview": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "hit_count": {
+          "description": "Europe PMC's total hits for the query; only `records` were read.",
+          "type": "integer"
+        },
+        "records": {
+          "items": {
+            "$ref": "#/definitions/LiteratureRecord"
+          },
+          "type": "array"
+        },
+        "statements": {
+          "description": "Statements that passed the citation check.",
+          "items": {
+            "$ref": "#/definitions/LiteratureStatement"
+          },
+          "type": "array"
+        },
+        "dropped": {
+          "description": "Statements removed, with the reason.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "gap": {
+          "default": "",
+          "type": "string"
+        },
+        "co_mention": {
+          "$ref": "#/definitions/CoMention"
+        },
+        "note": {
+          "description": "What the co-mention count supports, worded as a count, never as novelty.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "query",
+        "hit_count",
+        "records",
+        "statements",
+        "dropped",
+        "gap",
+        "co_mention",
+        "note"
+      ],
+      "title": "LiteratureReview",
+      "type": "object"
+    },
+    "LiteratureStatement": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "cites": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "text",
+        "cites"
+      ],
+      "title": "LiteratureStatement",
+      "type": "object"
+    },
+    "LiteratureStatementDraft": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "description": "One sentence about what the cited records report. No claim beyond them.",
+          "type": "string"
+        },
+        "cites": {
+          "description": "record_id values of the records the sentence rests on; at least one.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "text",
+        "cites"
+      ],
+      "title": "LiteratureStatementDraft",
       "type": "object"
     },
     "MarkerPairsSource": {
@@ -5704,6 +6249,42 @@
       "title": "ProteinConditionRow",
       "type": "object"
     },
+    "ProteinCrossCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "sub_claim": {
+          "type": "integer"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "population": {
+          "type": "string"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/definitions/ProteinAuditResult"
+          },
+          "type": "array"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "sub_claim",
+        "marker",
+        "population",
+        "results",
+        "note"
+      ],
+      "title": "ProteinCrossCheck",
+      "type": "object"
+    },
     "ProteinThreshold": {
       "additionalProperties": false,
       "description": "A frozen positivity threshold on a marker's per-cell mean intensity.",
@@ -5729,6 +6310,55 @@
         "source_participant_id"
       ],
       "title": "ProteinThreshold",
+      "type": "object"
+    },
+    "PublicationFigure": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "sub_claim": {
+          "type": "integer"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "svg": {
+          "type": "string"
+        },
+        "pdf": {
+          "type": "string"
+        },
+        "png": {
+          "type": "string"
+        },
+        "legend": {
+          "type": "string"
+        },
+        "sections": {
+          "type": "integer"
+        },
+        "cells": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "task_id",
+        "sub_claim",
+        "finding_id",
+        "title",
+        "svg",
+        "pdf",
+        "png",
+        "legend",
+        "sections",
+        "cells"
+      ],
+      "title": "PublicationFigure",
       "type": "object"
     },
     "RandomThinningControl": {

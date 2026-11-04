@@ -897,6 +897,18 @@ export interface ClaimVerifiedEvent {
   verification: VerificationResult;
 }
 /**
+ * A deterministic count over the fetched records: how many mention every term group in title or abstract.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "CoMention".
+ */
+export interface CoMention {
+  term_groups: string[][];
+  records_searched: number;
+  records_mentioning_all: number;
+  record_ids: string[];
+}
+/**
  * The difference between group means of the log2 values under one condition (disease minus control).
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1210,6 +1222,40 @@ export interface FileChecksum {
   path: string;
   sha256: string;
   bytes: number;
+}
+/**
+ * The dispatcher's answer: the sub-agents to start, at most eight.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DispatchProposal".
+ */
+export interface DispatchProposal {
+  /**
+   * One sentence on what the lab will do and why.
+   */
+  summary: string;
+  tasks: LabTaskProposal[];
+}
+/**
+ * One sub-agent the dispatcher asks for, about one sub-claim of the verdict.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabTaskProposal".
+ */
+export interface LabTaskProposal {
+  agent: "literature" | "protein_crosscheck" | "publication_figure";
+  /**
+   * Index of the sub-claim in the verdict, from 0.
+   */
+  sub_claim: number;
+  /**
+   * One sentence: why this sub-agent, for this sub-claim.
+   */
+  reason: string;
+  /**
+   * Literature only: a Europe PMC query (boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human').
+   */
+  query: string | null;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1843,6 +1889,237 @@ export interface KpmpResultEntry {
   path: string;
 }
 /**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabEvent".
+ */
+export interface LabEvent {
+  seq: number;
+  at_utc: string;
+  type:
+    | "lab_started"
+    | "dispatched"
+    | "task_rejected"
+    | "subagent_started"
+    | "model_call"
+    | "subagent_finished"
+    | "subagent_failed"
+    | "lab_finished";
+  task_id: string | null;
+  agent: ("literature" | "protein_crosscheck" | "publication_figure") | null;
+  text: string;
+  call: ModelCallRecord | null;
+}
+/**
+ * The written analysis, assembled deterministically from the verdict, the claims, their controls and the lab's
+ * artifacts. Next steps are suggestions, each tied to the artifact it comes from.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabReport".
+ */
+export interface LabReport {
+  what_happened: string[];
+  why: string[];
+  next_steps: string[];
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabRun".
+ */
+export interface LabRun {
+  schema_version: string;
+  investigation_id: string;
+  question: string;
+  origin: "live" | "replay" | "hand_authored";
+  started_at_utc: string;
+  finished_at_utc: string;
+  dispatch_summary: string;
+  tasks: LabTask[];
+  events: LabEvent[];
+  literature: LiteratureReview[];
+  protein: ProteinCrossCheck[];
+  figures: PublicationFigure[];
+  report: LabReport;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LabTask".
+ */
+export interface LabTask {
+  task_id: string;
+  agent: "literature" | "protein_crosscheck" | "publication_figure";
+  sub_claim: number;
+  reason: string;
+  query: string | null;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LiteratureReview".
+ */
+export interface LiteratureReview {
+  task_id: string;
+  query: string;
+  /**
+   * Europe PMC's total hits for the query; only `records` were read.
+   */
+  hit_count: number;
+  records: LiteratureRecord[];
+  /**
+   * Statements that passed the citation check.
+   */
+  statements: LiteratureStatement[];
+  /**
+   * Statements removed, with the reason.
+   */
+  dropped: string[];
+  gap: string;
+  co_mention: CoMention;
+  /**
+   * What the co-mention count supports, worded as a count, never as novelty.
+   */
+  note: string;
+}
+/**
+ * One record exactly as Europe PMC returned it (abstract cut to 1,500 characters).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LiteratureRecord".
+ */
+export interface LiteratureRecord {
+  /**
+   * 'PMID:<n>' when the record has a PubMed id, else '<source>:<id>'.
+   */
+  record_id: string;
+  pmid: string | null;
+  doi: string | null;
+  title: string;
+  journal: string | null;
+  year: number | null;
+  first_author: string | null;
+  abstract: string;
+  url: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LiteratureStatement".
+ */
+export interface LiteratureStatement {
+  text: string;
+  cites: string[];
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinCrossCheck".
+ */
+export interface ProteinCrossCheck {
+  task_id: string;
+  sub_claim: number;
+  marker: string;
+  population: string;
+  results: ProteinAuditResult[];
+  note: string;
+}
+/**
+ * How the share of one marker's positive cells in a population behaves across measurement conditions, for one
+ * participant, over the whole image or a region. One participant against another is descriptive only.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinAuditResult".
+ */
+export interface ProteinAuditResult {
+  result_id: string;
+  dataset_id: string;
+  participant_id: string;
+  /**
+   * 'healthy reference' or 'diseased'.
+   */
+  role: string;
+  roi: Region | null;
+  /**
+   * The population, frozen under the whole-cell condition, for example 'Podocalyxin+ cells'.
+   */
+  population: string;
+  population_marker: string;
+  marker: string;
+  /**
+   * The marker's home cells, for example 'LRP2+ cells that are not Podocalyxin+'.
+   */
+  home: string;
+  population_cells: number;
+  home_cells: number;
+  thresholds: ProteinThreshold[];
+  conditions: ProteinConditionRow[];
+  label: EvidenceStatus;
+  label_reason: string;
+  inference: string;
+  rules: {
+    [k: string]: string;
+  };
+  /**
+   * sha256 of the per-cell table the result was computed from.
+   */
+  cell_table_checksum: string;
+}
+/**
+ * The result under one measurement condition. Population cells with no pixel kept count as not positive.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinConditionRow".
+ */
+export interface ProteinConditionRow {
+  condition: string;
+  /**
+   * Population cells whose mean of the marker under this condition is at or above its threshold.
+   */
+  positive_cells: number;
+  observed_share: number | null;
+  /**
+   * Random-pixel-loss expectation: the mean over population cells of the probability that a random subset of the cell's pixels, as large as this condition keeps, has a mean at or above the threshold.
+   */
+  expected_share: number | null;
+  /**
+   * Population pixels kept under this condition / population pixels of the whole cells.
+   */
+  pixel_retention: number | null;
+  /**
+   * Population cells positive for the marker as whole cells but not under this condition.
+   */
+  excluded_cells: number;
+  /**
+   * Population cells positive for the marker as whole cells and under this condition.
+   */
+  retained_cells: number;
+  /**
+   * Share of the excluded cells that border a home cell.
+   */
+  bordering_home_share_excluded: number | null;
+  /**
+   * Share of the retained cells that border a home cell.
+   */
+  bordering_home_share_retained: number | null;
+  /**
+   * Why a value is null.
+   */
+  reasons: {
+    [k: string]: string;
+  };
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PublicationFigure".
+ */
+export interface PublicationFigure {
+  task_id: string;
+  sub_claim: number;
+  finding_id: string;
+  title: string;
+  svg: string;
+  pdf: string;
+  png: string;
+  legend: string;
+  sections: number;
+  cells: number;
+}
+/**
  * One section's cells counted by cell type label under each rule, and the cells whose label differs.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1968,6 +2245,33 @@ export interface LabelSensitivityCheck {
   same_label: boolean;
   summary: string;
   roi: Region | null;
+}
+/**
+ * Muse Spark's reading of the fetched records about one sub-claim.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LiteratureDigest".
+ */
+export interface LiteratureDigest {
+  statements: LiteratureStatementDraft[];
+  /**
+   * One sentence: what these records do not address about the sub-claim.
+   */
+  gap: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "LiteratureStatementDraft".
+ */
+export interface LiteratureStatementDraft {
+  /**
+   * One sentence about what the cited records report. No claim beyond them.
+   */
+  text: string;
+  /**
+   * record_id values of the records the sentence rests on; at least one.
+   */
+  cites: string[];
 }
 /**
  * How the server answers questions. Live runs arrive with ticket 03.
@@ -2231,91 +2535,6 @@ export interface ProposedStep {
     [k: string]: unknown;
   };
   rationale: string;
-}
-/**
- * How the share of one marker's positive cells in a population behaves across measurement conditions, for one
- * participant, over the whole image or a region. One participant against another is descriptive only.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "ProteinAuditResult".
- */
-export interface ProteinAuditResult {
-  result_id: string;
-  dataset_id: string;
-  participant_id: string;
-  /**
-   * 'healthy reference' or 'diseased'.
-   */
-  role: string;
-  roi: Region | null;
-  /**
-   * The population, frozen under the whole-cell condition, for example 'Podocalyxin+ cells'.
-   */
-  population: string;
-  population_marker: string;
-  marker: string;
-  /**
-   * The marker's home cells, for example 'LRP2+ cells that are not Podocalyxin+'.
-   */
-  home: string;
-  population_cells: number;
-  home_cells: number;
-  thresholds: ProteinThreshold[];
-  conditions: ProteinConditionRow[];
-  label: EvidenceStatus;
-  label_reason: string;
-  inference: string;
-  rules: {
-    [k: string]: string;
-  };
-  /**
-   * sha256 of the per-cell table the result was computed from.
-   */
-  cell_table_checksum: string;
-}
-/**
- * The result under one measurement condition. Population cells with no pixel kept count as not positive.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "ProteinConditionRow".
- */
-export interface ProteinConditionRow {
-  condition: string;
-  /**
-   * Population cells whose mean of the marker under this condition is at or above its threshold.
-   */
-  positive_cells: number;
-  observed_share: number | null;
-  /**
-   * Random-pixel-loss expectation: the mean over population cells of the probability that a random subset of the cell's pixels, as large as this condition keeps, has a mean at or above the threshold.
-   */
-  expected_share: number | null;
-  /**
-   * Population pixels kept under this condition / population pixels of the whole cells.
-   */
-  pixel_retention: number | null;
-  /**
-   * Population cells positive for the marker as whole cells but not under this condition.
-   */
-  excluded_cells: number;
-  /**
-   * Population cells positive for the marker as whole cells and under this condition.
-   */
-  retained_cells: number;
-  /**
-   * Share of the excluded cells that border a home cell.
-   */
-  bordering_home_share_excluded: number | null;
-  /**
-   * Share of the retained cells that border a home cell.
-   */
-  bordering_home_share_retained: number | null;
-  /**
-   * Why a value is null.
-   */
-  reasons: {
-    [k: string]: string;
-  };
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
