@@ -180,30 +180,31 @@ export function LabView({ investigationId, subClaims, verdicts }: Props) {
             const figure = lab.figures.find((f) => f.sub_claim === task.sub_claim);
             return (
               <section key={l.task_id} aria-label="Candidate finding" className="rise milestone rounded-3xl bg-[#11150a] p-6">
-                <p className="text-[12px] font-medium tracking-wide text-stable uppercase">Candidate to test · not a discovery</p>
+                <p className="text-[12px] font-medium tracking-wide text-stable uppercase">Research lead to investigate · not a discovery</p>
                 <h3 className="mt-2 text-[clamp(22px,2.6vw,32px)] leading-tight font-semibold tracking-tight">
-                  {verdict.genes} signal in {verdict.cellType}s is not explained by molecules spilling over from neighbouring cells.
+                  {verdict.genes} signal in labelled {verdict.cellType}s persists under the tested assignment restrictions.
                 </h3>
                 <ul className="mt-4 grid grid-cols-1 gap-4 text-[14px] leading-relaxed text-ink-2 md:grid-cols-3">
                   <li>
-                    <span className="block text-ink">Transcripts (the evidence)</span>
+                    <span className="block text-ink">RNA (the evidence)</span>
                     {figure
-                      ? `${figure.sections} Xenium sections, ${figure.cells.toLocaleString()} cells: under nucleus-only assignment the share stays above what random thinning predicts. Verified claim, controls cited.`
-                      : "The share stays under stricter assignment (verified claim)."}
+                      ? `${figure.sections} Xenium sections, ${figure.cells.toLocaleString()} cells: no stricter rule took the share below the frozen threshold (about 71% of what random molecule loss predicts). Verified claim, controls cited.`
+                      : "No stricter rule took the share below the frozen threshold (verified claim)."}
                   </li>
                   <li>
-                    <span className="block text-ink">Protein (descriptive)</span>
+                    <span className="block text-ink">Protein (different specimens, descriptive)</span>
                     {protein ? protein.note : "Not checked."}
                   </li>
                   <li>
                     <span className="block text-ink">Literature (a count, not a search of everything)</span>
                     {l.co_mention.records_mentioning_all} of the {l.co_mention.records_searched} most relevant titles and abstracts (of {l.hit_count.toLocaleString()} Europe PMC hits for "
-                    {l.query}") pair {verdict.genes} with {verdict.cellType}s in human tissue. Full texts were not read.
+                    {l.query}") pair {verdict.genes} with {verdict.cellType}s in human tissue. Full texts were not read, so this does not establish novelty.
                   </li>
                 </ul>
                 <p className="mt-4 text-[12px] leading-relaxed text-ink-3">
-                  One dataset, and protein from one person per group. Other explanations (a cell-labelling error beyond the
-                  second rule tested, transcripts lying outside cells) are not fully ruled out; the next steps below say how to test them.
+                  Persisting under these checks supports robustness to them; it does not establish where the signal comes from or rule out all contamination.
+                  One dataset, and protein from one person per group. Other explanations (a cell-labelling error beyond the second rule tested, transcripts
+                  lying outside cells) remain open; the next steps below say how to test them.
                 </p>
               </section>
             );
@@ -291,7 +292,8 @@ export function LabView({ investigationId, subClaims, verdicts }: Props) {
                 </ul>
                 {l.gap && <p className="mt-3 text-[13px] text-ink-2">Not addressed by these records: {l.gap}</p>}
                 <p className="mt-3 text-[12px] text-ink-3">
-                  Muse Spark read only the records listed; a check in code dropped {l.dropped.length} statement{l.dropped.length === 1 ? "" : "s"} citing anything not fetched.
+                  Muse Spark read only the records listed; a check in code dropped {l.dropped.length} statement{l.dropped.length === 1 ? "" : "s"} citing anything not fetched. That
+                  check confirms each citation was fetched, not that the record proves the statement.
                 </p>
               </section>
             );

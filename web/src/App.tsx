@@ -8,6 +8,7 @@ import { DualViewer } from "./components/DualViewer";
 import { formatUtc } from "./components/RunModeBanner";
 import { CONDITION_NAMES } from "./components/Viewer";
 import { AgentBar, AgentOrb, ScoutMark } from "./components/stage/AgentBar";
+import { type Chapter, ChapterStrip, chaptersOf, MISSIONS } from "./components/stage/Chapters";
 import { CompareView } from "./components/stage/CompareView";
 import { Explore, type TissueContext } from "./components/stage/Explore";
 import { Intro } from "./components/stage/Intro";
@@ -88,7 +89,7 @@ function milestonesOf(events: InvestigationEvent[]): Milestone[] {
     if (e.type === "claim_drafted") once("claims", { text: "Writing claims from the computed results" });
     if (e.type === "claim_verified" && !e.claim.injected.is_injected) once("verified", { text: "Claims checked: every number recomputed, every figure read", sub: e.verification.verification_status });
     if (e.type === "claim_verified" && e.claim.injected.is_injected) once("injected", { text: "Testing the verifier with a deliberately wrong claim", sub: e.verification.verification_status });
-    if (e.type === "verdict") once("verdict", { text: "Verdict reached", sub: e.verdict.verdicts.map((v) => v.verdict).join(" · "), final: true });
+    if (e.type === "verdict") once("verdict", { text: "Findings ready", sub: `prediction check: ${e.verdict.verdicts.map((v) => v.verdict).join(" · ")}`, final: true });
   }
   return out;
 }
@@ -216,6 +217,9 @@ export default function App() {
   };
 
   const shown = useMemo(() => (investigation ? partial(investigation, shownCount) : null), [investigation, shownCount]);
+  const chapters = useMemo(() => (investigation ? chaptersOf(investigation.events) : []), [investigation]);
+  const mission = investigation?.replay ? MISSIONS[investigation.replay.recording_id] : undefined;
+  const [chapterId, setChapterId] = useState<string | null>(null);
   const graph = useMemo(() => buildGraph(shown?.question ?? "", shown?.events ?? []), [shown]);
   const milestones = useMemo(() => milestonesOf(shown?.events ?? []), [shown]);
   const [toasts, setToasts] = useState<Milestone[]>([]);
@@ -274,6 +278,39 @@ export default function App() {
       }
     }
   }, [graph, focusFinding, stage]);
+
+  // A chapter during the run seeks playback to its events; after the run it opens the findings section it names.
+  const selectChapter = (chapter: Chapter) => {
+    if (!investigation) return;
+    setChapterId(chapter.id);
+    if (chapter.atEvent !== null) {
+      setPaused(true);
+      setShownCount(chapter.atEvent);
+      setFollow(true);
+      setStage("run");
+      if (chapter.id === "data") {
+        const events = investigation.events;
+        const audits = events.filter((e) => e.type === "tool_started" && e.tool === "audit_population");
+        const pick = audits.find((e) => e.type === "tool_started" && JSON.stringify(e.arguments).includes('"B cell"')) ?? audits[0];
+        const done = pick && events.find((e) => e.type === "tool_finished" && pick.type === "tool_started" && e.observation_id === pick.observation_id);
+        if (done && done.type === "tool_finished" && done.artifact_id) focusFinding(done.artifact_id);
+      }
+      return;
+    }
+    setStage("results");
+    window.setTimeout(() => {
+      const target = (chapter.section ?? "")
+        .split("|")
+        .map((label) => document.querySelector<HTMLElement>(`[aria-label="${label}"]`))
+        .find(Boolean);
+      if (!target) return;
+      if (target instanceof HTMLDetailsElement) target.open = true;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }, 120);
+  };
+  const currentChapter =
+    stage === "run" ? ([...chapters].reverse().find((c) => c.atEvent !== null && Math.min(shownCount, total) >= c.atEvent)?.id ?? null) : stage === "results" ? chapterId : null;
 
   const runsOn = (question: string): string | null => {
     const recording = mode?.recordings.find((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase());
@@ -364,7 +401,7 @@ export default function App() {
     { id: "intro", label: "Overview", enabled: true },
     { id: "explore", label: "Tissue", enabled: !!kpmp },
     { id: "run", label: "Run", enabled: !!investigation },
-    { id: "results", label: "Verdict", enabled: !!investigation?.verdict },
+    { id: "results", label: "Findings", enabled: !!investigation?.verdict },
     { id: "upload", label: "Your data", enabled: true },
   ];
   const showBar = stage !== "intro" && stage !== "upload" && stage !== "section" && stage !== "classic" && (stage !== "run" || !!shown);
@@ -392,7 +429,7 @@ export default function App() {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           {runMode && (
-            <p role="status" className="hidden items-center gap-2 text-[13px] text-ink-2 sm:flex" title={RUN_MODE_NOTE[runMode]}>
+            <p role="status" className="flex items-center gap-2 text-[12px] text-ink-2 sm:text-[13px]" title={RUN_MODE_NOTE[runMode]}>
               <span className="h-2 w-2 rounded-full bg-run-mode" aria-hidden="true" />
               <strong className="font-medium text-ink">{RUN_MODE_LABEL[runMode]}</strong>
               <span className="hidden lg:inline">
@@ -404,6 +441,20 @@ export default function App() {
           )}
         </div>
       </header>
+      <nav aria-label="Stages (narrow screens)" className="flex shrink-0 gap-1 overflow-x-auto px-3 pb-2 md:hidden">
+        {nav.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            disabled={!item.enabled}
+            aria-current={stage === item.id || (item.id === "explore" && stage === "compare") ? "page" : undefined}
+            onClick={() => setStage(item.id)}
+            className="h-8 shrink-0 rounded-full px-3 text-[13px] font-medium text-[#bbb] disabled:text-[#555] aria-[current=page]:bg-raised aria-[current=page]:text-white"
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
 
       <main className="relative min-h-0 flex-1">
         {stage === "intro" && (
@@ -454,8 +505,24 @@ export default function App() {
             {/* The tissue the agent is working on: the main surface. */}
             <div className={`relative flex min-w-0 flex-1 flex-col ${rail === "full" ? "hidden" : ""}`}>
               <div className="flex-none px-5 pt-4 pb-2">
-                <p className="text-[12px] text-ink-3">{playing ? "Replaying a recorded run" : shown.status.replaceAll("_", " ")}</p>
-                <h1 className="mt-0.5 line-clamp-2 max-w-[60rem] text-[16px] leading-snug font-semibold">{shown.question}</h1>
+                <p className="text-[12px] text-ink-3">{playing ? "Replaying a recorded investigation" : shown.status.replaceAll("_", " ")}</p>
+                {mission ? (
+                  <>
+                    <h1 className="mt-0.5 max-w-[60rem] text-[18px] leading-snug font-semibold">{mission.title}</h1>
+                    <p className="mt-0.5 max-w-[60rem] text-[13px] leading-relaxed text-ink-2">{mission.summary}</p>
+                    <details className="mt-1 max-w-[60rem] text-[12px] text-ink-3">
+                      <summary className="cursor-pointer">Exact research question · {mission.focus}</summary>
+                      <p className="mt-1 text-[13px] leading-snug text-ink">{shown.question}</p>
+                    </details>
+                  </>
+                ) : (
+                  <h1 className="mt-0.5 line-clamp-2 max-w-[60rem] text-[16px] leading-snug font-semibold">{shown.question}</h1>
+                )}
+                {chapters.length > 0 && (
+                  <div className="mt-2">
+                    <ChapterStrip chapters={chapters} shownCount={Math.min(shownCount, total)} finished={finishedRun} current={currentChapter} onSelect={selectChapter} />
+                  </div>
+                )}
                 <p className="mt-1 max-w-[60rem] text-[13px] leading-relaxed text-ink-2">
                   {focus
                     ? `On screen: Xenium section ${focus.sectionId}, the region the agent cites for ${focus.cellType} ${focus.highlight.join("/")} (white box). Left of the divider, every molecule counted the usual way; right, the stricter ${CONDITION_NAMES[focus.condition] ?? focus.condition} rule, with the molecules it drops in yellow. Drag the divider.`
@@ -533,6 +600,10 @@ export default function App() {
           <Results
             view={shown}
             graph={graph}
+            mission={mission}
+            chapters={
+              chapters.length > 0 ? <ChapterStrip chapters={chapters} shownCount={Math.min(shownCount, total)} finished={finishedRun} current={currentChapter} onSelect={selectChapter} /> : null
+            }
             mode={mode}
             libraryDatasetId={audits?.dataset_id ?? null}
             onCanvas={() => setStage("run")}

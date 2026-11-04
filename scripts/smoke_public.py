@@ -26,7 +26,7 @@ def main(url: str) -> int:
         page.goto(url, wait_until="networkidle", timeout=120_000)
 
         expect(page.get_by_role("heading", level=1)).to_be_visible(timeout=60_000)
-        page.get_by_role("button", name="Start with the diseased biopsy").click()
+        page.get_by_role("button", name="Explore the tissue").click()
         expect(page.get_by_text("CODEX protein imaging").first).to_be_visible(timeout=60_000)
         expect(page.locator("[data-testid=protein-audit-result]")).to_have_count(2, timeout=60_000)
         print("explore: diseased KPMP image and two protein audit results")
@@ -49,7 +49,7 @@ def main(url: str) -> int:
         page.get_by_role("button", name=GOLDEN).click()
         expect(page.locator(".react-flow__node").first).to_be_visible(timeout=30_000)
         print("run canvas: the first step is drawn")
-        page.get_by_role("button", name="See the verdict").click(timeout=LIMIT_S * 1000)
+        page.get_by_role("button", name="See the findings").click(timeout=LIMIT_S * 1000)
         expect(page.locator("[data-testid=sub-claim-verdict]").first).to_be_visible(timeout=LIMIT_S * 1000)
         elapsed = time.monotonic() - started
         verdicts = page.locator("[data-testid=sub-claim-verdict]").evaluate_all("els => els.map(e => e.dataset.verdict)")

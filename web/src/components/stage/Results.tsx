@@ -2,7 +2,7 @@
 // computed numbers the claim cites, every check the verifier ran, and the figure Muse Spark read). Then what to look at
 // next, the evidence package, and the full detail folded away. Verdict words come from the frozen rule; the plain
 // sentence under each is the rule's own definition applied to the sub-claim's prediction.
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { api } from "../../api";
 import type { Claim, ModeInfo, ReviewRequest, SubClaimVerdict, VerificationResult } from "../../contracts/generated";
 import type { InvestigationView } from "../../investigation";
@@ -12,6 +12,7 @@ import { FindingsPanel } from "../FindingsPanel";
 import { TelemetryPills } from "../TelemetryPills";
 import type { TissueFocus } from "../TissuePanel";
 import { LabView } from "./LabView";
+import { outcomeOf } from "./outcome";
 import { labelTone } from "./RunCanvas";
 import type { RunGraph } from "./runGraph";
 
@@ -19,11 +20,6 @@ const VERDICT_TONE: Record<string, string> = {
   confirmed: "text-stable",
   refuted: "text-sensitive",
   inconclusive: "text-ink-2",
-};
-const VERDICT_RING: Record<string, string> = {
-  confirmed: "ring-stable/40",
-  refuted: "ring-sensitive/40",
-  inconclusive: "ring-line",
 };
 const OUTCOME_WORDS: Record<string, string> = { holds: "stays", drops: "falls away" };
 /** The protein-level counterpart on the KPMP images, where one exists. */
@@ -39,6 +35,28 @@ function plain(v: SubClaimVerdict): string {
   if (v.verdict === "confirmed") return `You predicted ${what} ${predicted} when molecules are assigned more strictly. It does.`;
   if (v.verdict === "refuted") return `You predicted ${what} ${predicted} when molecules are assigned more strictly. It ${opposite} instead.`;
   return `The evidence can't say whether ${what} ${predicted} under stricter assignment.`;
+}
+
+const STABLE_RULE =
+  "Persists means no stricter rule took the share below about 71% of what random molecule loss alone predicts (expectation × 2^-0.5, frozen before the run). It is not a test of where the signal comes from.";
+
+const pct1 = (x: number) => `${(x * 100).toFixed(1)}%`;
+
+/** The claim's own cited numbers as one readable sentence: default share, nucleus-only share, and the random-loss
+ *  expectation when the claim cites it. */
+function measuredSentence(v: SubClaimVerdict, claim: Claim | undefined): string | null {
+  if (!claim) return null;
+  const value = (key: string) => claim.cited[key]?.value ?? null;
+  const base = value("pooled[default].observed_value");
+  const strict = value("pooled[nucleus_only].observed_value");
+  if (base === null || strict === null) return null;
+  const expected = value("pooled[nucleus_only].expectation_home_matched");
+  const sections = value("eligible_section_ids.count");
+  return (
+    `In cells labelled ${v.sub_claim.cell_type}, ${pct1(base)} carry ${v.sub_claim.genes.join("/")} under the usual counting and ${pct1(strict)} when only molecules over the nucleus count` +
+    (expected !== null ? `; random molecule loss alone would predict ${pct1(expected)}` : "") +
+    (sections !== null ? ` (pooled over ${sections} sections).` : ".")
+  );
 }
 
 /** A cited number's source, in words. */
@@ -121,6 +139,9 @@ function Basis({ claim, verification, investigationId, onTissue }: { claim: Clai
 interface Props {
   view: InvestigationView;
   graph: RunGraph;
+  /** The recording's audience-facing mission, if it has one; the exact question stays shown. */
+  mission?: { title: string; summary: string; focus: string };
+  chapters?: ReactNode;
   mode: ModeInfo | null;
   onCanvas: () => void;
   onReplay: () => void;
@@ -133,7 +154,7 @@ interface Props {
   libraryDatasetId: string | null;
 }
 
-export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding, onOpenFinding, onAsk, onProtein, onReview, libraryDatasetId }: Props) {
+export function Results({ view, graph, mission, chapters, mode, onCanvas, onReplay, onFocusFinding, onOpenFinding, onAsk, onProtein, onReview, libraryDatasetId }: Props) {
   const [open, setOpen] = useState<number | null>(0);
   const calls = view.events.filter((e) => e.type === "model_call").length;
   const tools = view.events.filter((e) => e.type === "tool_finished").length;
@@ -147,26 +168,40 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
     <div className="h-full overflow-y-auto">
       <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-5 pt-10 pb-28">
         <section aria-label="Hypothesis verdict" className="rise">
-          <p className="text-[13px] text-ink-3">Verdict on your question</p>
-          <p className="mt-1 max-w-[56rem] text-[19px] leading-snug text-ink">{view.question}</p>
+          {chapters && <div className="mb-6">{chapters}</div>}
+          <p className="text-[13px] text-ink-3">What the investigation found</p>
+          {mission && <h1 className="mt-1 max-w-[56rem] text-[clamp(22px,2.4vw,30px)] leading-tight font-semibold tracking-tight">{mission.title}</h1>}
+          <details className="mt-2 max-w-[56rem]" open={!mission}>
+            <summary className="cursor-pointer text-[12px] text-ink-3">Exact research question{mission ? ` · ${mission.focus}` : ""}</summary>
+            <p className="mt-1 text-[17px] leading-snug text-ink">{view.question}</p>
+          </details>
           {view.verdict ? (
             <>
               <ul className="mt-7 flex flex-col gap-3">
                 {view.verdict.verdicts.map((v, i) => {
                   const claim = v.claim_ids.map((id) => claimsById.get(id)).find(Boolean);
                   const expanded = open === i;
+                  const outcome = outcomeOf(claim);
+                  const sentence = measuredSentence(v, claim);
                   return (
-                    <li key={v.sub_claim.text} data-testid="sub-claim-verdict" data-verdict={v.verdict} className={`rounded-3xl bg-panel p-6 ring-1 ${VERDICT_RING[v.verdict] ?? ""}`}>
-                      <button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? null : i)} className="flex w-full flex-col gap-4 text-left md:flex-row md:items-center md:gap-8">
-                        <span className={`shrink-0 text-[clamp(44px,6vw,80px)] leading-none font-semibold tracking-[-0.04em] uppercase ${VERDICT_TONE[v.verdict] ?? ""}`}>{v.verdict}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[13px] text-ink-3">
-                            Part {i + 1} · {v.sub_claim.cell_type} · {v.sub_claim.genes.join("/")} · {v.dataset_id}
+                    <li key={v.sub_claim.text} data-testid="sub-claim-verdict" data-verdict={v.verdict} className={`rounded-3xl bg-panel p-6 ring-1 ${outcome.ring}`}>
+                      <button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? null : i)} className="flex w-full flex-col gap-3 text-left">
+                        <span className="flex flex-wrap items-baseline justify-between gap-3">
+                          <span className="text-[13px] text-ink-3">
+                            Part {i + 1} · {v.sub_claim.cell_type} · {v.sub_claim.genes.join("/")} · {v.dataset_id} RNA
                           </span>
-                          <span className="mt-1 block text-[18px] leading-snug font-semibold">{plain(v)}</span>
-                          <span className="mt-1 block text-[14px] leading-relaxed text-ink-2">{v.sub_claim.text}</span>
+                          <span className="shrink-0 text-[13px] font-medium text-ink underline decoration-ink-3 underline-offset-4">{expanded ? "Hide the evidence" : "Why?"}</span>
                         </span>
-                        <span className="shrink-0 text-[13px] font-medium text-ink underline decoration-ink-3 underline-offset-4">{expanded ? "Hide the evidence" : "Why?"}</span>
+                        <span className={`block text-[clamp(28px,3.6vw,46px)] leading-[1.05] font-semibold tracking-[-0.03em] ${outcome.tone}`}>{outcome.title}</span>
+                        {sentence && <span className="block max-w-[52rem] text-[16px] leading-relaxed text-ink">{sentence}</span>}
+                        <span className="mt-1 flex flex-col gap-1 rounded-2xl bg-raised px-4 py-3 md:flex-row md:items-baseline md:gap-4">
+                          <span className="shrink-0 text-[12px] text-ink-3">
+                            Prediction check <span className={`ml-1 text-[14px] font-semibold uppercase ${VERDICT_TONE[v.verdict] ?? ""}`}>{v.verdict}</span>
+                          </span>
+                          <span className="text-[13px] leading-relaxed text-ink-2">
+                            {plain(v)} This compares the researcher's prediction with the measured behaviour in these sections and controls; it is not a test of biological truth.
+                          </span>
+                        </span>
                       </button>
                       {expanded &&
                         (claim ? (
@@ -178,8 +213,8 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
                   );
                 })}
               </ul>
-              <p className="mt-4 max-w-[48rem] text-[13px] leading-relaxed text-ink-3">
-                {view.verdict.scope} The verdict comes from a fixed rule over verified claims; no model writes it.
+              <p className="mt-4 max-w-[52rem] text-[13px] leading-relaxed text-ink-3">
+                {STABLE_RULE} {view.verdict.scope} Outcomes and prediction checks come from fixed rules over verified claims; no model writes them.
               </p>
             </>
           ) : (
@@ -188,9 +223,11 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
         </section>
 
         {view.verdict && view.status === "complete" && (
+          <section aria-label="Lab" className="scroll-mt-6">
           <LabView investigationId={view.investigationId} subClaims={view.verdict.verdicts.map((v) => `${v.sub_claim.cell_type} · ${v.sub_claim.genes.join("/")}`)}
             verdicts={view.verdict.verdicts.map((v) => ({ verdict: v.verdict, predicted: v.sub_claim.predicted, cellType: v.sub_claim.cell_type, genes: v.sub_claim.genes.join("/") }))}
           />
+          </section>
         )}
 
         <section aria-label="What to look at next" className="flex flex-col gap-3">
@@ -214,7 +251,7 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
           </div>
         </section>
 
-        <section aria-label="The run" className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
+        <section aria-label="Take the evidence" className="grid scroll-mt-6 grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr]">
           <button type="button" onClick={onCanvas} className="group flex flex-col items-start rounded-3xl bg-panel p-6 text-left transition-colors hover:bg-raised">
             <h2 className="text-[18px] font-semibold">How the agent got here</h2>
             <p className="mt-2 text-[14px] leading-relaxed text-ink-2">
@@ -237,7 +274,7 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
           </div>
         </section>
 
-        <details className="group rounded-3xl bg-panel p-6">
+        <details aria-label="Checked claims" className="group scroll-mt-6 rounded-3xl bg-panel p-6">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
             <span>
               <span className="block text-[18px] font-semibold">All checked claims, including the injected errors</span>
