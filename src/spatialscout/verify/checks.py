@@ -55,15 +55,18 @@ def required_controls(finding: AuditResult, label_rules: LabelRuleSet | Sequence
     rule = next((r for r in rules if r.label_rule_id == rule_id), None)
     if rule is not None:
         markers = {g for marker_genes in rule.markers.values() for g in marker_genes}
-        involved = [g for g in genes if g in markers or g in rule.ignored_genes]
+        involved = [g for g in genes if g in markers]
+        ignored = [g for g in genes if g in rule.ignored_genes]
         competing = [g for g in genes if HOME_OF.get(g) not in (None, cell_type) and HOME_OF[g] in rule.markers]
     else:
         # A rule recorded without its markers (labels given by construction): any marker gene may decide membership.
-        involved, competing = [g for g in genes if g in HOME_OF], []
-    if involved or competing:
+        involved, ignored, competing = [g for g in genes if g in HOME_OF], [], []
+    if involved or ignored or competing:
         reasons = []
         if involved:
-            reasons.append(f"{rule_id} reads {', '.join(sorted(set(involved)))}")
+            reasons.append(f"{rule_id} uses {', '.join(sorted(set(involved)))} as a marker")
+        if ignored:
+            reasons.append(f"{rule_id} is defined by ignoring {', '.join(sorted(set(ignored)))}")
         if competing:
             homes = sorted({HOME_OF[g] for g in competing})
             reasons.append(f"{rule_id} decides {cell_type} membership against {', '.join(homes)}, the home type of "

@@ -28,6 +28,10 @@ def main(argv: list[str] | None = None) -> int:
     smoke.add_argument("--env-file", type=Path, default=None, help="a .env file with the provider keys, when they are not in the environment")
     ingest = commands.add_parser("ingest", help="download missing GSE286184 files, then validate and label all 22 sections")
     ingest.add_argument("--no-download", action="store_true", help="fail on a missing raw file instead of fetching it")
+    benchmark = commands.add_parser("benchmark", help="verify valid and injected claims derived from the audit results; replays stored visual checks")
+    benchmark.add_argument("--run-mode", choices=["cached_tool_rerun", "live", "offline"], default="cached_tool_rerun",
+                           help="live re-records the visual checks (cents); offline skips them")
+    benchmark.add_argument("--env-file", type=Path, default=None)
     commands.add_parser("audit", help="compute the demo's GSE286184 audit results into artifacts/GSE286184/audit/ (needs ingest)")
     structures = commands.add_parser(
         "structures", help="SAM 3.1 glomerulus outlines (exploratory) for the demo sections into artifacts/GSE286184/structures/"
@@ -40,6 +44,8 @@ def main(argv: list[str] | None = None) -> int:
         return _ingest(download=not args.no_download)
     if args.command == "audit":
         return _audit()
+    if args.command == "benchmark":
+        return asyncio.run(_benchmark(args.run_mode, args.env_file))
     if args.command == "structures":
         return asyncio.run(_structures(args.run_mode, args.sections, args.env_file))
     if args.command == "serve":
@@ -129,6 +135,49 @@ def _audit() -> int:
     store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
     index = run_batch(store, settings.artifacts_dir / "GSE286184" / "audit", _repo_root())
     print(f"wrote {len(index.entries)} audit results to {settings.artifacts_dir / 'GSE286184' / 'audit'}")
+    return 0
+
+
+async def _benchmark(run_mode: str, env_file: Path | None) -> int:
+    """The verification benchmark (`verify/benchmark.py`): results to artifacts/GSE286184/benchmark/results.json."""
+    from datetime import UTC, datetime
+
+    from .contracts import Recording
+    from .data import DatasetStore
+    from .gateway import LIST_PRICES, ApiKeys, LiveClient, LiveSource, ModelGateway, RecordingWriter, ReplaySource, SpendLedger
+    from .settings import Settings
+    from .verify.benchmark import RECORDING_ID, recording_info, run_benchmark, write_results
+
+    settings = Settings.from_env()
+    assert settings.artifacts_dir
+    store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
+    recording_path = settings.fixtures_dir / "benchmark" / "recording.json"
+
+    def clock() -> datetime:
+        return datetime.now(UTC)
+
+    client, gateway = None, None
+    if run_mode == "live":
+        live = settings.live
+        if live.daily_budget_usd is None or live.spend_dir is None:
+            print("benchmark: live calls need SPATIALSCOUT_DAILY_BUDGET_USD (and optionally SPATIALSCOUT_SPEND_DIR)", file=sys.stderr)
+            return 2
+        client = LiveClient(ApiKeys.from_env(env_file or live.env_file), SpendLedger(live.spend_dir, live.daily_budget_usd, clock), LIST_PRICES)
+        recording_path.unlink(missing_ok=True)
+        gateway = ModelGateway(LiveSource(client, RECORDING_ID), clock, run_mode="live", recorder=RecordingWriter(recording_path, recording_info()))
+    elif run_mode == "cached_tool_rerun":
+        gateway = ModelGateway(ReplaySource(Recording.model_validate_json(recording_path.read_text(encoding="utf-8"))), clock,
+                               run_mode="cached_tool_rerun")
+    try:
+        results = await run_benchmark(store, settings.artifacts_dir, gateway)
+    finally:
+        if client is not None:
+            await client.aclose()
+    out = settings.artifacts_dir / "GSE286184" / "benchmark"
+    path = write_results(results, out) if run_mode != "offline" else write_results(results, out / "offline")
+    summary = results["summary"]["all"]
+    print(f"wrote {path}: {summary['valid_claims']} valid and {summary['injected_claims']} injected claims; "
+          f"detection {summary['detection']['any_check']}, false rejection {summary['false_rejection']['any_check']}")
     return 0
 
 
