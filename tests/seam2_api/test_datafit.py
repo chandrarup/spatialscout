@@ -107,3 +107,19 @@ def test_the_search_broadens_until_geo_returns_records_and_survives_a_failure(cl
     client.app.state.public_search = down
     body = client.post("/api/data-fit", json={"question": "Is APOL1 in podocytes higher in FSGS?"}).json()
     assert body["datasets"] == [] and "could not be searched" in body["search_note"] and "FSGS" in body["search_url"]
+
+
+@pytest.mark.parametrize("question", [
+    "Is CD3 in T cells stable?", "CD8 T cells", "CD31 in endothelium", "CD45 cells", "aSMA in vessels",
+    "smooth muscle actin in vessels", "Podocalyxin+ cells", "collecting duct principal cells", "CKD5 biopsies",
+    "UMOD in TAL cells in DKD", "G3a CKD with A2 albuminuria",
+])
+def test_the_words_the_biopsy_screens_show_never_block_a_question(client, question):
+    body = fit(client, question, search=False)
+    assert body["answerable"], body["gaps"]
+
+
+def test_a_protein_imaged_on_kpmp_points_to_the_biopsy_and_does_not_block(client):
+    body = fit(client, "Is Podocalyxin in glomeruli lower in CKD?", search=False)
+    gap = next(g for g in body["gaps"] if g["item"] == "PODXL")
+    assert not gap["hard"] and "draw a box" in gap["why"]

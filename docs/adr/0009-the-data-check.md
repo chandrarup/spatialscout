@@ -18,9 +18,11 @@ runs, what is missing and where to get it.
   letters-only word counts only when written in capitals, and disease, cell-type and assay abbreviations never do.
   Cell types, groups, organs, species and assays come from fixed phrase lists set against the dataset's own label
   rules, groups and the KPMP enrollment categories.
-- **Hard gaps stop the run**: a gene off the panel, an unlabelled cell type, another organ, another species, or an
-  assay the workspace lacks (chromatin, methylation, metabolites, genome-wide expression). **Soft gaps** (a disease
-  the cohort lacks, outcomes, treatment, time) are shown, and a live run may go ahead on what is here.
+- **Hard gaps stop the run**: a known protein-coding gene off the panel, an unlabelled cell type, another organ,
+  another species, or an assay the workspace lacks (chromatin, methylation, metabolites, genome-wide expression).
+  **Soft gaps** are shown and a live run may go ahead on what is here: a disease the cohort lacks, outcomes, treatment,
+  time, a gene-shaped word that is no known protein-coding gene, and a gene whose protein the KPMP biopsies image
+  (the note sends the researcher to the biopsy's box audit). CKD stage codes (G3a, A2) are never read as genes.
 - **Two ways to get the rest**: the Your data page, prefilled with the question's cell type and genes and the exact
   columns the files need; and public datasets from a live NCBI GEO search (E-utilities, db=gds), most specific query
   first, topped up from broader ones. Each dataset is a record GEO returned; its technology is read from its title and
@@ -31,5 +33,6 @@ runs, what is missing and where to get it.
 
 - No model call, so the check costs nothing and plays the same in every run mode.
 - Reading by phrase lists misses wordings the lists lack; a missed need means a question runs that would have been
-  flagged, never that one is blocked wrongly. All-capitals text is not read for letters-only genes.
+  flagged. A wrong block is possible only through a word the lists misread, so the words the biopsy screens show are
+  tested never to block. All-capitals text is not read for letters-only genes.
 - GEO search quality is GEO's: results are leads to read, not claims the product makes.

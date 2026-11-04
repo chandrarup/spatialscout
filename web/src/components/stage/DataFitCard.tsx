@@ -16,10 +16,24 @@ interface Props {
   onDismiss: () => void;
 }
 
+const NEED: Record<DataFit["gaps"][number]["kind"], (items: string) => string> = {
+  gene: (x) => `a gene off the panel (${x})`,
+  cell_type: (x) => `a cell type no label covers (${x})`,
+  group: (x) => `a disease not in the cohort (${x})`,
+  organ: (x) => `${x} tissue`,
+  species: (x) => `${x} tissue`,
+  assay: (x) => `${x} data`,
+};
+
+function needs(gaps: DataFit["gaps"]): string {
+  const kinds = [...new Set(gaps.map((g) => g.kind))];
+  return kinds.map((k) => NEED[k](gaps.filter((g) => g.kind === k).map((g) => g.item).join(", "))).join(" and ");
+}
+
 function headline(fit: DataFit, canRun: boolean): string {
   const hard = fit.gaps.filter((g) => g.hard);
-  if (hard.length > 0) return `I can't prove this with the data here: it needs ${hard.map((g) => g.item).join(", ")}.`;
-  if (fit.gaps.length > 0) return `The data here answers part of this; ${fit.gaps.map((g) => g.item).join(", ")} is not in it.`;
+  if (hard.length > 0) return `I can't prove this with the data here: it needs ${needs(hard)}.`;
+  if (fit.gaps.length > 0) return `The data here answers part of this; it lacks ${needs(fit.gaps)}.`;
   if (!canRun) return "The data here can answer this, but this public demo replays recorded runs only.";
   return "The data here can answer this.";
 }

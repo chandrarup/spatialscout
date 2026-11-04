@@ -26,7 +26,7 @@ PROTEIN_NAMES = {
     "megalin": "LRP2", "cubilin": "CUBN", "uromodulin": "UMOD", "tamm-horsfall": "UMOD", "nephrin": "NPHS1",
     "podocin": "NPHS2", "podocalyxin": "PODXL", "synaptopodin": "SYNPO", "aquaporin-2": "AQP2", "aquaporin 2": "AQP2",
     "collagen i": "COL1A1", "fibronectin": "FN1", "periostin": "POSTN", "vimentin": "VIM", "kim-1": "HAVCR1",
-    "ngal": "LCN2", "renin": "REN", "apol1": "APOL1", "wt1": "WT1", "smooth muscle actin": "ACTA2", "asma": "ACTA2",
+    "ngal": "LCN2", "renin": "REN", "cd3": "CD3D", "cd8": "CD8A", "apol1": "APOL1", "wt1": "WT1", "smooth muscle actin": "ACTA2", "asma": "ACTA2",
 }
 NOT_GENES = {
     # disease groups and clinical terms
@@ -45,7 +45,7 @@ CELL_TYPES: dict[str, tuple[str, ...]] = {
     "PT": ("proximal tubule", "proximal tubular", "proximal convoluted", "pt cell"),
     "TAL": ("thick ascending limb", "loop of henle", "tal cell"),
     "DCT": ("distal convoluted", "distal tubule", "dct cell"),
-    "PC": ("principal cell",),
+    "PC": ("principal cell", "collecting duct"),
     "IC": ("intercalated",),
     "Endothelial": ("endothelial", "endothelium"),
     "Mesangial/Pericyte": ("mesangial", "pericyte"),
@@ -56,7 +56,7 @@ CELL_TYPES: dict[str, tuple[str, ...]] = {
 }
 UNLABELLED_CELLS = (
     "plasma cell", "nk cell", "natural killer", "neutrophil", "mast cell", "eosinophil", "macula densa", "juxtaglomerular",
-    "connecting tubule", "thin limb", "collecting duct", "smooth muscle", "adipocyte", "tumor cell", "tumour cell",
+    "connecting tubule", "thin limb", "smooth muscle cell", "adipocyte", "tumor cell", "tumour cell",
     "cancer cell", "stem cell", "progenitor", "renin cell", "platelet", "erythrocyte", "red blood cell",
 )
 GROUPS: dict[str, tuple[str, ...]] = {
@@ -155,8 +155,8 @@ def read_needs(question: str, vocabulary: dict[str, str]) -> dict[str, list[tupl
     shouting = len(words) >= 4 and sum(t.isupper() for t in words) > len(words) / 2  # capitals no longer mark a gene
     for index, token in enumerate(tokens):
         upper = token.upper().rstrip("+")
-        if upper in NOT_GENES or len(upper) < 2:
-            continue
+        if upper in NOT_GENES or len(upper) < 2 or re.fullmatch(r"(G[1-5]|A[1-3])[AB]?", upper):
+            continue  # CKD stage codes (G3a, A2) are aliases of real genes
         lettered = not any(ch.isdigit() for ch in token)
         if lettered and (token != token.upper() or shouting):
             continue
@@ -166,7 +166,8 @@ def read_needs(question: str, vocabulary: dict[str, str]) -> dict[str, list[tupl
         symbol = vocabulary.get(upper)
         if symbol:
             genes.setdefault(symbol, token)
-        elif re.fullmatch(r"[A-Z]{2,}[0-9]+[A-Z0-9]*", token) and not upper.startswith(("GSE", "GSM", "GPL", "PMID", "COVID")):
+        elif re.fullmatch(r"[A-Z]{2,}[0-9]+[A-Z0-9]*", token) and not upper.startswith(("GSE", "GSM", "GPL", "PMID", "COVID", "CKD", "AKI", "ESKD", "ESRD", "STAGE")) \
+                and not re.fullmatch(r"(G[1-5]|A[1-3])[AB]?", upper):
             genes.setdefault(token, token)  # gene-shaped (IGHG1, a non-coding gene): read as named, never mapped
     cells = _phrases(lower, CELL_TYPES)
     unlabelled = [(p, p) for p in UNLABELLED_CELLS if re.search(rf"(?<![a-z]){re.escape(p)}s?(?![a-z])", lower)]
@@ -205,9 +206,16 @@ def check(
             matched.append(NeedMatch(kind="gene", text=written, value=symbol, available=True, note=f"In the {dataset_id} panel."))
             continue
         protein = KPMP_PROTEIN_GENES.get(symbol)
-        note = f" Its protein ({protein}) is imaged on the KPMP CODEX biopsies." if protein else ""
-        matched.append(NeedMatch(kind="gene", text=written, value=symbol, available=False, note=f"Not in the {len(panel)}-gene {dataset_id} panel.{note}"))
-        gaps.append(DataGap(kind="gene", item=symbol, hard=True, why=f"{symbol} is not among the {len(panel)} genes {dataset_id} measured, so no count of it exists here.{note}"))
+        known = vocabulary.get(symbol.upper()) == symbol
+        if protein:
+            note = f" Its protein ({protein}) is imaged on the KPMP CODEX biopsies: open a biopsy and draw a box to audit it there."
+        elif not known:
+            note = " Not a protein-coding gene name SpatialScout knows; read as written."
+        else:
+            note = ""
+        matched.append(NeedMatch(kind="gene", text=written, value=symbol, available=bool(protein), note=f"Not in the {len(panel)}-gene {dataset_id} panel.{note}"))
+        gaps.append(DataGap(kind="gene", item=symbol, hard=known and not protein,
+                            why=f"{symbol} is not among the {len(panel)} genes {dataset_id} measured, so no RNA count of it exists here.{note}"))
     for written, label in needs["cells"]:
         ok = label in cell_types
         matched.append(NeedMatch(kind="cell_type", text=written, value=label, available=ok,

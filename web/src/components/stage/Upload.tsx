@@ -170,6 +170,7 @@ export function Upload({ prefill = null }: { prefill?: { cell_type?: string | nu
             <button type="button" disabled={state === "running"} onClick={() => run("sample")} className="mt-auto h-10 rounded-full bg-raised px-4 text-[13px] text-ink hover:bg-[#2a2d32] disabled:opacity-50">
               Try it on the sample (3 GSE286184 crops)
             </button>
+            <p className="text-center text-[11px] leading-snug text-ink-3">The sample holds GSE286184's 50 genes (NPHS1, LRP2, UMOD, …), not every gene you may ask about.</p>
             <a href="/api/upload/sample" target="_blank" rel="noreferrer" className="text-center text-[12px] text-ink-3 underline underline-offset-4 hover:text-ink">
               Download the sample files
             </a>
