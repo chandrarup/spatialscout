@@ -255,6 +255,18 @@
             "$ref": "#/definitions/AuditIndexEntry"
           },
           "type": "array"
+        },
+        "section_disclosure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How many sections and donors the dataset holds; shown with every section count."
         }
       },
       "required": [
@@ -264,7 +276,8 @@
         "sections_counted",
         "sections_left_out",
         "input_sha256",
-        "entries"
+        "entries",
+        "section_disclosure"
       ],
       "title": "AuditIndex",
       "type": "object"
@@ -1271,7 +1284,7 @@
     },
     "ConditionEffect": {
       "additionalProperties": false,
-      "description": "The difference between group means of the log2 values under one condition.",
+      "description": "The difference between group means of the log2 values under one condition (disease minus control).",
       "properties": {
         "condition": {
           "$ref": "#/definitions/ConditionName"
@@ -1296,12 +1309,86 @@
             }
           ],
           "default": null
+        },
+        "disease_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "control_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "enum": [
+                -1,
+                0,
+                1
+              ],
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "0 inside the near-zero band (\u00b10.1 log2)."
+        },
+        "valid": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Every section of both groups passes the molecule gate under the condition."
+        },
+        "invalid_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sections_used": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "required": [
         "condition",
         "effect",
-        "missing_reason"
+        "missing_reason",
+        "disease_mean",
+        "control_mean",
+        "direction",
+        "valid",
+        "invalid_reason",
+        "sections_used"
       ],
       "title": "ConditionEffect",
       "type": "object"
@@ -1405,6 +1492,147 @@
       "title": "ContrastEligibility",
       "type": "object"
     },
+    "ContrastIndex": {
+      "additionalProperties": false,
+      "description": "The committed contrast results of a dataset, with their run configuration and inputs.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "generated_by": {
+          "type": "string"
+        },
+        "citation": {
+          "type": "string"
+        },
+        "section_disclosure": {
+          "type": "string"
+        },
+        "sections_counted": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "input_sha256": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "run_configuration": {
+          "$ref": "#/definitions/ContrastRunConfiguration"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/definitions/ContrastIndexEntry"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "generated_by",
+        "citation",
+        "section_disclosure",
+        "sections_counted",
+        "sections_left_out",
+        "input_sha256",
+        "run_configuration",
+        "entries"
+      ],
+      "title": "ContrastIndex",
+      "type": "object"
+    },
+    "ContrastIndexEntry": {
+      "additionalProperties": false,
+      "description": "One committed contrast result, as the findings table lists it.",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "finding_id": {
+          "type": "string"
+        },
+        "finding_path": {
+          "type": "string"
+        },
+        "groups": {
+          "$ref": "#/definitions/Contrast"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "gene": {
+          "type": "string"
+        },
+        "disease_sections": {
+          "type": "integer"
+        },
+        "control_sections": {
+          "type": "integer"
+        },
+        "donor_distinctness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "figure": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CompositeFigure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "finding_id",
+        "finding_path",
+        "groups",
+        "label",
+        "label_rule_id",
+        "cell_type",
+        "gene",
+        "disease_sections",
+        "control_sections",
+        "donor_distinctness",
+        "figure"
+      ],
+      "title": "ContrastIndexEntry",
+      "type": "object"
+    },
     "ContrastResult": {
       "additionalProperties": false,
       "properties": {
@@ -1475,6 +1703,83 @@
             "type": "string"
           },
           "type": "array"
+        },
+        "donor_distinctness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "From the capability report, for example counts_do_not_reconcile."
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/definitions/ContrastSection"
+          },
+          "type": "array"
+        },
+        "sections_left_out": {
+          "items": {
+            "$ref": "#/definitions/LeftOutSection"
+          },
+          "type": "array"
+        },
+        "valid_conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "exploratory_per_section": {
+          "description": "The exploratory condition's values, on sections with structure masks only; never in the label (ADR-0006).",
+          "items": {
+            "$ref": "#/definitions/SectionLog2Value"
+          },
+          "type": "array"
+        },
+        "evidence_regions": {
+          "items": {
+            "$ref": "#/definitions/EvidenceRegion"
+          },
+          "type": "array"
+        },
+        "ranking_rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rules": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ContrastRules"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "section_disclosure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How many sections and donors the dataset holds; shown with every section count."
         }
       },
       "required": [
@@ -1493,9 +1798,147 @@
         "inference_reason",
         "label",
         "label_reason",
-        "source_artifact_ids"
+        "source_artifact_ids",
+        "donor_distinctness",
+        "sections",
+        "sections_left_out",
+        "valid_conditions",
+        "exploratory_per_section",
+        "evidence_regions",
+        "ranking_rule",
+        "rules",
+        "section_disclosure"
       ],
       "title": "ContrastResult",
+      "type": "object"
+    },
+    "ContrastRules": {
+      "additionalProperties": false,
+      "description": "The frozen contrast rules a result was computed under, recorded with it.",
+      "properties": {
+        "population_gate_min_cells": {
+          "type": "integer"
+        },
+        "molecule_gate_min_molecules": {
+          "type": "integer"
+        },
+        "near_zero_band_log2": {
+          "type": "number"
+        },
+        "max_stable_range_log2": {
+          "type": "number"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "normalisation": {
+          "type": "string"
+        },
+        "value_rule": {
+          "type": "string"
+        },
+        "effect_rule": {
+          "type": "string"
+        },
+        "gate_precedence": {
+          "type": "string"
+        },
+        "label_rule": {
+          "type": "string"
+        },
+        "primary_conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "exploratory_conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "population_gate_min_cells",
+        "molecule_gate_min_molecules",
+        "near_zero_band_log2",
+        "max_stable_range_log2",
+        "label_rule_id",
+        "normalisation",
+        "value_rule",
+        "effect_rule",
+        "gate_precedence",
+        "label_rule",
+        "primary_conditions",
+        "exploratory_conditions"
+      ],
+      "title": "ContrastRules",
+      "type": "object"
+    },
+    "ContrastRunConfiguration": {
+      "additionalProperties": false,
+      "description": "What a contrast batch ran: the frozen rules, conditions and the (cell type, gene) grid, fixed before computing.",
+      "properties": {
+        "rules": {
+          "$ref": "#/definitions/ContrastRules"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ConditionName"
+          },
+          "type": "array"
+        },
+        "grid": {
+          "description": "[label rule, cell type, gene] per result, per contrast.",
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "contrasts": {
+          "items": {
+            "$ref": "#/definitions/Contrast"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "rules",
+        "conditions",
+        "grid",
+        "contrasts"
+      ],
+      "title": "ContrastRunConfiguration",
+      "type": "object"
+    },
+    "ContrastSection": {
+      "additionalProperties": false,
+      "description": "One section of a contrast: its group and the fixed population count against the population gate.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "cells_labelled": {
+          "type": "integer"
+        },
+        "passes_population_gate": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "section_id",
+        "group",
+        "cells_labelled",
+        "passes_population_gate"
+      ],
+      "title": "ContrastSection",
       "type": "object"
     },
     "DatasetFilters": {
@@ -2543,13 +2986,30 @@
               "type": "null"
             }
           ]
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "enum": [
+                -1,
+                0,
+                1
+              ],
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
         "left_out_section_id",
         "condition",
         "effect",
-        "direction_kept"
+        "direction_kept",
+        "direction"
       ],
       "title": "LeaveOneSectionOut",
       "type": "object"
@@ -4598,6 +5058,29 @@
             }
           ],
           "default": null
+        },
+        "gene_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Molecules of the gene in the population kept under the condition."
+        },
+        "passes_molecule_gate": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -4606,7 +5089,9 @@
         "condition",
         "library_size",
         "log2_value",
-        "missing_reason"
+        "missing_reason",
+        "gene_molecules",
+        "passes_molecule_gate"
       ],
       "title": "SectionLog2Value",
       "type": "object"

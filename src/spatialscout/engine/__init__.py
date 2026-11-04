@@ -9,6 +9,7 @@ from .conditions import (
     conditions_for,
     inclusion_mask,
 )
+from .contrast import compute_contrast
 from .controls import label_sensitivity_check, random_thinning_control
 from .markers import HOME_CELL_TYPES, MarkerPairs, home_cell_type, load_marker_pairs
 from .population import (
@@ -34,6 +35,7 @@ __all__ = [
     "MarkerPairs",
     "audit_population",
     "audit_section",
+    "compute_contrast",
     "build_packed_region_view",
     "build_region_view",
     "gate_status",

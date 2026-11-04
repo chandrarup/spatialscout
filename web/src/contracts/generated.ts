@@ -149,6 +149,10 @@ export interface AuditIndex {
     [k: string]: string;
   };
   entries: AuditIndexEntry[];
+  /**
+   * How many sections and donors the dataset holds; shown with every section count.
+   */
+  section_disclosure: string | null;
 }
 /**
  * A section of the dataset the result does not count, with the reason (for example a duplicate).
@@ -624,7 +628,7 @@ export interface ClaimDraftedEvent {
   claim: Claim;
 }
 /**
- * The difference between group means of the log2 values under one condition.
+ * The difference between group means of the log2 values under one condition (disease minus control).
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "ConditionEffect".
@@ -633,6 +637,94 @@ export interface ConditionEffect {
   condition: ConditionName;
   effect: number | null;
   missing_reason: string | null;
+  disease_mean: number | null;
+  control_mean: number | null;
+  /**
+   * 0 inside the near-zero band (±0.1 log2).
+   */
+  direction: (-1 | 0 | 1) | null;
+  /**
+   * Every section of both groups passes the molecule gate under the condition.
+   */
+  valid: boolean | null;
+  invalid_reason: string | null;
+  sections_used: string[];
+}
+/**
+ * The committed contrast results of a dataset, with their run configuration and inputs.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ContrastIndex".
+ */
+export interface ContrastIndex {
+  schema_version: string;
+  dataset_id: string;
+  generated_by: string;
+  citation: string;
+  section_disclosure: string;
+  sections_counted: string[];
+  sections_left_out: LeftOutSection[];
+  input_sha256: {
+    [k: string]: string;
+  };
+  run_configuration: ContrastRunConfiguration;
+  entries: ContrastIndexEntry[];
+}
+/**
+ * What a contrast batch ran: the frozen rules, conditions and the (cell type, gene) grid, fixed before computing.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ContrastRunConfiguration".
+ */
+export interface ContrastRunConfiguration {
+  rules: ContrastRules;
+  conditions: ConditionName[];
+  /**
+   * [label rule, cell type, gene] per result, per contrast.
+   */
+  grid: string[][];
+  contrasts: Contrast[];
+}
+/**
+ * The frozen contrast rules a result was computed under, recorded with it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ContrastRules".
+ */
+export interface ContrastRules {
+  population_gate_min_cells: number;
+  molecule_gate_min_molecules: number;
+  near_zero_band_log2: number;
+  max_stable_range_log2: number;
+  label_rule_id: string;
+  normalisation: string;
+  value_rule: string;
+  effect_rule: string;
+  gate_precedence: string;
+  label_rule: string;
+  primary_conditions: ConditionName[];
+  exploratory_conditions: ConditionName[];
+}
+/**
+ * One committed contrast result, as the findings table lists it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ContrastIndexEntry".
+ */
+export interface ContrastIndexEntry {
+  slug: string;
+  title: string;
+  finding_id: string;
+  finding_path: string;
+  groups: Contrast;
+  label: EvidenceStatus;
+  label_rule_id: string;
+  cell_type: string;
+  gene: string;
+  disease_sections: number;
+  control_sections: number;
+  donor_distinctness: string | null;
+  figure: CompositeFigure | null;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -655,6 +747,24 @@ export interface ContrastResult {
   label: EvidenceStatus;
   label_reason: string;
   source_artifact_ids: string[];
+  /**
+   * From the capability report, for example counts_do_not_reconcile.
+   */
+  donor_distinctness: string | null;
+  sections: ContrastSection[];
+  sections_left_out: LeftOutSection[];
+  valid_conditions: ConditionName[];
+  /**
+   * The exploratory condition's values, on sections with structure masks only; never in the label (ADR-0006).
+   */
+  exploratory_per_section: SectionLog2Value[];
+  evidence_regions: EvidenceRegion[];
+  ranking_rule: string | null;
+  rules: ContrastRules | null;
+  /**
+   * How many sections and donors the dataset holds; shown with every section count.
+   */
+  section_disclosure: string | null;
 }
 /**
  * One section's library-size-normalised value, log2(CP10K + 1), under one condition.
@@ -669,6 +779,11 @@ export interface SectionLog2Value {
   library_size: number | null;
   log2_value: number | null;
   missing_reason: string | null;
+  /**
+   * Molecules of the gene in the population kept under the condition.
+   */
+  gene_molecules: number | null;
+  passes_molecule_gate: boolean | null;
 }
 /**
  * The effect recomputed without one section, and whether its direction survives.
@@ -681,6 +796,19 @@ export interface LeaveOneSectionOut {
   condition: ConditionName;
   effect: number | null;
   direction_kept: boolean | null;
+  direction: (-1 | 0 | 1) | null;
+}
+/**
+ * One section of a contrast: its group and the fixed population count against the population gate.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ContrastSection".
+ */
+export interface ContrastSection {
+  section_id: string;
+  group: string;
+  cells_labelled: number;
+  passes_population_gate: boolean;
 }
 /**
  * The quality and panel filters every validated molecule passed.
