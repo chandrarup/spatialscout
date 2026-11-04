@@ -91,6 +91,7 @@ from .finding import (
     PooledConditionValue,
     Population,
     Region,
+    RegionAuditRequest,
     SectionLog2Value,
 )
 from .controls import LabelRuleArm, LabelSensitivityCheck, RandomThinningControl

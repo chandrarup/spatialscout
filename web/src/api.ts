@@ -21,6 +21,7 @@ import type {
   ProteinAuditResult,
   RecordedBoxes,
   Region,
+  RegionAuditRequest,
   RegionView,
   ReviewRequest,
   StartInvestigationRequest,
@@ -132,6 +133,14 @@ export const api = {
     if (box) for (const key of ["x0", "y0", "x1", "y1"] as const) query.set(key, String(box[key]));
     return fetch(`/api/sections/${encodeURIComponent(sectionId)}/gate-status?${query}`, { signal }).then(json<GateStatus>);
   },
+  /** A fresh deterministic audit of one population inside a drawn box: the agent's audit operation, no model call. */
+  regionAudit: (body: RegionAuditRequest, signal?: AbortSignal) =>
+    fetch(`/api/sections/${encodeURIComponent(body.region.section_id)}/region-audit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    }).then(json<AuditResult>),
   samBoxes: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/sam-boxes`).then(json<RecordedBoxes>),
   /** SAM 3.1 on a drawn box. Errors carry the server's message (for example: no stored response for this box). */
   samOutline: async (sectionId: string, box: Region): Promise<StructureRun> => {

@@ -105,6 +105,63 @@ function runSummary(events: InvestigationEvent[]) {
   return { steps: events.filter(isStep).length, calls: calls.length, cost, minutes };
 }
 
+const RAIL_KEY = "spatialscout.railWidth";
+const DEFAULT_RAIL = 560;
+const MIN_RAIL = 300;
+const MIN_TISSUE = 360;
+
+function useNarrow(): boolean {
+  const query = "(max-width: 767px)";
+  const [narrow, setNarrow] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const list = window.matchMedia(query);
+    const on = () => setNarrow(list.matches);
+    list.addEventListener("change", on);
+    return () => list.removeEventListener("change", on);
+  }, []);
+  return narrow;
+}
+
+/** The separator between the tissue and the steps: drag it, or focus it and use the arrow keys (Home resets). */
+function SplitHandle({ width, onWidth }: { width: number; onWidth: (w: number) => void }) {
+  const clamp = (w: number, total: number) => Math.max(MIN_RAIL, Math.min(total - MIN_TISSUE, w));
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize the tissue and the agent's steps"
+      aria-valuemin={MIN_RAIL}
+      aria-valuenow={Math.round(width)}
+      tabIndex={0}
+      className="group relative z-10 w-2 shrink-0 cursor-col-resize touch-none bg-line/40 outline-none hover:bg-white/20 focus-visible:bg-white/40"
+      onKeyDown={(e) => {
+        const total = e.currentTarget.parentElement?.clientWidth ?? window.innerWidth;
+        if (e.key === "ArrowLeft") onWidth(clamp(width + 40, total));
+        else if (e.key === "ArrowRight") onWidth(clamp(width - 40, total));
+        else if (e.key === "Home") onWidth(clamp(DEFAULT_RAIL, total));
+        else return;
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onPointerDown={(e) => {
+        const parent = e.currentTarget.parentElement;
+        if (!parent) return;
+        e.currentTarget.setPointerCapture(e.pointerId);
+        const box = parent.getBoundingClientRect();
+        const move = (event: PointerEvent) => onWidth(clamp(box.right - event.clientX, box.width));
+        const up = () => {
+          window.removeEventListener("pointermove", move);
+          window.removeEventListener("pointerup", up);
+        };
+        window.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", up);
+      }}
+    >
+      <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/30 group-hover:bg-white/70" aria-hidden="true" />
+    </div>
+  );
+}
+
 export default function App() {
   const [mode, setMode] = useState<ModeInfo | null>(null);
   const [investigation, dispatch] = useReducer(reducer, null);
@@ -119,7 +176,19 @@ export default function App() {
   const [strips, setStrips] = useState<{ section: LoadedSection; role: string }[]>([]);
   const [participantId, setParticipantId] = useState<string | null>(null);
   const [focus, setFocus] = useState<TissueFocus | null>(null);
-  const [rail, setRail] = useState<Rail>("rail");
+  const [railChoice, setRail] = useState<Rail>("rail");
+  const narrow = useNarrow();
+  // On phones the tissue and the steps take turns rather than sharing a narrow row.
+  const rail: Rail = narrow && railChoice === "rail" ? "hidden" : railChoice;
+  const [railWidth, setRailWidthState] = useState(() => {
+    const saved = Number(window.localStorage.getItem(RAIL_KEY));
+    return Number.isFinite(saved) && saved >= MIN_RAIL ? saved : DEFAULT_RAIL;
+  });
+  const setRailWidth = useCallback((w: number) => {
+    setRailWidthState(w);
+    window.localStorage.setItem(RAIL_KEY, String(Math.round(w)));
+  }, []);
+  const [graphFit, setGraphFit] = useState(0);
   const [follow, setFollow] = useState(true);
   const [shownCount, setShownCount] = useState(Number.POSITIVE_INFINITY);
   const [paused, setPaused] = useState(false);
@@ -499,6 +568,10 @@ export default function App() {
             }}
             onBack={() => setStage("explore")}
             onClassic={() => setStage("classic")}
+            onAsk={(c) => {
+              setContext(c);
+              setAgentOpen(true);
+            }}
           />
         )}
         {stage === "classic" && adapters.length > 0 && (
@@ -531,15 +604,15 @@ export default function App() {
                 )}
                 <p className="mt-1 max-w-[60rem] text-[13px] leading-relaxed text-ink-2">
                   {focus
-                    ? `On screen: Xenium section ${focus.sectionId}, the region the agent cites for ${focus.cellType} ${focus.highlight.join("/")} (white box). Left of the divider, every molecule counted the usual way; right, the stricter ${CONDITION_NAMES[focus.condition] ?? focus.condition} rule, with the molecules it drops in yellow. Drag the divider.`
+                    ? `On screen: Xenium section ${focus.sectionId}, the region the agent cites for ${focus.cellType} ${focus.highlight.join("/")} (outlined). Yellow: the molecules the stricter ${CONDITION_NAMES[focus.condition] ?? focus.condition} rule drops. Switch the counting rule above the tissue, or compare both rules on the same section.`
                     : "Each dot is one RNA molecule in a Xenium kidney section. When the agent's first result arrives, the view flies to the region it cites."}
                 </p>
               </div>
-              <div className="flex min-h-0 flex-1 flex-col px-3 pb-[150px] *:flex-1">
-                <TissuePanel defaultDatasetId={datasetId} onShow={() => undefined} focus={focus} compact />
+              <div className="flex min-h-0 flex-1 flex-col px-3 pb-2 *:flex-1">
+                <TissuePanel defaultDatasetId={datasetId} focus={focus} compact />
               </div>
               {/* Milestones: glow while the agent works, then fade. */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-[176px] z-20 flex flex-col items-center gap-2">
+              <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 flex flex-col items-center gap-2">
                 {toasts.map((t) => (
                   <div key={t.key} className="milestone flex items-center gap-3 rounded-full bg-[#111214]/95 py-2 pr-5 pl-2 backdrop-blur">
                     <AgentOrb size={26} working={!t.final} />
@@ -566,28 +639,44 @@ export default function App() {
                 </button>
               )}
             </div>
+            {rail === "rail" && <SplitHandle width={railWidth} onWidth={setRailWidth} />}
             {/* The agent's steps, as a graph. */}
             {rail !== "hidden" && (
-              <aside aria-label="The agent's steps" className={`relative flex flex-col bg-[#0d0e10] ${rail === "full" ? "flex-1" : "w-[min(44vw,620px)] border-l border-line"}`}>
-                <header className="flex items-center justify-between gap-2 px-4 py-2.5">
+              <aside
+                aria-label="The agent's steps"
+                className={`relative flex min-w-0 flex-col bg-[#0d0e10] ${rail === "full" ? "flex-1" : "shrink-0"}`}
+                style={rail === "full" ? undefined : { width: `min(${railWidth}px, calc(100% - ${MIN_TISSUE}px))` }}
+              >
+                <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
                   <h2 className="text-[13px] font-semibold">
                     The agent's steps <span className="font-normal text-ink-3">· drag, zoom, click a card</span>
                   </h2>
-                  <div className="flex gap-1">
-                    {!follow && (
-                      <button type="button" onClick={() => setFollow(true)} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
-                        Follow
-                      </button>
-                    )}
+                  <div className="flex flex-wrap gap-1">
+                    <button type="button" onClick={() => setFollow(true)} disabled={follow} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink disabled:text-ink-3">
+                      {follow ? "Following the run" : "Follow evidence"}
+                    </button>
+                    <button type="button" onClick={() => setGraphFit((k) => k + 1)} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
+                      Fit graph
+                    </button>
                     <button type="button" onClick={() => setRail(rail === "full" ? "rail" : "full")} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
                       {rail === "full" ? "Show the tissue" : "Expand"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRail("rail");
+                        setRailWidth(DEFAULT_RAIL);
+                      }}
+                      className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink"
+                    >
+                      Reset layout
                     </button>
                     <button type="button" onClick={() => setRail("hidden")} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
                       Hide
                     </button>
                   </div>
                 </header>
-                <div className="relative min-h-0 flex-1 pb-[140px]">
+                <div className="relative min-h-0 flex-1">
                   <RunCanvas
                     graph={graph}
                     investigationId={shown.investigationId}
@@ -596,6 +685,7 @@ export default function App() {
                     follow={follow}
                     onFollow={setFollow}
                     zoom={rail === "full" ? 0.9 : 0.72}
+                    fitKey={graphFit}
                   />
                 </div>
               </aside>
@@ -658,7 +748,7 @@ export default function App() {
       </main>
 
       {showBar && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-3">
+        <div className={stage === "run" ? "relative z-40 flex shrink-0 justify-center border-t border-line px-3 py-2" : "pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-3"}>
           <AgentBar
             mode={mode}
             view={stage === "run" ? shown : null}

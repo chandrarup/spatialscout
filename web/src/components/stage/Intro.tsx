@@ -56,7 +56,11 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
                   </p>
                 </div>
               ))
-            : [0, 1].map((i) => <div key={i} className="bg-black" />)}
+            : [0, 1].map((i) => (
+                <div key={i} className="grid place-items-center bg-black text-[12px] text-ink-3" role={i === 0 ? "status" : undefined}>
+                  {i === 0 ? (kpmp === null ? "The biopsy images could not be loaded." : "Loading the KPMP biopsy images…") : ""}
+                </div>
+              ))}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-surface to-transparent" />
         </div>
 
@@ -65,12 +69,17 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
           <div className="rise mt-5 grid grid-cols-1 items-end gap-6 [animation-delay:100ms] lg:grid-cols-[1.2fr_1fr]">
             <div>
               <h1 className="text-[clamp(26px,3vw,40px)] leading-tight font-semibold tracking-[-0.02em]">A co-scientist for kidney research</h1>
-              <p className="mt-3 max-w-[38rem] text-[18px] leading-relaxed text-ink">
-                Delegate the work of investigating tissue images, molecular signals and supporting evidence.
+              <p className="mt-3 max-w-[40rem] text-[17px] leading-relaxed text-ink">
+                SpatialScout is a spatial-omics co-scientist powered by Meta models. Delegate investigations across kidney tissue images, gene and protein
+                measurements, and scientific literature. Specialised agents run the available tools, test alternative explanations and assemble evidence for the
+                next experiment.
               </p>
-              <p className="mt-3 max-w-[38rem] text-[13px] leading-relaxed text-ink-3">
-                Human kidney data. RNA cohort includes diabetic kidney disease (DKD); separate healthy/CKD/AKI protein images. Powered by Meta models; not an
-                official Meta product. Research use only.
+              <p className="mt-3 max-w-[40rem] text-[13px] leading-relaxed text-ink-3">
+                First completed module: does a kidney RNA signal survive a change to how molecules are assigned to cells?
+              </p>
+              <p className="mt-1 max-w-[40rem] text-[13px] leading-relaxed text-ink-3">
+                Human kidney RNA cohort includes DKD; protein images are from separate healthy/CKD/AKI specimens. Lupus nephritis (LN) is on the roadmap, not in
+                the current data. Not an official Meta product. Research use only.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">

@@ -248,6 +248,15 @@ class GateStatus(Contract):
     status: str
 
 
+class RegionAuditRequest(Contract):
+    """A box the researcher drew on one RNA section, to audit one population and its genes inside it."""
+
+    region: Region
+    cell_type: str
+    genes: list[str] = Field(min_length=1)
+    label_rule_id: str | None = None
+
+
 class SectionLog2Value(Contract):
     """One section's library-size-normalised value, log2(CP10K + 1), under one condition."""
 

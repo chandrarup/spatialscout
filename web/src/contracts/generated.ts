@@ -2697,6 +2697,21 @@ export interface Recording {
   calls: RecordedCall[];
 }
 /**
+ * A box the researcher drew on one RNA section, to audit one population and its genes inside it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "RegionAuditRequest".
+ */
+export interface RegionAuditRequest {
+  region: Region;
+  cell_type: string;
+  /**
+   * @minItems 1
+   */
+  genes: [string, ...string[]];
+  label_rule_id: string | null;
+}
+/**
  * Everything the viewer draws for one region of a section, in micrometres.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema

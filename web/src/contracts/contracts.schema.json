@@ -6802,6 +6802,44 @@
       "title": "Region",
       "type": "object"
     },
+    "RegionAuditRequest": {
+      "additionalProperties": false,
+      "description": "A box the researcher drew on one RNA section, to audit one population and its genes inside it.",
+      "properties": {
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "label_rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "region",
+        "cell_type",
+        "genes",
+        "label_rule_id"
+      ],
+      "title": "RegionAuditRequest",
+      "type": "object"
+    },
     "RegionView": {
       "additionalProperties": false,
       "description": "Everything the viewer draws for one region of a section, in micrometres.",

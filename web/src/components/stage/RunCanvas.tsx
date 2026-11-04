@@ -139,9 +139,11 @@ interface Props {
   onFollow: (follow: boolean) => void;
   /** The zoom the camera follows at; smaller in a narrow rail. */
   zoom?: number;
+  /** Fit every card in view whenever this changes. */
+  fitKey?: number;
 }
 
-function Canvas({ graph, investigationId, rightInset, onFocus, follow, onFollow, zoom: followZoom = 0.9 }: Props) {
+function Canvas({ graph, investigationId, rightInset, onFocus, follow, onFollow, zoom: followZoom = 0.9, fitKey = 0 }: Props) {
   const flow = useReactFlow();
   const laneCount = Math.max(1, graph.lanes.length);
   const centre = ((laneCount - 1) / 2) * LANE;
@@ -186,6 +188,9 @@ function Canvas({ graph, investigationId, rightInset, onFocus, follow, onFollow,
     const zoom = followZoom;
     void flow.setCenter(p.x + WIDTH / 2 + rightInset / 2 / zoom, p.y + 200, { zoom, duration: 900 });
   }, [follow, graph.latest, placed, flow, rightInset, followZoom]);
+  useEffect(() => {
+    if (fitKey) void flow.fitView({ padding: 0.15, duration: 500 });
+  }, [fitKey, flow]);
 
   return (
     <ReactFlow

@@ -37,6 +37,12 @@ interface Props {
   onPick?: (x: number, y: number) => void;
   /** Fly here (section coordinates) whenever the key changes. */
   flyTo?: { key: number; region: Region } | null;
+  /** Refit the whole strip whenever this changes. */
+  fitKey?: number;
+  /** Called after the visitor pans or zooms, with the old and new view. */
+  onViewChange?: (from: View, to: View) => void;
+  /** Move by this screen-world offset and zoom step whenever the key changes (linked navigation). */
+  nudge?: { key: number; dx: number; dy: number; dz: number } | null;
   className?: string;
 }
 
@@ -53,7 +59,7 @@ export function toWorld(width: number, x: number, y: number): [number, number] {
   return [y, width - x];
 }
 
-export function CodexView({ section, visible, gain = 1.2, boxMode = false, box = null, onBox, drift = false, fill = 1, direction = 1, phase = 0, overlays = [], onPick, flyTo = null, className = "" }: Props) {
+export function CodexView({ section, visible, gain = 1.2, boxMode = false, box = null, onBox, drift = false, fill = 1, direction = 1, phase = 0, overlays = [], onPick, flyTo = null, fitKey = 0, onViewChange, nudge = null, className = "" }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const [view, setView] = useState<View | null>(null);
@@ -77,15 +83,25 @@ export function CodexView({ section, visible, gain = 1.2, boxMode = false, box =
     return { target: [length / 2, width / 2], zoom: Math.log2(scale) };
   }, [size, length, width, fill]);
 
+  // A resize keeps the visitor's camera; only the first size, or an explicit Fit, fits the strip.
   useEffect(() => {
     if (fitted) setView((v) => v ?? fitted);
   }, [fitted]);
+  const fittedRef = useRef(fitted);
+  fittedRef.current = fitted;
+  useEffect(() => {
+    if (fitKey && fittedRef.current) setView(fittedRef.current);
+  }, [fitKey]);
+  useEffect(() => {
+    if (!nudge) return;
+    setView((v) => (v ? { target: [v.target[0] + nudge.dx, v.target[1] + nudge.dy], zoom: v.zoom + nudge.dz } : v));
+  }, [nudge?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A slow pan along the strip and back at a constant screen speed, for the first screen; it stops for good once the
   // visitor takes over. `direction` lets two strips drift opposite ways.
   useEffect(() => {
     if (!drift || touched || !fitted || !size) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.recording === "on") return;
     const scale = 2 ** fitted.zoom;
     const visibleLength = size.width / scale;
     const span = Math.max(0, (length - visibleLength) / 2);
@@ -117,12 +133,13 @@ export function CodexView({ section, visible, gain = 1.2, boxMode = false, box =
   }, [flyTo?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const matrix = useMemo(() => rotation(width), [width]);
+  const zoomBucket = view ? Math.round(view.zoom * 4) / 4 : 0;
   const channelLayers = useMemo(
     () =>
       section
-        .layers({ idPrefix: "codex", visibleChannels: visible, gain, zoom: view ? Math.round(view.zoom * 4) / 4 : 0 })
+        .layers({ idPrefix: "codex", visibleChannels: visible, gain, zoom: zoomBucket })
         .map((layer) => layer.clone({ modelMatrix: matrix })),
-    [section, visible, gain, view, matrix],
+    [section, visible, gain, zoomBucket, matrix],
   );
 
   const boxPath = (r: Region): [number, number][] => {
@@ -170,6 +187,7 @@ export function CodexView({ section, visible, gain = 1.2, boxMode = false, box =
   return (
     <div
       ref={container}
+      data-camera={view ? `${view.target[0].toFixed(1)},${view.target[1].toFixed(1)},${view.zoom.toFixed(3)}` : undefined}
       className={`relative h-full w-full overflow-hidden bg-black ${boxMode ? "cursor-crosshair" : "cursor-grab active:cursor-grabbing"} ${className}`}
       onPointerDown={(e) => {
         setTouched(true);
@@ -206,7 +224,9 @@ export function CodexView({ section, visible, gain = 1.2, boxMode = false, box =
           onViewStateChange={({ viewState, interactionState }) => {
             if (interactionState?.isDragging || interactionState?.isZooming || interactionState?.isPanning) setTouched(true);
             const next = viewState as unknown as View;
-            setView({ target: [next.target[0], next.target[1]], zoom: next.zoom });
+            const to: View = { target: [next.target[0], next.target[1]], zoom: next.zoom };
+            if (view) onViewChange?.(view, to);
+            setView(to);
           }}
           onClick={(info) => {
             if (boxMode || !onPick || !info.coordinate) return;

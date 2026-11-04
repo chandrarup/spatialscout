@@ -7,6 +7,7 @@ import { api } from "../../api";
 import type { KpmpCellMap, KpmpManifest, ProteinAuditResult, Region } from "../../contracts/generated";
 import type { DatasetAdapter, LoadedSection } from "../../datasets/adapter";
 import { KPMP_COLOURS } from "../../datasets/kpmp";
+import type { RegionSelection } from "../../selection";
 import { CodexView } from "./CodexView";
 import { labelTone } from "./RunCanvas";
 
@@ -41,6 +42,8 @@ export interface TissueContext {
   markers: string[];
   /** One sentence read back to the researcher, built only from computed values. */
   summary: string;
+  /** The exact region and source the summary was computed on. */
+  selection: RegionSelection | null;
 }
 
 type Selection = { kind: "cell"; index: number } | { kind: "box"; region: Region };
@@ -174,6 +177,18 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
   });
   const askContext = (): TissueContext => {
     const around = auditLines.length ? ` Around it: ${auditLines.join("; ")}.` : "";
+    const selected: RegionSelection | null = region
+      ? {
+          datasetId: kpmp.dataset_id,
+          sourceId: participant.participant_id,
+          assay: "CODEX protein",
+          region,
+          units: "µm",
+          markers: selection?.kind === "cell" ? selectedMarkers : [...cellMarkers],
+          pane: "explore",
+          scope: selection?.kind === "cell" ? "around a cell" : "box",
+        }
+      : null;
     if (selection?.kind === "cell" && cells) {
       const i = selection.index;
       const strongest = cells.markers
@@ -186,6 +201,7 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
         label: `cell ${cells.cell_id[i]} (${selectedMarkers.map((m) => `${m}+`).join(" ")})`,
         markers: selectedMarkers,
         summary: `Cell ${cells.cell_id[i]} on ${participant.participant_id} is ${selectedMarkers.map((m) => `${m}+`).join(" ")}: ${strongest}.${around}`,
+        selection: selected,
       };
     }
     const markers = [...cellMarkers];
@@ -195,6 +211,7 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
       label: `your ${size} box`,
       markers: markers.length ? markers : ["LRP2", "UMOD", "CD20"],
       summary: `Your ${size} box on ${participant.participant_id}.${around}`,
+      selection: selected,
     };
   };
 

@@ -3,6 +3,8 @@
 import re
 from typing import Annotated
 
+import numpy as np
+
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
@@ -21,6 +23,9 @@ from ..contracts import (
     DatasetManifest,
     LabelRuleSet,
     PackedRegionView,
+    AuditResult,
+    Region,
+    RegionAuditRequest,
     InvestigationSnapshot,
     ModeInfo,
     RegionView,
@@ -29,7 +34,7 @@ from ..contracts import (
     StartInvestigationRequest,
 )
 from ..data import DatasetStore, SectionNotIngested, SectionTables, UnknownDataset, UnknownLabelRule, UnknownSection
-from ..engine import build_packed_region_view, build_region_view, conditions_for, section_channels
+from ..engine import PRIMARY_CONDITIONS, audit_population, build_packed_region_view, build_region_view, conditions_for, section_channels
 from ..gateway import LiveRunRefused, RecordingLibrary
 from ..gateway.gate import LiveGate
 from ..settings import Settings
@@ -152,6 +157,31 @@ def packed_region_view(section_id: str, store: StoreDep, label_rule_id: str | No
     return build_packed_region_view(
         section, conditions, synthetic=store.manifest(section.dataset_id).synthetic, section_name=info.name, group=info.group
     )
+
+
+@router.post("/sections/{section_id}/region-audit")
+def region_audit(section_id: str, body: RegionAuditRequest, store: StoreDep) -> AuditResult:
+    """Audit one population inside a box drawn on this section: the same engine operation as the agent's
+    `audit_population` tool with its `roi`, deterministic and without a model call. The box is clamped to the
+    section; one box is one section, so the label is usually insufficient evidence while the counts stand."""
+    if body.region.section_id != section_id:
+        raise HTTPException(status_code=422, detail=f"the box is on section {body.region.section_id}, not {section_id}")
+    section = _section(store, section_id, body.label_rule_id)
+    xs = np.concatenate([section.molecules["x"].to_numpy(), section.cells["x"].to_numpy()])
+    ys = np.concatenate([section.molecules["y"].to_numpy(), section.cells["y"].to_numpy()])
+    r = body.region
+    x0, x1 = max(min(r.x0, r.x1), float(np.nanmin(xs))), min(max(r.x0, r.x1), float(np.nanmax(xs)))
+    y0, y1 = max(min(r.y0, r.y1), float(np.nanmin(ys))), min(max(r.y0, r.y1), float(np.nanmax(ys)))
+    if x1 <= x0 or y1 <= y0:
+        raise HTTPException(status_code=422, detail="the box has no area inside the section")
+    roi = Region(section_id=section_id, x0=x0, y0=y0, x1=x1, y1=y1)
+    group = store.section_info(section_id).group
+    try:
+        return audit_population(
+            [section], body.cell_type, body.genes, PRIMARY_CONDITIONS, section_groups={section_id: group} if group else None, roi=roi
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from None
 
 
 @router.get("/sections/{section_id}/channels")
