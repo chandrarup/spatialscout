@@ -7,6 +7,7 @@ import type {
   ClaimChallenges,
   ContrastIndex,
   ContrastResult,
+  DataFit,
   DatasetManifest,
   GateStatus,
   LabelRuleSet,
@@ -45,6 +46,8 @@ export const api = {
     fetch(`/api/sections/${encodeURIComponent(sectionId)}/region-view`).then(json<RegionView>),
   datasets: () => fetch("/api/datasets").then(json<DatasetManifest[]>),
   /** The KPMP CODEX participants, or null when this server has no KPMP artifacts. */
+  dataFit: (question: string, search: boolean) =>
+    fetch("/api/data-fit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, search }) }).then(json<DataFit>),
   kpmp: () => fetch("/api/kpmp").then((r) => (r.status === 404 ? null : json<KpmpManifest>(r))),
   kpmpFileUrl: (path: string) => `/api/kpmp/files/${path.split("/").map(encodeURIComponent).join("/")}`,
   kpmpProteinAudit: (participantId: string, populationMarker: string, marker: string, box: Region | null, signal?: AbortSignal) => {

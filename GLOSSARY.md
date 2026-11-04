@@ -264,3 +264,12 @@ _Avoid_: novelty check, prior-art search
 A researcher's own Xenium section (a transcripts file and a cells file), audited for one request and not kept.
 _Avoid_: user sample, customer data
 
+## The data check
+
+- **Data check**: before a question that no recording answers runs, the reading in code of what it needs (genes,
+  cell types, disease groups, organ, species, assay) against what the workspace holds ([ADR-0009](docs/adr/0009-the-data-check.md)).
+- **Hard gap**: a need no run here can meet (a gene off the panel, an unlabelled cell type, another organ, species or
+  assay); the question does not run. **Soft gap**: a need a run would answer only nearby (a disease the cohort lacks).
+- **Public dataset**: a GEO record the data check's live search returned for the question's needs; "audit it here"
+  only when it is human Xenium output.
+

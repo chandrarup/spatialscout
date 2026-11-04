@@ -38,6 +38,8 @@ The run made 18 model calls costing an estimated $0.29, and took 179 s from plan
 - **Voice questions** via Muse Voice Transcribe, with an editable transcript.
 - **Descriptive disease contrasts**, with no p-values ([ADR-0007](docs/adr/0007-descriptive-disease-contrasts.md)).
 - **The lab** ([ADR-0008](docs/adr/0008-the-lab-and-uploaded-sections.md)). After the verdict, Muse Wonder dispatches sub-agents that run at the same time: a literature agent (Europe PMC records, read by Muse Spark, every statement cited and checked against the records fetched), a KPMP protein cross-check, and a figure agent that draws journal-width SVG/PDF figures. The report (what happened, why, next steps) is assembled in code. Recorded live on the featured run for about $0.08 in total.
+- **The data check** ([ADR-0009](docs/adr/0009-the-data-check.md)). Before a new question runs, code reads what it needs and sets it against the data here. If it needs a gene off the panel, another cell type, disease, organ or species, SpatialScout says so and offers two ways on: audit your own sections (prefilled), or public datasets from a live GEO search, with human Xenium sets marked as auditable here.
+- **Four KPMP biopsies**: two healthy references (164-17, 165-13), one CKD (31-10013) and one AKI (30-11101), enrollment categories from the KPMP atlas.
 - **Your data.** Upload or link Xenium sections (transcripts and cells files, up to 40 MB per request). The same engine audits them, in temporary storage deleted when the request ends; nothing is stored or sent to a model. A three-section sample is bundled.
 - **Run modes:** immutable replay, cached tool rerun, and live. Live runs are gated by a passcode and a file-locked daily budget.
 

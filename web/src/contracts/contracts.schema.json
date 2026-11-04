@@ -2322,6 +2322,121 @@
       "title": "ContrastSection",
       "type": "object"
     },
+    "DataFit": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "answerable": {
+          "description": "No hard gap: a run on this workspace can address the question.",
+          "type": "boolean"
+        },
+        "matched": {
+          "items": {
+            "$ref": "#/definitions/NeedMatch"
+          },
+          "type": "array"
+        },
+        "gaps": {
+          "items": {
+            "$ref": "#/definitions/DataGap"
+          },
+          "type": "array"
+        },
+        "have": {
+          "description": "One sentence: what the workspace holds.",
+          "type": "string"
+        },
+        "upload_needs": {
+          "description": "What the researcher's own sections must contain for this question.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "upload_prefill": {
+          "$ref": "#/definitions/UploadPrefill"
+        },
+        "related_recordings": {
+          "description": "Recorded questions on the same genes or cell types.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "search_query": {
+          "type": "string"
+        },
+        "search_url": {
+          "type": "string"
+        },
+        "datasets": {
+          "items": {
+            "$ref": "#/definitions/PublicDataset"
+          },
+          "type": "array"
+        },
+        "search_note": {
+          "description": "Which query returned the datasets, or why the search could not run.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "dataset_id",
+        "answerable",
+        "matched",
+        "gaps",
+        "have",
+        "upload_needs",
+        "upload_prefill",
+        "related_recordings",
+        "search_query",
+        "search_url",
+        "datasets",
+        "search_note"
+      ],
+      "title": "DataFit",
+      "type": "object"
+    },
+    "DataGap": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "gene",
+            "cell_type",
+            "group",
+            "organ",
+            "species",
+            "assay"
+          ],
+          "type": "string"
+        },
+        "item": {
+          "type": "string"
+        },
+        "why": {
+          "type": "string"
+        },
+        "hard": {
+          "description": "True when no run on this workspace can answer it (a gene off the panel, another organ, species or assay); false when a run would answer a nearby question instead.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "item",
+        "why",
+        "hard"
+      ],
+      "title": "DataGap",
+      "type": "object"
+    },
     "DatasetFilters": {
       "additionalProperties": false,
       "description": "The quality and panel filters every validated molecule passed.",
@@ -3534,7 +3649,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Clinical values from downloaded KPMP files only; empty when none is downloaded.",
+          "description": "Clinical values from KPMP sources only (the atlas's enrollment category); empty when none was fetched.",
           "type": "object"
         },
         "clinical_note": {
@@ -3870,16 +3985,8 @@
           "type": "string"
         },
         "query": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Literature only: a Europe PMC query (boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human')."
+          "description": "Required for a literature task: a Europe PMC query in boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human'. An empty string for every other agent.",
+          "type": "string"
         }
       },
       "required": [
@@ -4995,6 +5102,47 @@
         "included"
       ],
       "title": "MoleculeColumns",
+      "type": "object"
+    },
+    "NeedMatch": {
+      "additionalProperties": false,
+      "description": "One thing the question names, and whether the workspace holds it.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "gene",
+            "cell_type",
+            "group",
+            "organ",
+            "species",
+            "assay"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "description": "As written in the question.",
+          "type": "string"
+        },
+        "value": {
+          "description": "What it was read as: an HGNC symbol, a cell-type label, a disease group, an organ, a species or an assay.",
+          "type": "string"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "note": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "text",
+        "value",
+        "available",
+        "note"
+      ],
+      "title": "NeedMatch",
       "type": "object"
     },
     "OpenQuestion": {
@@ -6310,6 +6458,73 @@
         "source_participant_id"
       ],
       "title": "ProteinThreshold",
+      "type": "object"
+    },
+    "PublicDataset": {
+      "additionalProperties": false,
+      "description": "One repository record, as returned. `technology` and `matches` are read from its title and summary by code.",
+      "properties": {
+        "accession": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "samples": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "published": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "technology": {
+          "type": "string"
+        },
+        "auditable_here": {
+          "description": "Human Xenium output (GEO's taxon), which the Your data page audits as uploaded.",
+          "type": "boolean"
+        },
+        "matches": {
+          "description": "Which of the question's needs the title or summary names.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "accession",
+        "title",
+        "summary",
+        "samples",
+        "published",
+        "technology",
+        "auditable_here",
+        "matches",
+        "url"
+      ],
+      "title": "PublicDataset",
       "type": "object"
     },
     "PublicationFigure": {
@@ -8003,6 +8218,34 @@
         "latency_ms"
       ],
       "title": "Transcription",
+      "type": "object"
+    },
+    "UploadPrefill": {
+      "additionalProperties": false,
+      "properties": {
+        "cell_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "cell_type",
+        "genes"
+      ],
+      "title": "UploadPrefill",
       "type": "object"
     },
     "VerdictEvent": {

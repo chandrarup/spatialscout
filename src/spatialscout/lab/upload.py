@@ -7,7 +7,7 @@ parts) that is deleted when the request ends; the figure is drawn in a temporary
 is stored and no model is called, so no part of the data leaves this server. The same validation, frozen label rules (with GSE286184's pooled gene scales) and audit as GSE286184 run on
 them, and the publication figure is returned inline.
 
-Label rules are frozen on GSE286184's 5K-panel markers: a panel without those markers leaves cells unlabelled, and
+Label rules are frozen on GSE286184's 50-gene panel markers: a panel without those markers leaves cells unlabelled, and
 the result says so. An audit result needs at least three eligible sections, as everywhere else."""
 
 import base64

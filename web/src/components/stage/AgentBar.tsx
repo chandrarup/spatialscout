@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ModeInfo } from "../../contracts/generated";
 import type { InvestigationView } from "../../investigation";
 import { QuestionBar } from "../QuestionBar";
+import { DataFitCard } from "./DataFitCard";
 import type { TissueContext } from "./Explore";
 import { KIND_LINE } from "./RunCanvas";
 import { type RunNode, modelName } from "./runGraph";
@@ -38,6 +39,10 @@ interface Props {
   open: boolean;
   onOpen: (open: boolean) => void;
   onAsk: (question: string) => void;
+  /** The question being checked against the data, before it runs. */
+  checking: string | null;
+  /** What the asked question needs that the data here lacks, and where to get it. */
+  dataFit: Omit<React.ComponentProps<typeof DataFitCard>, "onAsk"> | null;
   onApprove: () => void;
   onReject: () => void;
   approving: boolean;
@@ -257,15 +262,21 @@ export function AgentBar(props: Props) {
           </svg>
         </button>
       </header>
-      <p className="mt-3 text-[14px] leading-relaxed text-ink">
-        <Typed text={greeting} speed={110} />
-      </p>
-      {context && (
+      {props.checking ? (
+        <p className="shimmer-text mt-3 text-[14px] leading-relaxed">Checking what this question needs against the data here…</p>
+      ) : props.dataFit ? (
+        <DataFitCard {...props.dataFit} onAsk={props.onAsk} />
+      ) : (
+        <p className="mt-3 text-[14px] leading-relaxed text-ink">
+          <Typed text={greeting} speed={110} />
+        </p>
+      )}
+      {context && !props.dataFit && (
         <button type="button" onClick={props.onClearContext} className="mt-1 text-[12px] text-ink-3 hover:text-ink">
           Clear the selection
         </button>
       )}
-      {!props.busy && runs.length > 0 && (
+      {!props.busy && !props.dataFit && !props.checking && runs.length > 0 && (
         <ul className="mt-3 flex flex-col gap-0.5">
           {runs.map((r) => (
             <li key={r.recording_id}>

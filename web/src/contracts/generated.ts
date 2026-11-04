@@ -1092,6 +1092,103 @@ export interface ContrastSection {
   passes_population_gate: boolean;
 }
 /**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DataFit".
+ */
+export interface DataFit {
+  question: string;
+  dataset_id: string;
+  /**
+   * No hard gap: a run on this workspace can address the question.
+   */
+  answerable: boolean;
+  matched: NeedMatch[];
+  gaps: DataGap[];
+  /**
+   * One sentence: what the workspace holds.
+   */
+  have: string;
+  /**
+   * What the researcher's own sections must contain for this question.
+   */
+  upload_needs: string[];
+  upload_prefill: UploadPrefill;
+  /**
+   * Recorded questions on the same genes or cell types.
+   */
+  related_recordings: string[];
+  search_query: string;
+  search_url: string;
+  datasets: PublicDataset[];
+  /**
+   * Which query returned the datasets, or why the search could not run.
+   */
+  search_note: string;
+}
+/**
+ * One thing the question names, and whether the workspace holds it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "NeedMatch".
+ */
+export interface NeedMatch {
+  kind: "gene" | "cell_type" | "group" | "organ" | "species" | "assay";
+  /**
+   * As written in the question.
+   */
+  text: string;
+  /**
+   * What it was read as: an HGNC symbol, a cell-type label, a disease group, an organ, a species or an assay.
+   */
+  value: string;
+  available: boolean;
+  note: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DataGap".
+ */
+export interface DataGap {
+  kind: "gene" | "cell_type" | "group" | "organ" | "species" | "assay";
+  item: string;
+  why: string;
+  /**
+   * True when no run on this workspace can answer it (a gene off the panel, another organ, species or assay); false when a run would answer a nearby question instead.
+   */
+  hard: boolean;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "UploadPrefill".
+ */
+export interface UploadPrefill {
+  cell_type: string | null;
+  genes: string[];
+}
+/**
+ * One repository record, as returned. `technology` and `matches` are read from its title and summary by code.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "PublicDataset".
+ */
+export interface PublicDataset {
+  accession: string;
+  title: string;
+  summary: string;
+  samples: number | null;
+  published: string | null;
+  technology: string;
+  /**
+   * Human Xenium output (GEO's taxon), which the Your data page audits as uploaded.
+   */
+  auditable_here: boolean;
+  /**
+   * Which of the question's needs the title or summary names.
+   */
+  matches: string[];
+  url: string;
+}
+/**
  * The quality and panel filters every validated molecule passed.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1253,9 +1350,9 @@ export interface LabTaskProposal {
    */
   reason: string;
   /**
-   * Literature only: a Europe PMC query (boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human').
+   * Required for a literature task: a Europe PMC query in boolean syntax, for example '(LRP2 OR megalin) AND podocyte AND human'. An empty string for every other agent.
    */
-  query: string | null;
+  query: string;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1869,7 +1966,7 @@ export interface KpmpParticipant {
   mask_note: string;
   channels: KpmpChannel[];
   /**
-   * Clinical values from downloaded KPMP files only; empty when none is downloaded.
+   * Clinical values from KPMP sources only (the atlas's enrollment category); empty when none was fetched.
    */
   clinical: {
     [k: string]: string;

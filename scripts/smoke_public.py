@@ -38,6 +38,13 @@ def main(url: str) -> int:
         print("side by side: two KPMP strips and four protein audit results")
 
         page.get_by_role("button", name="Talk to SpatialScout").click()
+        box = page.get_by_placeholder("Ask about a gene, a cell type, a condition…")
+        box.fill("Is APOL1 in podocytes higher in FSGS?")
+        box.press("Enter")
+        expect(page.get_by_test_id("data-fit")).to_contain_text("APOL1", timeout=30_000)
+        expect(page.get_by_role("button", name="Audit your data")).to_be_visible()
+        print("data check: an off-panel gene is named, with the upload and public-dataset paths")
+        page.get_by_role("button", name="Ask something else").click()
         started = time.monotonic()
         page.get_by_role("button", name=GOLDEN).click()
         expect(page.locator(".react-flow__node").first).to_be_visible(timeout=30_000)

@@ -16,7 +16,7 @@ import { Upload } from "./components/stage/Upload";
 import { RunCanvas } from "./components/stage/RunCanvas";
 import { buildGraph, isStep, playbackDelay } from "./components/stage/runGraph";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
-import type { AuditIndex, DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, RunMode } from "./contracts/generated";
+import type { AuditIndex, DataFit, DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, RunMode } from "./contracts/generated";
 import type { DatasetAdapter, LoadedSection } from "./datasets/adapter";
 import { kpmpAdapter } from "./datasets/kpmp";
 import { moleculeAdapter } from "./datasets/molecules";
@@ -111,6 +111,7 @@ export default function App() {
   const [context, setContext] = useState<TissueContext | null>(null);
   const [approving, setApproving] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
+  const [uploadPrefill, setUploadPrefill] = useState<DataFit["upload_prefill"] | null>(null);
   const [kpmp, setKpmp] = useState<KpmpManifest | null | undefined>(undefined);
   const [audits, setAudits] = useState<AuditIndex | null>(null);
   const [strips, setStrips] = useState<{ section: LoadedSection; role: string }[]>([]);
@@ -278,8 +279,37 @@ export default function App() {
     return mode?.dataset_id ?? null;
   };
 
+  // Before a question that no recording answers runs, the data check says what it needs that the workspace lacks.
+  const [fit, setFit] = useState<DataFit | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [checking, setChecking] = useState<string | null>(null);
+  const canRun = mode?.default_run_mode === "live";
+  const recorded = (question: string) => mode?.recordings.some((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase()) ?? false;
+
   const ask = (question: string) => {
     setProblem(null);
+    setFit(null);
+    if (recorded(question)) return start(question);
+    setChecking(question);
+    setAgentOpen(true);
+    api
+      .dataFit(question, false)
+      .then((first) => {
+        if (first.answerable && first.gaps.length === 0 && canRun) return start(question);
+        setFit(first);
+        if (first.gaps.length === 0) return;
+        setSearching(true);
+        return api
+          .dataFit(question, true)
+          .then((full) => setFit((now) => (now?.question === question ? full : now)))
+          .finally(() => setSearching(false));
+      })
+      .catch(() => start(question))
+      .finally(() => setChecking(null));
+  };
+
+  const start = (question: string) => {
+    setFit(null);
     setContext(null);
     api
       .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: runsOn(question), regions: [] })
@@ -537,7 +567,7 @@ export default function App() {
             }
           />
         )}
-        {stage === "upload" && <Upload />}
+        {stage === "upload" && <Upload key={JSON.stringify(uploadPrefill)} prefill={uploadPrefill} />}
         {stage === "section" && (
           <div className="flex h-full flex-col gap-2 p-4 *:flex-1">
             <button type="button" onClick={() => setStage(investigation?.verdict ? "results" : "run")} className="h-9 flex-none! self-start rounded-full bg-raised px-4 text-[13px] text-ink hover:bg-[#2a2d32]">
@@ -578,6 +608,24 @@ export default function App() {
             open={agentOpen}
             onOpen={setAgentOpen}
             onAsk={ask}
+            checking={checking}
+            dataFit={
+              fit
+                ? {
+                    fit,
+                    searching,
+                    canRun,
+                    onAskAnyway: () => start(fit.question),
+                    onUpload: (prefill) => {
+                      setUploadPrefill(prefill);
+                      setFit(null);
+                      setAgentOpen(false);
+                      setStage("upload");
+                    },
+                    onDismiss: () => setFit(null),
+                  }
+                : null
+            }
             onApprove={() => decide(api.approve)}
             onReject={() => decide(api.reject)}
             approving={approving}

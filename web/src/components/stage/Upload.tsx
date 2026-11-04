@@ -33,11 +33,12 @@ interface Audit {
   handling: string;
 }
 
-export function Upload() {
+/** `prefill`: the cell type and genes of a question the data check sent here. */
+export function Upload({ prefill = null }: { prefill?: { cell_type?: string | null; genes?: string[] } | null }) {
   const [pairs, setPairs] = useState<{ t: File | null; c: File | null }[]>([{ t: null, c: null }]);
   const [links, setLinks] = useState("");
-  const [cellType, setCellType] = useState("Podocyte");
-  const [genes, setGenes] = useState("NPHS1");
+  const [cellType, setCellType] = useState(prefill?.cell_type && CELL_TYPES.includes(prefill.cell_type) ? prefill.cell_type : "Podocyte");
+  const [genes, setGenes] = useState(prefill?.genes?.length ? prefill.genes.join(", ") : "NPHS1");
   const [state, setState] = useState<"idle" | "running">("idle");
   const [audit, setAudit] = useState<Audit | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
@@ -104,7 +105,7 @@ export function Upload() {
           <p className="mt-3 flex items-start gap-2 rounded-2xl bg-[#11150a] px-4 py-3 text-[13px] leading-relaxed text-ink-2">
             <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-stable" />
             Nothing is kept. Files sit in temporary storage for the one request and are deleted when it ends; nothing is stored or sent to a model. Up to 40 MB per request. Cell types use label
-            rules frozen on the GSE286184 5K panel, so other panels may leave cells unlabelled.
+            rules frozen on the GSE286184 50-gene panel, so other panels may leave cells unlabelled.
           </p>
         </div>
 

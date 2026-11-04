@@ -17,6 +17,7 @@ from ..gateway.gate import LiveGate
 from ..settings import Settings
 from .audit_routes import router as audit_router
 from .kpmp_routes import router as kpmp_router
+from .datafit_routes import router as datafit_router
 from .upload_routes import refuse_oversized_uploads
 from .upload_routes import router as upload_router
 from .routes import router
@@ -87,6 +88,7 @@ def create_app(
     app.include_router(structure_router, prefix="/api")
     app.include_router(kpmp_router, prefix="/api")
     app.include_router(upload_router, prefix="/api")
+    app.include_router(datafit_router, prefix="/api")
     app.middleware("http")(refuse_oversized_uploads)
     if settings.web_dist is not None and (settings.web_dist / "index.html").is_file():
         app.mount("/", WebApp(directory=settings.web_dist, html=True), name="web")
