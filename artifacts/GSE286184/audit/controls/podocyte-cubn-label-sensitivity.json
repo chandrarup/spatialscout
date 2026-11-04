@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-3e866d6f4ca7fc60",
+ "control_id": "ctl-41d100b9b18f3010",
  "dataset_id": "GSE286184",
  "cell_type": "Podocyte",
  "genes": [
@@ -11,7 +11,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-bf7f49db1b84a5fe",
+   "finding_id": "fnd-b071b0dd3e2e4702",
    "cells_labelled": 8004,
    "cells_labelled_by_section": {
     "GSM8720409": 164,
@@ -119,7 +119,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-1818f45d2ab25bb3",
+   "finding_id": "fnd-994a1b6a7600f77a",
    "cells_labelled": 6347,
    "cells_labelled_by_section": {
     "GSM8720409": 136,

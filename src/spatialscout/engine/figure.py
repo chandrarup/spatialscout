@@ -45,11 +45,13 @@ def render_composite_figure(
     *,
     title: str,
     rank: int = 1,
+    disclosure: str | None = None,
 ) -> CompositeFigure:
     """Write `<finding_id>.png` into `out_dir` and describe it. `sections` holds the section of the evidence
     region (under the result's label rule)."""
     figure, (panel_a, panel_b) = plt.subplots(1, 2, figsize=(12, 5.2), gridspec_kw={"width_ratios": [1.15, 1]})
-    figure.suptitle(f"{title}\nEvidence label: {result.label.value.replace('_', ' ')}", fontsize=11)
+    figure.suptitle(f"{title}\nEvidence label: {result.label.value.replace('_', ' ')}" + (f"\n{disclosure}" if disclosure else ""),
+                    fontsize=11 if not disclosure else 9.5)
     a_text = _panel_a(panel_a, result)
     region = next((r for r in result.evidence_regions if r.rank == rank), None)
     crop = None

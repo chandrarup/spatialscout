@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-9f1e797a786797de",
+ "control_id": "ctl-832c2cb9a614ff8a",
  "dataset_id": "GSE286184",
  "cell_type": "Mesangial/Pericyte",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-01a451c05dfb5571",
+   "finding_id": "fnd-8989af9d28dc7b58",
    "cells_labelled": 33740,
    "cells_labelled_by_section": {
     "GSM8720409": 540,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-7ed3d1d16767fe06",
+   "finding_id": "fnd-f0b0880502a12847",
    "cells_labelled": 33740,
    "cells_labelled_by_section": {
     "GSM8720409": 540,

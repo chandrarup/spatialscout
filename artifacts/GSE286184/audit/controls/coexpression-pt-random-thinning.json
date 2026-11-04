@@ -1,8 +1,8 @@
 {
  "schema_version": "1.0",
  "control_kind": "random_thinning",
- "control_id": "ctl-bdec4d7e65644c19",
- "finding_id": "fnd-51bb003581415e7f",
+ "control_id": "ctl-1d61282b318e9313",
+ "finding_id": "fnd-fcbf1f557657e699",
  "dataset_id": "GSE286184",
  "label_rule_id": "full-panel-v1",
  "cell_type": "PT",

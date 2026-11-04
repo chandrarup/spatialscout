@@ -229,6 +229,7 @@ class AuditIndex(Contract):
     sections_left_out: list[LeftOutSection]
     input_sha256: dict[str, str] = Field(description="sha256 of each input artifact, by path.")
     entries: list[AuditIndexEntry]
+    section_disclosure: str | None = Field(default=None, description="How many sections and donors the dataset holds; shown with every section count.")
 
 
 class GateStatus(Contract):
@@ -256,14 +257,22 @@ class SectionLog2Value(Contract):
     library_size: int | None = None
     log2_value: float | None
     missing_reason: str | None = None
+    gene_molecules: int | None = Field(default=None, description="Molecules of the gene in the population kept under the condition.")
+    passes_molecule_gate: bool | None = None
 
 
 class ConditionEffect(Contract):
-    """The difference between group means of the log2 values under one condition."""
+    """The difference between group means of the log2 values under one condition (disease minus control)."""
 
     condition: ConditionName
     effect: float | None
     missing_reason: str | None = None
+    disease_mean: float | None = None
+    control_mean: float | None = None
+    direction: Literal[-1, 0, 1] | None = Field(default=None, description="0 inside the near-zero band (±0.1 log2).")
+    valid: bool | None = Field(default=None, description="Every section of both groups passes the molecule gate under the condition.")
+    invalid_reason: str | None = None
+    sections_used: list[str] = Field(default_factory=list)
 
 
 class LeaveOneSectionOut(Contract):
@@ -273,6 +282,33 @@ class LeaveOneSectionOut(Contract):
     condition: ConditionName
     effect: float | None
     direction_kept: bool | None
+    direction: Literal[-1, 0, 1] | None = None
+
+
+class ContrastSection(Contract):
+    """One section of a contrast: its group and the fixed population count against the population gate."""
+
+    section_id: str
+    group: str
+    cells_labelled: int
+    passes_population_gate: bool
+
+
+class ContrastRules(Contract):
+    """The frozen contrast rules a result was computed under, recorded with it."""
+
+    population_gate_min_cells: int
+    molecule_gate_min_molecules: int
+    near_zero_band_log2: float
+    max_stable_range_log2: float
+    label_rule_id: str
+    normalisation: str
+    value_rule: str
+    effect_rule: str
+    gate_precedence: str
+    label_rule: str
+    primary_conditions: list[ConditionName]
+    exploratory_conditions: list[ConditionName] = Field(default_factory=list)
 
 
 class ContrastResult(Contract):
@@ -292,6 +328,59 @@ class ContrastResult(Contract):
     label: EvidenceStatus
     label_reason: str
     source_artifact_ids: list[str] = Field(default_factory=list)
+    donor_distinctness: str | None = Field(default=None, description="From the capability report, for example counts_do_not_reconcile.")
+    sections: list[ContrastSection] = Field(default_factory=list)
+    sections_left_out: list[LeftOutSection] = Field(default_factory=list)
+    valid_conditions: list[ConditionName] = Field(default_factory=list)
+    exploratory_per_section: list[SectionLog2Value] = Field(
+        default_factory=list, description="The exploratory condition's values, on sections with structure masks only; never in the label (ADR-0006)."
+    )
+    evidence_regions: list[EvidenceRegion] = Field(default_factory=list)
+    ranking_rule: str | None = None
+    rules: ContrastRules | None = None
+    section_disclosure: str | None = Field(default=None, description="How many sections and donors the dataset holds; shown with every section count.")
+
+
+class ContrastIndexEntry(Contract):
+    """One committed contrast result, as the findings table lists it."""
+
+    slug: str
+    title: str
+    finding_id: str
+    finding_path: str
+    groups: Contrast
+    label: EvidenceStatus
+    label_rule_id: str
+    cell_type: str
+    gene: str
+    disease_sections: int
+    control_sections: int
+    donor_distinctness: str | None = None
+    figure: CompositeFigure | None = None
+
+
+class ContrastRunConfiguration(Contract):
+    """What a contrast batch ran: the frozen rules, conditions and the (cell type, gene) grid, fixed before computing."""
+
+    rules: ContrastRules
+    conditions: list[ConditionName]
+    grid: list[list[str]] = Field(description="[label rule, cell type, gene] per result, per contrast.")
+    contrasts: list[Contrast]
+
+
+class ContrastIndex(Contract):
+    """The committed contrast results of a dataset, with their run configuration and inputs."""
+
+    schema_version: str = SCHEMA_VERSION
+    dataset_id: str
+    generated_by: str
+    citation: str
+    section_disclosure: str
+    sections_counted: list[str]
+    sections_left_out: list[LeftOutSection]
+    input_sha256: dict[str, str]
+    run_configuration: ContrastRunConfiguration
+    entries: list[ContrastIndexEntry]
 
 
 Finding = Annotated[AuditResult | ContrastResult, Field(discriminator="finding_kind")]

@@ -1,8 +1,8 @@
 {
  "schema_version": "1.0",
  "control_kind": "random_thinning",
- "control_id": "ctl-77c121df1c1eab8c",
- "finding_id": "fnd-7ed3d1d16767fe06",
+ "control_id": "ctl-febd6306731cef72",
+ "finding_id": "fnd-f0b0880502a12847",
  "dataset_id": "GSE286184",
  "label_rule_id": "full-panel-v1",
  "cell_type": "Mesangial/Pericyte",

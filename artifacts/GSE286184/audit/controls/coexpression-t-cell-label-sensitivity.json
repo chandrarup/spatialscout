@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-e9099eea50ccdddb",
+ "control_id": "ctl-18d207a35236f91d",
  "dataset_id": "GSE286184",
  "cell_type": "T cell",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-4ae0ea5feec8febd",
+   "finding_id": "fnd-f3832da1054a6225",
    "cells_labelled": 11371,
    "cells_labelled_by_section": {
     "GSM8720409": 147,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-e425521ebcbf7063",
+   "finding_id": "fnd-e66d4dffa14bd2aa",
    "cells_labelled": 11371,
    "cells_labelled_by_section": {
     "GSM8720409": 147,

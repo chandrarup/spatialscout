@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-7536342f6f99e50e",
+ "control_id": "ctl-ec13b668a47ba9d9",
  "dataset_id": "GSE286184",
  "cell_type": "Endothelial",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-ec703813db4e8eef",
+   "finding_id": "fnd-bdbd7df308f9dd23",
    "cells_labelled": 64965,
    "cells_labelled_by_section": {
     "GSM8720409": 1028,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-a4d6eed53118c398",
+   "finding_id": "fnd-8bcb24712ec08cc2",
    "cells_labelled": 64965,
    "cells_labelled_by_section": {
     "GSM8720409": 1028,

@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-799bd3a667d7fbd4",
+ "control_id": "ctl-16a4cb37b7383ca0",
  "dataset_id": "GSE286184",
  "cell_type": "Fibroblast",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-f1f43da60dee345f",
+   "finding_id": "fnd-43066356461fc98e",
    "cells_labelled": 39549,
    "cells_labelled_by_section": {
     "GSM8720409": 145,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-bfbc217c9b870e1d",
+   "finding_id": "fnd-c23955f9cdc2f1c6",
    "cells_labelled": 39549,
    "cells_labelled_by_section": {
     "GSM8720409": 145,

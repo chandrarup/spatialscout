@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-96584d7e250bf8fb",
+ "control_id": "ctl-84c084cded894448",
  "dataset_id": "GSE286184",
  "cell_type": "Myeloid",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-5174dd921403db8e",
+   "finding_id": "fnd-5c94311386633125",
    "cells_labelled": 39411,
    "cells_labelled_by_section": {
     "GSM8720409": 385,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-6cdd664781e14004",
+   "finding_id": "fnd-da81c00af4b6bfa6",
    "cells_labelled": 39411,
    "cells_labelled_by_section": {
     "GSM8720409": 385,

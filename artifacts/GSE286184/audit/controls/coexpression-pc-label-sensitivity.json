@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-f6d9f5b68066120f",
+ "control_id": "ctl-c5d8d9fe9a17180b",
  "dataset_id": "GSE286184",
  "cell_type": "PC",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-8ec450b0f2ae2aaf",
+   "finding_id": "fnd-c4478816380841ae",
    "cells_labelled": 35568,
    "cells_labelled_by_section": {
     "GSM8720409": 1294,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-2e36de137f4e9393",
+   "finding_id": "fnd-f26612daf35e4d02",
    "cells_labelled": 35568,
    "cells_labelled_by_section": {
     "GSM8720409": 1294,

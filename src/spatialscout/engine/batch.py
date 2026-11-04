@@ -20,6 +20,7 @@ from ..contracts import AuditIndex, AuditIndexEntry, AuditResult, ConditionName,
 from ..data import FULL_PANEL_RULE, NPHS1_ANCHORED_RULE, DatasetStore
 from ..data.label_rules import MARKERS
 from .conditions import PRIMARY_CONDITIONS
+from .contrast_batch import section_disclosure
 from .controls import label_sensitivity_check, random_thinning_control
 from .figure import render_composite_figure
 from .markers import FROZEN_MARKER_PAIRS
@@ -67,6 +68,7 @@ def run_batch(store: DatasetStore, out_dir: Path, repo_root: Path, log: Callable
     groups = {s.section_id: s.group for s in counted if s.group}
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "controls").mkdir(exist_ok=True)
+    disclosure = section_disclosure(store)
     by_rule: dict[str, list] = {}
     for rule in sorted({s.label_rule_id for s in specs}):
         started = time.perf_counter()
@@ -84,7 +86,7 @@ def run_batch(store: DatasetStore, out_dir: Path, repo_root: Path, log: Callable
         control_path = f"audit/controls/{spec.slug}-random-thinning.json"
         _write(out_dir.parent / finding_path, result)
         _write(out_dir.parent / control_path, control)
-        figure = render_composite_figure(result, {s.section_id: s for s in sections}, out_dir / "figures", title=spec.title)
+        figure = render_composite_figure(result, {s.section_id: s for s in sections}, out_dir / "figures", title=spec.title, disclosure=disclosure)
         figure = figure.model_copy(update={"path": f"audit/{figure.path}"})
         entry = AuditIndexEntry(
             slug=spec.slug,
@@ -122,6 +124,7 @@ def run_batch(store: DatasetStore, out_dir: Path, repo_root: Path, log: Callable
         sections_left_out=[{"section_id": k, "reason": v} for k, v in sorted(left_out.items())],
         input_sha256={p.as_posix(): hashlib.sha256((repo_root / p).read_bytes()).hexdigest() for p in inputs},
         entries=entries,
+        section_disclosure=disclosure,
     )
     _write(out_dir / "index.json", index)
     return index

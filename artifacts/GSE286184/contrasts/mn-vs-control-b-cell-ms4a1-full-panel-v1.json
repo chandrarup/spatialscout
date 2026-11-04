@@ -1,0 +1,911 @@
+{
+ "schema_version": "1.0",
+ "finding_kind": "contrast",
+ "finding_id": "fnd-db653e01a5590817",
+ "dataset_id": "GSE286184",
+ "groups": {
+  "disease": "MN",
+  "control": "Control"
+ },
+ "population": {
+  "label_rule_id": "full-panel-v1",
+  "cell_type": "B cell"
+ },
+ "gene": "MS4A1",
+ "per_section": [
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "condition": "default",
+   "library_size": 644,
+   "log2_value": 9.841012430303921,
+   "missing_reason": null,
+   "gene_molecules": 59,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "condition": "nucleus_only",
+   "library_size": 453,
+   "log2_value": 10.246892620048252,
+   "missing_reason": null,
+   "gene_molecules": 55,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "condition": "distance_cap_1um",
+   "library_size": 550,
+   "log2_value": 10.018705988281424,
+   "missing_reason": null,
+   "gene_molecules": 57,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "condition": "distance_cap_2um",
+   "library_size": 592,
+   "log2_value": 9.91264662852589,
+   "missing_reason": null,
+   "gene_molecules": 57,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "condition": "default",
+   "library_size": 2317,
+   "log2_value": 9.899084362723192,
+   "missing_reason": null,
+   "gene_molecules": 221,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "condition": "nucleus_only",
+   "library_size": 1763,
+   "log2_value": 10.119902570532904,
+   "missing_reason": null,
+   "gene_molecules": 196,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "condition": "distance_cap_1um",
+   "library_size": 2034,
+   "log2_value": 10.026912377288827,
+   "missing_reason": null,
+   "gene_molecules": 212,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "condition": "distance_cap_2um",
+   "library_size": 2166,
+   "log2_value": 9.956540401274198,
+   "missing_reason": null,
+   "gene_molecules": 215,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720414",
+   "group": "Control",
+   "condition": "default",
+   "library_size": 528,
+   "log2_value": 10.65360508631824,
+   "missing_reason": null,
+   "gene_molecules": 85,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720414",
+   "group": "Control",
+   "condition": "nucleus_only",
+   "library_size": 338,
+   "log2_value": 10.975012710654866,
+   "missing_reason": null,
+   "gene_molecules": 68,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720414",
+   "group": "Control",
+   "condition": "distance_cap_1um",
+   "library_size": 425,
+   "log2_value": 10.805127406727951,
+   "missing_reason": null,
+   "gene_molecules": 76,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720414",
+   "group": "Control",
+   "condition": "distance_cap_2um",
+   "library_size": 467,
+   "log2_value": 10.706699367644179,
+   "missing_reason": null,
+   "gene_molecules": 78,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720426",
+   "group": "MN",
+   "condition": "default",
+   "library_size": 414,
+   "log2_value": 10.119085219702784,
+   "missing_reason": null,
+   "gene_molecules": 46,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720426",
+   "group": "MN",
+   "condition": "nucleus_only",
+   "library_size": 187,
+   "log2_value": 10.829074025056993,
+   "missing_reason": null,
+   "gene_molecules": 34,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720426",
+   "group": "MN",
+   "condition": "distance_cap_1um",
+   "library_size": 298,
+   "log2_value": 10.427144075796825,
+   "missing_reason": null,
+   "gene_molecules": 41,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720426",
+   "group": "MN",
+   "condition": "distance_cap_2um",
+   "library_size": 343,
+   "log2_value": 10.358599945048764,
+   "missing_reason": null,
+   "gene_molecules": 45,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720427",
+   "group": "MN",
+   "condition": "default",
+   "library_size": 1672,
+   "log2_value": 10.780845830554648,
+   "missing_reason": null,
+   "gene_molecules": 294,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720427",
+   "group": "MN",
+   "condition": "nucleus_only",
+   "library_size": 1125,
+   "log2_value": 11.095177217042014,
+   "missing_reason": null,
+   "gene_molecules": 246,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720427",
+   "group": "MN",
+   "condition": "distance_cap_1um",
+   "library_size": 1451,
+   "log2_value": 10.920051668023383,
+   "missing_reason": null,
+   "gene_molecules": 281,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720427",
+   "group": "MN",
+   "condition": "distance_cap_2um",
+   "library_size": 1565,
+   "log2_value": 10.8564528755846,
+   "missing_reason": null,
+   "gene_molecules": 290,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720428",
+   "group": "MN",
+   "condition": "default",
+   "library_size": 892,
+   "log2_value": 10.453625904318905,
+   "missing_reason": null,
+   "gene_molecules": 125,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720428",
+   "group": "MN",
+   "condition": "nucleus_only",
+   "library_size": 567,
+   "log2_value": 10.770690108959371,
+   "missing_reason": null,
+   "gene_molecules": 99,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720428",
+   "group": "MN",
+   "condition": "distance_cap_1um",
+   "library_size": 754,
+   "log2_value": 10.600585823215106,
+   "missing_reason": null,
+   "gene_molecules": 117,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720428",
+   "group": "MN",
+   "condition": "distance_cap_2um",
+   "library_size": 825,
+   "log2_value": 10.507344178072175,
+   "missing_reason": null,
+   "gene_molecules": 120,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720429",
+   "group": "MN",
+   "condition": "default",
+   "library_size": 2887,
+   "log2_value": 9.53576895204997,
+   "missing_reason": null,
+   "gene_molecules": 214,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720429",
+   "group": "MN",
+   "condition": "nucleus_only",
+   "library_size": 1932,
+   "log2_value": 9.935549426615086,
+   "missing_reason": null,
+   "gene_molecules": 189,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720429",
+   "group": "MN",
+   "condition": "distance_cap_1um",
+   "library_size": 2502,
+   "log2_value": 9.694075989105526,
+   "missing_reason": null,
+   "gene_molecules": 207,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720429",
+   "group": "MN",
+   "condition": "distance_cap_2um",
+   "library_size": 2716,
+   "log2_value": 9.6102121698229,
+   "missing_reason": null,
+   "gene_molecules": 212,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720430",
+   "group": "MN",
+   "condition": "default",
+   "library_size": 783,
+   "log2_value": 10.215216838469537,
+   "missing_reason": null,
+   "gene_molecules": 93,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720430",
+   "group": "MN",
+   "condition": "nucleus_only",
+   "library_size": 536,
+   "log2_value": 10.68193327265762,
+   "missing_reason": null,
+   "gene_molecules": 88,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720430",
+   "group": "MN",
+   "condition": "distance_cap_1um",
+   "library_size": 704,
+   "log2_value": 10.352946270129594,
+   "missing_reason": null,
+   "gene_molecules": 92,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720430",
+   "group": "MN",
+   "condition": "distance_cap_2um",
+   "library_size": 756,
+   "log2_value": 10.250216943526787,
+   "missing_reason": null,
+   "gene_molecules": 92,
+   "passes_molecule_gate": true
+  }
+ ],
+ "effects": [
+  {
+   "condition": "default",
+   "effect": 0.0896745892373847,
+   "missing_reason": null,
+   "disease_mean": 10.22090854901917,
+   "control_mean": 10.131233959781785,
+   "direction": 0,
+   "valid": true,
+   "invalid_reason": null,
+   "sections_used": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414",
+    "GSM8720426",
+    "GSM8720427",
+    "GSM8720428",
+    "GSM8720429",
+    "GSM8720430"
+   ]
+  },
+  {
+   "condition": "nucleus_only",
+   "effect": 0.21521550965420566,
+   "missing_reason": null,
+   "disease_mean": 10.662484810066214,
+   "control_mean": 10.447269300412009,
+   "direction": 1,
+   "valid": true,
+   "invalid_reason": null,
+   "sections_used": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414",
+    "GSM8720426",
+    "GSM8720427",
+    "GSM8720428",
+    "GSM8720429",
+    "GSM8720430"
+   ]
+  },
+  {
+   "condition": "distance_cap_1um",
+   "effect": 0.115378841154687,
+   "missing_reason": null,
+   "disease_mean": 10.398960765254087,
+   "control_mean": 10.2835819240994,
+   "direction": 1,
+   "valid": true,
+   "invalid_reason": null,
+   "sections_used": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414",
+    "GSM8720426",
+    "GSM8720427",
+    "GSM8720428",
+    "GSM8720429",
+    "GSM8720430"
+   ]
+  },
+  {
+   "condition": "distance_cap_2um",
+   "effect": 0.1246030899296251,
+   "missing_reason": null,
+   "disease_mean": 10.316565222411047,
+   "control_mean": 10.191962132481422,
+   "direction": 1,
+   "valid": true,
+   "invalid_reason": null,
+   "sections_used": [
+    "GSM8720409",
+    "GSM8720410",
+    "GSM8720414",
+    "GSM8720426",
+    "GSM8720427",
+    "GSM8720428",
+    "GSM8720429",
+    "GSM8720430"
+   ]
+  }
+ ],
+ "leave_one_section_out": [
+  {
+   "left_out_section_id": "GSM8720409",
+   "condition": "default",
+   "effect": -0.055436175501546,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720409",
+   "condition": "nucleus_only",
+   "effect": 0.11502716947232905,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720409",
+   "condition": "distance_cap_1um",
+   "effect": -0.017059126754302767,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720409",
+   "condition": "distance_cap_2um",
+   "effect": -0.015054662048141765,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720410",
+   "condition": "default",
+   "effect": -0.026400209291912446,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720410",
+   "condition": "nucleus_only",
+   "effect": 0.05153214471465617,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720410",
+   "condition": "distance_cap_1um",
+   "effect": -0.0129559322506001,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720410",
+   "condition": "distance_cap_2um",
+   "effect": 0.006892224326012553,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720414",
+   "condition": "default",
+   "effect": 0.35086015250561253,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720414",
+   "condition": "nucleus_only",
+   "effect": 0.4790872147756353,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720414",
+   "condition": "distance_cap_1um",
+   "effect": 0.3761515824689621,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720414",
+   "condition": "distance_cap_2um",
+   "effect": 0.38197170751100273,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720426",
+   "condition": "default",
+   "effect": 0.11513042156648012,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720426",
+   "condition": "nucleus_only",
+   "effect": 0.17356820590651445,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720426",
+   "condition": "distance_cap_1um",
+   "effect": 0.10833301351900282,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720426",
+   "condition": "distance_cap_2um",
+   "effect": 0.11409440927019432,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720427",
+   "condition": "default",
+   "effect": -0.05030973114648596,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720427",
+   "condition": "nucleus_only",
+   "effect": 0.10704240791025832,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720427",
+   "condition": "distance_cap_1um",
+   "effect": -0.014893884537636737,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720427",
+   "condition": "distance_cap_2um",
+   "effect": -0.010368823363764434,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720428",
+   "condition": "default",
+   "effect": 0.03149525041245127,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720428",
+   "condition": "nucleus_only",
+   "effect": 0.1881641849309208,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720428",
+   "condition": "distance_cap_1um",
+   "effect": 0.06497257666443268,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720428",
+   "condition": "distance_cap_2um",
+   "effect": 0.07690835101434068,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720429",
+   "condition": "default",
+   "effect": 0.26095948847968486,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720429",
+   "condition": "nucleus_only",
+   "effect": 0.3969493555169894,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720429",
+   "condition": "distance_cap_1um",
+   "effect": 0.2916000351918271,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720429",
+   "condition": "distance_cap_2um",
+   "effect": 0.30119135307666056,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720430",
+   "condition": "default",
+   "effect": 0.09109751687479317,
+   "direction_kept": true,
+   "direction": 0
+  },
+  {
+   "left_out_section_id": "GSM8720430",
+   "condition": "nucleus_only",
+   "effect": 0.210353394006356,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720430",
+   "condition": "distance_cap_1um",
+   "effect": 0.1268824649358109,
+   "direction_kept": true,
+   "direction": 1
+  },
+  {
+   "left_out_section_id": "GSM8720430",
+   "condition": "distance_cap_2um",
+   "effect": 0.14119015965068904,
+   "direction_kept": true,
+   "direction": 1
+  }
+ ],
+ "exploratory_effects": [
+  {
+   "condition": "structure_constrained",
+   "effect": null,
+   "missing_reason": "needs structure masks on at least one section of each group; computed on the sections that have them",
+   "disease_mean": null,
+   "control_mean": null,
+   "direction": null,
+   "valid": null,
+   "invalid_reason": null,
+   "sections_used": [
+    "GSM8720409",
+    "GSM8720410"
+   ]
+  }
+ ],
+ "inference_eligibility": "descriptive_only",
+ "inference_reason": "Descriptive only: GEO does not map sections to donors, so sections cannot be treated as independent replicates and no p-value or confidence interval is reported (ADR-0007).",
+ "label": "stable",
+ "label_reason": "Across 4 valid primary conditions the effect keeps its direction (range 0.13 log2, at most 0.5), and leaving out any one section never reverses it.",
+ "source_artifact_ids": [],
+ "donor_distinctness": "repeat_donor_in_group",
+ "sections": [
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "cells_labelled": 55,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "cells_labelled": 218,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720414",
+   "group": "Control",
+   "cells_labelled": 72,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720426",
+   "group": "MN",
+   "cells_labelled": 26,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720427",
+   "group": "MN",
+   "cells_labelled": 134,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720428",
+   "group": "MN",
+   "cells_labelled": 73,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720429",
+   "group": "MN",
+   "cells_labelled": 197,
+   "passes_population_gate": true
+  },
+  {
+   "section_id": "GSM8720430",
+   "group": "MN",
+   "cells_labelled": 49,
+   "passes_population_gate": true
+  }
+ ],
+ "sections_left_out": [],
+ "valid_conditions": [
+  "default",
+  "nucleus_only",
+  "distance_cap_1um",
+  "distance_cap_2um"
+ ],
+ "exploratory_per_section": [
+  {
+   "section_id": "GSM8720409",
+   "group": "Control",
+   "condition": "structure_constrained",
+   "library_size": 644,
+   "log2_value": 9.841012430303921,
+   "missing_reason": null,
+   "gene_molecules": 59,
+   "passes_molecule_gate": true
+  },
+  {
+   "section_id": "GSM8720410",
+   "group": "Control",
+   "condition": "structure_constrained",
+   "library_size": 2315,
+   "log2_value": 9.900328909200839,
+   "missing_reason": null,
+   "gene_molecules": 221,
+   "passes_molecule_gate": true
+  }
+ ],
+ "evidence_regions": [
+  {
+   "rank": 1,
+   "region": {
+    "section_id": "GSM8720427",
+    "x0": 3750.0,
+    "y0": 2250.0,
+    "x1": 3900.0,
+    "y1": 2400.0
+   },
+   "score": 20.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 20,
+   "default_molecules": 120
+  },
+  {
+   "rank": 2,
+   "region": {
+    "section_id": "GSM8720427",
+    "x0": 3750.0,
+    "y0": 2100.0,
+    "x1": 3900.0,
+    "y1": 2250.0
+   },
+   "score": 10.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 10,
+   "default_molecules": 52
+  },
+  {
+   "rank": 3,
+   "region": {
+    "section_id": "GSM8720428",
+    "x0": 6000.0,
+    "y0": 3750.0,
+    "x1": 6150.0,
+    "y1": 3900.0
+   },
+   "score": 6.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 6,
+   "default_molecules": 9
+  },
+  {
+   "rank": 4,
+   "region": {
+    "section_id": "GSM8720428",
+    "x0": 1200.0,
+    "y0": 900.0,
+    "x1": 1350.0,
+    "y1": 1050.0
+   },
+   "score": 3.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 3,
+   "default_molecules": 11
+  },
+  {
+   "rank": 5,
+   "region": {
+    "section_id": "GSM8720410",
+    "x0": 1350.0,
+    "y0": 4800.0,
+    "x1": 1500.0,
+    "y1": 4950.0
+   },
+   "score": 3.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 3,
+   "default_molecules": 7
+  },
+  {
+   "rank": 6,
+   "region": {
+    "section_id": "GSM8720426",
+    "x0": 3000.0,
+    "y0": 450.0,
+    "x1": 3150.0,
+    "y1": 600.0
+   },
+   "score": 3.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 3,
+   "default_molecules": 5
+  },
+  {
+   "rank": 7,
+   "region": {
+    "section_id": "GSM8720428",
+    "x0": 1200.0,
+    "y0": 750.0,
+    "x1": 1350.0,
+    "y1": 900.0
+   },
+   "score": 2.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 2,
+   "default_molecules": 8
+  },
+  {
+   "rank": 8,
+   "region": {
+    "section_id": "GSM8720427",
+    "x0": 3900.0,
+    "y0": 2250.0,
+    "x1": 4050.0,
+    "y1": 2400.0
+   },
+   "score": 2.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 2,
+   "default_molecules": 5
+  },
+  {
+   "rank": 9,
+   "region": {
+    "section_id": "GSM8720427",
+    "x0": 3150.0,
+    "y0": 2400.0,
+    "x1": 3300.0,
+    "y1": 2550.0
+   },
+   "score": 2.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 2,
+   "default_molecules": 3
+  },
+  {
+   "rank": 10,
+   "region": {
+    "section_id": "GSM8720427",
+    "x0": 3750.0,
+    "y0": 2700.0,
+    "x1": 3900.0,
+    "y1": 2850.0
+   },
+   "score": 2.0,
+   "condition": "nucleus_only",
+   "excluded_molecules": 2,
+   "default_molecules": 3
+  }
+ ],
+ "ranking_rule": "150 x 150 \u00b5m windows on a grid anchored at (0, 0) in section coordinates, ranked by the result's molecules in the population excluded under nucleus_only; ties go to more default-condition molecules in the window, then section id, y0 and x0. Every section of both groups; the top 10 windows with at least one excluded molecule are kept.",
+ "rules": {
+  "population_gate_min_cells": 20,
+  "molecule_gate_min_molecules": 10,
+  "near_zero_band_log2": 0.1,
+  "max_stable_range_log2": 0.5,
+  "label_rule_id": "full-panel-v1",
+  "normalisation": "Library size: the pseudobulk total of the population (molecules of every gene in its cells) in that section under that condition.",
+  "value_rule": "log2(CP10K + 1), with CP10K = 10,000 x the gene's molecules in the population / the library size.",
+  "effect_rule": "Mean of the disease group's per-section log2 values minus the mean of the control group's, per condition.",
+  "gate_precedence": "1. Every section of both groups must have at least 20 cells of the population, else insufficient evidence. 2. A condition is valid only if every section has at least 10 of the gene's molecules in the population under it. 3. The default condition and at least one stricter primary condition must be valid, else insufficient evidence.",
+  "label_rule": "A direction within \u00b10.1 log2 is none. A reversal is two valid conditions with opposite non-zero directions. Stable: at least two valid primary conditions, no reversal, an effect range of at most 0.5 log2, and leaving out any one section never gives an opposite non-zero direction in any valid condition. Segmentation-sensitive: a reversal or a range above 0.5, with the default effect's direction kept whichever section is left out. Otherwise insufficient evidence. The exploratory condition never enters the label.",
+  "primary_conditions": [
+   "default",
+   "nucleus_only",
+   "distance_cap_1um",
+   "distance_cap_2um"
+  ],
+  "exploratory_conditions": [
+   "structure_constrained"
+  ]
+ },
+ "section_disclosure": "22 sections from 19 donors (published counts; GEO does not map sections to donors), 21 distinct (GSM8720419 duplicates GSM8720418). Sections are not independent donors."
+}

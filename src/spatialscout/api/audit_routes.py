@@ -9,7 +9,7 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 
-from ..contracts import AuditIndex, AuditResult, GateStatus, LabelSensitivityCheck, RandomThinningControl, Region
+from ..contracts import AuditIndex, AuditResult, ContrastIndex, ContrastIndexEntry, ContrastResult, GateStatus, LabelSensitivityCheck, RandomThinningControl, Region
 from ..data import DatasetStore, SectionNotIngested, UnknownLabelRule, UnknownSection
 from ..engine import gate_status
 from ..settings import Settings
@@ -110,3 +110,46 @@ def section_gate_status(
     if x0 is not None:
         roi = Region(section_id=section_id, x0=min(x0, x1), y0=min(y0, y1), x1=max(x0, x1), y1=max(y0, y1))  # type: ignore[type-var]
     return gate_status(section, roi, cell_type, genes)
+
+
+# --- descriptive disease contrasts ------------------------------------------------------------------------------
+
+
+@lru_cache(maxsize=8)
+def _read_contrast_index(path: Path, mtime: float) -> ContrastIndex:
+    return ContrastIndex.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+def _contrast_entry(request: Request, dataset_id: str, finding_id: str | None) -> tuple[Path, ContrastIndex, ContrastIndexEntry | None]:
+    root = _audit_dir(request, dataset_id).parent
+    path = root / "contrasts" / "index.json"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no committed contrast results for {dataset_id}; run `make contrasts`")
+    index = _read_contrast_index(path, path.stat().st_mtime)
+    if finding_id is None:
+        return root, index, None
+    entry = next((e for e in index.entries if e.finding_id == finding_id), None)
+    if entry is None:
+        raise HTTPException(status_code=404, detail=f"no contrast result {finding_id} in {dataset_id}")
+    return root, index, entry
+
+
+@router.get("/datasets/{dataset_id}/contrast-results")
+async def contrast_results(dataset_id: str, request: Request) -> ContrastIndex:
+    """The committed descriptive disease contrasts of a dataset, with their run configuration and labels."""
+    return _contrast_entry(request, dataset_id, None)[1]
+
+
+@router.get("/datasets/{dataset_id}/contrast-results/{finding_id}")
+async def contrast_result(dataset_id: str, finding_id: str, request: Request) -> ContrastResult:
+    root, _, entry = _contrast_entry(request, dataset_id, finding_id)
+    assert entry is not None
+    return ContrastResult.model_validate_json((root / entry.finding_path).read_text())
+
+
+@router.get("/datasets/{dataset_id}/contrast-results/{finding_id}/figure.png")
+async def contrast_figure(dataset_id: str, finding_id: str, request: Request) -> FileResponse:
+    root, _, entry = _contrast_entry(request, dataset_id, finding_id)
+    if entry is None or entry.figure is None:
+        raise HTTPException(status_code=404, detail=f"contrast result {finding_id} has no composite figure")
+    return FileResponse(root / entry.figure.path, media_type="image/png")

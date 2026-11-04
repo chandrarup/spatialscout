@@ -1,7 +1,7 @@
 {
  "schema_version": "1.0",
  "control_kind": "label_sensitivity",
- "control_id": "ctl-f6d87e4565a0076a",
+ "control_id": "ctl-a7ec74d087d8709a",
  "dataset_id": "GSE286184",
  "cell_type": "TAL",
  "genes": [
@@ -24,7 +24,7 @@
  "arms": [
   {
    "label_rule_id": "nphs1-anchored-v1",
-   "finding_id": "fnd-8ebf079f8497f76c",
+   "finding_id": "fnd-34b7bd191b606e65",
    "cells_labelled": 102625,
    "cells_labelled_by_section": {
     "GSM8720409": 2340,
@@ -135,7 +135,7 @@
   },
   {
    "label_rule_id": "full-panel-v1",
-   "finding_id": "fnd-79d81c37f3c723d8",
+   "finding_id": "fnd-1645045b46c1a9fa",
    "cells_labelled": 102625,
    "cells_labelled_by_section": {
     "GSM8720409": 2340,
