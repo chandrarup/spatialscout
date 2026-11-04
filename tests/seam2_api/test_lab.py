@@ -82,7 +82,7 @@ def test_a_statement_citing_a_record_that_was_not_fetched_is_dropped(tmp_path):
     assert len(review.dropped) == 2 and "PMID:999999" in review.dropped[0]
     # the co-mention count is computed: record 111 is rat, record 222 is proximal tubule, so none pairs LRP2, podocyte and human
     assert review.co_mention.records_searched == 2 and review.co_mention.records_mentioning_all == 0
-    assert "not a search of everything published" in review.note
+    assert "full texts and the remaining hits were not read" in review.note
 
 
 def test_the_dispatcher_s_tasks_are_validated_and_the_sub_agents_overlap_in_time(tmp_path):
@@ -99,3 +99,22 @@ def test_the_dispatcher_s_tasks_are_validated_and_the_sub_agents_overlap_in_time
     assert f"{figure.sections} eligible sections" in figure.legend
     assert {r.participant_id for r in lab.protein[0].results} == {"164-17", "31-10013"}
     assert lab.report.what_happened and lab.report.next_steps
+
+
+def test_a_replayed_investigation_serves_its_recorded_lab_and_figures_without_keeping_a_copy(client):
+    from .test_agent_loop import TWO_PART
+
+    snapshot = client.post("/api/investigations", json={"question": TWO_PART, "run_mode": "immutable_replay"}).json()
+    iid = snapshot["investigation_id"]
+    assert client.get(f"/api/investigations/{iid}/lab").status_code == 404
+    lab = client.post(f"/api/investigations/{iid}/lab").json()
+    assert lab["investigation_id"] == iid and lab["origin"] == "replay"
+    starts = [e for e in lab["events"] if e["type"] == "subagent_started"]
+    assert len(starts) == len(lab["tasks"]) >= 3
+    for review in lab["literature"]:
+        fetched = {r["record_id"] for r in review["records"]}
+        assert all(set(s["cites"]) <= fetched for s in review["statements"])
+    figure = lab["figures"][0]
+    response = client.get(f"/api/investigations/{iid}/lab/figures/{figure['svg']}")
+    assert response.status_code == 200 and response.headers["content-type"].startswith("image/svg+xml")
+    assert client.get(f"/api/investigations/{iid}/lab").status_code == 404, "a replay's lab is never kept"

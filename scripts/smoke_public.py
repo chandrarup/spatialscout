@@ -1,7 +1,8 @@
 """Playwright smoke run against the public URL (ticket 12): the first screen names the product, the diseased KPMP image
 opens with its protein audit, the side-by-side view compares it with the healthy reference, and the golden path, asked
 from the assistant bar, plays on the tissue and the run canvas at presenting pace to its verdicts in under three
-minutes, labelled as an immutable replay with its recording time.
+minutes, labelled as an immutable replay with its recording time. Then the lab opens with its sub-agent timeline and
+literature, and "Your data" audits the bundled sample.
 
     uv run python scripts/smoke_public.py [url]      # or `make smoke-public`
 
@@ -47,6 +48,19 @@ def main(url: str) -> int:
         verdicts = page.locator("[data-testid=sub-claim-verdict]").evaluate_all("els => els.map(e => e.dataset.verdict)")
         banner = page.get_by_text("Immutable replay", exact=True).locator("xpath=..").inner_text()
         page.screenshot(path="smoke_public.png")
+
+        lab_started = time.monotonic()
+        page.get_by_role("button", name="Run the lab").click()
+        expect(page.get_by_label("Lab timeline")).to_be_visible(timeout=60_000)
+        expect(page.get_by_label("Literature").first).to_be_visible(timeout=60_000)
+        lanes = page.get_by_label("Lab timeline").inner_text()
+        print(f"lab: timeline and literature in {time.monotonic() - lab_started:.1f} s; {lanes.count('Literature agent')} literature lane(s)")
+
+        page.get_by_role("button", name="Your data").click()
+        upload_started = time.monotonic()
+        page.get_by_role("button", name="Try it on the sample (3 GSE286184 crops)").click()
+        expect(page.get_by_label("Your audit")).to_be_visible(timeout=120_000)
+        print(f"your data: sample audited in {time.monotonic() - upload_started:.1f} s")
         browser.close()
 
     assert elapsed < LIMIT_S, f"the replay took {elapsed:.0f} s"

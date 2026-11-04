@@ -103,7 +103,7 @@ export function Upload() {
           </p>
           <p className="mt-3 flex items-start gap-2 rounded-2xl bg-[#11150a] px-4 py-3 text-[13px] leading-relaxed text-ink-2">
             <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-stable" />
-            Nothing is kept. Files are held in memory for the one request and discarded; nothing is written to disk, logged or sent to a model. Cell types use label
+            Nothing is kept. Files sit in temporary storage for the one request and are deleted when it ends; nothing is stored or sent to a model. Up to 40 MB per request. Cell types use label
             rules frozen on the GSE286184 5K panel, so other panels may leave cells unlabelled.
           </p>
         </div>

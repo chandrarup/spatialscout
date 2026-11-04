@@ -19,17 +19,35 @@ def _sample_dir(request: Request) -> Path:
     return settings.fixtures_dir / "upload_sample"
 
 
-async def _fetch(url: str) -> bytes:
-    if not url.startswith("https://"):
+def _public_https(url: str) -> None:
+    """Links must be https to a public host: no loopback, private, link-local or reserved addresses (no redirects)."""
+    import ipaddress
+    import socket
+    from urllib.parse import urlparse
+
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or not parsed.hostname:
         raise HTTPException(status_code=400, detail={"code": "bad_url", "message": "Links must be https."})
-    async with httpx.AsyncClient(timeout=120, follow_redirects=True) as client, client.stream("GET", url) as response:
+    try:
+        addresses = {info[4][0] for info in socket.getaddrinfo(parsed.hostname, 443)}
+    except OSError as error:
+        raise HTTPException(status_code=400, detail={"code": "bad_url", "message": f"Cannot resolve {parsed.hostname}."}) from error
+    for address in addresses:
+        ip = ipaddress.ip_address(address.split("%")[0])
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast or ip.is_unspecified:
+            raise HTTPException(status_code=400, detail={"code": "bad_url", "message": "Links must point to a public host."})
+
+
+async def _fetch(url: str, budget: list[int]) -> bytes:
+    _public_https(url)
+    async with httpx.AsyncClient(timeout=120, follow_redirects=False) as client, client.stream("GET", url) as response:
         if response.status_code != 200:
             raise HTTPException(status_code=400, detail={"code": "fetch_failed", "message": f"{url} returned {response.status_code}."})
-        chunks, size = [], 0
+        chunks = []
         async for chunk in response.aiter_bytes():
-            size += len(chunk)
-            if size > MAX_BYTES:
-                raise HTTPException(status_code=413, detail={"code": "too_large", "message": f"{url} is over {MAX_BYTES // 2**20} MB."})
+            budget[0] += len(chunk)
+            if budget[0] > MAX_BYTES:
+                raise HTTPException(status_code=413, detail={"code": "too_large", "message": f"The linked files are over {MAX_BYTES // 2**20} MB in all."})
             chunks.append(chunk)
         return b"".join(chunks)
 
@@ -49,6 +67,21 @@ async def upload_sample_file(section: str, name: str, request: Request) -> FileR
     return FileResponse(path, filename=f"{section}_{name}")
 
 
+UPLOAD_PATH = "/api/upload/audit"
+
+
+async def refuse_oversized_uploads(request: Request, call_next):
+    """HTTP middleware: refuse an oversized upload from its Content-Length before any of the body is read (FastAPI
+    reads a form body before route dependencies run), and refuse an upload that does not declare its length."""
+    from fastapi.responses import JSONResponse
+
+    if request.url.path == UPLOAD_PATH and request.method == "POST":
+        length = request.headers.get("content-length")
+        if length is None or not length.isdigit() or int(length) > MAX_BYTES + 1024 * 1024:
+            return JSONResponse(status_code=413, content={"detail": {"code": "too_large", "message": f"Uploads are limited to {MAX_BYTES // 2**20} MB per request."}})
+    return await call_next(request)
+
+
 @router.post("/upload/audit")
 async def upload_audit(
     request: Request,
@@ -64,6 +97,7 @@ async def upload_audit(
     file, uploaded or linked by https URL; or the bundled sample). Held in memory for this request only."""
     settings: Settings = request.app.state.settings
     raw: list[tuple[str, str, bytes, str, bytes]] = []
+    budget = [0]
     if use_sample:
         for d in sorted(_sample_dir(request).iterdir()):
             raw.append((d.name, "transcripts.parquet", (d / "transcripts.parquet").read_bytes(), "cells.csv.gz", (d / "cells.csv.gz").read_bytes()))
@@ -76,7 +110,7 @@ async def upload_audit(
         if len(transcripts_url) != len(cells_url):
             raise HTTPException(status_code=400, detail={"code": "unpaired", "message": "Give one cells link per transcripts link."})
         for i, (t, c) in enumerate(zip(transcripts_url, cells_url, strict=True)):
-            raw.append((f"section-{i + 1}", t.split("?")[0], await _fetch(t), c.split("?")[0], await _fetch(c)))
+            raw.append((f"section-{i + 1}", t.split("?")[0], await _fetch(t, budget), c.split("?")[0], await _fetch(c, budget)))
     else:
         raise HTTPException(status_code=400, detail={"code": "no_data", "message": "Upload files, give links, or use the sample."})
     wanted = [g.strip() for g in genes.split(",") if g.strip()]

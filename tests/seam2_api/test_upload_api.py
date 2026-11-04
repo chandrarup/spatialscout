@@ -25,7 +25,7 @@ def test_uploaded_xenium_sections_are_audited_and_nothing_is_written(tmp_path):
         response = client.post("/api/upload/audit", data={"cell_type": "Podocyte", "genes": "NPHS1"}, files=files)
     assert response.status_code == 200, response.text
     audit = response.json()
-    assert audit["retained"] is False and "discarded" in audit["handling"]
+    assert audit["retained"] is False and "deleted when it ends" in audit["handling"]
     assert audit["result"]["label"] == "stable" and len(audit["result"]["eligible_section_ids"]) == 3
     assert audit["figure_svg"].startswith("<?xml") and "3 eligible sections" in audit["legend"]
     assert [s["validation"]["molecules_kept"] > 0 for s in audit["sections"]] == [True, True, True]
@@ -42,3 +42,11 @@ def test_links_must_be_https_and_files_must_pair(tmp_path):
                                files=[("transcripts", ("t.parquet", (d / "transcripts.parquet").read_bytes())), ("transcripts", ("u.parquet", b"x")),
                                       ("cells", ("c.csv.gz", (d / "cells.csv.gz").read_bytes()))])
         assert unpaired.status_code == 400 and unpaired.json()["detail"]["code"] == "unpaired"
+
+
+def test_links_to_private_hosts_and_oversized_uploads_are_refused(tmp_path):
+    with app_client(tmp_path) as client:
+        private = client.post("/api/upload/audit", data={"cell_type": "PT", "genes": "LRP2", "transcripts_url": "https://localhost/t.parquet", "cells_url": "https://127.0.0.1/c.csv"})
+        assert private.status_code == 400 and "public host" in private.json()["detail"]["message"]
+        big = client.post("/api/upload/audit", content=b"x", headers={"content-length": str(200 * 2**20), "content-type": "multipart/form-data; boundary=x"})
+        assert big.status_code == 413 and big.json()["detail"]["code"] == "too_large"

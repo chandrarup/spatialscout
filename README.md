@@ -37,6 +37,8 @@ The run made 18 model calls costing an estimated $0.29, and took 179 s from plan
 - **Review and export.** Per-claim review decisions in a hash-linked audit log. The evidence package holds findings, figures, a replay manifest, rerun instructions, and a standard-library notebook that rechecks every cited number and the log's hash chain.
 - **Voice questions** via Muse Voice Transcribe, with an editable transcript.
 - **Descriptive disease contrasts**, with no p-values ([ADR-0007](docs/adr/0007-descriptive-disease-contrasts.md)).
+- **The lab** ([ADR-0008](docs/adr/0008-the-lab-and-uploaded-sections.md)). After the verdict, Muse Wonder dispatches sub-agents that run at the same time: a literature agent (Europe PMC records, read by Muse Spark, every statement cited and checked against the records fetched), a KPMP protein cross-check, and a figure agent that draws journal-width SVG/PDF figures. The report (what happened, why, next steps) is assembled in code. Recorded live on the featured run for about $0.08 in total.
+- **Your data.** Upload or link Xenium sections (transcripts and cells files, up to 40 MB per request). The same engine audits them, in temporary storage deleted when the request ends; nothing is stored or sent to a model. A three-section sample is bundled.
 - **Run modes:** immutable replay, cached tool rerun, and live. Live runs are gated by a passcode and a file-locked daily budget.
 
 ## Measured results

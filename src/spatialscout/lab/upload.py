@@ -2,9 +2,9 @@
 built-in dataset, and nothing kept.
 
 Each section is a standard Xenium pair: `transcripts.parquet` (or `.csv`, optionally gzipped) and `cells.csv` (or
-`.parquet`, optionally gzipped). The files are held in memory for the length of the request only; nothing is
-written to disk (the figure is drawn in a temporary directory deleted at once), and no model is called, so no part
-of the data leaves this server. The same validation, frozen label rules (with GSE286184's pooled gene scales) and audit as GSE286184 run on
+`.parquet`, optionally gzipped). The upload sits in temporary storage (memory, or a temporary file for large
+parts) that is deleted when the request ends; the figure is drawn in a temporary directory deleted at once. Nothing
+is stored and no model is called, so no part of the data leaves this server. The same validation, frozen label rules (with GSE286184's pooled gene scales) and audit as GSE286184 run on
 them, and the publication figure is returned inline.
 
 Label rules are frozen on GSE286184's 5K-panel markers: a panel without those markers leaves cells unlabelled, and
@@ -27,7 +27,7 @@ from ..data.validation import validate_section
 from ..engine.population import audit_population
 from . import figures
 
-MAX_BYTES = 300 * 1024 * 1024
+MAX_BYTES = 40 * 1024 * 1024  # per request: the web container has 1 GB of memory
 DATASET_ID = "uploaded"
 
 
@@ -51,14 +51,14 @@ class UploadAudit(Contract):
 
 
 HANDLING = (
-    "Held in memory for this request only, then discarded. Nothing is written to disk, logged or sent to a model; "
+    "Held in temporary storage for this request only and deleted when it ends. Nothing is stored or sent to a model; "
     "the audit and the figure are computed on this server and returned only to you, over HTTPS."
 )
 
 
 def read_table(name: str, data: bytes) -> pd.DataFrame:
     if len(data) > MAX_BYTES:
-        raise ValueError(f"{name} is over {MAX_BYTES // 2**20} MB")
+        raise ValueError(f"{name} is over the {MAX_BYTES // 2**20} MB limit")
     lower = name.lower()
     if lower.endswith(".gz"):
         data = gzip.decompress(data)

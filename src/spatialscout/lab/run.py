@@ -198,7 +198,7 @@ def report(finished: Finished, literature: list[LiteratureReview], protein: list
             if by_task[lit.task_id].sub_claim == i:
                 why.append(f"Part {i + 1}, literature: {lit.note}")
                 if lit.co_mention.records_mentioning_all == 0:
-                    nxt.append(f"Part {i + 1}: none of the {lit.co_mention.records_searched} records read pairs {sub.genes[0]} with {sub.cell_type.lower()}s in human tissue. "
+                    nxt.append(f"Part {i + 1}: none of the {lit.co_mention.records_searched} titles and abstracts read pairs {sub.genes[0]} with {sub.cell_type.lower()}s in human tissue. "
                                "A targeted search (full text, other databases) and an orthogonal assay such as RNAscope or immunostaining on human biopsies would test it directly.")
                 else:
                     nxt.append(f"Part {i + 1}: read the {lit.co_mention.records_mentioning_all} records that pair {sub.genes[0]} with {sub.cell_type.lower()}s "

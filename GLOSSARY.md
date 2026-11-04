@@ -245,3 +245,22 @@ _Avoid_: warm run, re-execution
 **Live run**:
 An investigation that makes fresh model calls under the spend budget.
 _Avoid_: live mode, real mode, online mode
+
+## The lab
+
+**Lab**:
+The follow-up phase on a finished investigation: sub-agents dispatched by Muse Wonder, run at the same time, and a report assembled in code. It never changes the verdict.
+_Avoid_: post-processing, extras
+
+**Sub-agent**:
+One lab task from the fixed registry: a literature review, a protein cross-check or a publication figure, about one sub-claim.
+_Avoid_: worker, swarm agent
+
+**Literature review**:
+A sub-agent's reading of the records Europe PMC returned for one query: cited statements only, plus a count of the records that pair the gene with the cell type in human tissue.
+_Avoid_: novelty check, prior-art search
+
+**Uploaded section**:
+A researcher's own Xenium section (a transcripts file and a cells file), audited for one request and not kept.
+_Avoid_: user sample, customer data
+

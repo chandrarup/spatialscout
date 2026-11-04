@@ -25,7 +25,7 @@ MAX_TOKENS = 6000
 REGISTRY: list[dict[str, str]] = [
     {
         "agent": "literature",
-        "does": "Searches Europe PMC with one boolean query you write, reads the 25 most-cited records, and reports what they say about the sub-claim's gene in its cell type, citing only those records.",
+        "does": "Searches Europe PMC with one boolean query you write, reads the 50 most relevant records, and reports what they say about the sub-claim's gene in its cell type, citing only those records.",
         "when": "Whenever it helps to know whether the sub-claim's result is already reported, contradicted or untested in the literature.",
     },
     {

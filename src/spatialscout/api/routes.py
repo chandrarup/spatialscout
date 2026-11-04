@@ -302,7 +302,8 @@ async def investigation_lab(investigation: InvestigationDep) -> LabRun:
     """The investigation's lab run, once started: its dispatch, every sub-agent event with its timestamp, the literature
     reviews (fetched records and cited statements only), protein cross-checks, publication figures and the report."""
     path = _lab_path(investigation)
-    if not path.is_file():
+    if investigation.state.run_mode == "immutable_replay" or not path.is_file():
+        # A replay's lab is served from its recording on request, never kept, so it always matches the recording.
         raise HTTPException(status_code=404, detail={"code": "no_lab", "message": "The lab has not run for this investigation."})
     return LabRun.model_validate_json(path.read_text(encoding="utf-8"))
 
@@ -312,8 +313,6 @@ async def start_lab(investigation: InvestigationDep, request: Request, orchestra
     """Runs the lab on a finished investigation. An immutable replay serves the recorded lab verbatim; a cached tool
     rerun runs it again with the recorded model and Europe PMC responses (figures and protein checks recomputed); a
     live investigation runs it live under the daily budget."""
-    import shutil
-
     from ..agent import utc_now
     from ..gateway import ModelGateway
     from ..gateway.live import LiveSource
@@ -322,7 +321,7 @@ async def start_lab(investigation: InvestigationDep, request: Request, orchestra
     from ..lab.run import Finished, run_lab
 
     path = _lab_path(investigation)
-    if path.is_file():
+    if path.is_file() and investigation.state.run_mode != "immutable_replay":
         return LabRun.model_validate_json(path.read_text(encoding="utf-8"))
     if investigation.state.status.value != "complete":
         raise HTTPException(status_code=409, detail={"code": "not_finished", "message": "The lab runs once the investigation has its verdict."})
@@ -332,11 +331,8 @@ async def start_lab(investigation: InvestigationDep, request: Request, orchestra
     if mode == "immutable_replay":
         if recorded is None:
             raise HTTPException(status_code=404, detail={"code": "no_recorded_lab", "message": "This recorded investigation has no recorded lab."})
-        shutil.copytree(recorded, path.parent, dirs_exist_ok=True)
-        lab = LabRun.model_validate_json(path.read_text(encoding="utf-8"))
-        lab = lab.model_copy(update={"investigation_id": investigation.investigation_id, "origin": "replay"})
-        path.write_text(lab.model_dump_json(indent=1), encoding="utf-8")
-        return lab
+        lab = LabRun.model_validate_json((recorded / "lab.json").read_text(encoding="utf-8"))
+        return lab.model_copy(update={"investigation_id": investigation.investigation_id, "origin": "replay"})
     finished = Finished(investigation.directory)
     if mode == "cached_tool_rerun":
         if recorded is None:
@@ -361,9 +357,12 @@ async def start_lab(investigation: InvestigationDep, request: Request, orchestra
 
 
 @router.get("/investigations/{investigation_id}/lab/figures/{name}")
-async def lab_figure(name: str, investigation: InvestigationDep) -> FileResponse:
+async def lab_figure(name: str, investigation: InvestigationDep, request: Request) -> FileResponse:
     """A publication figure the lab rendered (SVG, PDF or a 300 dpi PNG)."""
     path = investigation.directory / "lab" / "figures" / name
+    recorded = _recorded_lab(investigation, request)
+    if investigation.state.run_mode == "immutable_replay" and recorded is not None:
+        path = recorded / "figures" / name
     if not LAB_FILE.match(name) or not path.is_file():
         raise HTTPException(status_code=404, detail=f"no lab figure {name}")
     return FileResponse(path, media_type=LAB_MEDIA[name.rsplit(".", 1)[1]], filename=name)

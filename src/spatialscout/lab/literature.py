@@ -16,7 +16,7 @@ import httpx2 as httpx
 from ..contracts import CoMention, LiteratureDigest, LiteratureRecord, LiteratureStatement
 
 EUROPE_PMC = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
-PAGE_SIZE = 25
+PAGE_SIZE = 50
 ABSTRACT_CHARS = 1500
 
 # Gene and protein names, and cell-type words, as the literature writes them. Matching is case-insensitive, on word
@@ -52,7 +52,7 @@ class EuropePmcLive:
         self.fetched: dict[str, dict[str, Any]] = {}
 
     async def search(self, query: str) -> dict[str, Any]:
-        params = {"query": query, "format": "json", "pageSize": str(PAGE_SIZE), "resultType": "core", "sort": "CITED desc"}
+        params = {"query": query, "format": "json", "pageSize": str(PAGE_SIZE), "resultType": "core"}  # Europe PMC's relevance order
         async with httpx.AsyncClient(timeout=30, transport=self._transport) as client:
             response = await client.get(EUROPE_PMC, params=params)
             response.raise_for_status()
@@ -136,7 +136,7 @@ def term_groups(cell_type: str, genes: Sequence[str]) -> list[list[str]]:
 def co_mention_note(count: CoMention, query: str, hit_count: int) -> str:
     gene, cell, _ = count.term_groups
     return (
-        f"{count.records_mentioning_all} of the {count.records_searched} most-cited records read (of {hit_count:,} Europe PMC hits for "
+        f"{count.records_mentioning_all} of the {count.records_searched} most relevant records read (of {hit_count:,} Europe PMC hits for "
         f"'{query}') mention {gene[0]} together with {cell[0]}s in a human context in their title or abstract. "
-        "A count over the records read, not a search of everything published."
+        "A count over the titles and abstracts read; full texts and the remaining hits were not read."
     )

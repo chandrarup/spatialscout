@@ -57,7 +57,12 @@ export function LabView({ investigationId, subClaims, verdicts }: Props) {
       })
       .catch((e: unknown) => {
         setState("error");
-        setProblem(String(e).replace(/^Error:\s*/, ""));
+        const text = String(e);
+        setProblem(
+          text.includes("no_recorded_lab")
+            ? "This recorded run has no recorded lab. The lab is recorded for the featured run (the two-part podocyte LRP2 and B-cell UMOD question); live runs start it fresh."
+            : text.replace(/^Error:\s*/, ""),
+        );
       });
   };
 
@@ -168,31 +173,37 @@ export function LabView({ investigationId, subClaims, verdicts }: Props) {
           .map((l) => {
             const task = lab.tasks.find((t) => t.task_id === l.task_id)!;
             const verdict = verdicts?.[task.sub_claim];
-            if (!verdict || verdict.verdict !== "confirmed" || verdict.predicted !== "holds") return null;
+            // The signal held under stricter assignment: a confirmed 'holds' or a refuted 'drops'.
+            const held = verdict && ((verdict.verdict === "confirmed" && verdict.predicted === "holds") || (verdict.verdict === "refuted" && verdict.predicted === "drops"));
+            if (!verdict || !held) return null;
             const protein = lab.protein.find((p) => p.sub_claim === task.sub_claim);
             const figure = lab.figures.find((f) => f.sub_claim === task.sub_claim);
             return (
               <section key={l.task_id} aria-label="Candidate finding" className="rise milestone rounded-3xl bg-[#11150a] p-6">
-                <p className="text-[12px] font-medium tracking-wide text-stable uppercase">Candidate finding · worth testing</p>
+                <p className="text-[12px] font-medium tracking-wide text-stable uppercase">Candidate to test · not a discovery</p>
                 <h3 className="mt-2 text-[clamp(22px,2.6vw,32px)] leading-tight font-semibold tracking-tight">
-                  {verdict.genes} in human {verdict.cellType.toLowerCase()}s survives stricter molecule assignment, and the most-cited literature does not report it.
+                  {verdict.genes} signal in {verdict.cellType}s is not explained by molecules spilling over from neighbouring cells.
                 </h3>
-                <ul className="mt-4 grid grid-cols-1 gap-3 text-[14px] leading-relaxed text-ink-2 md:grid-cols-3">
+                <ul className="mt-4 grid grid-cols-1 gap-4 text-[14px] leading-relaxed text-ink-2 md:grid-cols-3">
                   <li>
-                    <span className="block text-ink">Transcripts</span>
-                    {figure ? `${figure.sections} sections, ${figure.cells.toLocaleString()} cells: the signal stays at what random thinning predicts under nucleus-only assignment (verdict confirmed, controls cited).` : "Verdict confirmed under stricter assignment."}
+                    <span className="block text-ink">Transcripts (the evidence)</span>
+                    {figure
+                      ? `${figure.sections} Xenium sections, ${figure.cells.toLocaleString()} cells: under nucleus-only assignment the share stays above what random thinning predicts. Verified claim, controls cited.`
+                      : "The share stays under stricter assignment (verified claim)."}
                   </li>
                   <li>
-                    <span className="block text-ink">Protein</span>
-                    {protein ? protein.note.split(". Descriptive")[0] + "." : "No protein-level counterpart was checked."}
+                    <span className="block text-ink">Protein (descriptive)</span>
+                    {protein ? protein.note : "Not checked."}
                   </li>
                   <li>
-                    <span className="block text-ink">Literature</span>
-                    {l.co_mention.records_mentioning_all} of the {l.co_mention.records_searched} most-cited of {l.hit_count.toLocaleString()} records pair them in human tissue.
+                    <span className="block text-ink">Literature (a count, not a search of everything)</span>
+                    {l.co_mention.records_mentioning_all} of the {l.co_mention.records_searched} most relevant titles and abstracts (of {l.hit_count.toLocaleString()} Europe PMC hits for "
+                    {l.query}") pair {verdict.genes} with {verdict.cellType}s in human tissue. Full texts were not read.
                   </li>
                 </ul>
                 <p className="mt-4 text-[12px] leading-relaxed text-ink-3">
-                  A candidate, not a discovery: a count over the records read, one dataset, and protein from one person per group. The next steps below say how to test it.
+                  One dataset, and protein from one person per group. Other explanations (a cell-labelling error beyond the
+                  second rule tested, transcripts lying outside cells) are not fully ruled out; the next steps below say how to test them.
                 </p>
               </section>
             );
@@ -255,7 +266,7 @@ export function LabView({ investigationId, subClaims, verdicts }: Props) {
                 <p className="text-[12px] text-ink-3">Literature agent · part {(task?.sub_claim ?? 0) + 1}</p>
                 <h3 className="mt-1 text-[17px] font-semibold">What the literature says</h3>
                 <p className="mt-1 font-mono text-[12px] text-ink-3">
-                  Europe PMC › {l.query} · {l.hit_count.toLocaleString()} hits · {l.records.length} most-cited read
+                  Europe PMC › {l.query} · {l.hit_count.toLocaleString()} hits · {l.records.length} most relevant read
                 </p>
                 <div className="mt-4 rounded-2xl bg-raised p-4">
                   <p className="text-[28px] leading-none font-semibold tracking-tight">
