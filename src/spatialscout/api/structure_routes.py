@@ -1,5 +1,6 @@
 """SAM 3.1 outlines (exploratory, ADR-0006): a section's committed structure-finder run, and a box the researcher
-drew sent to SAM 3.1 as its box prompt (draft revision 3). The UI wires the box route in later."""
+drew sent to SAM 3.1 as its box prompt (revision 3), and the boxes whose response is stored, which the dual-section
+viewer offers as recorded boxes."""
 
 import json
 from typing import Annotated, Literal

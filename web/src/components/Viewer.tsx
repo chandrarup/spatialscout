@@ -283,6 +283,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
         </>
       )}
       <div className="pointer-events-none absolute bottom-2 left-3 text-xs text-ink-3">
+        <span className="font-medium text-ink-2">Rendered from molecules{view.synthetic ? " · synthetic section" : ""}</span> ·{" "}
         {view.section_name ? `${view.section_name} (${view.section_id})` : view.section_id} ·{" "}
         {section.moleculeCount.toLocaleString()} molecules · micrometres · drag to pan, scroll to zoom
       </div>

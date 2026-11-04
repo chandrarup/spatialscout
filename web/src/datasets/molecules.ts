@@ -27,7 +27,7 @@ export const ADDITIVE = {
  * points neither saturate at overview nor vanish when zoomed in. It depends only on the channel and the zoom, never
  * on a section's own counts, so the same channel is exposed identically on both panes and brightness stays comparable.
  */
-const BASE_OPACITY: Record<string, number> = { nuclei: 0.25, umod: 0.12, lrp2_cubn: 0.16 };
+const BASE_OPACITY: Record<string, number> = { nuclei: 0.25, umod: 0.06, lrp2_cubn: 0.16 }; // UMOD is dense: kept dim so stacked orange does not read as the yellow reserved for excluded molecules
 const DEFAULT_OPACITY = 0.9;
 const REFERENCE_UM_PER_PX = 6;
 const MIN_OPACITY = 0.025;

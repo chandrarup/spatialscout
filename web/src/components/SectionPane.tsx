@@ -172,6 +172,7 @@ export function SectionPane(props: Props) {
       data-testid={`pane-${props.side}`}
       data-zoom={camera?.zoom}
       data-target={camera ? camera.target.join(",") : undefined}
+      data-box={box ? [box.x0, box.y0, box.x1, box.y1].join(",") : undefined}
       className={`relative h-full min-h-[22rem] w-full overflow-hidden rounded-md border border-line bg-black ${tool === "box" ? "cursor-crosshair" : "cursor-grab"}`}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -282,6 +283,7 @@ function GateCard({ gate, box, failing, dragging }: { gate: GateReadout; box: Re
       data-testid="gate-readout"
       data-gate-latency-ms={gate.latencyMs !== null ? Math.round(gate.latencyMs) : undefined}
       data-gate-passes={passes ? "true" : "false"}
+      data-gate-box={s.roi ? [s.roi.x0, s.roi.y0, s.roi.x1, s.roi.y1].join(",") : undefined}
       className={`rounded border px-2 py-1 text-[11px] leading-snug backdrop-blur ${
         !forBox ? "border-line bg-black/70 text-ink-2" : failing ? "border-red-400/70 bg-red-950/80 text-red-100" : "border-emerald-400/50 bg-emerald-950/70 text-emerald-50"
       }`}

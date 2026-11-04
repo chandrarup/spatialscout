@@ -89,11 +89,13 @@ export default function App() {
 
   // The region pair goes with a question only when it lies on the dataset the question will run on (a recorded
   // question runs on its recording's dataset); the server refuses regions on any other dataset.
-  const runsOn = (question: string) =>
-    mode?.recordings.find((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase())?.dataset_id ??
-    shown?.manifest.dataset_id ??
-    mode?.dataset_id ??
-    null;
+  // A recorded question runs on its recording's dataset (the server's default when the recording names none);
+  // any other question on the open section's dataset.
+  const runsOn = (question: string): string | null => {
+    const recording = mode?.recordings.find((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase());
+    if (recording) return recording.dataset_id ?? mode?.dataset_id ?? null;
+    return shown?.manifest.dataset_id ?? mode?.dataset_id ?? null;
+  };
   const regionsFor = (question: string): [] | [Region] | [Region, Region] =>
     regionPair && regionPair.datasetIds.length === 1 && regionPair.datasetIds[0] === runsOn(question) ? (regionPair.regions.slice(0, 2) as [Region] | [Region, Region]) : [];
 
@@ -103,7 +105,7 @@ export default function App() {
       .start({
         question,
         run_mode: mode?.default_run_mode ?? "cached_tool_rerun",
-        dataset_id: shown?.manifest.dataset_id ?? null,
+        dataset_id: runsOn(question),
         regions: regionsFor(question),
       })
       .then(follow)
