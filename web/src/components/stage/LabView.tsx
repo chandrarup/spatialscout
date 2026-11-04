@@ -28,9 +28,11 @@ function seconds(ms: number): string {
 interface Props {
   investigationId: string;
   subClaims: string[];
+  /** Each sub-claim's verdict, for the candidate-finding card. */
+  verdicts?: { verdict: string; predicted: string; cellType: string; genes: string }[];
 }
 
-export function LabView({ investigationId, subClaims }: Props) {
+export function LabView({ investigationId, subClaims, verdicts }: Props) {
   const [lab, setLab] = useState<LabRun | null>(null);
   const [state, setState] = useState<"idle" | "starting" | "error">("idle");
   const [problem, setProblem] = useState<string | null>(null);
@@ -159,6 +161,42 @@ export function LabView({ investigationId, subClaims }: Props) {
         )}
         <p className="mt-3 text-[12px] text-ink-3">Bars are drawn from each sub-agent's recorded start and finish; overlapping bars ran at the same time.</p>
       </section>
+
+      {done &&
+        lab.literature
+          .filter((l) => l.co_mention.records_mentioning_all === 0)
+          .map((l) => {
+            const task = lab.tasks.find((t) => t.task_id === l.task_id)!;
+            const verdict = verdicts?.[task.sub_claim];
+            if (!verdict || verdict.verdict !== "confirmed" || verdict.predicted !== "holds") return null;
+            const protein = lab.protein.find((p) => p.sub_claim === task.sub_claim);
+            const figure = lab.figures.find((f) => f.sub_claim === task.sub_claim);
+            return (
+              <section key={l.task_id} aria-label="Candidate finding" className="rise milestone rounded-3xl bg-[#11150a] p-6">
+                <p className="text-[12px] font-medium tracking-wide text-stable uppercase">Candidate finding · worth testing</p>
+                <h3 className="mt-2 text-[clamp(22px,2.6vw,32px)] leading-tight font-semibold tracking-tight">
+                  {verdict.genes} in human {verdict.cellType.toLowerCase()}s survives stricter molecule assignment, and the most-cited literature does not report it.
+                </h3>
+                <ul className="mt-4 grid grid-cols-1 gap-3 text-[14px] leading-relaxed text-ink-2 md:grid-cols-3">
+                  <li>
+                    <span className="block text-ink">Transcripts</span>
+                    {figure ? `${figure.sections} sections, ${figure.cells.toLocaleString()} cells: the signal stays at what random thinning predicts under nucleus-only assignment (verdict confirmed, controls cited).` : "Verdict confirmed under stricter assignment."}
+                  </li>
+                  <li>
+                    <span className="block text-ink">Protein</span>
+                    {protein ? protein.note.split(". Descriptive")[0] + "." : "No protein-level counterpart was checked."}
+                  </li>
+                  <li>
+                    <span className="block text-ink">Literature</span>
+                    {l.co_mention.records_mentioning_all} of the {l.co_mention.records_searched} most-cited of {l.hit_count.toLocaleString()} records pair them in human tissue.
+                  </li>
+                </ul>
+                <p className="mt-4 text-[12px] leading-relaxed text-ink-3">
+                  A candidate, not a discovery: a count over the records read, one dataset, and protein from one person per group. The next steps below say how to test it.
+                </p>
+              </section>
+            );
+          })}
 
       {done && (
         <>

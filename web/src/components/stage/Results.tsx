@@ -188,7 +188,9 @@ export function Results({ view, graph, mode, onCanvas, onReplay, onFocusFinding,
         </section>
 
         {view.verdict && view.status === "complete" && (
-          <LabView investigationId={view.investigationId} subClaims={view.verdict.verdicts.map((v) => `${v.sub_claim.cell_type} · ${v.sub_claim.genes.join("/")}`)} />
+          <LabView investigationId={view.investigationId} subClaims={view.verdict.verdicts.map((v) => `${v.sub_claim.cell_type} · ${v.sub_claim.genes.join("/")}`)}
+            verdicts={view.verdict.verdicts.map((v) => ({ verdict: v.verdict, predicted: v.sub_claim.predicted, cellType: v.sub_claim.cell_type, genes: v.sub_claim.genes.join("/") }))}
+          />
         )}
 
         <section aria-label="What to look at next" className="flex flex-col gap-3">
