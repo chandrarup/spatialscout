@@ -24,7 +24,7 @@ without affecting it. Every state change is persisted before it is announced.
 import asyncio
 import hashlib
 import time
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable, Coroutine, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -61,6 +61,7 @@ from ..contracts import (
     PlanRejectedEvent,
     RandomThinningControl,
     Recording,
+    Region,
     ReplayInfo,
     RunMode,
     ToolFailedEvent,
@@ -89,6 +90,7 @@ from ..gateway.gate import LiveGate
 from .claims import claim_problems
 from .errors import (
     DatasetUnavailable,
+    InvalidRegions,
     InvestigationError,
     NoRecordedInvestigation,
     PlanInvalid,
@@ -136,13 +138,22 @@ class Orchestrator:
         self._gateways: dict[str, ModelGateway] = {}
         self._tasks: set[asyncio.Task[None]] = set()
 
-    def start(self, question: str, run_mode: RunMode, passcode: str | None = None, dataset_id: str | None = None) -> Investigation:
+    def start(
+        self,
+        question: str,
+        run_mode: RunMode,
+        passcode: str | None = None,
+        dataset_id: str | None = None,
+        regions: Sequence[Region] = (),
+    ) -> Investigation:
         """Create and persist an investigation, then propose its plan in the background.
 
         `immutable_replay` instead returns the recorded investigation that answers the question (or raises
         NoRecordedInvestigation). `live` first asks the live gate, which raises LiveRunRefused before anything
         is created when the passcode is wrong, live runs are not configured or today's budget is spent.
         The dataset is the recording's for a cached tool rerun, else the one asked for, else the server's default.
+        `regions` (drawn in the viewer) are kept as context and must lie on that dataset's sections, else
+        InvalidRegions; immutable replay ignores them.
         """
         question = normalise_question(question)
         if run_mode == "immutable_replay":
@@ -156,14 +167,18 @@ class Orchestrator:
         dataset_id = (recording.info.dataset_id if recording else None) or dataset_id or self._dataset_id
         if dataset_id not in self._store.dataset_ids():
             raise DatasetUnavailable(f"No dataset {dataset_id!r} is served here.")
+        sections = {s.section_id for s in self._store.sections(dataset_id)}
+        stray = [r.section_id for r in regions if r.section_id not in sections]
+        if stray:
+            raise InvalidRegions(f"Regions on {', '.join(stray)} are not on a section of {dataset_id}.")
         investigation = Investigation.create(
-            self._root, question, run_mode, dataset_id, recording.info if recording else None, self._clock
+            self._root, question, run_mode, dataset_id, recording.info if recording else None, self._clock, regions
         )
-        investigation.audit_log.append(
-            "investigation_started",
-            {"question": question, "run_mode": run_mode, "dataset_id": dataset_id,
-             "recording_id": recording.info.recording_id if recording else None},
-        )
+        started = {"question": question, "run_mode": run_mode, "dataset_id": dataset_id,
+                   "recording_id": recording.info.recording_id if recording else None}
+        if regions:  # only when drawn, so investigations without regions log exactly what they did before
+            started["regions"] = [r.model_dump(mode="json") for r in regions]
+        investigation.audit_log.append("investigation_started", started)
         self._investigations[investigation.investigation_id] = investigation
         self._spawn(investigation, self._propose_plan(investigation, recording))
         return investigation

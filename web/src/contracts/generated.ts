@@ -605,6 +605,45 @@ export interface ChainCheckResult {
   reason: string | null;
 }
 /**
+ * Every rendered channel of one section, in a fixed order.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ChannelSet".
+ */
+export interface ChannelSet {
+  schema_version: string;
+  dataset_id: string;
+  section_id: string;
+  provenance: "rendered from molecules";
+  channels: RenderedChannel[];
+}
+/**
+ * One channel of a section: which molecules (or nuclei) it draws, and whether the section has any.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "RenderedChannel".
+ */
+export interface RenderedChannel {
+  channel_id: string;
+  label: string;
+  source: "molecules" | "nuclei";
+  /**
+   * The genes whose molecules the channel draws; empty for the nuclei channel.
+   */
+  genes: string[];
+  description: string;
+  /**
+   * Molecules of the channel's genes in the section, assigned or not; for nuclei, cells with a detected nucleus.
+   */
+  count: number;
+  available: boolean;
+  /**
+   * The channel's genes with no molecule in the section.
+   */
+  missing_genes: string[];
+  unavailable_reason: string | null;
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "ChatMessage".
  */
@@ -1387,6 +1426,10 @@ export interface InvestigationSnapshot {
     | ErrorEvent
   )[];
   approved_plan_hash: string | null;
+  /**
+   * Regions the researcher drew in the viewer, kept as context.
+   */
+  regions: Region[];
 }
 /**
  * What the replay banner shows about the recording being played.
@@ -1428,6 +1471,10 @@ export interface InvestigationState {
   approved_at_utc: string | null;
   finished_at_utc: string | null;
   last_seq: number;
+  /**
+   * Regions the researcher drew in the viewer, kept as context.
+   */
+  regions: Region[];
 }
 /**
  * One section's cells counted by cell type label under each rule, and the cells whose label differs.
@@ -1841,6 +1888,17 @@ export interface RandomThinningControl {
   roi: Region | null;
 }
 /**
+ * Boxes on a section whose SAM 3.1 box-prompt response is stored, so a cached tool rerun can outline them
+ * without a model call. Any other box needs a live run.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "RecordedBoxes".
+ */
+export interface RecordedBoxes {
+  section_id: string;
+  boxes: Region[];
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "RecordedCall".
  */
@@ -1928,6 +1986,12 @@ export interface StartInvestigationRequest {
    * The dataset to investigate; the server's default when omitted. A recording names its own.
    */
   dataset_id: string | null;
+  /**
+   * Regions the researcher drew in the dual-section viewer (one per section), kept with the investigation as context and shown beside its verdicts. Each must lie on a section of the investigated dataset. They do not scope the analysis or reach any model prompt. Ignored by immutable replay, which returns a recorded investigation.
+   *
+   * @maxItems 2
+   */
+  regions: [] | [Region] | [Region, Region];
 }
 /**
  * What SAM 3.1 proposed for one seed. Empty, fragmented and rejected proposals are kept, never forced:

@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from ..agent import Investigation, NoRecordedInvestigation, Orchestrator, RunModeUnavailable, UnknownInvestigation
-from ..agent.errors import DatasetUnavailable
+from ..agent.errors import DatasetUnavailable, InvalidRegions
 from ..audit import verify_chain
 from ..contracts import (
     CapabilityReport,
@@ -166,11 +166,15 @@ async def start_investigation(
     `X-Live-Passcode` header (never the URL, which access logs keep) and budget left today; otherwise 403 and
     nothing is created. Immutable replay returns the recorded investigation that answers the question."""
     try:
-        return orchestrator.start(body.question, body.run_mode, passcode=x_live_passcode, dataset_id=body.dataset_id).snapshot()
+        return orchestrator.start(
+            body.question, body.run_mode, passcode=x_live_passcode, dataset_id=body.dataset_id, regions=body.regions
+        ).snapshot()
     except LiveRunRefused as refused:
         raise HTTPException(status_code=403, detail=str(refused)) from None
     except RunModeUnavailable as unavailable:
         raise HTTPException(status_code=409, detail=str(unavailable)) from None
+    except InvalidRegions as invalid:
+        raise HTTPException(status_code=422, detail=str(invalid)) from None
     except (NoRecordedInvestigation, DatasetUnavailable) as missing:
         raise HTTPException(status_code=404, detail=str(missing)) from None
 

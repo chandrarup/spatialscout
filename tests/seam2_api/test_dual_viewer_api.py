@@ -37,6 +37,34 @@ def test_the_recorded_boxes_of_a_section_each_replay_a_sam_outline_with_no_model
         assert outline.json()["badge"] == "SAM 3.1 proposal (exploratory)"
 
 
+RECORDED_QUESTION = "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?"
+GLOMERULUS_BOX = {"section_id": "SYN-01", "x0": 25.0, "y0": 40.0, "x1": 95.0, "y1": 110.0}
+TUBULE_BOX = {"section_id": "SYN-01", "x0": 100.0, "y0": 20.0, "x1": 160.0, "y1": 120.0}
+
+
+def test_the_region_pair_drawn_in_the_viewer_reaches_the_investigation_as_context(client):
+    response = client.post("/api/investigations", json={"question": RECORDED_QUESTION, "regions": [GLOMERULUS_BOX, TUBULE_BOX]})
+
+    assert response.status_code == 201, response.text
+    assert response.json()["regions"] == [GLOMERULUS_BOX, TUBULE_BOX]
+    again = client.get(f"/api/investigations/{response.json()['investigation_id']}").json()
+    assert again["regions"] == [GLOMERULUS_BOX, TUBULE_BOX]
+
+
+def test_an_investigation_started_without_regions_has_none(client):
+    response = client.post("/api/investigations", json={"question": RECORDED_QUESTION})
+
+    assert response.status_code == 201 and response.json()["regions"] == []
+
+
+def test_a_region_off_the_investigated_dataset_or_with_no_area_is_refused_and_nothing_is_created(client):
+    elsewhere = client.post("/api/investigations", json={"question": RECORDED_QUESTION, "regions": [{**GLOMERULUS_BOX, "section_id": "GSM-OTHER"}]})
+    flat = client.post("/api/investigations", json={"question": RECORDED_QUESTION, "regions": [{**GLOMERULUS_BOX, "x1": 25.0}]})
+
+    assert elsewhere.status_code == 422, elsewhere.text
+    assert flat.status_code == 422, flat.text
+
+
 def test_a_section_with_no_recorded_box_lists_none(client):
     response = client.get("/api/sections/NOPE/sam-boxes")
 

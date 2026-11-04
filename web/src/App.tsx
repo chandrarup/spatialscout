@@ -63,7 +63,7 @@ export default function App() {
   const ask = (question: string) => {
     setProblem(null);
     api
-      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: shown?.manifest.dataset_id ?? null })
+      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: shown?.manifest.dataset_id ?? null, regions: [] })
       .then(follow)
       .catch((error: unknown) => setProblem(String(error)));
   };

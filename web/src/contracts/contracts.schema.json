@@ -1080,6 +1080,42 @@
       "title": "ChainCheckResult",
       "type": "object"
     },
+    "ChannelSet": {
+      "additionalProperties": false,
+      "description": "Every rendered channel of one section, in a fixed order.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "provenance": {
+          "const": "rendered from molecules",
+          "default": "rendered from molecules",
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/RenderedChannel"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "dataset_id",
+        "section_id",
+        "provenance",
+        "channels"
+      ],
+      "title": "ChannelSet",
+      "type": "object"
+    },
     "ChatMessage": {
       "additionalProperties": false,
       "properties": {
@@ -2855,6 +2891,13 @@
             }
           ],
           "default": null
+        },
+        "regions": {
+          "description": "Regions the researcher drew in the viewer, kept as context.",
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
         }
       },
       "required": [
@@ -2868,7 +2911,8 @@
         "claims",
         "package",
         "events",
-        "approved_plan_hash"
+        "approved_plan_hash",
+        "regions"
       ],
       "title": "InvestigationSnapshot",
       "type": "object"
@@ -2957,6 +3001,13 @@
         "last_seq": {
           "default": 0,
           "type": "integer"
+        },
+        "regions": {
+          "description": "Regions the researcher drew in the viewer, kept as context.",
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
         }
       },
       "required": [
@@ -2972,7 +3023,8 @@
         "updated_at_utc",
         "approved_at_utc",
         "finished_at_utc",
-        "last_seq"
+        "last_seq",
+        "regions"
       ],
       "title": "InvestigationState",
       "type": "object"
@@ -5022,6 +5074,27 @@
       "title": "RandomThinningControl",
       "type": "object"
     },
+    "RecordedBoxes": {
+      "additionalProperties": false,
+      "description": "Boxes on a section whose SAM 3.1 box-prompt response is stored, so a cached tool rerun can outline them\nwithout a model call. Any other box needs a live run.",
+      "properties": {
+        "section_id": {
+          "type": "string"
+        },
+        "boxes": {
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "section_id",
+        "boxes"
+      ],
+      "title": "RecordedBoxes",
+      "type": "object"
+    },
     "RecordedCall": {
       "additionalProperties": false,
       "properties": {
@@ -5191,6 +5264,73 @@
         "notes"
       ],
       "title": "RegionView",
+      "type": "object"
+    },
+    "RenderedChannel": {
+      "additionalProperties": false,
+      "description": "One channel of a section: which molecules (or nuclei) it draws, and whether the section has any.",
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "molecules",
+            "nuclei"
+          ],
+          "type": "string"
+        },
+        "genes": {
+          "description": "The genes whose molecules the channel draws; empty for the nuclei channel.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        },
+        "count": {
+          "description": "Molecules of the channel's genes in the section, assigned or not; for nuclei, cells with a detected nucleus.",
+          "type": "integer"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "missing_genes": {
+          "description": "The channel's genes with no molecule in the section.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "unavailable_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "channel_id",
+        "label",
+        "source",
+        "genes",
+        "description",
+        "count",
+        "available",
+        "missing_genes",
+        "unavailable_reason"
+      ],
+      "title": "RenderedChannel",
       "type": "object"
     },
     "ReplayInfo": {
@@ -5661,12 +5801,21 @@
           ],
           "default": null,
           "description": "The dataset to investigate; the server's default when omitted. A recording names its own."
+        },
+        "regions": {
+          "description": "Regions the researcher drew in the dual-section viewer (one per section), kept with the investigation as context and shown beside its verdicts. Each must lie on a section of the investigated dataset. They do not scope the analysis or reach any model prompt. Ignored by immutable replay, which returns a recorded investigation.",
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "maxItems": 2,
+          "type": "array"
         }
       },
       "required": [
         "question",
         "run_mode",
-        "dataset_id"
+        "dataset_id",
+        "regions"
       ],
       "title": "StartInvestigationRequest",
       "type": "object"
