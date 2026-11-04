@@ -6,6 +6,7 @@ from typing import Any, Literal
 from pydantic import Field
 
 from .base import SCHEMA_VERSION, ConditionName, Contract, Contrast
+from .verdict import SubClaim
 
 
 class ToolSpec(Contract):
@@ -31,6 +32,7 @@ class PlanProposal(Contract):
     cell_types: list[str]
     conditions: list[ConditionName]
     steps: list[ProposedStep]
+    sub_claims: list[SubClaim] = Field(default_factory=list, description="The question split into testable sub-claims, each with the hypothesis's prediction.")
 
 
 class PlanStep(Contract):
@@ -57,6 +59,7 @@ class Plan(Contract):
     cell_types: list[str]
     conditions: list[ConditionName]
     steps: list[PlanStep]
+    sub_claims: list[SubClaim] = Field(default_factory=list)
     budget: Budget
     proposed_by: str
     status: Literal["proposed", "approved", "rejected"] = "proposed"

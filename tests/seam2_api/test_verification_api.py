@@ -80,3 +80,20 @@ def test_challenge_the_verifier_serves_every_recorded_variant_by_kind_without_a_
 def test_challenges_of_an_unknown_claim_are_not_found(client):
     investigation_id, _ = run(client)
     assert client.get(f"/api/investigations/{investigation_id}/claims/clm-nope/challenges").status_code == 404
+
+
+def test_the_sub_claim_verdict_streams_and_is_logged_and_a_failed_claim_never_confirms_it(client):
+    """The skeleton's plan predicts that podocyte LRP2 holds. Its only claim fails structurally (no control was run),
+    so the rule makes the sub-claim inconclusive, whatever the evidence label."""
+    investigation_id, events = run(client)
+
+    [event] = of_type(events, "verdict")
+    [verdict] = event["verdict"]["verdicts"]
+    assert verdict["sub_claim"]["predicted"] == "holds" and verdict["sub_claim"]["genes"] == ["LRP2"]
+    assert verdict["verdict"] == "inconclusive" and "failed" in verdict["reason"]
+    [claim] = [e["claim"] for e in of_type(events, "claim_verified") if not e["claim"]["injected"]["is_injected"]]
+    assert verdict["claim_ids"] == [claim["claim_id"]]
+    assert "these sections" in event["verdict"]["scope"]
+
+    [logged] = audit_entries(client, investigation_id, "verdict_computed")
+    assert logged["verdicts"] == event["verdict"]["verdicts"]

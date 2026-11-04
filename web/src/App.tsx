@@ -13,6 +13,7 @@ import { ReasoningTimeline } from "./components/ReasoningTimeline";
 import { QuestionBar } from "./components/QuestionBar";
 import { RunModeBanner } from "./components/RunModeBanner";
 import { TelemetryPills } from "./components/TelemetryPills";
+import { VerdictBanner } from "./components/VerdictBanner";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
 import type { DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, Region } from "./contracts/generated";
 import type { DatasetAdapter } from "./datasets/adapter";
@@ -222,6 +223,12 @@ export default function App() {
                   ))}
                   <p className="mt-1 text-[11px] text-ink-3">Visual evidence beside cohort-level verdicts; it does not scope the analysis.</p>
                 </div>
+              )}
+              {investigation.verdict && (
+                <VerdictBanner
+                  verdict={investigation.verdict}
+                  onClaim={(id) => document.getElementById(`claim-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                />
               )}
               <PlanCard
                 plan={investigation.plan}

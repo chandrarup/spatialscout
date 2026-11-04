@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-replan",
-  "recorded_at": "2026-11-04T00:47:38Z",
+  "recorded_at": "2026-11-04T02:34:11Z",
   "origin": "hand_authored",
   "question": "Would re-segmenting the synthetic section change podocyte LRP2?",
   "note": "Hand-authored model responses: the first plan names a tool outside the registry, the re-plan does not. No model was called.",
@@ -11,14 +11,14 @@
  "calls": [
   {
    "purpose": "plan",
-   "cache_key": "3443d3ad0c980aeb0b85cc8b9e0b1775608373321ff634bdd69632412c29611f",
+   "cache_key": "3546fcd142b39a722a215b04f47b1780013f96f0f94ccf8fbdb3a9f881423892",
    "request": {
     "provider": "meta",
     "model": "muse-wonder-1.0",
     "messages": [
      {
       "role": "system",
-      "content": "You are SpatialScout's planner. Propose the smallest plan that answers the researcher's question, using only the tools listed and only analyses the capability report marks as supported. Give each step the tool's arguments, valid against its arguments_schema, and a one-sentence rationale; use the dataset's own section ids, panel genes and label rule ids. The tools listed are the audits a plan may schedule. The controls (the random-thinning control and the label-sensitivity check) are not plan steps: after each audit runs, an agent reads its result and decides which controls it needs. If the question needs an analysis no listed tool provides, plan what the tools can do and say what is left out in the summary. Respond with JSON that matches the response schema."
+      "content": "You are SpatialScout's planner. Propose the smallest plan that answers the researcher's question, using only the tools listed and only analyses the capability report marks as supported. Give each step the tool's arguments, valid against its arguments_schema, and a one-sentence rationale; use the dataset's own section ids, panel genes and label rule ids. The tools listed are the audits a plan may schedule. The controls (the random-thinning control and the label-sensitivity check) are not plan steps: after each audit runs, an agent reads its result and decides which controls it needs. If the question needs an analysis no listed tool provides, plan what the tools can do and say what is left out in the summary. Split the question into sub_claims, one per testable part: each names a cell type label from the label rules, its panel genes, and what the researcher's hypothesis predicts under stricter assignment conditions: 'holds' (the signal is real cell content) or 'drops' (it is admixture from neighbouring cells). Record the researcher's prediction as the question states or implies it; never predict an outcome yourself. Respond with JSON that matches the response schema."
      },
      {
       "role": "user",
@@ -83,6 +83,47 @@
        ],
        "title": "ProposedStep",
        "type": "object"
+      },
+      "SubClaim": {
+       "additionalProperties": false,
+       "description": "One testable part of the question: a population, its genes, and what the hypothesis predicts under stricter\nassignment conditions. A prediction, never an outcome.",
+       "properties": {
+        "text": {
+         "description": "The sub-claim as a question-scoped statement, for example 'podocyte LRP2/CUBN presence persists'.",
+         "title": "Text",
+         "type": "string"
+        },
+        "cell_type": {
+         "description": "A cell type label from the dataset's label rules.",
+         "title": "Cell Type",
+         "type": "string"
+        },
+        "genes": {
+         "description": "Panel genes the sub-claim is about.",
+         "items": {
+          "type": "string"
+         },
+         "title": "Genes",
+         "type": "array"
+        },
+        "predicted": {
+         "description": "What the researcher's hypothesis predicts: 'holds' (the signal stays when assignment is stricter, as real cell content would) or 'drops' (it falls beyond random thinning, as admixture from neighbours would).",
+         "enum": [
+          "holds",
+          "drops"
+         ],
+         "title": "Predicted",
+         "type": "string"
+        }
+       },
+       "required": [
+        "text",
+        "cell_type",
+        "genes",
+        "predicted"
+       ],
+       "title": "SubClaim",
+       "type": "object"
       }
      },
      "additionalProperties": false,
@@ -122,6 +163,14 @@
        },
        "title": "Steps",
        "type": "array"
+      },
+      "sub_claims": {
+       "description": "The question split into testable sub-claims, each with the hypothesis's prediction.",
+       "items": {
+        "$ref": "#/$defs/SubClaim"
+       },
+       "title": "Sub Claims",
+       "type": "array"
       }
      },
      "required": [
@@ -157,7 +206,7 @@
     }
    ],
    "response": {
-    "content": "{\"summary\": \"Re-segment SYN-01 with Proseg, then recount podocyte LRP2.\", \"contrast\": null, \"cell_types\": [\"Podocyte\"], \"conditions\": [\"default\", \"nucleus_only\"], \"steps\": [{\"tool\": \"resegment_with_proseg\", \"arguments\": {\"section_ids\": [\"SYN-01\"]}, \"rationale\": \"Re-segmenting the section would show whether the assignment itself changes the answer.\"}]}",
+    "content": "{\"summary\": \"Re-segment SYN-01 with Proseg, then recount podocyte LRP2.\", \"contrast\": null, \"cell_types\": [\"Podocyte\"], \"conditions\": [\"default\", \"nucleus_only\"], \"steps\": [{\"tool\": \"resegment_with_proseg\", \"arguments\": {\"section_ids\": [\"SYN-01\"]}, \"rationale\": \"Re-segmenting the section would show whether the assignment itself changes the answer.\"}], \"sub_claims\": []}",
     "finish_reason": "stop",
     "usage": null,
     "served_by": "meta",
@@ -168,14 +217,14 @@
   },
   {
    "purpose": "replan",
-   "cache_key": "76840de8162ab29722d5c5821030dfdadcbd1176fbf5ce4208cc2ac0a0040b2f",
+   "cache_key": "8f69f815af605cf3ed20a6c6f0026e14268419c673dc200e72296f6988e8f9c3",
    "request": {
     "provider": "meta",
     "model": "muse-wonder-1.0",
     "messages": [
      {
       "role": "system",
-      "content": "You are SpatialScout's planner. Propose the smallest plan that answers the researcher's question, using only the tools listed and only analyses the capability report marks as supported. Give each step the tool's arguments, valid against its arguments_schema, and a one-sentence rationale; use the dataset's own section ids, panel genes and label rule ids. The tools listed are the audits a plan may schedule. The controls (the random-thinning control and the label-sensitivity check) are not plan steps: after each audit runs, an agent reads its result and decides which controls it needs. If the question needs an analysis no listed tool provides, plan what the tools can do and say what is left out in the summary. Respond with JSON that matches the response schema."
+      "content": "You are SpatialScout's planner. Propose the smallest plan that answers the researcher's question, using only the tools listed and only analyses the capability report marks as supported. Give each step the tool's arguments, valid against its arguments_schema, and a one-sentence rationale; use the dataset's own section ids, panel genes and label rule ids. The tools listed are the audits a plan may schedule. The controls (the random-thinning control and the label-sensitivity check) are not plan steps: after each audit runs, an agent reads its result and decides which controls it needs. If the question needs an analysis no listed tool provides, plan what the tools can do and say what is left out in the summary. Split the question into sub_claims, one per testable part: each names a cell type label from the label rules, its panel genes, and what the researcher's hypothesis predicts under stricter assignment conditions: 'holds' (the signal is real cell content) or 'drops' (it is admixture from neighbouring cells). Record the researcher's prediction as the question states or implies it; never predict an outcome yourself. Respond with JSON that matches the response schema."
      },
      {
       "role": "user",
@@ -183,7 +232,7 @@
      },
      {
       "role": "assistant",
-      "content": "{\"summary\":\"Re-segment SYN-01 with Proseg, then recount podocyte LRP2.\",\"contrast\":null,\"cell_types\":[\"Podocyte\"],\"conditions\":[\"default\",\"nucleus_only\"],\"steps\":[{\"tool\":\"resegment_with_proseg\",\"arguments\":{\"section_ids\":[\"SYN-01\"]},\"rationale\":\"Re-segmenting the section would show whether the assignment itself changes the answer.\"}]}"
+      "content": "{\"summary\":\"Re-segment SYN-01 with Proseg, then recount podocyte LRP2.\",\"contrast\":null,\"cell_types\":[\"Podocyte\"],\"conditions\":[\"default\",\"nucleus_only\"],\"steps\":[{\"tool\":\"resegment_with_proseg\",\"arguments\":{\"section_ids\":[\"SYN-01\"]},\"rationale\":\"Re-segmenting the section would show whether the assignment itself changes the answer.\"}],\"sub_claims\":[]}"
      },
      {
       "role": "user",
@@ -248,6 +297,47 @@
        ],
        "title": "ProposedStep",
        "type": "object"
+      },
+      "SubClaim": {
+       "additionalProperties": false,
+       "description": "One testable part of the question: a population, its genes, and what the hypothesis predicts under stricter\nassignment conditions. A prediction, never an outcome.",
+       "properties": {
+        "text": {
+         "description": "The sub-claim as a question-scoped statement, for example 'podocyte LRP2/CUBN presence persists'.",
+         "title": "Text",
+         "type": "string"
+        },
+        "cell_type": {
+         "description": "A cell type label from the dataset's label rules.",
+         "title": "Cell Type",
+         "type": "string"
+        },
+        "genes": {
+         "description": "Panel genes the sub-claim is about.",
+         "items": {
+          "type": "string"
+         },
+         "title": "Genes",
+         "type": "array"
+        },
+        "predicted": {
+         "description": "What the researcher's hypothesis predicts: 'holds' (the signal stays when assignment is stricter, as real cell content would) or 'drops' (it falls beyond random thinning, as admixture from neighbours would).",
+         "enum": [
+          "holds",
+          "drops"
+         ],
+         "title": "Predicted",
+         "type": "string"
+        }
+       },
+       "required": [
+        "text",
+        "cell_type",
+        "genes",
+        "predicted"
+       ],
+       "title": "SubClaim",
+       "type": "object"
       }
      },
      "additionalProperties": false,
@@ -287,6 +377,14 @@
        },
        "title": "Steps",
        "type": "array"
+      },
+      "sub_claims": {
+       "description": "The question split into testable sub-claims, each with the hypothesis's prediction.",
+       "items": {
+        "$ref": "#/$defs/SubClaim"
+       },
+       "title": "Sub Claims",
+       "type": "array"
       }
      },
      "required": [
@@ -322,7 +420,7 @@
     }
    ],
    "response": {
-    "content": "{\"summary\": \"Re-segmentation is not available, so audit LRP2 in cells labelled Podocyte under default and nucleus-only.\", \"contrast\": null, \"cell_types\": [\"Podocyte\"], \"conditions\": [\"default\", \"nucleus_only\"], \"steps\": [{\"tool\": \"audit_population\", \"arguments\": {\"section_ids\": [\"SYN-01\"], \"cell_type\": \"Podocyte\", \"genes\": [\"LRP2\"], \"conditions\": [\"default\", \"nucleus_only\"]}, \"rationale\": \"The registry has no re-segmentation tool; an assignment audit is the supported alternative.\"}]}",
+    "content": "{\"summary\": \"Re-segmentation is not available, so audit LRP2 in cells labelled Podocyte under default and nucleus-only.\", \"contrast\": null, \"cell_types\": [\"Podocyte\"], \"conditions\": [\"default\", \"nucleus_only\"], \"steps\": [{\"tool\": \"audit_population\", \"arguments\": {\"section_ids\": [\"SYN-01\"], \"cell_type\": \"Podocyte\", \"genes\": [\"LRP2\"], \"conditions\": [\"default\", \"nucleus_only\"]}, \"rationale\": \"The registry has no re-segmentation tool; an assignment audit is the supported alternative.\"}], \"sub_claims\": []}",
     "finish_reason": "stop",
     "usage": null,
     "served_by": "meta",

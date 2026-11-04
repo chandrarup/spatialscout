@@ -70,8 +70,14 @@ def audit_step(genes: list[str], rationale: str, cell_type: str = "Podocyte", ru
     return {"tool": "audit_population", "arguments": arguments, "rationale": rationale}
 
 
-def plan(summary: str, steps: list[dict[str, Any]], cell_types: list[str]) -> dict[str, Any]:
-    return {"summary": summary, "contrast": None, "cell_types": cell_types, "conditions": ["default", "nucleus_only"], "steps": steps}
+def plan(summary: str, steps: list[dict[str, Any]], cell_types: list[str], sub_claims: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    return {"summary": summary, "contrast": None, "cell_types": cell_types, "conditions": ["default", "nucleus_only"], "steps": steps,
+            "sub_claims": sub_claims or []}
+
+
+def sub_claim(text: str, genes: list[str], predicted: str, cell_type: str = "Podocyte") -> dict[str, Any]:
+    """The prediction the question states (the researcher's hypothesis), never an outcome."""
+    return {"text": text, "cell_type": cell_type, "genes": genes, "predicted": predicted}
 
 
 def unsupported_step() -> dict[str, Any]:
@@ -159,6 +165,7 @@ def skeleton() -> Policy:
             "Audit LRP2 in cells labelled Podocyte in synthetic section SYN-01 under the default and nucleus-only conditions.",
             [audit_step(["LRP2"], "The capability report supports an assignment audit, and nucleus-only is the stricter condition the question names.")],
             ["Podocyte"],
+            [sub_claim("Podocyte LRP2 survives nucleus-only assignment.", ["LRP2"], "holds")],
         ),
         lambda body: no_follow_up(
             "Nucleus-only assignment keeps none of the podocyte LRP2 molecules. The question asks only whether they survive, "
@@ -192,6 +199,7 @@ def hero() -> Policy:
             "Audit LRP2 or CUBN presence in cells labelled Podocyte in SYN-01 under the default and nucleus-only conditions.",
             [audit_step(["LRP2", "CUBN"], "The question asks whether podocyte LRP2/CUBN survives a stricter assignment.", rule=DEFAULT_RULE)],
             ["Podocyte"],
+            [sub_claim("Podocytes really carry LRP2 and CUBN.", ["LRP2", "CUBN"], "holds")],
         ),
         agent,
     )

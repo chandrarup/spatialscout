@@ -198,6 +198,14 @@ _Avoid_: plot, chart (for the whole figure)
 The structural, numerical and visual checks run on a claim.
 _Avoid_: validation, fact-check
 
+**Sub-claim**:
+One testable part of a question: a cell type, its genes, and whether the researcher's hypothesis predicts the signal holds or drops under stricter assignment. A prediction, never an outcome.
+_Avoid_: hypothesis (for the part), expectation
+
+**Verdict**:
+Confirmed, refuted or inconclusive for one sub-claim, derived by a frozen rule from its verified claims' evidence labels. Like an evidence label, it is scoped to the sections, regions and controls behind it and says nothing about biological truth.
+_Avoid_: proof, validated, artifact, true positive
+
 **Disputed**:
 A claim whose visual check disagrees with its figure; it stays visible and flagged for review.
 _Avoid_: rejected, false

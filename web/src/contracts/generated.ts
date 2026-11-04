@@ -63,6 +63,7 @@ export type InvestigationEvent =
   | ClaimDraftedEvent
   | ClaimRejectedEvent
   | ClaimVerifiedEvent
+  | VerdictEvent
   | PackageReadyEvent
   | ModelCallEvent
   | ErrorEvent;
@@ -175,6 +176,7 @@ export interface AuditEntry {
     | "claim_rejected"
     | "claim_verified"
     | "claim_challenges_recorded"
+    | "verdict_computed"
     | "figure_failed"
     | "package_exported"
     | "error";
@@ -1297,6 +1299,57 @@ export interface GateStatus {
   status: string;
 }
 /**
+ * Every sub-claim's verdict, in the investigation's sections and under the controls its claims cite.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "HypothesisVerdict".
+ */
+export interface HypothesisVerdict {
+  question: string;
+  scope: string;
+  verdicts: SubClaimVerdict[];
+  rule: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "SubClaimVerdict".
+ */
+export interface SubClaimVerdict {
+  sub_claim: SubClaim;
+  verdict: "confirmed" | "refuted" | "inconclusive";
+  reason: string;
+  /**
+   * The verified claim versions the verdict rests on.
+   */
+  claim_ids: string[];
+  dataset_id: string;
+}
+/**
+ * One testable part of the question: a population, its genes, and what the hypothesis predicts under stricter
+ * assignment conditions. A prediction, never an outcome.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "SubClaim".
+ */
+export interface SubClaim {
+  /**
+   * The sub-claim as a question-scoped statement, for example 'podocyte LRP2/CUBN presence persists'.
+   */
+  text: string;
+  /**
+   * A cell type label from the dataset's label rules.
+   */
+  cell_type: string;
+  /**
+   * Panel genes the sub-claim is about.
+   */
+  genes: string[];
+  /**
+   * What the researcher's hypothesis predicts: 'holds' (the signal stays when assignment is stricter, as real cell content would) or 'drops' (it falls beyond random thinning, as admixture from neighbours would).
+   */
+  predicted: "holds" | "drops";
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "PlanProposedEvent".
  */
@@ -1324,6 +1377,7 @@ export interface Plan {
   cell_types: string[];
   conditions: ConditionName[];
   steps: PlanStep[];
+  sub_claims: SubClaim[];
   budget: Budget;
   proposed_by: string;
   status: "proposed" | "approved" | "rejected";
@@ -1445,6 +1499,19 @@ export interface ToolFailedEvent {
   error: string;
 }
 /**
+ * Each sub-claim's verdict, derived by the frozen rule from the verified claims once verification ends.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "VerdictEvent".
+ */
+export interface VerdictEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "verdict";
+  verdict: HypothesisVerdict;
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "PackageReadyEvent".
  */
@@ -1555,6 +1622,7 @@ export interface InvestigationSnapshot {
     | ClaimDraftedEvent
     | ClaimRejectedEvent
     | ClaimVerifiedEvent
+    | VerdictEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent
@@ -2074,6 +2142,10 @@ export interface PlanProposal {
   cell_types: string[];
   conditions: ConditionName[];
   steps: ProposedStep[];
+  /**
+   * The question split into testable sub-claims, each with the hypothesis's prediction.
+   */
+  sub_claims: SubClaim[];
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema

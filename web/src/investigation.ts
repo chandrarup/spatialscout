@@ -1,6 +1,7 @@
 // The web app's view of one investigation, folded from its events in seq order.
 import type {
   Claim,
+  HypothesisVerdict,
   InvestigationEvent,
   InvestigationSnapshot,
   InvestigationStatus,
@@ -23,6 +24,8 @@ export interface InvestigationView {
   verifications: Record<string, VerificationResult>;
   /** Injected variants shown in the stream, always labelled as injected. */
   injected: { claim: Claim; verification: VerificationResult }[];
+  /** The sub-claims' verdicts, once verification ends. */
+  verdict: HypothesisVerdict | null;
   pkg: PackageInfo | null;
   events: InvestigationEvent[];
   error: string | null;
@@ -39,6 +42,7 @@ export function fromSnapshot(snapshot: InvestigationSnapshot): InvestigationView
     claims: [],
     verifications: {},
     injected: [],
+    verdict: null,
     pkg: null,
     events: [],
     error: null,
@@ -83,6 +87,8 @@ export function applyEvent(view: InvestigationView, event: InvestigationEvent): 
         claims: next.claims.map((claim) => (claim.claim_id === event.claim.claim_id ? event.claim : claim)),
         verifications: { ...next.verifications, [event.claim.claim_id]: event.verification },
       };
+    case "verdict":
+      return { ...next, verdict: event.verdict };
     case "package_ready":
       return { ...next, pkg: event.package, status: "complete" };
     case "error":

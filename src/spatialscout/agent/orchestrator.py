@@ -42,6 +42,7 @@ from ..contracts import (
     ClaimDraftedEvent,
     ClaimRejectedEvent,
     ClaimVerifiedEvent,
+    VerdictEvent,
     DatasetManifest,
     InjectedErrorKind,
     ErrorEvent,
@@ -76,6 +77,7 @@ from ..contracts import (
 )
 from ..data import DatasetStore
 from ..engine.figure import render_composite_figure
+from ..verify.verdict import derive_verdicts, hypothesis_verdict
 from ..verify.verifier import VerificationContext, challenge, reasons_of, verify_claim
 from ..export import AUDIT_LOG_FILE, CLAIMS_FILE, MANIFEST_FILE, build_package
 from ..gateway import (
@@ -388,6 +390,7 @@ class Orchestrator:
         await self._follow_up(investigation, run, report, manifest)
         claims = await self._draft_claims(investigation, run)
         claims = await self._verify_claims(investigation, run, claims)
+        self._announce_verdict(investigation, run, claims)
         package = self._export(investigation, claims, run.open_questions)
         investigation.emit(PackageReadyEvent, status=InvestigationStatus.COMPLETE, package=package)
 
@@ -687,6 +690,19 @@ class Orchestrator:
              "figure_id": verification.figure.figure_id if verification.figure else None},
         )
         investigation.emit(ClaimVerifiedEvent, claim=claim, verification=verification)
+
+    def _announce_verdict(self, investigation: Investigation, run: "_Run", claims: list[Claim]) -> None:
+        """Each sub-claim's verdict by the frozen rule, once every claim is verified. A plan without sub-claims has none."""
+        if not run.plan.sub_claims:
+            return
+        populations = {o.artifact.finding_id: (o.artifact.population.cell_type, o.artifact.genes)
+                       for o in run.observations if isinstance(o.artifact, AuditResult)}
+        verdict = hypothesis_verdict(
+            investigation.state.question,
+            derive_verdicts(run.plan.sub_claims, claims, populations, dataset_id=investigation.state.dataset_id),
+        )
+        investigation.audit_log.append("verdict_computed", verdict.model_dump(mode="json"))
+        investigation.emit(VerdictEvent, verdict=verdict)
 
     def _export(self, investigation: Investigation, claims: list[Claim], open_questions: list[OpenQuestion]) -> PackageInfo:
         """Write the evidence package, then log the export. The package's manifest anchors the audit log at

@@ -46,8 +46,11 @@ PLANNER_INSTRUCTIONS = (
     "panel genes and label rule ids. The tools listed are the audits a plan may schedule. The controls (the "
     "random-thinning control and the label-sensitivity check) are not plan steps: after each audit runs, an agent "
     "reads its result and decides which controls it needs. If the question needs an analysis no listed tool provides, "
-    "plan what the tools can do and say what is left out in the summary. Respond with JSON that matches the response "
-    "schema."
+    "plan what the tools can do and say what is left out in the summary. Split the question into sub_claims, one per "
+    "testable part: each names a cell type label from the label rules, its panel genes, and what the researcher's "
+    "hypothesis predicts under stricter assignment conditions: 'holds' (the signal is real cell content) or 'drops' "
+    "(it is admixture from neighbouring cells). Record the researcher's prediction as the question states or implies "
+    "it; never predict an outcome yourself. Respond with JSON that matches the response schema."
 )
 
 REPLAN_FEEDBACK = (

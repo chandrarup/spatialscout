@@ -1,6 +1,6 @@
 {
  "schema_version": "1.0",
- "claim_id": "clm-155515db06cb",
+ "claim_id": "clm-17dc1c0560df",
  "claim_version": 1,
  "base_status": "failed",
  "variants": [
@@ -8,9 +8,9 @@
    "kind": "reversed_direction",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-reversed_direction",
+    "claim_id": "clm-17dc1c0560df-inj-reversed_direction",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "synthetic",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -52,7 +52,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-reversed_direction",
+    "claim_id": "clm-17dc1c0560df-inj-reversed_direction",
     "claim_version": 1,
     "checks": [
      {
@@ -61,7 +61,7 @@
       "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
       "reasons": [
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)"
       ]
      },
      {
@@ -135,9 +135,9 @@
    "kind": "wrong_section_count",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-wrong_section_count",
+    "claim_id": "clm-17dc1c0560df-inj-wrong_section_count",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "synthetic",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -183,7 +183,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-wrong_section_count",
+    "claim_id": "clm-17dc1c0560df-inj-wrong_section_count",
     "claim_version": 1,
     "checks": [
      {
@@ -193,7 +193,7 @@
       "reasons": [
        "section count mismatch: the claim cites 2 for eligible_section_ids.count, the finding has 0",
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)"
       ]
      },
      {
@@ -276,9 +276,9 @@
    "kind": "wrong_dataset_reference",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-wrong_dataset_reference",
+    "claim_id": "clm-17dc1c0560df-inj-wrong_dataset_reference",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "GSE271188",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -320,7 +320,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-wrong_dataset_reference",
+    "claim_id": "clm-17dc1c0560df-inj-wrong_dataset_reference",
     "claim_version": 1,
     "checks": [
      {
@@ -331,7 +331,7 @@
        "dataset reference 'GSE271188' names no dataset served here",
        "dataset reference 'GSE271188' does not match the finding's dataset 'synthetic'",
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)"
       ]
      },
      {
@@ -408,9 +408,9 @@
    "kind": "changed_effect",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-changed_effect",
+    "claim_id": "clm-17dc1c0560df-inj-changed_effect",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "synthetic",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -452,7 +452,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-changed_effect",
+    "claim_id": "clm-17dc1c0560df-inj-changed_effect",
     "claim_version": 1,
     "checks": [
      {
@@ -461,7 +461,7 @@
       "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
       "reasons": [
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)"
       ]
      },
      {
@@ -540,9 +540,9 @@
    "kind": "figure_label_mismatch",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-figure_label_mismatch",
+    "claim_id": "clm-17dc1c0560df-inj-figure_label_mismatch",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "synthetic",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -584,7 +584,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-figure_label_mismatch",
+    "claim_id": "clm-17dc1c0560df-inj-figure_label_mismatch",
     "claim_version": 1,
     "checks": [
      {
@@ -593,7 +593,7 @@
       "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
       "reasons": [
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)",
        "figure reference 'fig-0000000000000000' resolves to no figure"
       ]
      },
@@ -645,9 +645,9 @@
    "kind": "misstated_spatial_pattern",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-misstated_spatial_pattern",
+    "claim_id": "clm-17dc1c0560df-inj-misstated_spatial_pattern",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "synthetic",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -689,7 +689,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-misstated_spatial_pattern",
+    "claim_id": "clm-17dc1c0560df-inj-misstated_spatial_pattern",
     "claim_version": 1,
     "checks": [
      {
@@ -698,7 +698,7 @@
       "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
       "reasons": [
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)"
       ]
      },
      {
@@ -775,9 +775,9 @@
    "kind": "missing_required_control",
    "claim": {
     "schema_version": "2.0",
-    "claim_id": "clm-155515db06cb-inj-missing_required_control",
+    "claim_id": "clm-17dc1c0560df-inj-missing_required_control",
     "version": 1,
-    "investigation_id": "inv-3be0784c1d0c",
+    "investigation_id": "inv-c3f30d109d5b",
     "dataset_id": "synthetic",
     "finding": {
      "finding_id": "fnd-697ce05f9889dc65",
@@ -819,7 +819,7 @@
    },
    "verification": {
     "schema_version": "1.0",
-    "claim_id": "clm-155515db06cb-inj-missing_required_control",
+    "claim_id": "clm-17dc1c0560df-inj-missing_required_control",
     "claim_version": 1,
     "checks": [
      {
@@ -828,7 +828,7 @@
       "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
       "reasons": [
        "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
-       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction uses LRP2 as a marker)"
       ]
      },
      {

@@ -52,6 +52,7 @@ from .events import (
     ClaimDraftedEvent,
     ClaimRejectedEvent,
     ClaimVerifiedEvent,
+    VerdictEvent,
     PlanRejectedEvent,
     ToolFailedEvent,
     ErrorEvent,
@@ -140,6 +141,7 @@ from .region import (
     StructureSeed,
 )
 from .review import CheckKind, CheckResult, ClaimChallenge, ClaimChallenges, FieldChange, ReviewDecision, VerificationResult, VisualAnswer
+from .verdict import HypothesisVerdict, Prediction, SubClaim, SubClaimVerdict
 from .voice import Transcription
 
 __all__ = [name for name in dir() if not name.startswith("_")]

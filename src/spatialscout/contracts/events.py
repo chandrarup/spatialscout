@@ -15,6 +15,7 @@ from .model_call import ModelCallRecord
 from .package import PackageInfo
 from .plan import Plan
 from .review import VerificationResult
+from .verdict import HypothesisVerdict
 
 
 class EventBase(Contract):
@@ -128,6 +129,13 @@ class ClaimVerifiedEvent(EventBase):
     verification: VerificationResult
 
 
+class VerdictEvent(EventBase):
+    """Each sub-claim's verdict, derived by the frozen rule from the verified claims once verification ends."""
+
+    type: Literal["verdict"] = "verdict"
+    verdict: HypothesisVerdict
+
+
 class PackageReadyEvent(EventBase):
     type: Literal["package_ready"] = "package_ready"
     package: PackageInfo
@@ -159,6 +167,7 @@ InvestigationEvent = Annotated[
     | ClaimDraftedEvent
     | ClaimRejectedEvent
     | ClaimVerifiedEvent
+    | VerdictEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent,

@@ -34,7 +34,7 @@ export function ClaimCard({ claim, verification, investigationId }: Props) {
   const shownVerification = variant ? variant.verification : verification;
 
   return (
-    <article aria-label={`Claim ${claim.claim_id}`} className="rounded-lg border border-line bg-panel p-4">
+    <article id={`claim-${claim.claim_id}`} aria-label={`Claim ${claim.claim_id}`} className="rounded-lg border border-line bg-panel p-4">
       <header className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-sm font-semibold text-ink">Claim</h2>
         <span className="font-mono text-xs text-ink-3">

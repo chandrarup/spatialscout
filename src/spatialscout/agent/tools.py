@@ -336,6 +336,10 @@ class ToolRegistry:
             steps.append(PlanStep(step_id=f"step-{index}", tool=step.tool, arguments=step.arguments, rationale=step.rationale))
         if proposal.contrast is not None and not any(self._tools[s.tool].computes_contrast for s in steps):
             raise PlanInvalid("the plan names a contrast, but none of its steps computes one")
+        for sub in proposal.sub_claims:
+            missing = [g for g in sub.genes if g not in dataset.panel]
+            if missing:
+                raise PlanInvalid(f"sub-claim '{sub.text}' names genes outside the panel: {', '.join(missing)}")
         return Plan(
             plan_id=new_id("pln"),
             investigation_id=investigation_id,
@@ -346,6 +350,7 @@ class ToolRegistry:
             cell_types=proposal.cell_types,
             conditions=proposal.conditions,
             steps=steps,
+            sub_claims=proposal.sub_claims,
             budget=budget,
             proposed_by=proposed_by,
         )

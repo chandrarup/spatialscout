@@ -57,6 +57,8 @@ FULL_SEQUENCE = [
     # verification: the visual check of the claim, its verdict, the visual checks of its injected variants, and the one
     # injected variant shown in the stream (changed effect), labelled as injected
     "model_call", "claim_verified", "model_call", "model_call", "model_call", "model_call", "claim_verified",
+    # the sub-claims' verdicts, by the frozen rule
+    "verdict",
     "package_ready",
 ]
 ALL_SEQS = list(range(1, len(FULL_SEQUENCE) + 1))
