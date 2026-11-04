@@ -83,6 +83,31 @@ def test_in_the_hero_run_the_agent_requests_both_controls_citing_the_audit_and_t
     assert scenarios.get(f"/api/investigations/{investigation_id}").json()["status"] == "complete"
 
 
+LIVE_HERO = "Do the podocytes this atlas calls 'endocytic' really carry LRP2 and CUBN, or is that segmentation?"
+
+
+def test_the_recorded_live_hero_run_replays_with_every_control_requested_by_the_agent_citing_an_earlier_observation(client):
+    """The live GSE286184 hero run, as immutable replay. Checks its structure, never its outcome (ADR-0001)."""
+    response = client.post("/api/investigations", json={"question": LIVE_HERO, "run_mode": "immutable_replay"})
+    assert response.status_code == 201, response.text
+    snapshot = response.json()
+    events = snapshot["events"]
+
+    assert (snapshot["run_mode"], snapshot["replay"]["origin"], snapshot["status"]) == ("immutable_replay", "live", "complete")
+    accepted = {r["request_id"]: r for d in of_type(events, "agent_decision") for r in d["requests"] if r["status"] == "accepted"}
+    seen: list[str] = []
+    for event in of_type(events, "tool_started"):
+        if event["tool"] != "audit_population" or event["request_id"]:
+            assert event["request_id"] in accepted, "a tool ran that the agent never requested"
+            assert event["cites_observation_id"] in seen
+            assert accepted[event["request_id"]]["cites_observation_id"] == event["cites_observation_id"]
+        seen.append(event["observation_id"])
+    ran = {e["artifact_id"] for e in of_type(events, "tool_finished")}
+    for claim in snapshot["claims"]:
+        for control_id in claim["controls"].values():
+            assert control_id is None or control_id in ran
+
+
 def test_the_audit_log_records_each_follow_up_with_the_observation_it_cites(scenarios):
     investigation_id, _ = run(scenarios, HERO)
     package = zipfile.ZipFile(io.BytesIO(scenarios.get(f"/api/investigations/{investigation_id}/package").content))
@@ -220,3 +245,28 @@ def test_a_claim_draft_citing_a_number_the_finding_does_not_hold_is_redrafted_on
     assert any("is 3, but sections[SYN-01].conditions[nucleus_only].molecules is 0" in p for p in rejected["problems"])
     assert of_type(events, "claim_drafted") == []
     assert events[-1]["type"] == "package_ready"
+
+
+def test_a_claim_draft_that_is_not_valid_json_even_after_repair_rejects_that_claim_and_the_run_still_completes(tmp_path):
+    providers = FakeProviders(answers={"meta-models/muse-spark-open": ["{\"text\": \"cut off", "{\"text\": \"cut off again"]})
+    with TestClient(live_app(tmp_path, providers)) as client:
+        _, events = run_live(client)
+
+    [rejected] = of_type(events, "claim_rejected")
+    assert "does not match ClaimDraft" in rejected["problems"][0]
+    assert events[-1]["type"] == "package_ready"
+
+
+def test_a_claim_may_state_the_frozen_threshold_without_citing_it(tmp_path):
+    draft = json.dumps({
+        "text": "In cells labelled Podocyte by construction, nucleus-only assignment keeps 0 of the 4 LRP2 molecules, "
+        "compared against the home-matched expectation × 2^-0.5.",
+        "cited": {"kept": {"value": 0, "source": "sections[SYN-01].conditions[nucleus_only].molecules"},
+                  "default": {"value": 4, "source": "sections[SYN-01].conditions[default].molecules"}},
+    })
+    providers = FakeProviders(answers={"meta-models/muse-spark-open": draft})
+    with TestClient(live_app(tmp_path, providers)) as client:
+        _, events = run_live(client)
+
+    assert [e["call"]["purpose"] for e in of_type(events, "model_call")] == ["plan", "follow_up", "claim_draft"]
+    assert len(of_type(events, "claim_drafted")) == 1

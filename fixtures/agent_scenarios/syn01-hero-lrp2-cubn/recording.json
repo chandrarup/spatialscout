@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-hero-lrp2-cubn",
-  "recorded_at": "2026-11-04T00:19:18Z",
+  "recorded_at": "2026-11-04T00:22:58Z",
   "origin": "hand_authored",
   "question": "Do the podocytes in the synthetic section really carry LRP2 and CUBN, or is that segmentation?",
   "note": "Hand-authored model responses: the agent requests the random-thinning control and the label-sensitivity check. No model was called.",
@@ -531,14 +531,14 @@
   },
   {
    "purpose": "claim_draft",
-   "cache_key": "b466857fc4479f63305a27e51342de7ba9aaed6b1a4c6839416cf8e2566b5691",
+   "cache_key": "02ded889ce15e09264c44b626bfb70c56222658826978e5f21c6aebc6197cb76",
    "request": {
     "provider": "baseten",
     "model": "meta-models/muse-spark-open",
     "messages": [
      {
       "role": "system",
-      "content": "You write one claim about one finding for SpatialScout. Word it cautiously and scope it to the population and its label rule, for example: 'Co-expression persists under the tested restriction in cells labelled by our marker rule.' Never imply that the authors' labels are replicated, that a biological state is proven, or that a result is an artifact, robust, validated or significant. Use only numbers that appear in the finding or in its controls, and list every number the text uses in `cited`, with the field it comes from, written like sections[<section_id>].conditions[<condition>].<field>, pooled[<condition>].<field>, eligible_section_ids.count, or controls[<control_id>].<field> for a control. Write shares as percentages or fractions of the cited value. Respond with JSON that matches the response schema."
+      "content": "You write one claim about one finding for SpatialScout. Word it cautiously and scope it to the population: name its cell type label and its label rule, in the style of 'Co-expression persists under the tested restriction in cells labelled <cell type> by our <label rule> rule.' Never imply that the authors' labels are replicated, that a biological state is proven, or that a result is an artifact, robust, validated or significant. Use only numbers that appear in the finding or in its controls, and list every number the text uses in `cited`, with the field it comes from, written like sections[<section_id>].conditions[<condition>].<field>, pooled[<condition>].<field>, eligible_section_ids.count, or controls[<control_id>].<field> for a control. Write shares as percentages or fractions of the cited value. Respond with JSON that matches the response schema."
      },
      {
       "role": "user",

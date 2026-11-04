@@ -76,6 +76,8 @@ from ..gateway import (
     GatewayError,
     LiveSource,
     ModelGateway,
+    ModelOutputInvalid,
+    ModelOutputTruncated,
     RecordingLibrary,
     RecordingWriter,
     ReplaySource,
@@ -554,14 +556,18 @@ class Orchestrator:
         thinning, labels = run.controls_for(finding.finding_id)
         controls = {c.control_id: c for c in (thinning, labels) if c is not None}
         request, inputs = claim_request(investigation.state.question, finding, tool.spec(), list(controls.values()))
-        draft, _ = await gateway.complete_json("claim_draft", request, inputs, ClaimDraft)
-        problems = claim_problems(draft, finding, controls)
-        if problems:
-            request = redraft_request(request, draft.model_dump_json(), problems)
-            draft, _ = await gateway.complete_json("claim_redraft", request, inputs, ClaimDraft)
+        try:
+            draft, _ = await gateway.complete_json("claim_draft", request, inputs, ClaimDraft)
             problems = claim_problems(draft, finding, controls)
             if problems:
-                return None, problems
+                request = redraft_request(request, draft.model_dump_json(), problems)
+                draft, _ = await gateway.complete_json("claim_redraft", request, inputs, ClaimDraft)
+                problems = claim_problems(draft, finding, controls)
+                if problems:
+                    return None, problems
+        except (ModelOutputInvalid, ModelOutputTruncated) as unusable:
+            # One unusable draft costs that claim, not the investigation: the other claims and the evidence stand.
+            return None, [str(unusable)]
         claim = Claim(
             claim_id=new_id("clm"),
             investigation_id=investigation.investigation_id,

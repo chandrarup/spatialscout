@@ -2,7 +2,8 @@
 
 A draft passes when:
 - it cites at least one number, and every cited source resolves to that value in the finding or one of its controls;
-- every number its text writes is one of the cited numbers (as written, or as a percentage of a share);
+- every number its text writes is one of the cited numbers (as written, or as a percentage of a share), or a constant
+  of the frozen rules recorded with the finding (gates, minimum sections, the 2^-0.5 threshold);
 - it names the population's cell type, and none of the wording the glossary rules out.
 
 This is a gate on the model's output, not verification: ticket 10 recomputes every cited number independently.
@@ -25,6 +26,8 @@ FORBIDDEN_WORDS = (
 
 # A number written on its own: not part of an identifier (LRP2, GSM8720409, nphs1-anchored-v1), and not a distance
 # cap's micrometres (1 µm, 2 um), which name a condition rather than cite a value.
+# The frozen audit threshold written as a factor, such as "× 2^-0.5": a rule, not a measured number.
+_FROZEN_THRESHOLD = re.compile(r"2\s*\^\s*\(?\s*[-−]\s*0\.5\s*\)?")
 _NUMBER = re.compile(r"(?<![A-Za-z0-9_.\-])(\d+(?:\.\d+)?)(\s*%)?(?![A-Za-z0-9_]|\.\d|\s*[µμu]m\b)")
 
 
@@ -41,8 +44,9 @@ def claim_problems(draft: ClaimDraft, finding: AuditResult, controls: Mapping[st
             continue
         if not same_number(number.value, actual):
             problems.append(f"cited {name} is {number.value}, but {number.source} is {actual}")
-    values = [n.value for n in draft.cited.values() if isinstance(n.value, int | float)]
-    for match in _NUMBER.finditer(draft.text):
+    values = [n.value for n in draft.cited.values() if isinstance(n.value, int | float) and not isinstance(n.value, bool)]
+    values += _frozen_rule_numbers(finding)
+    for match in _NUMBER.finditer(_FROZEN_THRESHOLD.sub(" ", draft.text)):
         written, percent = match.group(1), bool(match.group(2))
         if not any(_writes(written, percent, value) for value in values):
             problems.append(f"the text writes {match.group(0).strip()}, which is none of the cited numbers")
@@ -53,6 +57,15 @@ def claim_problems(draft: ClaimDraft, finding: AuditResult, controls: Mapping[st
         if re.search(rf"\b{re.escape(word)}\b", lowered):
             problems.append(f"the text uses {word!r}, which a claim must not (it states no verdict on biological truth)")
     return problems
+
+
+def _frozen_rule_numbers(finding: AuditResult) -> list[float]:
+    """The frozen rules' own constants (gates, minimum sections, the excess log2 drop threshold), which a claim may
+    state without citing them: they are recorded with the finding, not measured."""
+    rules = finding.rules
+    if rules is None:
+        return []
+    return [rules.population_gate_min_cells, rules.molecule_gate_min_molecules, rules.min_eligible_sections, rules.excess_log2_drop_threshold]
 
 
 def _writes(written: str, percent: bool, value: float | int) -> bool:

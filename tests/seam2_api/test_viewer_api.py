@@ -7,7 +7,10 @@ def test_the_mode_names_the_run_mode_and_offers_the_recorded_question(client):
     mode = client.get("/api/mode").json()
 
     assert mode["default_run_mode"] == "cached_tool_rerun"
-    assert [(r["question"], r["origin"]) for r in mode["recordings"]] == [(RECORDED_QUESTION, "hand_authored")]
+    recordings = {r["question"]: r for r in mode["recordings"]}
+    assert recordings[RECORDED_QUESTION]["origin"] == "hand_authored"
+    # every other recording the web app offers is a recorded live run, never a test scenario
+    assert {r["origin"] for q, r in recordings.items() if q != RECORDED_QUESTION} <= {"live"}
 
 
 def test_the_region_view_ships_the_synthetic_section_as_compact_columns(client):

@@ -72,9 +72,9 @@ AGENT_INSTRUCTIONS = (
 )
 
 CLAIM_INSTRUCTIONS = (
-    "You write one claim about one finding for SpatialScout. Word it cautiously and scope it to the population and "
-    "its label rule, for example: 'Co-expression persists under the tested restriction in cells labelled by our "
-    "marker rule.' Never imply that the authors' labels are replicated, that a biological state is proven, or that a "
+    "You write one claim about one finding for SpatialScout. Word it cautiously and scope it to the population: name "
+    "its cell type label and its label rule, in the style of 'Co-expression persists under the tested restriction in "
+    "cells labelled <cell type> by our <label rule> rule.' Never imply that the authors' labels are replicated, that a biological state is proven, or that a "
     "result is an artifact, robust, validated or significant. Use only numbers that appear in the finding or in its "
     "controls, and list every number the text uses in `cited`, with the field it comes from, written like "
     "sections[<section_id>].conditions[<condition>].<field>, pooled[<condition>].<field>, "
