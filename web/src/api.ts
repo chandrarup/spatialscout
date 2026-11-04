@@ -76,6 +76,8 @@ export const api = {
     }),
   approve: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}/approve`, { method: "POST" }).then(json<InvestigationSnapshot>),
+  reject: (investigationId: string) =>
+    fetch(`/api/investigations/${investigationId}/reject`, { method: "POST" }).then(json<InvestigationSnapshot>),
 
   /**
    * Stream events with seq > afterSeq until a terminal event. The server ends each connection after a bounded

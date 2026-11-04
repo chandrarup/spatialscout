@@ -1,4 +1,4 @@
-// The event log: every investigation event in seq order, as it streams. Ticket 09a adds the reasoning timeline.
+// The event log: every investigation event in seq order, as it streams. The reasoning timeline groups the agent loop.
 import type { InvestigationEvent } from "../contracts/generated";
 
 export function EventLog({ events }: { events: InvestigationEvent[] }) {
