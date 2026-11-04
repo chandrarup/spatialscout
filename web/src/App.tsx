@@ -12,6 +12,7 @@ import { CompareView } from "./components/stage/CompareView";
 import { Explore, type TissueContext } from "./components/stage/Explore";
 import { Intro } from "./components/stage/Intro";
 import { Results } from "./components/stage/Results";
+import { Upload } from "./components/stage/Upload";
 import { RunCanvas } from "./components/stage/RunCanvas";
 import { buildGraph, isStep, playbackDelay } from "./components/stage/runGraph";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
@@ -22,7 +23,7 @@ import { moleculeAdapter } from "./datasets/molecules";
 import { type InvestigationView, applyEvent, fromSnapshot, lastSeq } from "./investigation";
 
 type Action = { type: "open"; view: InvestigationView } | { type: "event"; event: InvestigationEvent };
-type Stage = "intro" | "explore" | "compare" | "classic" | "run" | "results" | "section";
+type Stage = "intro" | "explore" | "compare" | "classic" | "run" | "results" | "section" | "upload";
 type Rail = "rail" | "full" | "hidden";
 const SPEEDS = [1, 2, 4];
 
@@ -332,8 +333,9 @@ export default function App() {
     { id: "explore", label: "Tissue", enabled: !!kpmp },
     { id: "run", label: "Run", enabled: !!investigation },
     { id: "results", label: "Verdict", enabled: !!investigation?.verdict },
+    { id: "upload", label: "Your data", enabled: true },
   ];
-  const showBar = stage !== "intro" && stage !== "section" && stage !== "classic" && (stage !== "run" || !!shown);
+  const showBar = stage !== "intro" && stage !== "upload" && stage !== "section" && stage !== "classic" && (stage !== "run" || !!shown);
 
   return (
     <div className="flex h-full flex-col bg-surface">
@@ -535,6 +537,7 @@ export default function App() {
             }
           />
         )}
+        {stage === "upload" && <Upload />}
         {stage === "section" && (
           <div className="flex h-full flex-col gap-2 p-4 *:flex-1">
             <button type="button" onClick={() => setStage(investigation?.verdict ? "results" : "run")} className="h-9 flex-none! self-start rounded-full bg-raised px-4 text-[13px] text-ink hover:bg-[#2a2d32]">
