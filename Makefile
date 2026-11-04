@@ -1,5 +1,5 @@
 # One-command workflows. Each target is a thin wrapper; the underlying commands are listed in CLAUDE.md.
-.PHONY: benchmark contrasts structures audit install types test typecheck build serve api web dev fixtures smoke data deploy modal-secret modal-batch
+.PHONY: kpmp benchmark contrasts structures audit install types test typecheck build serve api web dev fixtures smoke data deploy modal-secret modal-batch
 
 # The API's port; for example `make dev PORT=8010` when 8000 is taken.
 PORT ?= 8000
@@ -40,6 +40,9 @@ audit:  ## compute the demo's audit results, controls and composite figures into
 
 benchmark:  ## verify valid and injected claims derived from the audit results, replaying the stored visual checks (after `make data`); `uv run spatialscout benchmark --run-mode live` re-records them (cents)
 	uv run spatialscout benchmark
+
+kpmp:  ## measure the two KPMP CODEX participants (raw files in data/kpmp/), compute the protein audit and write tiles into artifacts/KPMP/
+	uv run spatialscout kpmp
 
 contrasts:  ## compute every descriptive disease contrast and its composite figure into artifacts/GSE286184/contrasts/ (after `make data`)
 	uv run spatialscout contrasts

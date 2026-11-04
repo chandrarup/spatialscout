@@ -52,3 +52,53 @@ class ProteinAuditResult(Contract):
     inference: str
     rules: dict[str, str]
     cell_table_checksum: str = Field(description="sha256 of the per-cell table the result was computed from.")
+
+
+class KpmpTile(Contract):
+    """One display image of a channel: a horizontal strip of the participant's image, placed by its bounds (µm)."""
+
+    path: str = Field(description="Under the artifacts directory; served at /api/kpmp/files/<path>.")
+    bounds: Region
+
+
+class KpmpChannel(Contract):
+    channel_id: str
+    marker: str
+    label: str
+    description: str
+    display_max: float = Field(description="The raw intensity shown at full brightness.")
+    tiles: list[KpmpTile]
+
+
+class KpmpParticipant(Contract):
+    participant_id: str
+    panel_id: str
+    role: str
+    title: str
+    extent: Region
+    pixel_size_um: float
+    cells: int
+    mask_coverage: float = Field(description="Share of the image's pixels inside a segmentation label.")
+    median_cell_area_um2: float
+    mask_note: str
+    channels: list[KpmpChannel]
+    clinical: dict[str, str] = Field(description="Clinical values from downloaded KPMP files only; empty when none is downloaded.")
+    clinical_note: str
+    source_files: list[str]
+
+
+class KpmpResultEntry(Contract):
+    participant_id: str
+    population_marker: str
+    marker: str
+    label: EvidenceStatus
+    path: str
+
+
+class KpmpManifest(Contract):
+    dataset_id: str
+    participants: list[KpmpParticipant]
+    nucleus_threshold: ProteinThreshold
+    thresholds: list[ProteinThreshold]
+    results: list[KpmpResultEntry]
+    display_rule: str

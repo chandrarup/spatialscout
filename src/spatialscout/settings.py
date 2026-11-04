@@ -48,6 +48,10 @@ class Settings:
     """Validated GSE286184 tables written by `spatialscout ingest` (git-ignored)."""
     raw_dir: Path | None = None
     """Raw GSE286184 GEO files (git-ignored); in a worktree, point it at the main checkout's data/raw/GSE286184."""
+    kpmp_dir: Path | None = None
+    """Raw KPMP CODEX downloads, one folder per participant (git-ignored); in a worktree, the main checkout's data/kpmp."""
+    kpmp_processed_dir: Path | None = None
+    """Full KPMP per-cell tables written by `spatialscout kpmp` (git-ignored)."""
     # Each SSE connection ends after this many seconds and the client reconnects with `after_seq`, so a host that
     # cuts long requests (Modal, at 150 s) never cuts a stream mid-event.
     stream_window_seconds: float = 110.0
@@ -70,6 +74,8 @@ class Settings:
             artifacts_dir=Path(env("SPATIALSCOUT_ARTIFACTS_DIR", str(root / "artifacts"))),
             processed_dir=Path(env("SPATIALSCOUT_PROCESSED_DIR", str(root / "data" / "processed" / "GSE286184"))),
             raw_dir=Path(env("SPATIALSCOUT_RAW_DIR", str(root / "data" / "raw" / "GSE286184"))),
+            kpmp_dir=Path(env("SPATIALSCOUT_KPMP_DIR", str(root / "data" / "kpmp"))),
+            kpmp_processed_dir=Path(env("SPATIALSCOUT_KPMP_PROCESSED_DIR", str(root / "data" / "processed" / "KPMP"))),
             stream_window_seconds=float(env("SPATIALSCOUT_STREAM_WINDOW_SECONDS", "110")),
             live=LiveSettings(
                 passcode=env("SPATIALSCOUT_LIVE_PASSCODE") or None,

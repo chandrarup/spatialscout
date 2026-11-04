@@ -1,0 +1,92 @@
+{
+ "result_id": "pra-35a94fc5426b31ad",
+ "dataset_id": "KPMP-CODEX",
+ "participant_id": "31-10013",
+ "role": "diseased",
+ "roi": null,
+ "population": "Podocalyxin+ cells",
+ "population_marker": "Podocalyxin",
+ "marker": "LRP2",
+ "home": "LRP2+ cells that are not Podocalyxin+",
+ "population_cells": 219,
+ "home_cells": 6379,
+ "thresholds": [
+  {
+   "marker": "Podocalyxin",
+   "value": 62.0,
+   "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+   "source_participant_id": "164-17"
+  },
+  {
+   "marker": "LRP2",
+   "value": 6.0,
+   "rule": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+   "source_participant_id": "164-17"
+  }
+ ],
+ "conditions": [
+  {
+   "condition": "whole_cell",
+   "positive_cells": 38,
+   "observed_share": 0.1735159817351598,
+   "expected_share": 0.1735159817351598,
+   "pixel_retention": 1.0,
+   "excluded_cells": 0,
+   "retained_cells": 38,
+   "bordering_home_share_excluded": null,
+   "bordering_home_share_retained": 0.07894736842105263,
+   "reasons": {
+    "bordering_home_share_excluded": "no population cell loses positivity under this condition"
+   }
+  },
+  {
+   "condition": "eroded_1px",
+   "positive_cells": 40,
+   "observed_share": 0.182648401826484,
+   "expected_share": 0.1715746642710009,
+   "pixel_retention": 0.6636668905305574,
+   "excluded_cells": 1,
+   "retained_cells": 37,
+   "bordering_home_share_excluded": 0.0,
+   "bordering_home_share_retained": 0.08108108108108109,
+   "reasons": {}
+  },
+  {
+   "condition": "eroded_2px",
+   "positive_cells": 42,
+   "observed_share": 0.1917808219178082,
+   "expected_share": 0.1633913553897484,
+   "pixel_retention": 0.39629281396910676,
+   "excluded_cells": 5,
+   "retained_cells": 33,
+   "bordering_home_share_excluded": 0.0,
+   "bordering_home_share_retained": 0.09090909090909091,
+   "reasons": {}
+  },
+  {
+   "condition": "nucleus_region",
+   "positive_cells": 35,
+   "observed_share": 0.1598173515981735,
+   "expected_share": 0.15930859601313296,
+   "pixel_retention": 0.639543317662861,
+   "excluded_cells": 6,
+   "retained_cells": 32,
+   "bordering_home_share_excluded": 0.0,
+   "bordering_home_share_retained": 0.09375,
+   "reasons": {}
+  }
+ ],
+ "label": "stable",
+ "label_reason": "no stricter condition drops the observed share below the random-pixel-loss expectation x 2^-0.5",
+ "inference": "Descriptive only: one participant's section, with no leave-one-out; a participant compared with another is one person against one person.",
+ "rules": {
+  "threshold": "Otsu's threshold on the healthy reference's whole-cell means of the marker (256 bins of width 1 on 0-255): the first split maximising the between-class variance; a cell is positive when its mean is at or above it. The same value is applied to every participant and every measurement condition.",
+  "population": "Cells positive for the population marker as whole cells; frozen for every measurement condition.",
+  "home": "Cells positive for the marker as whole cells and not positive for the population marker.",
+  "bordering": "Two cells border when a pixel of one lies within 2 px of a pixel of the other along a row or a column of the segmentation mask, so a one-pixel background gap between cells still counts.",
+  "expectation": "Closed form. A condition keeping k of a cell's n pixels is compared with k pixels drawn at random: their mean has the whole-cell mean m and variance s^2 / k x (n - k) / (n - 1), with s^2 the whole-cell pixel variance, and reaches the threshold t with probability Phi((m - t) / sd) (1 or 0 when sd = 0; 0 when k = 0). Expected share: the mean of that probability over the population.",
+  "label": "Gates: at least 20 population cells and 10 of them positive for the marker as whole cells, else insufficient evidence. Segmentation-sensitive: under one stricter condition the observed share O is below the expectation E x 2^-0.5. Otherwise stable.",
+  "caveat": "Eroding a cell also removes genuine membrane signal, which random pixel loss does not model; compare the bordering-home shares of excluded and retained cells before reading an excess drop as spillover."
+ },
+ "cell_table_checksum": "ed24695fe0d07451646296dcd46a0c49256ecef0b23e37435ddfaf8765f13540"
+}

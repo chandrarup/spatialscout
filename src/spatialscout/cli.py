@@ -33,6 +33,7 @@ def main(argv: list[str] | None = None) -> int:
                            help="live re-records the visual checks (cents); offline skips them")
     benchmark.add_argument("--env-file", type=Path, default=None)
     commands.add_parser("audit", help="compute the demo's GSE286184 audit results into artifacts/GSE286184/audit/ (needs ingest)")
+    commands.add_parser("kpmp", help="measure the two KPMP CODEX participants, freeze thresholds, compute the protein audit and write tiles into artifacts/KPMP/")
     commands.add_parser("contrasts", help="compute every descriptive GSE286184 disease contrast into artifacts/GSE286184/contrasts/ (needs ingest)")
     structures = commands.add_parser(
         "structures", help="SAM 3.1 glomerulus outlines (exploratory) for the demo sections into artifacts/GSE286184/structures/"
@@ -49,6 +50,8 @@ def main(argv: list[str] | None = None) -> int:
         return asyncio.run(_benchmark(args.run_mode, args.env_file))
     if args.command == "contrasts":
         return _contrasts()
+    if args.command == "kpmp":
+        return _kpmp()
     if args.command == "structures":
         return asyncio.run(_structures(args.run_mode, args.sections, args.env_file))
     if args.command == "serve":
@@ -125,6 +128,19 @@ def _ingest(download: bool) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def _kpmp() -> int:
+    """Per-cell tables to SPATIALSCOUT_KPMP_PROCESSED_DIR (git-ignored); thresholds, audit tables, results and tiles
+    to artifacts/KPMP/."""
+    from .data.kpmp import build
+    from .settings import Settings
+
+    settings = Settings.from_env()
+    assert settings.kpmp_dir and settings.kpmp_processed_dir and settings.artifacts_dir
+    manifest = build(settings.kpmp_dir, settings.kpmp_processed_dir, settings.artifacts_dir)
+    print(f"wrote {len(manifest.results)} protein audit results for {len(manifest.participants)} participants to {settings.artifacts_dir / 'KPMP'}")
+    return 0
 
 
 def _audit() -> int:

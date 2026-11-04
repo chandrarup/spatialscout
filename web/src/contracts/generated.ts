@@ -1611,6 +1611,100 @@ export interface InvestigationState {
   regions: Region[];
 }
 /**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "KpmpChannel".
+ */
+export interface KpmpChannel {
+  channel_id: string;
+  marker: string;
+  label: string;
+  description: string;
+  /**
+   * The raw intensity shown at full brightness.
+   */
+  display_max: number;
+  tiles: KpmpTile[];
+}
+/**
+ * One display image of a channel: a horizontal strip of the participant's image, placed by its bounds (µm).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "KpmpTile".
+ */
+export interface KpmpTile {
+  /**
+   * Under the artifacts directory; served at /api/kpmp/files/<path>.
+   */
+  path: string;
+  bounds: Region;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "KpmpManifest".
+ */
+export interface KpmpManifest {
+  dataset_id: string;
+  participants: KpmpParticipant[];
+  nucleus_threshold: ProteinThreshold;
+  thresholds: ProteinThreshold[];
+  results: KpmpResultEntry[];
+  display_rule: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "KpmpParticipant".
+ */
+export interface KpmpParticipant {
+  participant_id: string;
+  panel_id: string;
+  role: string;
+  title: string;
+  extent: Region;
+  pixel_size_um: number;
+  cells: number;
+  /**
+   * Share of the image's pixels inside a segmentation label.
+   */
+  mask_coverage: number;
+  median_cell_area_um2: number;
+  mask_note: string;
+  channels: KpmpChannel[];
+  /**
+   * Clinical values from downloaded KPMP files only; empty when none is downloaded.
+   */
+  clinical: {
+    [k: string]: string;
+  };
+  clinical_note: string;
+  source_files: string[];
+}
+/**
+ * A frozen positivity threshold on a marker's per-cell mean intensity.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinThreshold".
+ */
+export interface ProteinThreshold {
+  marker: string;
+  value: number;
+  rule: string;
+  /**
+   * The participant whose cells the threshold was derived from.
+   */
+  source_participant_id: string;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "KpmpResultEntry".
+ */
+export interface KpmpResultEntry {
+  participant_id: string;
+  population_marker: string;
+  marker: string;
+  label: EvidenceStatus;
+  path: string;
+}
+/**
  * One section's cells counted by cell type label under each rule, and the cells whose label differs.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -1991,6 +2085,91 @@ export interface ProposedStep {
     [k: string]: unknown;
   };
   rationale: string;
+}
+/**
+ * How the share of one marker's positive cells in a population behaves across measurement conditions, for one
+ * participant, over the whole image or a region. One participant against another is descriptive only.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinAuditResult".
+ */
+export interface ProteinAuditResult {
+  result_id: string;
+  dataset_id: string;
+  participant_id: string;
+  /**
+   * 'healthy reference' or 'diseased'.
+   */
+  role: string;
+  roi: Region | null;
+  /**
+   * The population, frozen under the whole-cell condition, for example 'Podocalyxin+ cells'.
+   */
+  population: string;
+  population_marker: string;
+  marker: string;
+  /**
+   * The marker's home cells, for example 'LRP2+ cells that are not Podocalyxin+'.
+   */
+  home: string;
+  population_cells: number;
+  home_cells: number;
+  thresholds: ProteinThreshold[];
+  conditions: ProteinConditionRow[];
+  label: EvidenceStatus;
+  label_reason: string;
+  inference: string;
+  rules: {
+    [k: string]: string;
+  };
+  /**
+   * sha256 of the per-cell table the result was computed from.
+   */
+  cell_table_checksum: string;
+}
+/**
+ * The result under one measurement condition. Population cells with no pixel kept count as not positive.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinConditionRow".
+ */
+export interface ProteinConditionRow {
+  condition: string;
+  /**
+   * Population cells whose mean of the marker under this condition is at or above its threshold.
+   */
+  positive_cells: number;
+  observed_share: number | null;
+  /**
+   * Random-pixel-loss expectation: the mean over population cells of the probability that a random subset of the cell's pixels, as large as this condition keeps, has a mean at or above the threshold.
+   */
+  expected_share: number | null;
+  /**
+   * Population pixels kept under this condition / population pixels of the whole cells.
+   */
+  pixel_retention: number | null;
+  /**
+   * Population cells positive for the marker as whole cells but not under this condition.
+   */
+  excluded_cells: number;
+  /**
+   * Population cells positive for the marker as whole cells and under this condition.
+   */
+  retained_cells: number;
+  /**
+   * Share of the excluded cells that border a home cell.
+   */
+  bordering_home_share_excluded: number | null;
+  /**
+   * Share of the retained cells that border a home cell.
+   */
+  bordering_home_share_retained: number | null;
+  /**
+   * Why a value is null.
+   */
+  reasons: {
+    [k: string]: string;
+  };
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema

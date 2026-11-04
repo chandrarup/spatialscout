@@ -3224,6 +3224,209 @@
       "title": "InvestigationStatus",
       "type": "string"
     },
+    "KpmpChannel": {
+      "additionalProperties": false,
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "display_max": {
+          "description": "The raw intensity shown at full brightness.",
+          "type": "number"
+        },
+        "tiles": {
+          "items": {
+            "$ref": "#/definitions/KpmpTile"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "channel_id",
+        "marker",
+        "label",
+        "description",
+        "display_max",
+        "tiles"
+      ],
+      "title": "KpmpChannel",
+      "type": "object"
+    },
+    "KpmpManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "participants": {
+          "items": {
+            "$ref": "#/definitions/KpmpParticipant"
+          },
+          "type": "array"
+        },
+        "nucleus_threshold": {
+          "$ref": "#/definitions/ProteinThreshold"
+        },
+        "thresholds": {
+          "items": {
+            "$ref": "#/definitions/ProteinThreshold"
+          },
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/definitions/KpmpResultEntry"
+          },
+          "type": "array"
+        },
+        "display_rule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "participants",
+        "nucleus_threshold",
+        "thresholds",
+        "results",
+        "display_rule"
+      ],
+      "title": "KpmpManifest",
+      "type": "object"
+    },
+    "KpmpParticipant": {
+      "additionalProperties": false,
+      "properties": {
+        "participant_id": {
+          "type": "string"
+        },
+        "panel_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "extent": {
+          "$ref": "#/definitions/Region"
+        },
+        "pixel_size_um": {
+          "type": "number"
+        },
+        "cells": {
+          "type": "integer"
+        },
+        "mask_coverage": {
+          "description": "Share of the image's pixels inside a segmentation label.",
+          "type": "number"
+        },
+        "median_cell_area_um2": {
+          "type": "number"
+        },
+        "mask_note": {
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "$ref": "#/definitions/KpmpChannel"
+          },
+          "type": "array"
+        },
+        "clinical": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Clinical values from downloaded KPMP files only; empty when none is downloaded.",
+          "type": "object"
+        },
+        "clinical_note": {
+          "type": "string"
+        },
+        "source_files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "participant_id",
+        "panel_id",
+        "role",
+        "title",
+        "extent",
+        "pixel_size_um",
+        "cells",
+        "mask_coverage",
+        "median_cell_area_um2",
+        "mask_note",
+        "channels",
+        "clinical",
+        "clinical_note",
+        "source_files"
+      ],
+      "title": "KpmpParticipant",
+      "type": "object"
+    },
+    "KpmpResultEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "participant_id": {
+          "type": "string"
+        },
+        "population_marker": {
+          "type": "string"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "participant_id",
+        "population_marker",
+        "marker",
+        "label",
+        "path"
+      ],
+      "title": "KpmpResultEntry",
+      "type": "object"
+    },
+    "KpmpTile": {
+      "additionalProperties": false,
+      "description": "One display image of a channel: a horizontal strip of the participant's image, placed by its bounds (\u00b5m).",
+      "properties": {
+        "path": {
+          "description": "Under the artifacts directory; served at /api/kpmp/files/<path>.",
+          "type": "string"
+        },
+        "bounds": {
+          "$ref": "#/definitions/Region"
+        }
+      },
+      "required": [
+        "path",
+        "bounds"
+      ],
+      "title": "KpmpTile",
+      "type": "object"
+    },
     "LabelCounts": {
       "additionalProperties": false,
       "description": "One section's cells counted by cell type label under each rule, and the cells whose label differs.",
@@ -5150,6 +5353,231 @@
         "rationale"
       ],
       "title": "ProposedStep",
+      "type": "object"
+    },
+    "ProteinAuditResult": {
+      "additionalProperties": false,
+      "description": "How the share of one marker's positive cells in a population behaves across measurement conditions, for one\nparticipant, over the whole image or a region. One participant against another is descriptive only.",
+      "properties": {
+        "result_id": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "participant_id": {
+          "type": "string"
+        },
+        "role": {
+          "description": "'healthy reference' or 'diseased'.",
+          "type": "string"
+        },
+        "roi": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Region"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "population": {
+          "description": "The population, frozen under the whole-cell condition, for example 'Podocalyxin+ cells'.",
+          "type": "string"
+        },
+        "population_marker": {
+          "type": "string"
+        },
+        "marker": {
+          "type": "string"
+        },
+        "home": {
+          "description": "The marker's home cells, for example 'LRP2+ cells that are not Podocalyxin+'.",
+          "type": "string"
+        },
+        "population_cells": {
+          "type": "integer"
+        },
+        "home_cells": {
+          "type": "integer"
+        },
+        "thresholds": {
+          "items": {
+            "$ref": "#/definitions/ProteinThreshold"
+          },
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/ProteinConditionRow"
+          },
+          "type": "array"
+        },
+        "label": {
+          "$ref": "#/definitions/EvidenceStatus"
+        },
+        "label_reason": {
+          "type": "string"
+        },
+        "inference": {
+          "type": "string"
+        },
+        "rules": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "cell_table_checksum": {
+          "description": "sha256 of the per-cell table the result was computed from.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "result_id",
+        "dataset_id",
+        "participant_id",
+        "role",
+        "roi",
+        "population",
+        "population_marker",
+        "marker",
+        "home",
+        "population_cells",
+        "home_cells",
+        "thresholds",
+        "conditions",
+        "label",
+        "label_reason",
+        "inference",
+        "rules",
+        "cell_table_checksum"
+      ],
+      "title": "ProteinAuditResult",
+      "type": "object"
+    },
+    "ProteinConditionRow": {
+      "additionalProperties": false,
+      "description": "The result under one measurement condition. Population cells with no pixel kept count as not positive.",
+      "properties": {
+        "condition": {
+          "type": "string"
+        },
+        "positive_cells": {
+          "description": "Population cells whose mean of the marker under this condition is at or above its threshold.",
+          "type": "integer"
+        },
+        "observed_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Random-pixel-loss expectation: the mean over population cells of the probability that a random subset of the cell's pixels, as large as this condition keeps, has a mean at or above the threshold."
+        },
+        "pixel_retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Population pixels kept under this condition / population pixels of the whole cells."
+        },
+        "excluded_cells": {
+          "description": "Population cells positive for the marker as whole cells but not under this condition.",
+          "type": "integer"
+        },
+        "retained_cells": {
+          "description": "Population cells positive for the marker as whole cells and under this condition.",
+          "type": "integer"
+        },
+        "bordering_home_share_excluded": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Share of the excluded cells that border a home cell."
+        },
+        "bordering_home_share_retained": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Share of the retained cells that border a home cell."
+        },
+        "reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Why a value is null.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "condition",
+        "positive_cells",
+        "observed_share",
+        "expected_share",
+        "pixel_retention",
+        "excluded_cells",
+        "retained_cells",
+        "bordering_home_share_excluded",
+        "bordering_home_share_retained",
+        "reasons"
+      ],
+      "title": "ProteinConditionRow",
+      "type": "object"
+    },
+    "ProteinThreshold": {
+      "additionalProperties": false,
+      "description": "A frozen positivity threshold on a marker's per-cell mean intensity.",
+      "properties": {
+        "marker": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "source_participant_id": {
+          "description": "The participant whose cells the threshold was derived from.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "marker",
+        "value",
+        "rule",
+        "source_participant_id"
+      ],
+      "title": "ProteinThreshold",
       "type": "object"
     },
     "RandomThinningControl": {
