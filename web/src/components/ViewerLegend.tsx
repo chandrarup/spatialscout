@@ -46,6 +46,15 @@ export function ViewerLegend({ view, genes, cellTypes, onToggleGene, onToggleCel
       <div className="flex items-center gap-2 text-ink-2">
         <span className="h-0.5 w-4" style={{ background: STRUCTURE_OUTLINE }} />
         Glomerulus outline{view.structures.some((s) => s.source === "synthetic") ? " (drawn by construction)" : ""}
+        {view.structures.some((s) => s.source === "sam-3.1") && (
+          <span
+            className="rounded border px-1.5 py-0.5 text-xs"
+            style={{ borderColor: STRUCTURE_OUTLINE, color: STRUCTURE_OUTLINE }}
+            title="Box-prompted SAM 3.1 outlines on a nucleus image rendered from the data. Not checked against expert annotation; never used in an evidence label."
+          >
+            SAM 3.1 proposal (exploratory)
+          </span>
+        )}
       </div>
       <ul className="space-y-1 text-ink-3">
         {view.notes.map((note) => (
