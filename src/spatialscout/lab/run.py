@@ -40,6 +40,7 @@ from .prompts import dispatch_request, literature_request
 
 MAX_TASKS = 8
 # Sub-claims with a protein-level counterpart on the KPMP images: (cell type, gene) -> (population marker, marker).
+LAB_PARTICIPANTS = ("164-17", "31-10013")  # the pair the registry describes and the recorded lab ran on
 PROTEIN_TWIN: dict[tuple[str, str], tuple[str, str]] = {("podocyte", "LRP2"): ("Podocalyxin", "LRP2"), ("b cell", "UMOD"): ("CD20", "UMOD")}
 
 
@@ -143,7 +144,7 @@ def protein_check(task: LabTask, finished: Finished, artifacts_dir: Path) -> Pro
     population, marker = next(PROTEIN_TWIN[(sub.cell_type.lower(), g)] for g in sub.genes if (sub.cell_type.lower(), g) in PROTEIN_TWIN)
     manifest = KpmpManifest.model_validate_json((artifacts_dir / "KPMP" / "manifest.json").read_text(encoding="utf-8"))
     results = []
-    for participant in manifest.participants:
+    for participant in [p for p in manifest.participants if p.participant_id in LAB_PARTICIPANTS]:
         folder = artifacts_dir / "KPMP" / participant.participant_id
         table_path = folder / "cells.parquet"
         table = pd.read_parquet(table_path)

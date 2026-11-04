@@ -503,8 +503,10 @@
      ]
     }
    ],
-   "clinical": {},
-   "clinical_note": "Clinical metadata not downloaded: no clinical value is shown.",
+   "clinical": {
+    "KPMP enrollment category": "Healthy Reference"
+   },
+   "clinical_note": "KPMP enrollment category only, from the KPMP atlas; no other clinical value (eGFR, proteinuria, stage) was downloaded.",
    "source_files": [
     "23-0159_Section5_DAPIcomposite.tif",
     "23-0159_ChannelKey.csv",
@@ -943,12 +945,828 @@
      ]
     }
    ],
-   "clinical": {},
-   "clinical_note": "Clinical metadata not downloaded: no clinical value is shown.",
+   "clinical": {
+    "KPMP enrollment category": "CKD"
+   },
+   "clinical_note": "KPMP enrollment category only, from the KPMP atlas; no other clinical value (eGFR, proteinuria, stage) was downloaded.",
    "source_files": [
     "23-0118_DAPIcomposite.tif",
     "23-0118_ChannelKey.csv",
     "23-0118_SegmentationMask.tif"
+   ]
+  },
+  {
+   "participant_id": "165-13",
+   "panel_id": "24-0171",
+   "role": "healthy reference",
+   "title": "KPMP participant 165-13 (healthy reference) · CODEX panel 24-0171",
+   "extent": {
+    "section_id": "165-13",
+    "x0": 0.0,
+    "y0": 0.0,
+    "x1": 1829.2925409933853,
+    "y1": 9489.072679199802
+   },
+   "pixel_size_um": 0.5098362711798733,
+   "cells": 30681,
+   "mask_coverage": 0.07620881961770028,
+   "median_cell_area_um2": 41.32935072228497,
+   "mask_note": "KPMP's segmentation labels cover 7.6% of the image with a median area of 41 µm², about nucleus-sized, so 'whole cell' means the whole mask label: the nucleus and a thin rim, not the cytoplasm.",
+   "channels": [
+    {
+     "channel_id": "nuclei",
+     "marker": "DAPI",
+     "label": "DAPI",
+     "description": "Nuclear stain.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/nuclei/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/nuclei/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/nuclei/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/nuclei/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/nuclei/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "podocalyxin",
+     "marker": "Podocalyxin",
+     "label": "Podocalyxin",
+     "description": "Podocytes and endothelium: glomeruli.",
+     "display_max": 227.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/podocalyxin/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/podocalyxin/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/podocalyxin/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/podocalyxin/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/podocalyxin/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "lrp2",
+     "marker": "LRP2",
+     "label": "LRP2",
+     "description": "Megalin: proximal-tubule brush border.",
+     "display_max": 49.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/lrp2/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/lrp2/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/lrp2/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/lrp2/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/lrp2/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "umod",
+     "marker": "UMOD",
+     "label": "UMOD",
+     "description": "Uromodulin: thick ascending limb.",
+     "display_max": 74.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/umod/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/umod/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/umod/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/umod/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/umod/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "cd20",
+     "marker": "CD20",
+     "label": "CD20",
+     "description": "B cells.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/cd20/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd20/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd20/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd20/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd20/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "cd3",
+     "marker": "CD3",
+     "label": "CD3",
+     "description": "T cells.",
+     "display_max": 235.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/cd3/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd3/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd3/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd3/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/cd3/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "asma",
+     "marker": "aSMA",
+     "label": "aSMA",
+     "description": "Smooth muscle actin: vessels and myofibroblasts.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/165-13/asma/00.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1829.2925409933853,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/asma/01.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1829.2925409933853,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/asma/02.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1829.2925409933853,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/asma/03.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1829.2925409933853,
+        "y1": 8353.157467011044
+       }
+      },
+      {
+       "path": "KPMP/tiles/165-13/asma/04.webp",
+       "bounds": {
+        "section_id": "165-13",
+        "x0": 0.0,
+        "y0": 8353.157467011044,
+        "x1": 1829.2925409933853,
+        "y1": 9489.072679199802
+       }
+      }
+     ]
+    }
+   ],
+   "clinical": {
+    "KPMP enrollment category": "Healthy Reference"
+   },
+   "clinical_note": "KPMP enrollment category only, from the KPMP atlas; no other clinical value (eGFR, proteinuria, stage) was downloaded.",
+   "source_files": [
+    "24-0171_Section5_DAPIcomposite.tif",
+    "24-0171_ChannelKey.csv",
+    "24-0171_SegmentationMask.tif"
+   ]
+  },
+  {
+   "participant_id": "30-11101",
+   "panel_id": "23-0148",
+   "role": "diseased",
+   "title": "KPMP participant 30-11101 (diseased) · CODEX panel 23-0148",
+   "extent": {
+    "section_id": "30-11101",
+    "x0": 0.0,
+    "y0": 0.0,
+    "x1": 1639.6334481144725,
+    "y1": 7268.225881940273
+   },
+   "pixel_size_um": 0.5098362711798733,
+   "cells": 15207,
+   "mask_coverage": 0.05080799094454774,
+   "median_cell_area_um2": 39.50981955841079,
+   "mask_note": "KPMP's segmentation labels cover 5.1% of the image with a median area of 40 µm², about nucleus-sized, so 'whole cell' means the whole mask label: the nucleus and a thin rim, not the cytoplasm.",
+   "channels": [
+    {
+     "channel_id": "nuclei",
+     "marker": "DAPI",
+     "label": "DAPI",
+     "description": "Nuclear stain.",
+     "display_max": 249.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/nuclei/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/nuclei/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/nuclei/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/nuclei/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "podocalyxin",
+     "marker": "Podocalyxin",
+     "label": "Podocalyxin",
+     "description": "Podocytes and endothelium: glomeruli.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/podocalyxin/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/podocalyxin/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/podocalyxin/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/podocalyxin/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "lrp2",
+     "marker": "LRP2",
+     "label": "LRP2",
+     "description": "Megalin: proximal-tubule brush border.",
+     "display_max": 52.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/lrp2/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/lrp2/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/lrp2/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/lrp2/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "umod",
+     "marker": "UMOD",
+     "label": "UMOD",
+     "description": "Uromodulin: thick ascending limb.",
+     "display_max": 120.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/umod/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/umod/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/umod/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/umod/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "cd20",
+     "marker": "CD20",
+     "label": "CD20",
+     "description": "B cells.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/cd20/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/cd20/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/cd20/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/cd20/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "cd3",
+     "marker": "CD3",
+     "label": "CD3",
+     "description": "T cells.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/cd3/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/cd3/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/cd3/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/cd3/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    },
+    {
+     "channel_id": "asma",
+     "marker": "aSMA",
+     "label": "aSMA",
+     "description": "Smooth muscle actin: vessels and myofibroblasts.",
+     "display_max": 255.0,
+     "tiles": [
+      {
+       "path": "KPMP/tiles/30-11101/asma/00.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1639.6334481144725,
+        "y1": 2088.289366752761
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/asma/01.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 2088.289366752761,
+        "x1": 1639.6334481144725,
+        "y1": 4176.578733505522
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/asma/02.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 4176.578733505522,
+        "x1": 1639.6334481144725,
+        "y1": 6264.868100258283
+       }
+      },
+      {
+       "path": "KPMP/tiles/30-11101/asma/03.webp",
+       "bounds": {
+        "section_id": "30-11101",
+        "x0": 0.0,
+        "y0": 6264.868100258283,
+        "x1": 1639.6334481144725,
+        "y1": 7268.225881940273
+       }
+      }
+     ]
+    }
+   ],
+   "clinical": {
+    "KPMP enrollment category": "AKI"
+   },
+   "clinical_note": "KPMP enrollment category only, from the KPMP atlas; no other clinical value (eGFR, proteinuria, stage) was downloaded.",
+   "source_files": [
+    "23-0148_DAPIcomposite.tif",
+    "23-0148_ChannelKey.csv",
+    "23-0148_SegmentationMask.tif"
    ]
   }
  ],
@@ -1012,6 +1830,34 @@
    "marker": "UMOD",
    "label": "stable",
    "path": "KPMP/31-10013/audit_cd20_umod.json"
+  },
+  {
+   "participant_id": "165-13",
+   "population_marker": "Podocalyxin",
+   "marker": "LRP2",
+   "label": "stable",
+   "path": "KPMP/165-13/audit_podocalyxin_lrp2.json"
+  },
+  {
+   "participant_id": "165-13",
+   "population_marker": "CD20",
+   "marker": "UMOD",
+   "label": "stable",
+   "path": "KPMP/165-13/audit_cd20_umod.json"
+  },
+  {
+   "participant_id": "30-11101",
+   "population_marker": "Podocalyxin",
+   "marker": "LRP2",
+   "label": "insufficient_evidence",
+   "path": "KPMP/30-11101/audit_podocalyxin_lrp2.json"
+  },
+  {
+   "participant_id": "30-11101",
+   "population_marker": "CD20",
+   "marker": "UMOD",
+   "label": "stable",
+   "path": "KPMP/30-11101/audit_cd20_umod.json"
   }
  ],
  "display_rule": "Display only: 2 x 2 block means, scaled linearly so 0 is black and the 99.7th percentile of in-cell pixels is full brightness. Measurements use the raw pixels."

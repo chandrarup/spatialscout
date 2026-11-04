@@ -56,6 +56,12 @@ interface Props {
   auditFirst?: boolean;
 }
 
+/** "healthy reference", or "diseased · AKI" with KPMP's enrollment category when the atlas gave one. */
+export function roleLabel(p: { role: string; clinical: Record<string, string> }): string {
+  const category = p.clinical["KPMP enrollment category"];
+  return p.role === "healthy reference" || !category ? p.role : `${p.role} · ${category}`;
+}
+
 export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, onCompare, auditFirst = false }: Props) {
   const participant = kpmp.participants.find((p) => p.participant_id === participantId) ?? kpmp.participants[0]!;
   const [section, setSection] = useState<LoadedSection | null>(null);
@@ -232,7 +238,7 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
           <h1 className="text-[20px] leading-tight font-semibold tracking-tight">Participant {participant.participant_id}</h1>
           <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
             <span className={`mr-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium ${participant.role === "healthy reference" ? "bg-[#222a10] text-stable" : "bg-[#2b2414] text-sensitive"}`}>
-              {participant.role}
+              {roleLabel(participant)}
             </span>
             CODEX protein imaging, panel {participant.panel_id}, {participant.cells.toLocaleString()} segmented cells. From the KPMP Kidney Tissue Atlas.
           </p>
@@ -248,7 +254,7 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
               onClick={() => onParticipant(p.participant_id)}
               className="h-8 rounded-full bg-raised px-3 text-[13px] text-ink-2 hover:text-ink aria-pressed:bg-white aria-pressed:text-black"
             >
-              {p.participant_id} · {p.role === "healthy reference" ? "healthy" : "diseased"}
+              {p.participant_id} · {p.role === "healthy reference" ? "healthy" : (p.clinical["KPMP enrollment category"] ?? "diseased")}
             </button>
           ))}
           <button type="button" onClick={onCompare} className="h-8 rounded-full px-3 text-[13px] text-ink underline decoration-ink-3 underline-offset-4 hover:decoration-white">
@@ -318,7 +324,8 @@ export function Explore({ adapter, kpmp, participantId, onParticipant, onAsk, on
           <summary className="cursor-pointer text-[13px] text-ink">More biopsies</summary>
           <p className="mt-1.5 leading-relaxed">
             The KPMP atlas holds CODEX images for more participants. Once one with the same markers is processed into this workspace it joins the list above,
-            so a signal missing from this biopsy can be checked on another. This demo has two.
+            so a signal missing from this biopsy can be checked on another. This workspace has {kpmp.participants.length}: {kpmp.participants.filter((p) => p.role === "healthy reference").length} healthy
+            reference and {kpmp.participants.filter((p) => p.role !== "healthy reference").length} from people with kidney disease (KPMP enrollment: {[...new Set(kpmp.participants.filter((p) => p.role !== "healthy reference").map((p) => p.clinical["KPMP enrollment category"] ?? "diseased"))].join(", ")}).
           </p>
         </details>
       </aside>

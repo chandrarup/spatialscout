@@ -82,7 +82,7 @@ class KpmpParticipant(Contract):
     median_cell_area_um2: float
     mask_note: str
     channels: list[KpmpChannel]
-    clinical: dict[str, str] = Field(description="Clinical values from downloaded KPMP files only; empty when none is downloaded.")
+    clinical: dict[str, str] = Field(description="Clinical values from KPMP sources only (the atlas's enrollment category); empty when none was fetched.")
     clinical_note: str
     source_files: list[str]
 

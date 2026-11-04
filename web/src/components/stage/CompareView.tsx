@@ -1,4 +1,5 @@
-// Two KPMP participants one above the other, each on its side, with the same proteins switched on. They are two
+// Two KPMP participants one above the other, each on its side, with the same proteins switched on: a healthy reference
+// above and a participant with kidney disease below, each picked from the biopsies in the workspace. They are two
 // different people, so nothing links a place on one to a place on the other; each strip carries its own computed
 // whole-image protein audit.
 import { useEffect, useState } from "react";
@@ -6,7 +7,7 @@ import type { KpmpManifest, ProteinAuditResult } from "../../contracts/generated
 import type { DatasetAdapter, LoadedSection } from "../../datasets/adapter";
 import { KPMP_COLOURS } from "../../datasets/kpmp";
 import { CodexView } from "./CodexView";
-import { pct } from "./Explore";
+import { pct, roleLabel } from "./Explore";
 import { labelTone } from "./RunCanvas";
 
 interface Props {
@@ -18,7 +19,10 @@ interface Props {
   onClassic: () => void;
 }
 
-function Strip({ adapter, participantId, role, cells, visible, onOpen }: { adapter: DatasetAdapter; participantId: string; role: string; cells: number; visible: ReadonlySet<string>; onOpen: () => void }) {
+type Participant = KpmpManifest["participants"][number];
+
+function Strip({ adapter, participant, choices, onChoose, visible, onOpen }: { adapter: DatasetAdapter; participant: Participant; choices: Participant[]; onChoose: (id: string) => void; visible: ReadonlySet<string>; onOpen: () => void }) {
+  const { participant_id: participantId, role, cells } = participant;
   const [section, setSection] = useState<LoadedSection | null>(null);
   const [audit, setAudit] = useState<ProteinAuditResult[] | null>(null);
   useEffect(() => {
@@ -32,8 +36,23 @@ function Strip({ adapter, participantId, role, cells, visible, onOpen }: { adapt
         <div className="pointer-events-auto rounded-2xl bg-[#16171b]/95 ring-1 ring-white/[0.06] px-3.5 py-2.5">
           <p className="text-[15px] font-semibold">
             {participantId}{" "}
-            <span className={`ml-1 rounded-full px-2 py-0.5 text-[12px] font-medium ${role === "healthy reference" ? "bg-[#222a10] text-stable" : "bg-[#2b2414] text-sensitive"}`}>{role}</span>
+            <span className={`ml-1 rounded-full px-2 py-0.5 text-[12px] font-medium ${role === "healthy reference" ? "bg-[#222a10] text-stable" : "bg-[#2b2414] text-sensitive"}`}>{roleLabel(participant)}</span>
           </p>
+          {choices.length > 1 && (
+            <div className="mt-1.5 flex flex-wrap gap-1" role="group" aria-label={role === "healthy reference" ? "Healthy reference biopsies" : "Disease biopsies"}>
+              {choices.map((c) => (
+                <button
+                  key={c.participant_id}
+                  type="button"
+                  aria-pressed={c.participant_id === participantId}
+                  onClick={() => onChoose(c.participant_id)}
+                  className="h-6 rounded-full bg-raised px-2.5 text-[11px] text-ink-2 hover:text-ink aria-pressed:bg-white aria-pressed:text-black"
+                >
+                  {roleLabel(c) === c.role ? c.participant_id : `${c.participant_id} · ${c.clinical["KPMP enrollment category"]}`}
+                </button>
+              ))}
+            </div>
+          )}
           <p className="mt-0.5 text-[12px] text-ink-3">Kidney biopsy · CODEX · {cells.toLocaleString()} cells · real microscopy, KPMP</p>
         </div>
         <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 rounded-2xl bg-[#16171b]/95 ring-1 ring-white/[0.06] px-3 py-2">
@@ -53,7 +72,14 @@ function Strip({ adapter, participantId, role, cells, visible, onOpen }: { adapt
 }
 
 export function CompareView({ adapter, kpmp, onOpen, onBack, onClassic }: Props) {
-  const ordered = [...kpmp.participants].sort((a, b) => (a.role === "healthy reference" ? -1 : b.role === "healthy reference" ? 1 : 0));
+  const healthy = kpmp.participants.filter((p) => p.role === "healthy reference");
+  const disease = kpmp.participants.filter((p) => p.role !== "healthy reference");
+  const [top, setTop] = useState(healthy[0]?.participant_id ?? "");
+  const [bottom, setBottom] = useState(disease[0]?.participant_id ?? "");
+  const shown = [
+    { p: healthy.find((p) => p.participant_id === top) ?? healthy[0], choices: healthy, choose: setTop },
+    { p: disease.find((p) => p.participant_id === bottom) ?? disease[0], choices: disease, choose: setBottom },
+  ];
   const channels = kpmp.participants[0]?.channels ?? [];
   const [visible, setVisible] = useState<Set<string>>(() => new Set(channels.map((c) => c.channel_id).filter((id) => !adapter.defaultHidden?.has(id))));
   return (
@@ -61,7 +87,7 @@ export function CompareView({ adapter, kpmp, onOpen, onBack, onClassic }: Props)
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[20px] font-semibold tracking-tight">Healthy reference above, diseased below</h1>
-          <p className="text-[13px] text-ink-3">Two different people. Drag and zoom each strip on its own; the proteins switch on and off together.</p>
+          <p className="text-[13px] text-ink-3">Two different people, picked on each strip. Drag and zoom each strip on its own; the proteins switch on and off together.</p>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           {channels.map((c) => {
@@ -95,9 +121,9 @@ export function CompareView({ adapter, kpmp, onOpen, onBack, onClassic }: Props)
           </button>
         </div>
       </div>
-      {ordered.map((p) => (
-        <Strip key={p.participant_id} adapter={adapter} participantId={p.participant_id} role={p.role} cells={p.cells} visible={visible} onOpen={() => onOpen(p.participant_id)} />
-      ))}
+      {shown.map(({ p, choices, choose }) =>
+        p ? <Strip key={p.participant_id} adapter={adapter} participant={p} choices={choices} onChoose={choose} visible={visible} onOpen={() => onOpen(p.participant_id)} /> : null,
+      )}
     </div>
   );
 }

@@ -51,21 +51,22 @@ def kpmp_client(tmp_path):
         yield client, raw, tmp_path
 
 
-def test_the_manifest_lists_both_participants_with_tiles_thresholds_and_no_clinical_values(kpmp_client):
+def test_the_manifest_lists_every_participant_with_tiles_thresholds_and_only_the_enrollment_category(kpmp_client):
     client, _, _ = kpmp_client
     manifest = client.get("/api/kpmp").json()
     assert manifest["dataset_id"] == "KPMP-CODEX"
-    assert [p["participant_id"] for p in manifest["participants"]] == ["164-17", "31-10013"]
+    assert [p["participant_id"] for p in manifest["participants"]] == ["164-17", "31-10013", "165-13", "30-11101"]
+    assert [p["clinical"]["KPMP enrollment category"] for p in manifest["participants"]] == ["Healthy Reference", "CKD", "Healthy Reference", "AKI"]
     first = manifest["participants"][0]
     assert first["role"] == "healthy reference" and first["pixel_size_um"] == pytest.approx(0.5)
     assert first["extent"]["x1"] == pytest.approx(32.0) and first["cells"] == 256
-    assert first["clinical"] == {} and "not downloaded" in first["clinical_note"]
+    assert set(first["clinical"]) == {"KPMP enrollment category"} and "no other clinical value" in first["clinical_note"]
     assert {c["channel_id"] for c in first["channels"]} == {d[0] for d in DISPLAY}
     tile = first["channels"][0]["tiles"][0]
     response = client.get(f"/api/kpmp/files/{tile['path']}")
     assert response.status_code == 200 and response.content[:4] == b"RIFF"
     assert {t["source_participant_id"] for t in manifest["thresholds"]} == {"164-17"}
-    assert len(manifest["results"]) == 4
+    assert len(manifest["results"]) == 2 * len(PARTICIPANTS)
 
 
 def test_a_box_scopes_the_protein_audit_to_the_cells_whose_centroid_it_holds(kpmp_client):
