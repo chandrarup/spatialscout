@@ -29,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     ingest = commands.add_parser("ingest", help="download missing GSE286184 files, then validate and label all 22 sections")
     ingest.add_argument("--no-download", action="store_true", help="fail on a missing raw file instead of fetching it")
     commands.add_parser("audit", help="compute the demo's GSE286184 audit results into artifacts/GSE286184/audit/ (needs ingest)")
+    commands.add_parser("contrasts", help="compute every descriptive GSE286184 disease contrast into artifacts/GSE286184/contrasts/ (needs ingest)")
     structures = commands.add_parser(
         "structures", help="SAM 3.1 glomerulus outlines (exploratory) for the demo sections into artifacts/GSE286184/structures/"
     )
@@ -40,6 +41,8 @@ def main(argv: list[str] | None = None) -> int:
         return _ingest(download=not args.no_download)
     if args.command == "audit":
         return _audit()
+    if args.command == "contrasts":
+        return _contrasts()
     if args.command == "structures":
         return asyncio.run(_structures(args.run_mode, args.sections, args.env_file))
     if args.command == "serve":
@@ -127,8 +130,24 @@ def _audit() -> int:
     settings = Settings.from_env()
     assert settings.artifacts_dir
     store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
-    index = run_batch(store, settings.artifacts_dir / "GSE286184" / "audit", _repo_root())
+    from .engine.conditions import EXPLORATORY_CONDITIONS, PRIMARY_CONDITIONS
+
+    index = run_batch(store, settings.artifacts_dir / "GSE286184" / "audit", _repo_root(), conditions=[*PRIMARY_CONDITIONS, *EXPLORATORY_CONDITIONS])
     print(f"wrote {len(index.entries)} audit results to {settings.artifacts_dir / 'GSE286184' / 'audit'}")
+    return 0
+
+
+def _contrasts() -> int:
+    """Descriptive disease contrasts and their composite figures, written to artifacts/GSE286184/contrasts/."""
+    from .data import DatasetStore
+    from .engine.contrast_batch import run_contrasts
+    from .settings import Settings, _repo_root
+
+    settings = Settings.from_env()
+    assert settings.artifacts_dir
+    store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
+    index = run_contrasts(store, settings.artifacts_dir / "GSE286184" / "contrasts", _repo_root())
+    print(f"wrote {len(index.entries)} contrast results to {settings.artifacts_dir / 'GSE286184' / 'contrasts'}")
     return 0
 
 

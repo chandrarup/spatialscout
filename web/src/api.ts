@@ -3,6 +3,8 @@ import type {
   AuditIndex,
   AuditResult,
   CapabilityReport,
+  ContrastIndex,
+  ContrastResult,
   DatasetManifest,
   LabelRuleSet,
   PackedRegionView,
@@ -46,6 +48,12 @@ export const api = {
     fetch(`/api/datasets/${encodeURIComponent(datasetId)}/audit-results/${encodeURIComponent(findingId)}`).then(json<AuditResult>),
   auditFigureUrl: (datasetId: string, findingId: string) =>
     `/api/datasets/${encodeURIComponent(datasetId)}/audit-results/${encodeURIComponent(findingId)}/figure.png`,
+  contrastResults: (datasetId: string) =>
+    fetch(`/api/datasets/${encodeURIComponent(datasetId)}/contrast-results`).then(json<ContrastIndex>),
+  contrastResult: (datasetId: string, findingId: string) =>
+    fetch(`/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}`).then(json<ContrastResult>),
+  contrastFigureUrl: (datasetId: string, findingId: string) =>
+    `/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}/figure.png`,
   investigation: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}`).then(json<InvestigationSnapshot>),
   start: (body: StartInvestigationRequest) =>
