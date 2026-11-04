@@ -3,16 +3,21 @@ import type {
   AuditIndex,
   AuditResult,
   CapabilityReport,
+  ChannelSet,
   ContrastIndex,
   ContrastResult,
   DatasetManifest,
+  GateStatus,
   LabelRuleSet,
   PackedRegionView,
   InvestigationEvent,
   InvestigationSnapshot,
   ModeInfo,
+  RecordedBoxes,
+  Region,
   RegionView,
   StartInvestigationRequest,
+  StructureRun,
   Transcription,
 } from "./contracts/generated";
 
@@ -82,6 +87,29 @@ export const api = {
       if (!response.ok) throw new Error("This server has no recorded clip.");
       return response.blob();
     }),
+  channels: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/channels`).then(json<ChannelSet>),
+  /** Population cells and their molecules of `genes` in a box (the whole section without one), against the frozen gates. */
+  gateStatus: (sectionId: string, cellType: string, genes: string[], box: Region | null, signal?: AbortSignal) => {
+    const query = new URLSearchParams({ cell_type: cellType });
+    for (const gene of genes) query.append("genes", gene);
+    if (box) for (const key of ["x0", "y0", "x1", "y1"] as const) query.set(key, String(box[key]));
+    return fetch(`/api/sections/${encodeURIComponent(sectionId)}/gate-status?${query}`, { signal }).then(json<GateStatus>);
+  },
+  samBoxes: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/sam-boxes`).then(json<RecordedBoxes>),
+  /** SAM 3.1 on a drawn box. Errors carry the server's message (for example: no stored response for this box). */
+  samOutline: async (sectionId: string, box: Region): Promise<StructureRun> => {
+    const response = await fetch(`/api/sections/${encodeURIComponent(sectionId)}/sam-outline`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(box),
+    });
+    if (response.ok) return (await response.json()) as StructureRun;
+    const detail = await response
+      .json()
+      .then((body: { detail?: { message?: string } | string }) => (typeof body.detail === "string" ? body.detail : body.detail?.message))
+      .catch(() => undefined);
+    throw new Error(detail ?? `SAM 3.1 failed (HTTP ${response.status}).`);
+  },
   approve: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}/approve`, { method: "POST" }).then(json<InvestigationSnapshot>),
   reject: (investigationId: string) =>
