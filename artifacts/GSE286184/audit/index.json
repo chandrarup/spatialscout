@@ -106,8 +106,8 @@
    },
    "random_thinning_control_id": "ctl-f148f303b58ec31d",
    "random_thinning_control_path": "audit/controls/hero-podocyte-lrp2-cubn-full-panel-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-0ffa6995bd569b68",
+   "label_sensitivity_control_path": "audit/controls/hero-podocyte-lrp2-cubn-full-panel-label-sensitivity.json"
   },
   {
    "slug": "umod-b-cell",
@@ -141,8 +141,8 @@
    },
    "random_thinning_control_id": "ctl-4debf9fbd3600524",
    "random_thinning_control_path": "audit/controls/umod-b-cell-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-24238350c9e8d7bd",
+   "label_sensitivity_control_path": "audit/controls/umod-b-cell-label-sensitivity.json"
   },
   {
    "slug": "umod-t-cell",
@@ -176,8 +176,8 @@
    },
    "random_thinning_control_id": "ctl-a9f702aff69920d1",
    "random_thinning_control_path": "audit/controls/umod-t-cell-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-597e0da06fc6ce4a",
+   "label_sensitivity_control_path": "audit/controls/umod-t-cell-label-sensitivity.json"
   },
   {
    "slug": "umod-myeloid",
@@ -211,8 +211,8 @@
    },
    "random_thinning_control_id": "ctl-97c84c829270ba9c",
    "random_thinning_control_path": "audit/controls/umod-myeloid-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-aaa09daae79527e7",
+   "label_sensitivity_control_path": "audit/controls/umod-myeloid-label-sensitivity.json"
   },
   {
    "slug": "podocyte-nphs1",
@@ -246,8 +246,8 @@
    },
    "random_thinning_control_id": "ctl-d0f04d56379089c6",
    "random_thinning_control_path": "audit/controls/podocyte-nphs1-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-2b1023a79b6f0e02",
+   "label_sensitivity_control_path": "audit/controls/podocyte-nphs1-label-sensitivity.json"
   },
   {
    "slug": "podocyte-lrp2",
@@ -281,8 +281,8 @@
    },
    "random_thinning_control_id": "ctl-be3cad9b0330e517",
    "random_thinning_control_path": "audit/controls/podocyte-lrp2-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-6d655cb2b390c400",
+   "label_sensitivity_control_path": "audit/controls/podocyte-lrp2-label-sensitivity.json"
   },
   {
    "slug": "podocyte-cubn",
@@ -316,8 +316,8 @@
    },
    "random_thinning_control_id": "ctl-627dd51464c08010",
    "random_thinning_control_path": "audit/controls/podocyte-cubn-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-3e866d6f4ca7fc60",
+   "label_sensitivity_control_path": "audit/controls/podocyte-cubn-label-sensitivity.json"
   },
   {
    "slug": "coexpression-podocyte",
@@ -364,8 +364,8 @@
    },
    "random_thinning_control_id": "ctl-dc45c689e8e1b42c",
    "random_thinning_control_path": "audit/controls/coexpression-podocyte-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-cf9e8cef7c6f4328",
+   "label_sensitivity_control_path": "audit/controls/coexpression-podocyte-label-sensitivity.json"
   },
   {
    "slug": "coexpression-pec",
@@ -412,8 +412,8 @@
    },
    "random_thinning_control_id": "ctl-186618374d101cc4",
    "random_thinning_control_path": "audit/controls/coexpression-pec-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-34cda840075d2587",
+   "label_sensitivity_control_path": "audit/controls/coexpression-pec-label-sensitivity.json"
   },
   {
    "slug": "coexpression-pt",
@@ -460,8 +460,8 @@
    },
    "random_thinning_control_id": "ctl-bdec4d7e65644c19",
    "random_thinning_control_path": "audit/controls/coexpression-pt-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-3deca811101179ec",
+   "label_sensitivity_control_path": "audit/controls/coexpression-pt-label-sensitivity.json"
   },
   {
    "slug": "coexpression-tal",
@@ -508,8 +508,8 @@
    },
    "random_thinning_control_id": "ctl-014c7462b8f10636",
    "random_thinning_control_path": "audit/controls/coexpression-tal-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-f6d87e4565a0076a",
+   "label_sensitivity_control_path": "audit/controls/coexpression-tal-label-sensitivity.json"
   },
   {
    "slug": "coexpression-dct",
@@ -556,8 +556,8 @@
    },
    "random_thinning_control_id": "ctl-8937ecf375765054",
    "random_thinning_control_path": "audit/controls/coexpression-dct-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-dd74f8652c2f4dda",
+   "label_sensitivity_control_path": "audit/controls/coexpression-dct-label-sensitivity.json"
   },
   {
    "slug": "coexpression-pc",
@@ -604,8 +604,8 @@
    },
    "random_thinning_control_id": "ctl-80f6d086ca1f9ccd",
    "random_thinning_control_path": "audit/controls/coexpression-pc-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-f6d9f5b68066120f",
+   "label_sensitivity_control_path": "audit/controls/coexpression-pc-label-sensitivity.json"
   },
   {
    "slug": "coexpression-ic",
@@ -652,8 +652,8 @@
    },
    "random_thinning_control_id": "ctl-2049e30b2e92967b",
    "random_thinning_control_path": "audit/controls/coexpression-ic-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-f6e28e1f04897233",
+   "label_sensitivity_control_path": "audit/controls/coexpression-ic-label-sensitivity.json"
   },
   {
    "slug": "coexpression-endothelial",
@@ -700,8 +700,8 @@
    },
    "random_thinning_control_id": "ctl-5e36ce5ec06e62df",
    "random_thinning_control_path": "audit/controls/coexpression-endothelial-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-7536342f6f99e50e",
+   "label_sensitivity_control_path": "audit/controls/coexpression-endothelial-label-sensitivity.json"
   },
   {
    "slug": "coexpression-mesangial-pericyte",
@@ -748,8 +748,8 @@
    },
    "random_thinning_control_id": "ctl-77c121df1c1eab8c",
    "random_thinning_control_path": "audit/controls/coexpression-mesangial-pericyte-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-9f1e797a786797de",
+   "label_sensitivity_control_path": "audit/controls/coexpression-mesangial-pericyte-label-sensitivity.json"
   },
   {
    "slug": "coexpression-fibroblast",
@@ -796,8 +796,8 @@
    },
    "random_thinning_control_id": "ctl-c6756b4c332177b8",
    "random_thinning_control_path": "audit/controls/coexpression-fibroblast-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-799bd3a667d7fbd4",
+   "label_sensitivity_control_path": "audit/controls/coexpression-fibroblast-label-sensitivity.json"
   },
   {
    "slug": "coexpression-t-cell",
@@ -844,8 +844,8 @@
    },
    "random_thinning_control_id": "ctl-5a298b61c0144820",
    "random_thinning_control_path": "audit/controls/coexpression-t-cell-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-e9099eea50ccdddb",
+   "label_sensitivity_control_path": "audit/controls/coexpression-t-cell-label-sensitivity.json"
   },
   {
    "slug": "coexpression-b-cell",
@@ -892,8 +892,8 @@
    },
    "random_thinning_control_id": "ctl-299951abb88533e1",
    "random_thinning_control_path": "audit/controls/coexpression-b-cell-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-eacb6bb937f4087d",
+   "label_sensitivity_control_path": "audit/controls/coexpression-b-cell-label-sensitivity.json"
   },
   {
    "slug": "coexpression-myeloid",
@@ -940,8 +940,8 @@
    },
    "random_thinning_control_id": "ctl-460fc0c3cb4f9c81",
    "random_thinning_control_path": "audit/controls/coexpression-myeloid-random-thinning.json",
-   "label_sensitivity_control_id": null,
-   "label_sensitivity_control_path": null
+   "label_sensitivity_control_id": "ctl-96584d7e250bf8fb",
+   "label_sensitivity_control_path": "audit/controls/coexpression-myeloid-label-sensitivity.json"
   }
  ]
 }

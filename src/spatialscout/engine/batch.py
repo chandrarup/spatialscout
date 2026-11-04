@@ -3,7 +3,8 @@
     uv run spatialscout audit        # or `make audit`; needs `make data` first
 
 Writes `artifacts/GSE286184/audit/`: one JSON audit result per finding, its random-thinning control, the
-hero population's label-sensitivity check, one composite figure per result (`figures/`), and `index.json`.
+label-sensitivity check of every result (its population under both frozen label rules: the verifier requires it
+whenever a rule reads the result's genes or competes with their home cell type), one composite figure per result (`figures/`), and `index.json`.
 Every section of the dataset is considered; a section duplicating another is listed as left out, never counted.
 Nothing here asserts an outcome: the labels are whatever the frozen rules compute.
 """
@@ -100,10 +101,11 @@ def run_batch(store: DatasetStore, out_dir: Path, repo_root: Path, log: Callable
             random_thinning_control_id=control.control_id,
             random_thinning_control_path=control_path,
         )
-        if spec.hero:
+        if NPHS1_ANCHORED_RULE in by_rule and FULL_PANEL_RULE in by_rule:
             check = label_sensitivity_check(
                 {NPHS1_ANCHORED_RULE: by_rule[NPHS1_ANCHORED_RULE], FULL_PANEL_RULE: by_rule[FULL_PANEL_RULE]},
                 spec.cell_type, list(spec.genes), conditions, section_groups=groups, sections_left_out=left_out,
+                measure=spec.measure,
             )
             check_path = f"audit/controls/{spec.slug}-label-sensitivity.json"
             _write(out_dir.parent / check_path, check)
