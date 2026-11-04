@@ -30,10 +30,14 @@ interface Props {
   subClaims: string[];
   /** Each sub-claim's verdict, for the candidate-finding card. */
   verdicts?: { verdict: string; predicted: string; cellType: string; genes: string }[];
+  onLab?: (lab: LabRun) => void;
 }
 
-export function LabView({ investigationId, subClaims, verdicts }: Props) {
+export function LabView({ investigationId, subClaims, verdicts, onLab }: Props) {
   const [lab, setLab] = useState<LabRun | null>(null);
+  useEffect(() => {
+    if (lab) onLab?.(lab);
+  }, [lab]); // eslint-disable-line react-hooks/exhaustive-deps
   const [state, setState] = useState<"idle" | "starting" | "error">("idle");
   const [problem, setProblem] = useState<string | null>(null);
   const [progress, setProgress] = useState(1);
@@ -301,7 +305,12 @@ export function LabView({ investigationId, subClaims, verdicts }: Props) {
 
           {lab.protein.map((p) => (
             <section key={p.task_id} aria-label="Protein cross-check" className="rise rounded-3xl bg-panel p-6">
-              <p className="text-[12px] text-ink-3">Protein cross-check · part {p.sub_claim + 1} · KPMP CODEX</p>
+              <p className="flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+                Protein cross-check · part {p.sub_claim + 1} · KPMP CODEX
+                <span className="rounded-full bg-[#2a2213] px-2 py-0.5 font-medium text-run-mode" title="KPMP protein images come from different people than the GSE286184 RNA sections; they are not overlaid or matched.">
+                  Different specimens
+                </span>
+              </p>
               <h3 className="mt-1 text-[17px] font-semibold">
                 {p.marker} protein in {p.population}
               </h3>

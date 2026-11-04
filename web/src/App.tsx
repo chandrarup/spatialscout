@@ -10,6 +10,7 @@ import { CONDITION_NAMES } from "./components/Viewer";
 import { AgentBar, AgentOrb, ScoutMark } from "./components/stage/AgentBar";
 import { type Chapter, ChapterStrip, chaptersOf, MISSIONS } from "./components/stage/Chapters";
 import { CompareView } from "./components/stage/CompareView";
+import { Connections } from "./components/stage/Connections";
 import { Explore, type TissueContext } from "./components/stage/Explore";
 import { Intro } from "./components/stage/Intro";
 import { Results } from "./components/stage/Results";
@@ -220,6 +221,7 @@ export default function App() {
   const chapters = useMemo(() => (investigation ? chaptersOf(investigation.events) : []), [investigation]);
   const mission = investigation?.replay ? MISSIONS[investigation.replay.recording_id] : undefined;
   const [chapterId, setChapterId] = useState<string | null>(null);
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
   const graph = useMemo(() => buildGraph(shown?.question ?? "", shown?.events ?? []), [shown]);
   const milestones = useMemo(() => milestonesOf(shown?.events ?? []), [shown]);
   const [toasts, setToasts] = useState<Milestone[]>([]);
@@ -428,6 +430,9 @@ export default function App() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-3">
+          <button type="button" onClick={() => setConnectionsOpen(true)} className="h-8 rounded-full bg-raised px-3 text-[12px] text-ink hover:bg-[#2a2d32] sm:text-[13px]">
+            Connections
+          </button>
           {runMode && (
             <p role="status" className="flex items-center gap-2 text-[12px] text-ink-2 sm:text-[13px]" title={RUN_MODE_NOTE[runMode]}>
               <span className="h-2 w-2 rounded-full bg-run-mode" aria-hidden="true" />
@@ -441,6 +446,7 @@ export default function App() {
           )}
         </div>
       </header>
+      {connectionsOpen && <Connections mode={mode} onClose={() => setConnectionsOpen(false)} />}
       <nav aria-label="Stages (narrow screens)" className="flex shrink-0 gap-1 overflow-x-auto px-3 pb-2 md:hidden">
         {nav.map((item) => (
           <button

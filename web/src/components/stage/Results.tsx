@@ -4,7 +4,7 @@
 // sentence under each is the rule's own definition applied to the sub-claim's prediction.
 import { type ReactNode, useState } from "react";
 import { api } from "../../api";
-import type { Claim, ModeInfo, ReviewRequest, SubClaimVerdict, VerificationResult } from "../../contracts/generated";
+import type { Claim, LabRun, ModeInfo, ReviewRequest, SubClaimVerdict, VerificationResult } from "../../contracts/generated";
 import type { InvestigationView } from "../../investigation";
 import { ClaimCard } from "../ClaimCard";
 import { ExportButton } from "../ExportButton";
@@ -13,6 +13,7 @@ import { TelemetryPills } from "../TelemetryPills";
 import type { TissueFocus } from "../TissuePanel";
 import { LabView } from "./LabView";
 import { outcomeOf } from "./outcome";
+import { WorkSummary } from "./WorkSummary";
 import { labelTone } from "./RunCanvas";
 import type { RunGraph } from "./runGraph";
 
@@ -156,6 +157,7 @@ interface Props {
 
 export function Results({ view, graph, mission, chapters, mode, onCanvas, onReplay, onFocusFinding, onOpenFinding, onAsk, onProtein, onReview, libraryDatasetId }: Props) {
   const [open, setOpen] = useState<number | null>(0);
+  const [lab, setLab] = useState<LabRun | null>(null);
   const calls = view.events.filter((e) => e.type === "model_call").length;
   const tools = view.events.filter((e) => e.type === "tool_finished").length;
   const claimsById = new Map(view.claims.map((c) => [c.claim_id, c]));
@@ -222,10 +224,13 @@ export function Results({ view, graph, mission, chapters, mode, onCanvas, onRepl
           )}
         </section>
 
+        {view.verdict && view.status === "complete" && <WorkSummary events={view.events} lab={lab?.investigation_id === view.investigationId ? lab : null} />}
+
         {view.verdict && view.status === "complete" && (
           <section aria-label="Lab" className="scroll-mt-6">
           <LabView investigationId={view.investigationId} subClaims={view.verdict.verdicts.map((v) => `${v.sub_claim.cell_type} · ${v.sub_claim.genes.join("/")}`)}
             verdicts={view.verdict.verdicts.map((v) => ({ verdict: v.verdict, predicted: v.sub_claim.predicted, cellType: v.sub_claim.cell_type, genes: v.sub_claim.genes.join("/") }))}
+            onLab={setLab}
           />
           </section>
         )}
@@ -235,7 +240,10 @@ export function Results({ view, graph, mission, chapters, mode, onCanvas, onRepl
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {twins.map(({ v, twin }) => (
               <button key={v.sub_claim.text} type="button" onClick={onProtein} className="rounded-3xl bg-panel p-5 text-left transition-colors hover:bg-raised">
-                <p className="text-[12px] text-ink-3">Same question, different evidence</p>
+                <p className="flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+                  Same question, different evidence
+                  <span className="rounded-full bg-[#2a2213] px-2 py-0.5 font-medium text-run-mode">Different specimens</span>
+                </p>
                 <p className="mt-1 text-[16px] leading-snug font-semibold">
                   Is {twin!.marker} protein still there in {twin!.population} cells when their edges are trimmed?
                 </p>
