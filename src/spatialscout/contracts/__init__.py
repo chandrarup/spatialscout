@@ -165,4 +165,6 @@ from .review import CheckKind, CheckResult, ClaimChallenge, ClaimChallenges, Fie
 from .verdict import HypothesisVerdict, Prediction, SubClaim, SubClaimVerdict
 from .voice import Transcription
 
+from .depth import DepthBin, DepthPoints, DepthProfile, DepthProfileRequest, DepthSource  # noqa: E402
+
 __all__ = [name for name in dir() if not name.startswith("_")]

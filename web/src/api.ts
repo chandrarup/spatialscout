@@ -9,6 +9,10 @@ import type {
   ContrastResult,
   DataFit,
   DatasetManifest,
+  DepthPoints,
+  DepthProfile,
+  DepthProfileRequest,
+  DepthSource,
   GateStatus,
   LabelRuleSet,
   PackedRegionView,
@@ -141,6 +145,24 @@ export const api = {
       body: JSON.stringify(body),
       signal,
     }).then(json<AuditResult>),
+  depthSections: () => fetch("/api/depth/sections").then(json<string[]>),
+  depth: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/depth`).then(json<DepthSource>),
+  depthPoints: (region: Region, genes: string[], zRange: [number, number] | null, budget: number, signal?: AbortSignal) => {
+    const query = new URLSearchParams({ x0: String(region.x0), y0: String(region.y0), x1: String(region.x1), y1: String(region.y1), budget: String(budget) });
+    for (const gene of genes) query.append("genes", gene);
+    if (zRange) {
+      query.set("z0", String(zRange[0]));
+      query.set("z1", String(zRange[1]));
+    }
+    return fetch(`/api/sections/${encodeURIComponent(region.section_id)}/depth/points?${query}`, { signal }).then(json<DepthPoints>);
+  },
+  depthProfile: (body: DepthProfileRequest, signal?: AbortSignal) =>
+    fetch(`/api/sections/${encodeURIComponent(body.region.section_id)}/depth-profile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    }).then(json<DepthProfile>),
   samBoxes: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/sam-boxes`).then(json<RecordedBoxes>),
   /** SAM 3.1 on a drawn box. Errors carry the server's message (for example: no stored response for this box). */
   samOutline: async (sectionId: string, box: Region): Promise<StructureRun> => {

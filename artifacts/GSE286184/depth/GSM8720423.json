@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "depth_version": "depth-sidecar-v1",
+  "dataset_id": "GSE286184",
+  "section_id": "GSM8720423",
+  "units": "µm",
+  "coordinate_note": "Xenium transcripts table x_location, y_location, z_location in µm; x and y equal the validated molecule coordinates, z is measured depth.",
+  "raw_file": "GSM8720423_kidney_xenium_15_transcripts.parquet.gz",
+  "raw_sha256": "0cb2f43d7d319701160f18f5f018921979bacf06bd6ec2a2df047e0dfcfe486f",
+  "molecules_sha256": "2b01bf3bc44a063d7d3bc547687b6048238e4d4daf350a0e450a2cdc78a3a7f5",
+  "sidecar_sha256": "6bf88829c503ac852e841c437ecc29dbf3a3e3d5556706878d621881b6ab4269",
+  "molecules": 3737657,
+  "with_depth": 3737657,
+  "missing_depth": 0,
+  "max_xy_disagreement_um": 0.0,
+  "z_min": 11.09375,
+  "z_max": 27.625
+}

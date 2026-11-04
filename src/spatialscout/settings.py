@@ -46,6 +46,8 @@ class Settings:
     """Committed derived artifacts, such as artifacts/GSE286184/ (manifest, capability report, label rules)."""
     processed_dir: Path | None = None
     """Validated GSE286184 tables written by `spatialscout ingest` (git-ignored)."""
+    depth_dir: Path | None = None
+    """Measured-depth sidecars, one `<section>/depth.parquet` + `depth.json` each; defaults to processed_dir."""
     raw_dir: Path | None = None
     """Raw GSE286184 GEO files (git-ignored); in a worktree, point it at the main checkout's data/raw/GSE286184."""
     kpmp_dir: Path | None = None

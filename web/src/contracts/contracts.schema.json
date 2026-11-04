@@ -2577,6 +2577,406 @@
       "title": "DatasetManifest",
       "type": "object"
     },
+    "DepthBin": {
+      "additionalProperties": false,
+      "properties": {
+        "z0": {
+          "type": "number"
+        },
+        "z1": {
+          "type": "number"
+        },
+        "counts": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "description": "gene -> condition -> molecules in this interval.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "z0",
+        "z1",
+        "counts"
+      ],
+      "title": "DepthBin",
+      "type": "object"
+    },
+    "DepthPoints": {
+      "additionalProperties": false,
+      "description": "Molecules inside a box (by their own x, y) with measured z, sampled deterministically to a point budget for\ndrawing. Counts always say how many there are; the sample is for display only.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "depth_version": {
+          "default": "depth-sidecar-v1",
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "z_range": {
+          "description": "[z0, z1] in \u00b5m, inclusive.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "total_in_box": {
+          "description": "Molecules of the genes in the box, with or without depth.",
+          "type": "integer"
+        },
+        "eligible": {
+          "description": "Of those, with a measured z inside z_range.",
+          "type": "integer"
+        },
+        "displayed": {
+          "type": "integer"
+        },
+        "sampling": {
+          "type": "string"
+        },
+        "x": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "y": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "z": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "gene_index": {
+          "description": "Index into `genes`.",
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "assigned": {
+          "description": "Counted toward a cell under the default condition.",
+          "items": {
+            "type": "boolean"
+          },
+          "type": "array"
+        },
+        "kept_stricter": {
+          "description": "Still counted under `stricter_condition`.",
+          "items": {
+            "type": "boolean"
+          },
+          "type": "array"
+        },
+        "stricter_condition": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "depth_version",
+        "section_id",
+        "region",
+        "genes",
+        "z_range",
+        "total_in_box",
+        "eligible",
+        "displayed",
+        "sampling",
+        "x",
+        "y",
+        "z",
+        "gene_index",
+        "assigned",
+        "kept_stricter",
+        "stricter_condition"
+      ],
+      "title": "DepthPoints",
+      "type": "object"
+    },
+    "DepthProfile": {
+      "additionalProperties": false,
+      "description": "Full-data transcript counts of a box by depth interval, gene and assignment condition. Descriptive: it says\nwhere molecules sit in z, not why a signal is present.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "depth_version": {
+          "default": "depth-sidecar-v1",
+          "type": "string"
+        },
+        "kind": {
+          "const": "new_descriptive_depth_exploration",
+          "default": "new_descriptive_depth_exploration",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "label_rule_id": {
+          "type": "string"
+        },
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "cell_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conditions": {
+          "description": "'all' counts every molecule in scope; the others count molecules kept under that condition.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "units": {
+          "const": "\u00b5m",
+          "default": "\u00b5m",
+          "type": "string"
+        },
+        "bin_um": {
+          "type": "number"
+        },
+        "bins": {
+          "items": {
+            "$ref": "#/definitions/DepthBin"
+          },
+          "type": "array"
+        },
+        "totals": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "description": "gene -> condition -> molecules over all bins; equals the sum of the bins.",
+          "type": "object"
+        },
+        "missing_depth": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "gene -> molecules in scope without a measured z (in no bin).",
+          "type": "object"
+        },
+        "source": {
+          "$ref": "#/definitions/DepthSource"
+        }
+      },
+      "required": [
+        "schema_version",
+        "depth_version",
+        "kind",
+        "dataset_id",
+        "section_id",
+        "label_rule_id",
+        "region",
+        "scope",
+        "genes",
+        "cell_type",
+        "conditions",
+        "units",
+        "bin_um",
+        "bins",
+        "totals",
+        "missing_depth",
+        "source"
+      ],
+      "title": "DepthProfile",
+      "type": "object"
+    },
+    "DepthProfileRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "region": {
+          "$ref": "#/definitions/Region"
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "bin_um": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 20,
+          "type": "number"
+        },
+        "cell_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only molecules assigned (default condition) to cells of this type."
+        },
+        "label_rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "region",
+        "genes",
+        "bin_um",
+        "cell_type",
+        "label_rule_id"
+      ],
+      "title": "DepthProfileRequest",
+      "type": "object"
+    },
+    "DepthSource": {
+      "additionalProperties": false,
+      "description": "Where a section's depths come from and how complete they are.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "depth_version": {
+          "default": "depth-sidecar-v1",
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "units": {
+          "const": "\u00b5m",
+          "default": "\u00b5m",
+          "type": "string"
+        },
+        "coordinate_note": {
+          "description": "How x, y and z relate to the displayed section coordinates.",
+          "type": "string"
+        },
+        "raw_file": {
+          "description": "The deposited transcripts file the z values were read from.",
+          "type": "string"
+        },
+        "raw_sha256": {
+          "type": "string"
+        },
+        "molecules_sha256": {
+          "description": "Checksum of the validated molecule table the sidecar is joined to.",
+          "type": "string"
+        },
+        "sidecar_sha256": {
+          "type": "string"
+        },
+        "molecules": {
+          "description": "Validated molecules in the section.",
+          "type": "integer"
+        },
+        "with_depth": {
+          "type": "integer"
+        },
+        "missing_depth": {
+          "type": "integer"
+        },
+        "max_xy_disagreement_um": {
+          "description": "Largest |x| or |y| difference between the raw row and the validated molecule.",
+          "type": "number"
+        },
+        "z_min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "z_max": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "depth_version",
+        "dataset_id",
+        "section_id",
+        "units",
+        "coordinate_note",
+        "raw_file",
+        "raw_sha256",
+        "molecules_sha256",
+        "sidecar_sha256",
+        "molecules",
+        "with_depth",
+        "missing_depth",
+        "max_xy_disagreement_um",
+        "z_min",
+        "z_max"
+      ],
+      "title": "DepthSource",
+      "type": "object"
+    },
     "DispatchProposal": {
       "additionalProperties": false,
       "description": "The dispatcher's answer: the sub-agents to start, at most eight.",

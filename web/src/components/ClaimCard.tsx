@@ -53,21 +53,27 @@ export function ClaimCard({ claim, verification, investigationId, onReview }: Pr
         </span>
       </header>
       {challenges && challenges.variants.length > 0 && (
-        <label className="mb-2 flex flex-wrap items-center gap-2 text-xs text-ink-2">
-          Challenge the verifier
-          <select
-            className="rounded border border-line bg-raised px-2 py-1 text-xs text-ink"
-            value={chosen}
-            onChange={(event) => setChosen(event.target.value)}
-          >
-            <option value="">Original claim</option>
-            {challenges.variants.map((v) => (
-              <option key={v.kind} value={v.kind}>
-                {kindLabel(v.kind)}
-              </option>
+        <div className="mb-2 text-xs text-ink-2" role="group" aria-label="Challenge the verifier" data-testid="challenge-selector">
+          <p>
+            <span className="font-medium text-ink">Challenge the verifier</span>{" "}
+            <span className="text-ink-3">
+              · {challenges.variants.length} recorded altered copies of this claim, each checked by the same verifier (separate from the run's one injected claim)
+            </span>
+          </p>
+          <div className="mt-1 flex flex-wrap gap-1">
+            {[{ kind: "", label: "Original claim" }, ...challenges.variants.map((v) => ({ kind: v.kind, label: kindLabel(v.kind) }))].map((c) => (
+              <button
+                key={c.kind || "original"}
+                type="button"
+                aria-pressed={chosen === c.kind}
+                onClick={() => setChosen(c.kind)}
+                className="rounded-full border border-line px-2 py-0.5 text-ink-2 hover:text-ink aria-pressed:border-white aria-pressed:bg-white aria-pressed:text-black"
+              >
+                {c.label}
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
       )}
       {shown.injected.is_injected && (
         <p className="mb-2 rounded bg-red-500/15 px-2 py-1 text-xs font-medium text-red-300">

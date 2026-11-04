@@ -11,6 +11,7 @@ It checks structure and labels, never an outcome: any verdict the recording hold
 
 import sys
 import time
+from urllib.parse import urljoin
 
 from playwright.sync_api import expect, sync_playwright
 
@@ -82,6 +83,31 @@ def run_workspace(page) -> None:
     print(f"rna box: {' '.join(tissue.get_by_test_id('rna-region-result').inner_text().split())[:140]}")
     tissue.get_by_role("button", name="Clear the box").click()
 
+    expect(tissue.get_by_role("button", name="Follow evidence")).to_be_visible(timeout=150_000)
+    tissue.get_by_role("button", name="3D molecule depth").click()
+    expect(tissue.get_by_test_id("depth-counts")).to_be_visible(timeout=90_000)
+    expect(tissue.get_by_test_id("depth-slice-counts")).to_be_visible(timeout=90_000)
+    whole = tissue.get_by_test_id("depth-slice-counts").inner_text()
+    slider = tissue.get_by_label("Slice from (µm)")
+    slider.focus()
+    slider.press("End")
+    expect(tissue.get_by_test_id("depth-slice-counts")).not_to_have_text(whole, timeout=30_000)
+    print(f"depth: {' '.join(tissue.get_by_test_id('depth-counts').inner_text().split())[:110]} | {' '.join(tissue.get_by_test_id('depth-slice-counts').inner_text().split())[:120]}")
+    tissue.get_by_role("button", name="2D map").click()
+
+
+def findings_checks(page) -> None:
+    """A recorded challenge variant fails verification on screen, and the evidence package downloads."""
+    page.evaluate("document.querySelector('[aria-label=\"Checked claims\"]').open = true")
+    selector = page.get_by_test_id("challenge-selector").first
+    expect(selector).to_be_visible(timeout=30_000)
+    selector.get_by_role("button").nth(1).click()
+    expect(page.get_by_text("failed").first).to_be_visible(timeout=10_000)
+    href = page.locator("a[href*='package']").first.get_attribute("href")
+    response = page.request.get(urljoin(page.url, href))
+    assert response.ok and response.body()[:2] == b"PK", (href, response.status)
+    print(f"findings: a recorded challenge variant shown failing; evidence package {len(response.body()):,} bytes")
+
 
 def main(url: str) -> int:
     with sync_playwright() as p:
@@ -112,6 +138,10 @@ def main(url: str) -> int:
         page.get_by_role("button", name="Ask something else").click()
         started = time.monotonic()
         page.get_by_role("button", name=GOLDEN).click()
+        expect(page.get_by_test_id("team-job")).to_have_count(5, timeout=30_000)
+        expect(page.locator("[data-testid=team-job][data-status=done]").first).to_be_visible(timeout=60_000)
+        print("research team: five jobs, lit from the served events")
+        page.get_by_role("tab", name="Detailed graph").click()
         expect(page.locator(".react-flow__node").first).to_be_visible(timeout=30_000)
         print("run canvas: the first step is drawn")
         run_workspace(page)
@@ -120,7 +150,7 @@ def main(url: str) -> int:
         elapsed = time.monotonic() - started
         verdicts = page.locator("[data-testid=sub-claim-verdict]").evaluate_all("els => els.map(e => e.dataset.verdict)")
         banner = page.get_by_text("Immutable replay", exact=True).locator("xpath=..").inner_text()
-        page.screenshot(path="smoke_public.png")
+        findings_checks(page)
 
         lab_started = time.monotonic()
         page.get_by_role("button", name="Run the lab").click()

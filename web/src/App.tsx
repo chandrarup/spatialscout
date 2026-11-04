@@ -13,6 +13,7 @@ import { CompareView } from "./components/stage/CompareView";
 import { Connections } from "./components/stage/Connections";
 import { Explore, type TissueContext } from "./components/stage/Explore";
 import { Intro } from "./components/stage/Intro";
+import { ResearchTeam } from "./components/stage/ResearchTeam";
 import { Results } from "./components/stage/Results";
 import { Upload } from "./components/stage/Upload";
 import { RunCanvas } from "./components/stage/RunCanvas";
@@ -189,6 +190,12 @@ export default function App() {
     window.localStorage.setItem(RAIL_KEY, String(Math.round(w)));
   }, []);
   const [graphFit, setGraphFit] = useState(0);
+  const [railView, setRailView] = useState<"team" | "graph">("team");
+  const [recording, setRecording] = useState(() => window.localStorage.getItem("spatialscout.recording") === "on");
+  useEffect(() => {
+    document.documentElement.dataset.recording = recording ? "on" : "off";
+    window.localStorage.setItem("spatialscout.recording", recording ? "on" : "off");
+  }, [recording]);
   const [follow, setFollow] = useState(true);
   const [shownCount, setShownCount] = useState(Number.POSITIVE_INFINITY);
   const [paused, setPaused] = useState(false);
@@ -368,9 +375,14 @@ export default function App() {
       }
       return;
     }
+    openFindings(chapter.section ?? "");
+  };
+  /** Open the findings at the first of `labels` (separated by "|") that exists there. */
+  function openFindings(labels: string) {
+    if (!investigation?.verdict) return;
     setStage("results");
     window.setTimeout(() => {
-      const target = (chapter.section ?? "")
+      const target = labels
         .split("|")
         .map((label) => document.querySelector<HTMLElement>(`[aria-label="${label}"]`))
         .find(Boolean);
@@ -379,7 +391,7 @@ export default function App() {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     }, 120);
-  };
+  }
   const currentChapter =
     stage === "run" ? ([...chapters].reverse().find((c) => c.atEvent !== null && Math.min(shownCount, total) >= c.atEvent)?.id ?? null) : stage === "results" ? chapterId : null;
 
@@ -502,11 +514,20 @@ export default function App() {
           <button type="button" onClick={() => setConnectionsOpen(true)} className="h-8 rounded-full bg-raised px-3 text-[12px] text-ink hover:bg-[#2a2d32] sm:text-[13px]">
             Connections
           </button>
+          <button
+            type="button"
+            aria-pressed={recording}
+            onClick={() => setRecording((r) => !r)}
+            title="A steadier screen for recording: no drifting images, the run mode and recording time always shown. Results are unchanged."
+            className="hidden h-8 rounded-full bg-raised px-3 text-[12px] text-ink-2 hover:text-ink aria-pressed:bg-white aria-pressed:text-black sm:block sm:text-[13px]"
+          >
+            Recording mode
+          </button>
           {runMode && (
             <p role="status" className="flex items-center gap-2 text-[12px] text-ink-2 sm:text-[13px]" title={RUN_MODE_NOTE[runMode]}>
               <span className="h-2 w-2 rounded-full bg-run-mode" aria-hidden="true" />
               <strong className="font-medium text-ink">{RUN_MODE_LABEL[runMode]}</strong>
-              <span className="hidden lg:inline">
+              <span className={recording ? "inline" : "hidden lg:inline"}>
                 {RUN_MODE_NOTE[runMode]}
                 {replay && <> · recorded {formatUtc(replay.recorded_at)}</>}
                 {replay?.origin === "hand_authored" && " · responses hand-authored"}
@@ -534,6 +555,7 @@ export default function App() {
       <main className="relative min-h-0 flex-1">
         {stage === "intro" && (
           <Intro
+            key={recording ? "still" : "drift"}
             strips={strips}
             visible={introChannels}
             kpmp={kpmp}
@@ -648,9 +670,25 @@ export default function App() {
                 style={rail === "full" ? undefined : { width: `min(${railWidth}px, calc(100% - ${MIN_TISSUE}px))` }}
               >
                 <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
-                  <h2 className="text-[13px] font-semibold">
-                    The agent's steps <span className="font-normal text-ink-3">· drag, zoom, click a card</span>
-                  </h2>
+                  <div className="flex gap-1" role="tablist" aria-label="How to show the agent's steps">
+                    {(
+                      [
+                        ["team", "Research team"],
+                        ["graph", "Detailed graph"],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        role="tab"
+                        aria-selected={railView === id}
+                        onClick={() => setRailView(id)}
+                        className="h-7 rounded-full px-3 text-[13px] font-semibold text-ink-3 hover:text-ink aria-selected:bg-raised aria-selected:text-ink"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     <button type="button" onClick={() => setFollow(true)} disabled={follow} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink disabled:text-ink-3">
                       {follow ? "Following the run" : "Follow evidence"}
@@ -676,7 +714,21 @@ export default function App() {
                     </button>
                   </div>
                 </header>
-                <div className="relative min-h-0 flex-1">
+                {railView === "team" && (
+                  <div className="relative min-h-0 flex-1">
+                    <ResearchTeam
+                      events={shown.events}
+                      investigationId={shown.investigationId}
+                      complete={finishedRun}
+                      onOpen={(target) => {
+                        if (target.kind === "graph") setRailView("graph");
+                        else if (target.kind === "finding") focusFinding(target.id, () => rail === "full" && setRail("rail"));
+                        else openFindings(target.section);
+                      }}
+                    />
+                  </div>
+                )}
+                <div className={`relative min-h-0 flex-1 ${railView === "graph" ? "" : "hidden"}`}>
                   <RunCanvas
                     graph={graph}
                     investigationId={shown.investigationId}

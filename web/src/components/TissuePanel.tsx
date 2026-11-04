@@ -8,6 +8,7 @@ import type { AuditResult, ConditionName, DatasetManifest, Region } from "../con
 import { type SectionArrays, decodeSection } from "../packed";
 import { type Highlight, MAX_HIGHLIGHTED, toggleHighlight } from "../palette";
 import { regionSize } from "../selection";
+import { DepthView } from "./DepthView";
 import { CONDITION_NAMES, type Display, Viewer } from "./Viewer";
 import { ALL_GENES, ViewerControls, visibleGenes } from "./ViewerControls";
 import { ViewerLegend } from "./ViewerLegend";
@@ -109,6 +110,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, 
   const [compare, setCompare] = useState<ConditionName | null>(null);
   const [lockedGenes, setLockedGenes] = useState<string[] | null>(null);
   const [display, setDisplay] = useState<Display>("usual");
+  const [depthMode, setDepthMode] = useState(false);
   const [boxMode, setBoxMode] = useState(false);
   const [box, setBox] = useState<Region | null>(null);
   const [fitKey, setFitKey] = useState(0);
@@ -122,6 +124,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, 
     setBox(null);
     setRegionAudit(null);
     setBoxMode(false);
+    setDepthMode(false);
   }, [sectionId, labelRuleId]);
 
   useEffect(() => {
@@ -207,6 +210,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, 
       .catch((error: unknown) => !controller.signal.aborted && setRegionAudit({ key, result: null, pending: false, problem: String(error) }));
   };
   const currentAudit = regionAudit && regionAudit.key === auditKey ? regionAudit : null;
+  const depthRegion = box ?? focused?.region ?? null;
   const DISPLAYS: { id: Display; label: string }[] = [
     { id: "usual", label: "Usual assignment" },
     { id: "stricter", label: "Stricter assignment" },
@@ -238,7 +242,23 @@ export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, 
       />}
       {section && (
         <div className="flex flex-wrap items-center gap-1" role="toolbar" aria-label="Tissue view">
-          <div className="flex flex-wrap gap-1" role="group" aria-label="Counting rule shown">
+          <div className="flex gap-1" role="group" aria-label="Map or depth">
+            <button type="button" aria-pressed={!depthMode} onClick={() => setDepthMode(false)} className={chip}>
+              2D map
+            </button>
+            <button
+              type="button"
+              aria-pressed={depthMode}
+              disabled={!depthRegion}
+              title={depthRegion ? undefined : "Draw a box, or follow the agent's evidence, to explore its measured depth"}
+              onClick={() => setDepthMode(true)}
+              className={chip}
+            >
+              3D molecule depth
+            </button>
+          </div>
+          <span className="mx-1 h-4 w-px bg-line" aria-hidden="true" />
+          <div className={`flex flex-wrap gap-1 ${depthMode ? "hidden" : ""}`} role="group" aria-label="Counting rule shown">
             {DISPLAYS.map((d) => (
               <button
                 key={d.id}
@@ -270,7 +290,18 @@ export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, 
         </div>
       )}
       <div className="relative min-h-0 flex-1">
-        {section ? (
+        {section && depthMode && depthRegion ? (
+          <DepthView
+            region={depthRegion}
+            genes={auditGenes}
+            cellType={null}
+            labelRuleId={section.view.label_rule_id}
+            onOpenSection={(id) => {
+              setDepthMode(false);
+              pickSection(id);
+            }}
+          />
+        ) : section ? (
           <Viewer
             section={section}
             genes={genes}
@@ -304,7 +335,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, 
             {problem ?? "Loading the whole section…"}
           </div>
         )}
-        {box && section && (
+        {box && section && !depthMode && (
           <section
             aria-label="Your RNA region"
             data-testid="rna-region-card"
