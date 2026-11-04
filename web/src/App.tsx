@@ -180,12 +180,14 @@ export default function App() {
       .catch(() => setAudits(null));
   }, [mode?.dataset_id]);
 
-  // Both participants' images for the first screen, the diseased one first; the explore view opens the diseased one.
+  // One diseased and one healthy-reference image for the first screen (the hero has two rows), the diseased one
+  // first; the explore view opens the diseased one.
   useEffect(() => {
     if (!kpmp || !codexAdapter) return;
     const ordered = [...kpmp.participants].sort((a, b) => (a.role === "healthy reference" ? 1 : b.role === "healthy reference" ? -1 : 0));
     setParticipantId((p) => p ?? ordered[0]?.participant_id ?? null);
-    Promise.all(ordered.map((p) => codexAdapter.load(p.participant_id).then((section) => ({ section, role: p.role }))))
+    const shown = [ordered.find((p) => p.role !== "healthy reference"), ordered.find((p) => p.role === "healthy reference")].filter((p) => p !== undefined);
+    Promise.all(shown.map((p) => codexAdapter.load(p.participant_id).then((section) => ({ section, role: p.role }))))
       .then(setStrips)
       .catch(() => setStrips([]));
   }, [kpmp, codexAdapter]);

@@ -20,7 +20,7 @@ export function ExportButton({ pkg }: { pkg: PackageInfo | null }) {
         Download evidence package
       </a>
       <p className="text-xs text-ink-2">
-        {pkg.review_state.replaceAll("_", " ")} · audit log {chain.entries} entries,{" "}
+        {pkg.review_state === "reviewed" ? "Reviewed by a researcher" : "Not yet reviewed by a researcher"} · audit log {chain.entries} entries,{" "}
         {chain.ok ? "chain verified" : `chain broken at entry ${chain.first_bad_seq}`} · head hash{" "}
         <span className="font-mono">{chain.head_hash?.slice(0, 12) ?? "none"}</span>
       </p>

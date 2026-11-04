@@ -33,7 +33,6 @@ web_image = (
             "SPATIALSCOUT_INVESTIGATIONS_DIR": f"{INVESTIGATIONS_MOUNT}/investigations",
             # Modal cuts web requests at 150 s; each SSE connection ends well before that and the client reconnects.
             "SPATIALSCOUT_STREAM_WINDOW_SECONDS": "110",
-            # The molecule tables are not in the image, so the public URL plays the recorded investigations.
             "SPATIALSCOUT_DEFAULT_RUN_MODE": "immutable_replay",
         }
     )
@@ -44,6 +43,13 @@ web_image = (
     .add_local_dir(REPO / "configs", "/root/configs")
     .add_local_dir(REPO / "artifacts", "/root/artifacts")
     .add_local_dir(REPO / "web" / "dist", "/root/web-dist")
+    # The validated GSE286184 molecule and cell tables (git-ignored, from `make data`), read at the default
+    # processed path so the region view and section audits work on the public URL.
+    .add_local_dir(
+        REPO / "data" / "processed" / "GSE286184",
+        "/root/data/processed/GSE286184",
+        ignore=["*/cells.validated.parquet", "*/validation.json", "*/content.json", "*/stamp.json"],
+    )
 )
 
 
@@ -54,7 +60,7 @@ web_image = (
     min_containers=1,  # kept warm: no cold start for a judge
     max_containers=1,  # one process owns investigation state and the in-memory event streams
     cpu=1.0,
-    memory=1024,
+    memory=4096,  # loaded sections stay cached in memory
     timeout=600,
 )
 @modal.concurrent(max_inputs=100)  # an open SSE stream must not block `POST /approve` on the single container

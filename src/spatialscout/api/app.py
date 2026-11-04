@@ -30,11 +30,19 @@ class WebApp(StaticFiles):
     index.html; the content-hashed assets under /assets/ never change and may be cached for a year."""
 
     async def get_response(self, path, scope):
-        response = await super().get_response(path, scope)
         if path.startswith("assets/"):
+            response = await super().get_response(path, scope)
             response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
-        else:
-            response.headers["Cache-Control"] = "no-cache"
+            return response
+        # Modal mounts files with mtime 0, so a redeployed page of the same size keeps its ETag: never answer the
+        # page with 304, and send no validators for it.
+        conditional = {b"if-none-match", b"if-modified-since"}
+        scope = {**scope, "headers": [(k, v) for k, v in scope["headers"] if k.lower() not in conditional]}
+        response = await super().get_response(path, scope)
+        for header in ("etag", "last-modified"):
+            if header in response.headers:
+                del response.headers[header]
+        response.headers["Cache-Control"] = "no-cache"
         return response
 
 
