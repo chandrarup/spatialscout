@@ -88,17 +88,20 @@ class ModelGateway:
         self._recorder = recorder
 
     async def complete_json(
-        self, purpose: str, request: ModelRequest, inputs: Sequence[CacheInput], output_model: type[Output]
+        self, purpose: str, request: ModelRequest, inputs: Sequence[CacheInput], output_model: type[Output], image: bytes | None = None
     ) -> tuple[Output, ModelCallRecord]:
         """A structured response, validated locally against `output_model`. One invalid response gets exactly
-        one repair request (itself cached and recorded); a second invalid response raises ModelOutputInvalid."""
-        response, record = await self._call(purpose, request, inputs)
+        one repair request (itself cached and recorded); a second invalid response raises ModelOutputInvalid.
+        With `image`, a PNG goes with the last user message (vision), and its sha256 joins the cache key."""
+        if image is not None:
+            inputs = [*inputs, media_input("image/png", image)]
+        response, record = await self._call(purpose, request, inputs, image)
         try:
             return output_model.model_validate_json(json_text(response.content)), record
         except ValidationError as error:
             first_error = error
         repair = repair_request(request, response.content, first_error)
-        response, record = await self._call(f"{purpose}_repair", repair, inputs)
+        response, record = await self._call(f"{purpose}_repair", repair, inputs, image)
         try:
             return output_model.model_validate_json(json_text(response.content)), record
         except ValidationError as error:

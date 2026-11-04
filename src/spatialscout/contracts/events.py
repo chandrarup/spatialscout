@@ -14,6 +14,7 @@ from .claim import Claim
 from .model_call import ModelCallRecord
 from .package import PackageInfo
 from .plan import Plan
+from .review import VerificationResult
 
 
 class EventBase(Contract):
@@ -118,6 +119,15 @@ class ClaimDraftedEvent(EventBase):
     claim: Claim
 
 
+class ClaimVerifiedEvent(EventBase):
+    """A claim version after its three checks, with its verification status and every reason. An injected variant
+    carries `claim.injected.is_injected` and is always shown as injected."""
+
+    type: Literal["claim_verified"] = "claim_verified"
+    claim: Claim
+    verification: VerificationResult
+
+
 class PackageReadyEvent(EventBase):
     type: Literal["package_ready"] = "package_ready"
     package: PackageInfo
@@ -148,6 +158,7 @@ InvestigationEvent = Annotated[
     | BudgetExhaustedEvent
     | ClaimDraftedEvent
     | ClaimRejectedEvent
+    | ClaimVerifiedEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent,

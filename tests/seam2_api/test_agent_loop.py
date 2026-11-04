@@ -268,5 +268,6 @@ def test_a_claim_may_state_the_frozen_threshold_without_citing_it(tmp_path):
     with TestClient(live_app(tmp_path, providers)) as client:
         _, events = run_live(client)
 
-    assert [e["call"]["purpose"] for e in of_type(events, "model_call")] == ["plan", "follow_up", "claim_draft"]
+    assert [e["call"]["purpose"] for e in of_type(events, "model_call") if e["call"]["purpose"] != "visual_check"] == [
+        "plan", "follow_up", "claim_draft"]
     assert len(of_type(events, "claim_drafted")) == 1

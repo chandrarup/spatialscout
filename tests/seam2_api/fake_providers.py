@@ -40,9 +40,13 @@ def fake_keys() -> ApiKeys:
 
 
 def recorded_answers() -> dict[str, str]:
-    """The hand-authored answer for each model, as the fake providers return it."""
-    calls = json.loads(HAND_AUTHORED.read_text())["calls"]
-    return {call["request"]["model"]: call["response"]["content"] for call in calls}
+    """The hand-authored answer for each model, as the fake providers return it (the first call per model), and the
+    visual check's under "visual"."""
+    answers: dict[str, str] = {}
+    for call in json.loads(HAND_AUTHORED.read_text())["calls"]:
+        key = "visual" if call["purpose"].startswith("visual_check") else call["request"]["model"]
+        answers.setdefault(key, call["response"]["content"])
+    return answers
 
 
 @dataclass
@@ -77,10 +81,11 @@ class FakeProviders:
         status = self.status.get(request.url.host, 200)
         if status != 200:
             return httpx.Response(status, json={"error": {"code": "forced", "type": "test_error", "message": "forced failure"}})
-        return httpx.Response(200, json=self._chat_body(body["model"]))
+        visual = any(isinstance(m.get("content"), list) for m in body.get("messages", []))
+        return httpx.Response(200, json=self._chat_body(body["model"], visual))
 
-    def _chat_body(self, model: str) -> dict[str, Any]:
-        content = self._answer(model)
+    def _chat_body(self, model: str, visual: bool = False) -> dict[str, Any]:
+        content = recorded_answers()["visual"] if visual and self.finish_reason != "length" else self._answer(model)
         return {
             "id": "chatcmpl-fake",
             "object": "chat.completion",

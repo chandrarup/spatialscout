@@ -62,6 +62,7 @@ export type InvestigationEvent =
   | BudgetExhaustedEvent
   | ClaimDraftedEvent
   | ClaimRejectedEvent
+  | ClaimVerifiedEvent
   | PackageReadyEvent
   | ModelCallEvent
   | ErrorEvent;
@@ -172,6 +173,9 @@ export interface AuditEntry {
     | "budget_exhausted"
     | "claim_drafted"
     | "claim_rejected"
+    | "claim_verified"
+    | "claim_challenges_recorded"
+    | "figure_failed"
     | "package_exported"
     | "error";
   payload: {
@@ -659,6 +663,10 @@ export interface CheckResult {
   kind: "structural" | "numerical" | "visual";
   status: "passed" | "failed" | "disputed" | "unavailable";
   details: string;
+  /**
+   * Every problem the check found; empty when it passed.
+   */
+  reasons: string[];
 }
 /**
  * One number the claim's text uses, and the field of the cited finding it comes from.
@@ -691,6 +699,14 @@ export interface Claim {
   verification_status: VerificationStatus;
   review_status: ReviewStatus;
   injected: InjectedError;
+  /**
+   * The direction the claim states, when it states one in structured form; else read from its text.
+   */
+  direction: ("holds" | "drops") | null;
+  /**
+   * The neighbour pattern the claim states, if any.
+   */
+  neighbour_pattern: ("excluded_nearer_home" | "excluded_not_nearer_home") | null;
 }
 /**
  * The one finding a claim cites.
@@ -721,6 +737,108 @@ export interface ClaimControls {
 export interface InjectedError {
   is_injected: boolean;
   kind: InjectedErrorKind | null;
+}
+/**
+ * One recorded injected variant of a claim and its recorded verification. `detected` is the recorded outcome:
+ * true when a check found a problem the original claim did not have (`new_reasons`), false for a miss.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ClaimChallenge".
+ */
+export interface ClaimChallenge {
+  kind: InjectedErrorKind;
+  claim: Claim;
+  verification: VerificationResult;
+  changes: FieldChange[];
+  new_reasons: string[];
+  detected: boolean;
+}
+/**
+ * Every check run on one claim version, and the verification status they add up to.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "VerificationResult".
+ */
+export interface VerificationResult {
+  schema_version: string;
+  claim_id: string;
+  claim_version: number;
+  checks: CheckResult[];
+  verification_status: VerificationStatus;
+  finding_id: string | null;
+  /**
+   * The composite figure the visual check read.
+   */
+  figure: CompositeFigure | null;
+  visual: VisualAnswer | null;
+  /**
+   * The declared tolerances of the numerical check.
+   */
+  tolerances: {
+    [k: string]: number;
+  };
+  /**
+   * Each cited source's independently recomputed value.
+   */
+  recomputed: {
+    [k: string]: unknown;
+  };
+  /**
+   * False for a failed claim: it stays in history only.
+   */
+  in_validated_summary: boolean;
+}
+/**
+ * Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "VisualAnswer".
+ */
+export interface VisualAnswer {
+  /**
+   * What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.
+   */
+  panel_a_direction: "holds" | "drops" | "unclear";
+  /**
+   * Panel A's direction is the direction the claim states.
+   */
+  panel_a_matches_claim: boolean;
+  /**
+   * One section's line alone accounts for Panel A's pooled direction.
+   */
+  single_section_drives_panel_a: boolean;
+  /**
+   * Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.
+   */
+  panel_b_matches_claim: boolean | null;
+  /**
+   * One or two sentences on what the panels show.
+   */
+  explanation: string;
+}
+/**
+ * One field an injected error changed.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "FieldChange".
+ */
+export interface FieldChange {
+  field: string;
+  before: unknown;
+  after: unknown;
+}
+/**
+ * The "Challenge the verifier" options of one claim: its injected variants, named only by error kind.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ClaimChallenges".
+ */
+export interface ClaimChallenges {
+  schema_version: string;
+  claim_id: string;
+  claim_version: number;
+  base_status: VerificationStatus;
+  variants: ClaimChallenge[];
 }
 /**
  * The claim-drafting model's structured output: the sentence and every number it uses.
@@ -758,6 +876,21 @@ export interface ClaimRejectedEvent {
   type: "claim_rejected";
   finding_id: string;
   problems: string[];
+}
+/**
+ * A claim version after its three checks, with its verification status and every reason. An injected variant
+ * carries `claim.injected.is_injected` and is always shown as injected.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ClaimVerifiedEvent".
+ */
+export interface ClaimVerifiedEvent {
+  seq: number;
+  investigation_id: string;
+  recorded_at_utc: string;
+  type: "claim_verified";
+  claim: Claim;
+  verification: VerificationResult;
 }
 /**
  * The difference between group means of the log2 values under one condition (disease minus control).
@@ -1421,6 +1554,7 @@ export interface InvestigationSnapshot {
     | BudgetExhaustedEvent
     | ClaimDraftedEvent
     | ClaimRejectedEvent
+    | ClaimVerifiedEvent
     | PackageReadyEvent
     | ModelCallEvent
     | ErrorEvent
@@ -2105,17 +2239,4 @@ export interface Transcription {
    */
   audio_duration_ms: number;
   latency_ms: number;
-}
-/**
- * Every check run on one claim version, and the verification status they add up to.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "VerificationResult".
- */
-export interface VerificationResult {
-  schema_version: string;
-  claim_id: string;
-  claim_version: number;
-  checks: CheckResult[];
-  verification_status: VerificationStatus;
 }

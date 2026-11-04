@@ -1,5 +1,5 @@
 # One-command workflows. Each target is a thin wrapper; the underlying commands are listed in CLAUDE.md.
-.PHONY: contrasts structures audit install types test typecheck build serve api web dev fixtures smoke data deploy modal-secret modal-batch
+.PHONY: benchmark contrasts structures audit install types test typecheck build serve api web dev fixtures smoke data deploy modal-secret modal-batch
 
 # The API's port; for example `make dev PORT=8010` when 8000 is taken.
 PORT ?= 8000
@@ -37,6 +37,9 @@ data:  ## download any missing GSE286184 file, then validate and label all 22 se
 
 audit:  ## compute the demo's audit results, controls and composite figures into artifacts/GSE286184/audit/ (after `make data`)
 	uv run spatialscout audit
+
+benchmark:  ## verify valid and injected claims derived from the audit results, replaying the stored visual checks (after `make data`); `uv run spatialscout benchmark --run-mode live` re-records them (cents)
+	uv run spatialscout benchmark
 
 contrasts:  ## compute every descriptive disease contrast and its composite figure into artifacts/GSE286184/contrasts/ (after `make data`)
 	uv run spatialscout contrasts

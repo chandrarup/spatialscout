@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-unsupported-plan",
-  "recorded_at": "2026-11-04T00:22:58Z",
+  "recorded_at": "2026-11-04T00:47:38Z",
   "origin": "hand_authored",
   "question": "Re-segment the synthetic section with Proseg and recount podocyte LRP2.",
   "note": "Hand-authored model responses: the plan and the re-plan both name a tool outside the registry. No model was called.",

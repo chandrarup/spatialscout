@@ -4,6 +4,7 @@ import type {
   AuditResult,
   CapabilityReport,
   ChannelSet,
+  ClaimChallenges,
   ContrastIndex,
   ContrastResult,
   DatasetManifest,
@@ -61,6 +62,10 @@ export const api = {
     `/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}/figure.png`,
   investigation: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}`).then(json<InvestigationSnapshot>),
+  claimChallenges: (investigationId: string, claimId: string) =>
+    fetch(`/api/investigations/${encodeURIComponent(investigationId)}/claims/${encodeURIComponent(claimId)}/challenges`).then(
+      json<ClaimChallenges>,
+    ),
   start: (body: StartInvestigationRequest) =>
     fetch("/api/investigations", {
       method: "POST",

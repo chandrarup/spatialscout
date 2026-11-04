@@ -49,6 +49,7 @@ def label_sensitivity_check(
     section_groups: Mapping[str, str] | None = None,
     sections_left_out: Mapping[str, str] | None = None,
     roi: Region | None = None,
+    measure: str | None = None,
 ) -> LabelSensitivityCheck:
     """The same measure of the same population under two label rules (the same sections, labelled twice), with the
     cells each rule puts in the population and how many cells the rules disagree on."""
@@ -56,10 +57,13 @@ def label_sensitivity_check(
         raise ValueError("a label-sensitivity check compares exactly two label rules")
     (first_rule, first), (second_rule, second) = sections_by_rule.items()
     arms = []
+    arm_gene_lists: list[list[str]] = []
     for rule, sections in ((first_rule, first), (second_rule, second)):
         result = audit_population(
-            sections, cell_type, genes, conditions, section_groups=section_groups, sections_left_out=sections_left_out, roi=roi
+            sections, cell_type, genes, conditions, measure=measure, section_groups=section_groups,
+            sections_left_out=sections_left_out, roi=roi,
         )
+        arm_gene_lists.append(result.genes)
         arms.append(
             LabelRuleArm(
                 label_rule_id=rule,
@@ -89,8 +93,8 @@ def label_sensitivity_check(
         control_id="pending",
         dataset_id=first[0].dataset_id,
         cell_type=cell_type,
-        genes=list(genes),
-        measure="share_expressing" if len(genes) == 1 else "gene_set_share_expressing",
+        genes=list(genes) or sorted({g for arm_genes in arm_gene_lists for g in arm_genes}),
+        measure=measure or ("share_expressing" if len(genes) == 1 else "gene_set_share_expressing"),
         arms=arms,
         cells_in_both=both,
         cells_only_first=only_first,

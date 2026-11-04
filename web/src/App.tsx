@@ -224,8 +224,34 @@ export default function App() {
                 onReject={() => decide(api.reject)}
               />
               <ReasoningTimeline events={investigation.events} />
+              {investigation.claims.some((claim) => investigation.verifications[claim.claim_id]) && (
+                <section aria-label="Validated summary" className="rounded-lg border border-line bg-panel p-4 text-sm">
+                  <h2 className="mb-2 text-sm font-semibold text-ink">Validated summary</h2>
+                  {investigation.claims.filter((claim) => investigation.verifications[claim.claim_id]?.in_validated_summary).length === 0 ? (
+                    <p className="text-xs text-ink-3">No claim passed its structural and numerical checks; every claim stays in the history below.</p>
+                  ) : (
+                    <ul className="list-disc space-y-1 pl-4 text-ink">
+                      {investigation.claims
+                        .filter((claim) => investigation.verifications[claim.claim_id]?.in_validated_summary)
+                        .map((claim) => (
+                          <li key={claim.claim_id}>
+                            {claim.text} <span className="text-xs text-ink-3">({claim.verification_status.replaceAll("_", " ")})</span>
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+                </section>
+              )}
               {investigation.claims.map((claim) => (
-                <ClaimCard key={claim.claim_id} claim={claim} />
+                <ClaimCard
+                  key={claim.claim_id}
+                  claim={claim}
+                  verification={investigation.verifications[claim.claim_id]}
+                  investigationId={investigation.investigationId}
+                />
+              ))}
+              {investigation.injected.map(({ claim, verification }) => (
+                <ClaimCard key={claim.claim_id} claim={claim} verification={verification} />
               ))}
               {investigation.events.map(
                 (event) =>

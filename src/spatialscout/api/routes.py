@@ -13,6 +13,7 @@ from ..contracts import (
     CapabilityReport,
     ChannelSet,
     ChainCheckResult,
+    ClaimChallenges,
     ConditionName,
     DatasetManifest,
     LabelRuleSet,
@@ -204,6 +205,16 @@ async def download_package(investigation: InvestigationDep) -> FileResponse:
     if not path.is_file():
         raise HTTPException(status_code=409, detail="the evidence package is not ready yet")
     return FileResponse(path, media_type="application/zip", filename=f"spatialscout-{investigation.investigation_id}.zip")
+
+
+@router.get("/investigations/{investigation_id}/claims/{claim_id}/challenges")
+async def claim_challenges(claim_id: str, investigation: InvestigationDep) -> ClaimChallenges:
+    """The claim's recorded injected variants and their recorded verifications, for "Challenge the verifier". Read from
+    the investigation's files: no model is called and nothing is recomputed."""
+    path = investigation.directory / "challenges" / f"{claim_id}.json"
+    if "/" in claim_id or not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no recorded injected variants for claim {claim_id}")
+    return ClaimChallenges.model_validate_json(path.read_text(encoding="utf-8"))
 
 
 @router.post("/audit-log/verify")

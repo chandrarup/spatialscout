@@ -2,7 +2,7 @@
  "schema_version": "1.0",
  "info": {
   "recording_id": "syn01-podocyte-lrp2",
-  "recorded_at": "2026-11-04T00:22:57Z",
+  "recorded_at": "2026-11-04T00:47:38Z",
   "origin": "hand_authored",
   "question": "Does podocyte LRP2 in the synthetic section survive nucleus-only assignment?",
   "note": "Hand-authored model responses for the walking skeleton; the agent requests no control. No model was called.",
@@ -168,14 +168,14 @@
   },
   {
    "purpose": "follow_up",
-   "cache_key": "bf4f0e3f7dcb6c406fc643a7d3effb7faac63adc1cc554c971e83e86d2fc5a17",
+   "cache_key": "f0bd912c379ff30a5d6716fbfc3c5203e64e76d51ca59182f377a54b3d750156",
    "request": {
     "provider": "meta",
     "model": "muse-spark-1.3",
     "messages": [
      {
       "role": "system",
-      "content": "You are SpatialScout's investigating agent. A researcher approved a plan, and its tools have run. You now read one observation (a tool's result) and decide which follow-up tools, if any, it calls for. Rules:\n- Every follow-up must cite the observation that prompted it (its observation_id) and give the reason, naming what in that observation you are responding to.\n- Only tools in the registry can run, with arguments valid against their arguments_schema. To test the same result, reuse the cited observation's arguments exactly.\n- Verification later fails any claim that lacks a required control: a random-thinning control for a claim about assignment sensitivity, and a label-sensitivity check for a claim about a population whose label rule involves the claim's genes. Nobody runs a control for you; if you judge one unnecessary, request nothing and say why.\n- Each tool call spends one of the investigation's tool calls; the remaining budget is given. Do not repeat a call that has already run.\n- List as open questions what the evidence leaves unsettled that these tools cannot answer.\nRespond with JSON that matches the response schema."
+      "content": "You are SpatialScout's investigating agent. A researcher approved a plan, and its tools have run. You now read one observation (a tool's result) and decide which follow-up tools, if any, it calls for. Rules:\n- Every follow-up must cite the observation that prompted it (its observation_id) and give the reason, naming what in that observation you are responding to.\n- Only tools in the registry can run, with arguments valid against their arguments_schema. To test the same result, reuse the cited observation's arguments exactly.\n- Required controls. Verification fails any claim that does not cite each control required of it: a random-thinning control for any claim about assignment sensitivity, and a label-sensitivity check for any claim about a population whose label rule involves the claim's genes, or decides membership against those genes' home cell type (a rule that ignores a gene still competes with that gene's home type if it can assign the cell to it instead). Read the label rules and the result's home cell types to decide which controls apply. Nobody runs a control for you.\n- Each tool call spends one of the investigation's tool calls; the remaining budget is given. Do not repeat a call that has already run.\n- List as open questions what the evidence leaves unsettled that these tools cannot answer.\nRespond with JSON that matches the response schema."
      },
      {
       "role": "user",
@@ -375,6 +375,481 @@
     "finish_reason": "stop",
     "usage": null,
     "served_by": "baseten",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "2320d4d737d00cbd2d8ad31120b9b252bc28dad79756e92015c9fca87224786d",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":null,\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"share_expressing\"},\"claim_text\":\"In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).\",\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "d63f6e7b261b355137b13e883706475e646e0960ed6cfe888fa0bae33518a059"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"unclear\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "9339d94a43bf96a91924e70aa5c54f0a5ed561aba1e719b089e3e6acca6b2207",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":\"the pooled observed value drops below the home-matched expectation x 2^-0.5 under at least one stricter condition\",\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"share_expressing\"},\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "720b5aed7ce4303a7a0f37168f9b83b3e882fc2d5095a6da42ea40084425373f"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"drops\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "51a07c0b48cb061a714cb115b34f35d0a742cc26bc81aaf454ae5c2dc89e22fb",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":null,\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"share_expressing\"},\"claim_text\":\"In synthetic section SYN-01, nucleus-only assignment keeps 2 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).\",\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "a335134db9b445db3f2706ead2bfc9955e929fd7bea8e160ce8e9bc4530ba155"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"unclear\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "0ec3c571bc366f2c37ec944e0e8e5c47f293cb1e13498d99d3890f22a0b02577",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":null,\"claim_states_neighbour_pattern\":null,\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"share_expressing\"},\"claim_text\":\"In GSE271188 section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).\",\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "d2398d4bcff9049d5198c9100ac95cef20ef383086c92c10feedbeb21395c616"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"unclear\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": null, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
+    "events": null,
+    "audio_duration_ms": null
+   },
+   "latency_ms": null
+  },
+  {
+   "purpose": "visual_check",
+   "cache_key": "d20a9b6d350d667d62da24b2a4ed95725c7c789c4e4f314108a5bbce97b1379d",
+   "request": {
+    "provider": "meta",
+    "model": "muse-spark-1.3",
+    "messages": [
+     {
+      "role": "system",
+      "content": "You check one claim against its composite figure for SpatialScout. Panel A plots, per assignment condition, each section's observed value (thin grey lines), the pooled observed value (black), the home-matched and cell-matched random-thinning expectations, and a threshold line (home-matched x 2^-0.5). Panel B is a tissue crop: population nuclei, home-type nuclei, retained molecules (blue) and molecules excluded under the stricter condition (yellow). Read the figure itself; do not assume the claim is right. Answer:\n- panel_a_direction: holds if the pooled observed line stays at or above the threshold line under every stricter condition, drops if it falls below it under at least one, unclear if you cannot tell;\n- panel_a_matches_claim: whether that is the direction the claim states;\n- single_section_drives_panel_a: whether one section's line alone accounts for the pooled direction;\n- panel_b_matches_claim: whether Panel B, read together with the computed neighbour-proximity shares given, shows the neighbour pattern the claim states; null when the claim states none.\nAlso check that the figure's title names the claim's population and genes; if it does not, the claim does not match the figure. Respond with JSON that matches the response schema."
+     },
+     {
+      "role": "user",
+      "content": "{\"claim_states_direction\":\"the pooled observed value holds at or above the home-matched expectation x 2^-0.5 under every stricter condition\",\"claim_states_neighbour_pattern\":\"in Panel B's section, excluded molecules lie closer to a cell of their gene's home type more often than retained molecules do\",\"claim_subject\":{\"cell_type\":\"Podocyte\",\"genes\":[\"LRP2\"],\"label_rule_id\":\"synthetic-by-construction\",\"measure\":\"share_expressing\"},\"computed_neighbour_proximity_shares\":{\"condition\":\"nucleus_only\",\"excluded\":0.0,\"meaning\":\"share of the result's molecules strictly closer to a cell of their gene's home type than to their own cell's centroid\",\"retained\":null,\"section_id\":\"SYN-01\"},\"figure_title_panels\":{\"panel_a\":\"Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.\",\"panel_b\":\"300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only.\"}}"
+     }
+    ],
+    "response_schema": {
+     "additionalProperties": false,
+     "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+     "properties": {
+      "panel_a_direction": {
+       "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+       "enum": [
+        "holds",
+        "drops",
+        "unclear"
+       ],
+       "title": "Panel A Direction",
+       "type": "string"
+      },
+      "panel_a_matches_claim": {
+       "description": "Panel A's direction is the direction the claim states.",
+       "title": "Panel A Matches Claim",
+       "type": "boolean"
+      },
+      "single_section_drives_panel_a": {
+       "description": "One section's line alone accounts for Panel A's pooled direction.",
+       "title": "Single Section Drives Panel A",
+       "type": "boolean"
+      },
+      "panel_b_matches_claim": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none.",
+       "title": "Panel B Matches Claim"
+      },
+      "explanation": {
+       "description": "One or two sentences on what the panels show.",
+       "title": "Explanation",
+       "type": "string"
+      }
+     },
+     "required": [
+      "panel_a_direction",
+      "panel_a_matches_claim",
+      "single_section_drives_panel_a",
+      "panel_b_matches_claim",
+      "explanation"
+     ],
+     "title": "VisualAnswer",
+     "type": "object"
+    },
+    "max_tokens": 4000,
+    "reasoning_effort": "low",
+    "api": "chat_completions",
+    "keywords": []
+   },
+   "inputs": [
+    {
+     "name": "visual_check",
+     "version": "visual-1",
+     "sha256": "8cc8ac2f6d310f8275d82839f663aa7b27d1553f91ddca0946a6c1565bde0dcd"
+    },
+    {
+     "name": "image/png",
+     "version": "bytes",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222"
+    }
+   ],
+   "response": {
+    "content": "{\"panel_a_direction\": \"holds\", \"panel_a_matches_claim\": true, \"single_section_drives_panel_a\": false, \"panel_b_matches_claim\": true, \"explanation\": \"Hand-authored response for tests: no model read this figure.\"}",
+    "finish_reason": "stop",
+    "usage": null,
+    "served_by": "meta",
     "events": null,
     "audio_duration_ms": null
    },
