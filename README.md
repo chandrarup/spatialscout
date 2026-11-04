@@ -88,7 +88,7 @@ Live runs need provider keys in `.env`, `SPATIALSCOUT_LIVE_PASSCODE` and `SPATIA
 - **The visual check** wrongly disputes a third of valid co-expression claims in the benchmark.
 - **No clinical metadata** is shown: the KPMP clinical export was not downloaded.
 
-The root PRD (`spatialscout_prd_srs_spec.md`), the two whitepaper `.docx` files and `docs/product/` are pre-build planning drafts with placeholders, superseded by `docs/spec/` and this README.
+`docs/archive/` (the first PRD and the two whitepaper `.docx` files) and `docs/product/` are pre-build planning drafts with placeholders, superseded by `docs/spec/` and this README.
 
 ## Roadmap (not built)
 

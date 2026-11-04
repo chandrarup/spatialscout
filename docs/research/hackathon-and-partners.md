@@ -2,7 +2,7 @@
 
 All sources below were fetched on 2026-11-02 and are primary (Cerebral Valley, Meta, Baseten, Fireworks, Modal, PyPI, NIST). Every claim links to its source. Bracketed labels such as [cv-rules] point to the full URLs in **Sources** at the end. **UNVERIFIED** marks anything the public primary sources do not establish. Third-party pages appear only where the task asked for them to be checked.
 
-## Corrections to `spatialscout_prd_srs_spec.md`
+## Corrections to `docs/archive/spatialscout_prd_srs_spec.md`
 
 | Spec claim | What the primary sources say |
 |---|---|

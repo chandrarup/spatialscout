@@ -494,7 +494,7 @@ Convert first, verbatim from https://dev.meta.ai/docs/speech-to-text: `ffmpeg -i
 
 ## 9. Spec claims that conflict with the sources
 
-| Spec claim (`spatialscout_prd_srs_spec.md`) | What the sources say |
+| Spec claim (`docs/archive/spatialscout_prd_srs_spec.md`) | What the sources say |
 |---|---|
 | $150 Meta Model API credits | UNVERIFIED; not on the official event pages. |
 | Fireworks AI $25 | The event page says Fireworks offers **$100** to select participants ([CV](https://cerebralvalley.ai/e/meta-ai-developer-hackathon)). |

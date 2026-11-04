@@ -1,4 +1,4 @@
-> **Pre-build planning draft (Oct 28 2026), with placeholders.** It describes plans that were not built (SAM 3.1 fine-tuning, a lab validation study) and is superseded by the README and `docs/spec/`. Generated from `SpatialScout Whitepaper.docx` with pandoc.
+> **Pre-build planning draft (Oct 28 2026), with placeholders.** It describes plans that were not built (SAM 3.1 fine-tuning, a lab validation study) and is superseded by the README and `docs/spec/`. Generated from `docs/archive/SpatialScout Whitepaper.docx` with pandoc.
 
 # SpatialScout: Trustworthy Disease Discovery in Spatial Biology
 
