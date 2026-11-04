@@ -11,6 +11,7 @@ from ..agent.errors import DatasetUnavailable
 from ..audit import verify_chain
 from ..contracts import (
     CapabilityReport,
+    ChannelSet,
     ChainCheckResult,
     ConditionName,
     DatasetManifest,
@@ -23,7 +24,7 @@ from ..contracts import (
     StartInvestigationRequest,
 )
 from ..data import DatasetStore, SectionNotIngested, SectionTables, UnknownDataset, UnknownLabelRule, UnknownSection
-from ..engine import build_packed_region_view, build_region_view, conditions_for
+from ..engine import build_packed_region_view, build_region_view, conditions_for, section_channels
 from ..gateway import LiveRunRefused, RecordingLibrary
 from ..gateway.gate import LiveGate
 from ..settings import Settings
@@ -146,6 +147,13 @@ def packed_region_view(section_id: str, store: StoreDep, label_rule_id: str | No
     return build_packed_region_view(
         section, conditions, synthetic=store.manifest(section.dataset_id).synthetic, section_name=info.name, group=info.group
     )
+
+
+@router.get("/sections/{section_id}/channels")
+def channels(section_id: str, store: StoreDep) -> ChannelSet:
+    """The section's rendered channels (nuclei and five marker groups), each with its molecule count and whether
+    the section has any. The viewer draws them from the packed view's molecules: rendered, not imaged."""
+    return section_channels(_section(store, section_id, None))
 
 
 @router.post("/investigations", status_code=201)
