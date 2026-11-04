@@ -45,7 +45,7 @@ def render_contrast_figure(result: ContrastResult, sections: Mapping[str, Sectio
         panel_b.text(0.5, 0.5, "B  " + b_text, ha="center", va="center", fontsize=10, wrap=True)
     figure.tight_layout()
     buffer = io.BytesIO()
-    figure.savefig(buffer, format="png", dpi=100)
+    figure.savefig(buffer, format="png", dpi=72)
     plt.close(figure)
     png = buffer.getvalue()
     out_dir.mkdir(parents=True, exist_ok=True)

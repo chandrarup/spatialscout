@@ -107,7 +107,7 @@ def run_contrasts(store: DatasetStore, out_dir: Path, repo_root: Path, log: Call
         sections_left_out=[LeftOutSection(section_id=k, reason=v) for k, v in sorted(left_out.items())],
         input_sha256={p.as_posix(): hashlib.sha256((repo_root / p).read_bytes()).hexdigest() for p in inputs},
         run_configuration=ContrastRunConfiguration(
-            rules=contrast_rules("per result: see grid"),
+            rules=contrast_rules(" + ".join(sorted({r for r, _, _ in grid}))),
             conditions=list(CONDITIONS),
             grid=[list(g) for g in grid],
             contrasts=[c.groups for c in report.contrasts],
@@ -115,6 +115,10 @@ def run_contrasts(store: DatasetStore, out_dir: Path, repo_root: Path, log: Call
         entries=entries,
     )
     _write(out_dir / "index.json", index)
+    current = {Path(e.figure.path).name for e in entries if e.figure}
+    for stale in (out_dir / "figures").glob("*.png"):
+        if stale.name not in current:
+            stale.unlink()
     return index
 
 
