@@ -22,6 +22,8 @@ from .claim import (
     CLAIM_SCHEMA_VERSION,
     CitedNumber,
     Claim,
+    ClaimDirection,
+    NeighbourPattern,
     ClaimControls,
     ClaimDraft,
     FindingRef,
@@ -48,6 +50,7 @@ from .events import (
     BudgetExhaustedEvent,
     ClaimDraftedEvent,
     ClaimRejectedEvent,
+    ClaimVerifiedEvent,
     PlanRejectedEvent,
     ToolFailedEvent,
     ErrorEvent,
@@ -120,7 +123,7 @@ from .region import (
     StructureRun,
     StructureSeed,
 )
-from .review import CheckResult, ReviewDecision, VerificationResult
+from .review import CheckKind, CheckResult, ClaimChallenge, ClaimChallenges, FieldChange, ReviewDecision, VerificationResult, VisualAnswer
 from .voice import Transcription
 
 __all__ = [name for name in dir() if not name.startswith("_")]

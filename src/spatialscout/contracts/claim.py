@@ -8,6 +8,7 @@ becomes zero. `figure_id` and the control ids stay null until tickets 05, 06 and
 """
 
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import Field
 
@@ -76,6 +77,15 @@ class ClaimDraft(Contract):
     cited: dict[str, CitedNumber]
 
 
+ClaimDirection = Literal["holds", "drops"]
+"""What an audit claim says the pooled observed value does under the stricter primary conditions: holds at or above
+the home-matched expectation x 2^-0.5 under every one, or drops below it under at least one."""
+
+NeighbourPattern = Literal["excluded_nearer_home", "excluded_not_nearer_home"]
+"""What a claim says about Panel B's section: whether the excluded molecules are more often closer to a cell of their
+gene's home type than to their own cell's centroid (a higher neighbour-proximity share) than the retained ones."""
+
+
 class Claim(Contract):
     schema_version: str = CLAIM_SCHEMA_VERSION
     claim_id: str
@@ -91,3 +101,7 @@ class Claim(Contract):
     verification_status: VerificationStatus = VerificationStatus.PENDING
     review_status: ReviewStatus = ReviewStatus.UNREVIEWED
     injected: InjectedError = Field(default_factory=InjectedError)
+    direction: ClaimDirection | None = Field(
+        default=None, description="The direction the claim states, when it states one in structured form; else read from its text."
+    )
+    neighbour_pattern: NeighbourPattern | None = Field(default=None, description="The neighbour pattern the claim states, if any.")

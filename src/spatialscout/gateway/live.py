@@ -89,7 +89,7 @@ class LiveClient:
         headers = {"Authorization": authorization}
         try:
             if request.api == "chat_completions":
-                http_response = await self._http.post(f"{base}/chat/completions", json=chat_body(request, model), headers=headers)
+                http_response = await self._http.post(f"{base}/chat/completions", json=chat_body(request, model, media), headers=headers)
                 return parse_chat(self._checked(http_response, provider, model))
             if request.api == "responses":
                 http_response = await self._http.post(f"{base}/responses", json=responses_body(request, model), headers=headers)
@@ -130,10 +130,17 @@ class LiveClient:
             raise ProviderError(f"{provider} {model} returned a body that is not JSON", retryable=True) from None
 
 
-def chat_body(request: ModelRequest, model: str) -> dict[str, Any]:
+def chat_body(request: ModelRequest, model: str, image: bytes | None = None) -> dict[str, Any]:
+    """A chat completions body. With `image` (a PNG), the last user message carries it as an `image_url` part."""
+    messages: list[dict[str, Any]] = [m.model_dump() for m in request.messages]
+    if image is not None:
+        last = max(i for i, m in enumerate(messages) if m["role"] == "user")
+        url = "data:image/png;base64," + base64.b64encode(image).decode("ascii")
+        messages[last] = {"role": "user", "content": [{"type": "text", "text": messages[last]["content"]},
+                                                      {"type": "image_url", "image_url": {"url": url}}]}
     body: dict[str, Any] = {
         "model": model,
-        "messages": [m.model_dump() for m in request.messages],
+        "messages": messages,
         "max_tokens": request.max_tokens,
         "reasoning_effort": request.reasoning_effort,
     }
