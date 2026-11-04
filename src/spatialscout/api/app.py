@@ -22,6 +22,19 @@ from .structure_routes import router as structure_router
 from .voice import router as voice_router
 
 
+class WebApp(StaticFiles):
+    """The built web app. The page is revalidated on every visit, so a redeploy is never hidden behind a cached
+    index.html; the content-hashed assets under /assets/ never change and may be cached for a year."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        if path.startswith("assets/"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 def create_app(
     settings: Settings | None = None,
     *,
@@ -72,7 +85,7 @@ def create_app(
     app.include_router(structure_router, prefix="/api")
     app.include_router(kpmp_router, prefix="/api")
     if settings.web_dist is not None and (settings.web_dist / "index.html").is_file():
-        app.mount("/", StaticFiles(directory=settings.web_dist, html=True), name="web")
+        app.mount("/", WebApp(directory=settings.web_dist, html=True), name="web")
     else:
 
         @app.get("/", include_in_schema=False)

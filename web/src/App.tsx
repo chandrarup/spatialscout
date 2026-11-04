@@ -135,10 +135,13 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col">
-      <RunModeBanner
-        runMode={investigation?.runMode ?? mode?.default_run_mode ?? "cached_tool_rerun"}
-        replay={investigation ? investigation.replay : (mode?.recordings[0] ?? null)}
-      />
+      {(investigation || mode) && (
+        // Named only once the server has said which run mode it serves; a guessed mode would mislabel the page.
+        <RunModeBanner
+          runMode={investigation?.runMode ?? mode!.default_run_mode}
+          replay={investigation ? investigation.replay : (mode?.recordings[0] ?? null)}
+        />
+      )}
       <header className="flex flex-col gap-3 border-b border-line px-4 py-3 lg:flex-row lg:items-start">
         <div className="shrink-0 lg:w-56">
           <h1 className="text-lg font-semibold tracking-tight text-ink">SpatialScout</h1>
