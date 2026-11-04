@@ -29,11 +29,19 @@ def main(argv: list[str] | None = None) -> int:
     ingest = commands.add_parser("ingest", help="download missing GSE286184 files, then validate and label all 22 sections")
     ingest.add_argument("--no-download", action="store_true", help="fail on a missing raw file instead of fetching it")
     commands.add_parser("audit", help="compute the demo's GSE286184 audit results into artifacts/GSE286184/audit/ (needs ingest)")
+    structures = commands.add_parser(
+        "structures", help="SAM 3.1 glomerulus outlines (exploratory) for the demo sections into artifacts/GSE286184/structures/"
+    )
+    structures.add_argument("--run-mode", choices=["live", "cached_tool_rerun"], default="cached_tool_rerun")
+    structures.add_argument("--sections", nargs="*", default=None, help="section ids or names (default: the demo sections)")
+    structures.add_argument("--env-file", type=Path, default=None, help="a .env file with the Meta key, when it is not in the environment")
     args = parser.parse_args(argv)
     if args.command == "ingest":
         return _ingest(download=not args.no_download)
     if args.command == "audit":
         return _audit()
+    if args.command == "structures":
+        return asyncio.run(_structures(args.run_mode, args.sections, args.env_file))
     if args.command == "serve":
         uvicorn.run(
             "spatialscout.api:create_app",
@@ -121,4 +129,59 @@ def _audit() -> int:
     store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
     index = run_batch(store, settings.artifacts_dir / "GSE286184" / "audit", _repo_root())
     print(f"wrote {len(index.entries)} audit results to {settings.artifacts_dir / 'GSE286184' / 'audit'}")
+    return 0
+
+
+async def _structures(run_mode: str, wanted: list[str] | None, env_file: Path | None) -> int:
+    """SAM 3.1 outlines for the demo sections. Live: one image per crop of up to 16 seed boxes (about $0.0025 each),
+    recorded to fixtures/sam/<section_id>.json; cached_tool_rerun replays those recordings with no network call.
+    Either way the run, with its image count and cost, goes to artifacts/GSE286184/structures/<section_id>.json."""
+    from datetime import UTC, datetime
+
+    from .contracts import Recording
+    from .data import DatasetStore
+    from .engine.structure_finder import DEMO_SECTIONS, find_structures, recording_info, recording_path, run_path
+    from .gateway import LIST_PRICES, ApiKeys, LiveClient, LiveSource, ModelGateway, RecordingWriter, ReplaySource, SpendLedger
+    from .settings import Settings
+
+    settings = Settings.from_env()
+    assert settings.artifacts_dir
+    store = DatasetStore(settings.fixtures_dir, artifacts_dir=settings.artifacts_dir, processed_dir=settings.processed_dir)
+    by_name = {s.name: s.section_id for s in store.sections("GSE286184")}
+    section_ids = [by_name.get(w, w) for w in (wanted or DEMO_SECTIONS)]
+
+    def clock() -> datetime:
+        return datetime.now(UTC)
+
+    client = None
+    if run_mode == "live":
+        live = settings.live
+        if live.daily_budget_usd is None or live.spend_dir is None:
+            print("structures: live calls need SPATIALSCOUT_DAILY_BUDGET_USD (and optionally SPATIALSCOUT_SPEND_DIR)", file=sys.stderr)
+            return 2
+        keys = ApiKeys.from_env(env_file or live.env_file)
+        client = LiveClient(keys, SpendLedger(live.spend_dir, live.daily_budget_usd, clock), LIST_PRICES)
+    images, cost = 0, 0.0
+    try:
+        for section_id in section_ids:
+            section = store.load_section(section_id)
+            path = recording_path(settings.fixtures_dir, section_id)
+            if client is not None:
+                path.unlink(missing_ok=True)  # a fresh live run replaces the section's stored responses
+                recorder = RecordingWriter(path, recording_info(section_id))
+                gateway = ModelGateway(LiveSource(client, f"sam-{section_id}"), clock, run_mode="live", recorder=recorder)
+            else:
+                recording = Recording.model_validate_json(path.read_text(encoding="utf-8"))
+                gateway = ModelGateway(ReplaySource(recording), clock, run_mode="cached_tool_rerun")
+            run = await find_structures(section, gateway, run_mode, log=print)
+            out = run_path(settings.artifacts_dir, section_id)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(run.model_dump_json(indent=1) + "\n", encoding="utf-8")
+            counts = {status: sum(p.status == status for p in run.proposals) for status in ("outlined", "fragmented", "empty", "rejected")}
+            print(f"{section_id}: {len(run.proposals)} seeds, {counts}; wrote {out}")
+            images, cost = images + run.images_sent, cost + run.estimated_cost_usd
+    finally:
+        if client is not None:
+            await client.aclose()
+    print(f"structures, {run_mode}: {images} images sent to SAM 3.1 in total, ${cost:.4f}")
     return 0

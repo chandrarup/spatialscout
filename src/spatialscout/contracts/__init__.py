@@ -114,7 +114,11 @@ from .region import (
     PackedMoleculeColumns,
     PackedRegionView,
     RegionView,
+    OutlineMeasures,
     StructureMask,
+    StructureProposal,
+    StructureRun,
+    StructureSeed,
 )
 from .review import CheckResult, ReviewDecision, VerificationResult
 from .voice import Transcription

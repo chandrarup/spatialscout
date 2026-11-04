@@ -1,7 +1,14 @@
 """Analysis engine: every deterministic science operation behind the agent's tools."""
 
 from .audit import audit_section
-from .conditions import IMPLEMENTED_CONDITIONS, PRIMARY_CONDITIONS, ConditionUnavailable, inclusion_mask
+from .conditions import (
+    EXPLORATORY_CONDITIONS,
+    IMPLEMENTED_CONDITIONS,
+    PRIMARY_CONDITIONS,
+    ConditionUnavailable,
+    conditions_for,
+    inclusion_mask,
+)
 from .controls import label_sensitivity_check, random_thinning_control
 from .markers import HOME_CELL_TYPES, MarkerPairs, home_cell_type, load_marker_pairs
 from .population import (
@@ -22,6 +29,8 @@ __all__ = [
     "POPULATION_GATE_MIN_CELLS",
     "PRIMARY_CONDITIONS",
     "ConditionUnavailable",
+    "EXPLORATORY_CONDITIONS",
+    "conditions_for",
     "MarkerPairs",
     "audit_population",
     "audit_section",

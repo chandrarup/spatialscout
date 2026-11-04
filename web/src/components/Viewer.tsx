@@ -31,7 +31,7 @@ export const CONDITION_NAMES: Record<string, string> = {
   nucleus_only: "nucleus-only",
   distance_cap_1um: "1 µm cap",
   distance_cap_2um: "2 µm cap",
-  structure_constrained: "structure-constrained (exploratory)",
+  structure_constrained: "structure-constrained · SAM 3.1 proposal (exploratory)",
 };
 
 interface Props {

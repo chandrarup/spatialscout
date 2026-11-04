@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ..contracts import CapabilityReport, DatasetManifest, FileChecksum, LabelRuleSet, SectionInfo, StructureMask
+from ..contracts import CapabilityReport, DatasetManifest, FileChecksum, LabelRuleSet, SectionInfo, StructureMask, StructureRun
 from .gse286184 import DATASET_ID as GSE286184, label_column
 from .tables import SectionTables, make_section
 
@@ -138,7 +138,21 @@ class DatasetStore:
         molecules = pd.read_parquet(directory / "molecules.parquet")
         cells = pd.read_parquet(directory / "cells.parquet")
         cells["cell_type"] = cells[label_column(label_rule_id)]
-        return make_section(section_id, GSE286184, label_rule_id=label_rule_id, molecules=molecules, cells=cells)
+        return make_section(
+            section_id, GSE286184, label_rule_id=label_rule_id, molecules=molecules, cells=cells, structures=self.sam_structures(section_id)
+        )
+
+    def structure_run(self, section_id: str) -> StructureRun | None:
+        """The committed SAM 3.1 structure-finder run of a GSE286184 section (exploratory, ADR-0006), if any:
+        `artifacts/GSE286184/structures/<section_id>.json`, written by `spatialscout structures`."""
+        path = self._gse_artifacts / "structures" / f"{section_id}.json" if self._gse_artifacts else None
+        if path is None or not path.is_file():
+            return None
+        return StructureRun.model_validate_json(path.read_text(encoding="utf-8"))
+
+    def sam_structures(self, section_id: str) -> list[StructureMask]:
+        run = self.structure_run(section_id)
+        return list(run.structures) if run else []
 
     # --- synthetic -----------------------------------------------------------------------------------------
 

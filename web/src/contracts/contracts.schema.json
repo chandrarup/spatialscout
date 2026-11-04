@@ -3471,6 +3471,117 @@
       "title": "OpenQuestion",
       "type": "object"
     },
+    "OutlineMeasures": {
+      "additionalProperties": false,
+      "description": "One candidate outline of a seed (the seed box, the convex hull of its NPHS1 clusters, or the SAM 3.1\noutline) measured the same way, so what SAM adds over the cruder shapes is visible.\n\n- `seed_box_coverage`: the share of the seed box's area the shape covers.\n- `retention`: the structure-constrained condition with this shape as the only structure, over default\n  molecules whose molecule or cell centroid lies inside it: the share kept.\n- PECAM1 (endothelium) and PDGFRB (mesangium) consistency: each gene's molecule density inside the shape over\n  its density in the rest of the seed's crop, and the share of the crop's molecules of the gene inside.\n  Glomerular tufts carry both; neither gene seeded the box.",
+      "properties": {
+        "shape": {
+          "enum": [
+            "seed_box",
+            "convex_hull",
+            "sam_outline"
+          ],
+          "type": "string"
+        },
+        "area_um2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seed_box_coverage": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_molecules": {
+          "type": "integer"
+        },
+        "kept_molecules": {
+          "type": "integer"
+        },
+        "retention": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pecam1_enrichment": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pdgfrb_enrichment": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pecam1_share_inside": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pdgfrb_share_inside": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "shape",
+        "area_um2",
+        "seed_box_coverage",
+        "default_molecules",
+        "kept_molecules",
+        "retention",
+        "pecam1_enrichment",
+        "pdgfrb_enrichment",
+        "pecam1_share_inside",
+        "pdgfrb_share_inside",
+        "missing_reasons"
+      ],
+      "title": "OutlineMeasures",
+      "type": "object"
+    },
     "PackageInfo": {
       "additionalProperties": false,
       "description": "What the UI needs to offer an evidence package for download.",
@@ -5108,6 +5219,42 @@
             "sam-3.1"
           ],
           "type": "string"
+        },
+        "mask_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1 outlines: the version of the finder's frozen rules."
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1 outlines: the structure-finder run that proposed it."
+        },
+        "seed_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "SAM 3.1 outlines: the seed box it was prompted with."
         }
       },
       "required": [
@@ -5116,9 +5263,233 @@
         "section_id",
         "kind",
         "outline",
-        "source"
+        "source",
+        "mask_version",
+        "run_id",
+        "seed_id"
       ],
       "title": "StructureMask",
+      "type": "object"
+    },
+    "StructureProposal": {
+      "additionalProperties": false,
+      "description": "What SAM 3.1 proposed for one seed. Empty, fragmented and rejected proposals are kept, never forced:\n- outlined: one connected piece that passes the geometric checks;\n- fragmented: several pieces; the largest is outlined and the count recorded;\n- empty: no mask came back, or it has no pixels;\n- rejected: a geometric check failed (see the run's `rejection_rule`), or the seed was never sent.",
+      "properties": {
+        "seed": {
+          "$ref": "#/definitions/StructureSeed"
+        },
+        "status": {
+          "enum": [
+            "outlined",
+            "fragmented",
+            "empty",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "structure_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The structure mask built from it; null when it is empty or rejected."
+        },
+        "fragments": {
+          "default": 0,
+          "type": "integer"
+        },
+        "crop_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The image it was sent in, by index into the run's crops."
+        },
+        "comparisons": {
+          "items": {
+            "$ref": "#/definitions/OutlineMeasures"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "seed",
+        "status",
+        "reason",
+        "structure_id",
+        "fragments",
+        "crop_index",
+        "comparisons"
+      ],
+      "title": "StructureProposal",
+      "type": "object"
+    },
+    "StructureRun": {
+      "additionalProperties": false,
+      "description": "One run of the structure finder on one section: the images sent to SAM 3.1, what came back for every seed,\nand the outlines kept. Exploratory (ADR-0006): the outlines feed only the structure-constrained condition,\nwhich never enters an evidence label.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "mask_version": {
+          "type": "string"
+        },
+        "dataset_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "run_mode": {
+          "enum": [
+            "cached_tool_rerun",
+            "live"
+          ],
+          "type": "string"
+        },
+        "badge": {
+          "const": "SAM 3.1 proposal (exploratory)",
+          "default": "SAM 3.1 proposal (exploratory)",
+          "type": "string"
+        },
+        "seeding_rule": {
+          "type": "string"
+        },
+        "rendering_rule": {
+          "type": "string"
+        },
+        "rejection_rule": {
+          "type": "string"
+        },
+        "images_sent": {
+          "type": "integer"
+        },
+        "estimated_cost_usd": {
+          "description": "Live spend for a live run; for a stored run, what the same images cost at list price.",
+          "type": "number"
+        },
+        "crops": {
+          "items": {
+            "$ref": "#/definitions/Region"
+          },
+          "type": "array"
+        },
+        "proposals": {
+          "items": {
+            "$ref": "#/definitions/StructureProposal"
+          },
+          "type": "array"
+        },
+        "structures": {
+          "items": {
+            "$ref": "#/definitions/StructureMask"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "run_id",
+        "mask_version",
+        "dataset_id",
+        "section_id",
+        "model",
+        "run_mode",
+        "badge",
+        "seeding_rule",
+        "rendering_rule",
+        "rejection_rule",
+        "images_sent",
+        "estimated_cost_usd",
+        "crops",
+        "proposals",
+        "structures"
+      ],
+      "title": "StructureRun",
+      "type": "object"
+    },
+    "StructureSeed": {
+      "additionalProperties": false,
+      "description": "One box prompt: merged NPHS1 clusters (one per glomerulus, padded), or a box the researcher drew.\nNPHS1 seeds the box, so it is never used to judge the outline.",
+      "properties": {
+        "seed_id": {
+          "type": "string"
+        },
+        "section_id": {
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "nphs1_clusters",
+            "user_box"
+          ],
+          "type": "string"
+        },
+        "box": {
+          "$ref": "#/definitions/Region"
+        },
+        "nphs1_molecules": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "NPHS1 molecules in the merged clusters; null for a user box."
+        },
+        "clusters_merged": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "NPHS1 clusters merged into this seed; null for a user box."
+        }
+      },
+      "required": [
+        "seed_id",
+        "section_id",
+        "origin",
+        "box",
+        "nphs1_molecules",
+        "clusters_merged"
+      ],
+      "title": "StructureSeed",
       "type": "object"
     },
     "TokenUsage": {
