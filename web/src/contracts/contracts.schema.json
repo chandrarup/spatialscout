@@ -5091,13 +5091,39 @@
             "$ref": "#/definitions/ReplayInfo"
           },
           "type": "array"
+        },
+        "live_access": {
+          "description": "Who may start a live run: the owner's passcode, the open trial, or bring-your-own-key.",
+          "items": {
+            "enum": [
+              "owner",
+              "trial",
+              "byok"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "trial_remaining_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Left in today's live trial budget; null when no trial is open."
         }
       },
       "required": [
         "dataset_id",
         "default_run_mode",
         "available_run_modes",
-        "recordings"
+        "recordings",
+        "live_access",
+        "trial_remaining_usd"
       ],
       "title": "ModeInfo",
       "type": "object"
@@ -8718,6 +8744,53 @@
         "verdict"
       ],
       "title": "VerdictEvent",
+      "type": "object"
+    },
+    "VerificationBenchmark": {
+      "additionalProperties": false,
+      "description": "How the claim verifier scores on valid and deliberately altered claims: every injected error it caught, and\nevery valid claim it flagged, by check. Read from the committed benchmark results (`make benchmark`).",
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "valid_claims": {
+          "type": "integer"
+        },
+        "injected_claims": {
+          "type": "integer"
+        },
+        "injected_caught": {
+          "description": "Injected claims any check detected.",
+          "type": "integer"
+        },
+        "valid_flagged": {
+          "description": "Valid claims any check flagged.",
+          "type": "integer"
+        },
+        "valid_flagged_visual_only": {
+          "description": "Valid claims flagged by the figure-read check alone.",
+          "type": "integer"
+        },
+        "structural_false": {
+          "description": "Valid claims the structural check flagged.",
+          "type": "integer"
+        },
+        "numerical_false": {
+          "description": "Valid claims the numerical check flagged.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "valid_claims",
+        "injected_claims",
+        "injected_caught",
+        "valid_flagged",
+        "valid_flagged_visual_only",
+        "structural_false",
+        "numerical_false"
+      ],
+      "title": "VerificationBenchmark",
       "type": "object"
     },
     "VerificationResult": {

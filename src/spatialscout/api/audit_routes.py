@@ -9,7 +9,7 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 
-from ..contracts import AuditIndex, AuditResult, ContrastIndex, ContrastIndexEntry, ContrastResult, GateStatus, LabelSensitivityCheck, RandomThinningControl, Region
+from ..contracts import AuditIndex, AuditResult, ContrastIndex, ContrastIndexEntry, ContrastResult, GateStatus, LabelSensitivityCheck, RandomThinningControl, Region, VerificationBenchmark
 from ..data import DatasetStore, SectionNotIngested, UnknownLabelRule, UnknownSection
 from ..engine import gate_status
 from ..settings import Settings
@@ -153,3 +153,39 @@ async def contrast_figure(dataset_id: str, finding_id: str, request: Request) ->
     if entry is None or entry.figure is None:
         raise HTTPException(status_code=404, detail=f"contrast result {finding_id} has no composite figure")
     return FileResponse(root / entry.figure.path, media_type="image/png")
+
+
+# --- verifier benchmark ---------------------------------------------------------------------------------------
+
+
+@router.get("/datasets/{dataset_id}/verification-benchmark")
+async def verification_benchmark(dataset_id: str, request: Request) -> VerificationBenchmark:
+    """How the claim verifier scores on the dataset's valid and deliberately altered claims, from the committed
+    benchmark results (`make benchmark`)."""
+    settings: Settings = request.app.state.settings
+    if settings.artifacts_dir is None:
+        raise HTTPException(status_code=404, detail="no artifacts directory is configured")
+    path = settings.artifacts_dir / dataset_id / "benchmark" / "results.json"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no committed benchmark results for {dataset_id}; run `make benchmark`")
+    results = json.loads(path.read_text(encoding="utf-8"))
+    everything = results["summary"]["all"]
+    flagged = {"disputed", "failed"}
+    visual_only = sum(
+        1
+        for row in results["claims"]
+        if row["injected"] is None
+        and row["checks"]["visual"] in flagged
+        and row["checks"]["structural"] not in flagged
+        and row["checks"]["numerical"] not in flagged
+    )
+    return VerificationBenchmark(
+        dataset_id=dataset_id,
+        valid_claims=everything["valid_claims"],
+        injected_claims=everything["injected_claims"],
+        injected_caught=everything["detection"]["any_check"]["count"],
+        valid_flagged=everything["false_rejection"]["any_check"]["count"],
+        valid_flagged_visual_only=visual_only,
+        structural_false=everything["false_rejection"]["structural"]["count"],
+        numerical_false=everything["false_rejection"]["numerical"]["count"],
+    )

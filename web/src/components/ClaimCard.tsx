@@ -80,7 +80,7 @@ export function ClaimCard({ claim, verification, investigationId, onReview }: Pr
           Injected error ({kindLabel(shown.injected.kind ?? "")}): deliberately altered to test verification
         </p>
       )}
-      <p className="mb-3 text-sm leading-relaxed text-ink">{shown.text}</p>
+      <p className="mb-3 text-sm leading-relaxed text-ink">{roundLongDecimals(shown.text)}</p>
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Status label="Evidence" value={shown.evidence_status} />
         <Status label="Verification" value={shown.verification_status} />
@@ -202,6 +202,14 @@ function VerificationPanel({ verification }: { verification: VerificationResult 
 
 function kindLabel(kind: string): string {
   return kind.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
+}
+
+/** Model-drafted claim text can carry full-precision floats; round long decimal runs for display only. */
+export function roundLongDecimals(text: string): string {
+  return text.replace(/\d+\.\d{4,}/g, (m) => {
+    const n = Number(m);
+    return Number.isFinite(n) ? String(Math.round(n * 1000) / 1000) : m;
+  });
 }
 
 function Status({ label, value }: { label: string; value: string }) {

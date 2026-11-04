@@ -279,14 +279,13 @@ export function AgentBar(props: Props) {
       )}
       {context && !props.dataFit && (
         <div className="mt-2 rounded-2xl bg-raised/60 px-3 py-2 text-[12px] leading-relaxed text-ink-2">
-          {context.selection && (
-            <p data-testid="assistant-selection">
-              <span className="text-ink">Selection:</span> {describeSelection(context.selection)}
+          {(context.selections ?? (context.selection ? [context.selection] : [])).map((s) => (
+            <p key={`${s.pane}-${s.sourceId}`} data-testid="assistant-selection">
+              <span className="text-ink">Selection{s.pane !== "explore" ? ` (${s.pane} pane)` : ""}:</span> {describeSelection(s)}
             </p>
-          )}
+          ))}
           <p className="text-ink-3">
-            The numbers above were computed on this selection. The recorded investigations below replay their original RNA run; they do not analyse
-            {context.selection?.assay === "CODEX protein" ? " this protein image or" : ""} your box.
+            The numbers above were computed on {context.selections && context.selections.length > 1 ? "these selections" : "this selection"}. Recorded investigations below replay their original RNA run and do not use it. With the live trial or your own keys (Connections), your question runs live and takes these numbers along as context; protein boxes stay labelled as separate specimens.
           </p>
           <button type="button" onClick={props.onClearContext} className="mt-1 text-[12px] text-ink-3 underline underline-offset-4 hover:text-ink">
             Clear the selection

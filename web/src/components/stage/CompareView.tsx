@@ -23,6 +23,8 @@ interface Props {
 
 type Participant = KpmpManifest["participants"][number];
 type Nudge = { key: number; dx: number; dy: number; dz: number };
+/** One pane's box and the one sentence read back about it, built only from its computed audit. */
+type PaneSelection = { selection: RegionSelection; text: string };
 
 interface RegionAudit {
   region: Region;
@@ -38,6 +40,17 @@ function auditLine(r: ProteinAuditResult): string {
   return `${r.marker} in ${r.population} (${r.population_cells} cells): ${pct(whole?.observed_share ?? null)} → ${pct(trimmed?.observed_share ?? null)} edges trimmed`;
 }
 
+const TAKEAWAY: Record<string, string> = {
+  stable: "holds when cell edges are trimmed",
+  segmentation_sensitive: "changes when cell edges are trimmed",
+  insufficient_evidence: "too few cells to call",
+};
+
+/** One plain sentence per whole-image audit, so the pane's point lands without reading the badges. */
+function takeaway(results: ProteinAuditResult[]): string {
+  return results.map((r) => `${r.marker} protein in ${r.population} ${TAKEAWAY[r.label] ?? r.label.replaceAll("_", " ")}`).join("; ");
+}
+
 function Pane({
   pane,
   adapter,
@@ -47,7 +60,7 @@ function Pane({
   onChoose,
   visible,
   onOpen,
-  onAsk,
+  onSelected,
   onViewChange,
   nudge,
 }: {
@@ -59,7 +72,7 @@ function Pane({
   onChoose: (id: string) => void;
   visible: ReadonlySet<string>;
   onOpen: () => void;
-  onAsk: (context: TissueContext) => void;
+  onSelected: (selected: PaneSelection | null) => void;
   onViewChange: (from: View, to: View) => void;
   nudge: Nudge | null;
 }) {
@@ -103,18 +116,14 @@ function Pane({
     setRegionAudit(null);
   };
   const current = regionAudit && sameRegion(regionAudit.region, box) ? regionAudit : null;
-  const ask = () => {
-    if (!box) return;
-    const selection: RegionSelection = { datasetId: kpmp.dataset_id, sourceId: participantId, assay: "CODEX protein", region: box, units: "µm", markers: ["LRP2", "UMOD"], pane, scope: "box" };
+  useEffect(() => {
+    if (!box) return onSelected(null);
     const lines = current?.results?.map(auditLine) ?? [];
-    onAsk({
-      participantId,
-      label: `your ${regionSize(box)} box on ${participantId}`,
-      markers: ["LRP2", "UMOD", "CD20"],
-      summary: `Your ${regionSize(box)} box on KPMP participant ${participantId} (${roleLabel(participant)}).${lines.length ? ` Computed protein audit of exactly this box: ${lines.join("; ")}.` : " Analyse the region first to attach its computed protein audit."}`,
-      selection,
+    onSelected({
+      selection: { datasetId: kpmp.dataset_id, sourceId: participantId, assay: "CODEX protein", region: box, units: "µm", markers: ["LRP2", "UMOD"], pane, scope: "box" },
+      text: `${regionSize(box)} box on KPMP participant ${participantId} (${roleLabel(participant)}): ${lines.length ? `computed protein audit of exactly this box: ${lines.join("; ")}` : "not analysed yet"}`,
     });
-  };
+  }, [box, current?.results]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const tool = "h-7 rounded-full px-2.5 text-[12px]";
   return (
@@ -170,6 +179,7 @@ function Pane({
           <p className="mt-0.5 text-[12px] text-ink-3">
             {kpmp.dataset_id} · CODEX protein · {cells.toLocaleString()} cells · real microscopy
           </p>
+          {whole && whole.length > 0 && <p className="mt-1 max-w-[300px] text-[12px] leading-snug text-ink-2">{takeaway(whole)}</p>}
           <div className="mt-2 flex flex-wrap gap-1" role="group" aria-label={`Tools for ${participantId}`}>
             <button type="button" aria-pressed={!boxMode} onClick={() => setBoxMode(false)} className={`${tool} bg-raised text-ink-2 aria-pressed:bg-white aria-pressed:text-black`}>
               Pan
@@ -194,9 +204,6 @@ function Pane({
               <div className="flex flex-wrap gap-1">
                 <button type="button" onClick={analyse} disabled={current?.pending} className={`${tool} bg-white font-medium text-black disabled:opacity-60`}>
                   Analyse this region
-                </button>
-                <button type="button" onClick={ask} className={`${tool} bg-raised text-ink hover:bg-[#2a2d32]`}>
-                  Ask about this region
                 </button>
                 <button type="button" onClick={clear} className={`${tool} text-ink-3 hover:text-ink`}>
                   Clear
@@ -241,6 +248,20 @@ export function CompareView({ adapter, kpmp, onOpen, onBack, onClassic, onAsk }:
   const [bottom, setBottom] = useState(disease[0]?.participant_id ?? "");
   const [linked, setLinked] = useState(false);
   const [nudges, setNudges] = useState<[Nudge | null, Nudge | null]>([null, null]);
+  const [picked, setPicked] = useState<Record<string, PaneSelection | null>>({});
+  const chosen = ["top", "bottom"].flatMap((p) => (picked[p] ? [picked[p]!] : []));
+  const askBoth = () => {
+    if (chosen.length === 0) return;
+    const both = chosen.length === 2;
+    onAsk({
+      participantId: chosen.map((c) => c.selection.sourceId).join(" and "),
+      label: both ? "both boxes" : `your box on ${chosen[0]!.selection.sourceId}`,
+      markers: ["LRP2", "UMOD", "CD20"],
+      summary: `${both ? "Two boxes on two different people (separate specimens, not registered; each has its own denominator)" : "One box"}. ${chosen.map((c, i) => `${both ? (i === 0 ? "First" : "Second") : "The"}: ${c.text}.`).join(" ")}`,
+      selection: chosen[0]!.selection,
+      selections: chosen.map((c) => c.selection),
+    });
+  };
   const shown = [
     { pane: "top", p: healthy.find((p) => p.participant_id === top) ?? healthy[0], choices: healthy, choose: setTop },
     { pane: "bottom", p: disease.find((p) => p.participant_id === bottom) ?? disease[0], choices: disease, choose: setBottom },
@@ -290,11 +311,25 @@ export function CompareView({ adapter, kpmp, onOpen, onBack, onClassic, onAsk }:
               </button>
             );
           })}
+          <button
+            type="button"
+            onClick={askBoth}
+            disabled={chosen.length === 0}
+            title={chosen.length === 0 ? "Draw a box on one or both biopsies first" : undefined}
+            className="ml-2 h-8 rounded-full bg-white px-3 text-[13px] font-medium text-black disabled:bg-raised disabled:text-ink-3"
+          >
+            {chosen.length === 2 ? "Ask SpatialScout about both regions" : chosen.length === 1 ? "Ask SpatialScout about this region" : "Draw boxes, then ask about them"}
+          </button>
           <button type="button" aria-pressed={linked} onClick={() => setLinked((l) => !l)} className="ml-2 h-8 rounded-full bg-raised px-3 text-[13px] text-ink-2 hover:text-ink aria-pressed:bg-white aria-pressed:text-black">
             Link navigation
           </button>
-          <button type="button" onClick={onClassic} className="ml-2 h-8 rounded-full px-3 text-[13px] text-ink-2 underline decoration-ink-3 underline-offset-4 hover:text-ink">
-            Xenium viewer with SAM outlines
+          <button
+            type="button"
+            onClick={onClassic}
+            title="A power tool for inspecting molecule-level sections and exploratory SAM outlines; not part of the guided demo."
+            className="ml-2 h-8 rounded-full px-3 text-[13px] text-ink-2 underline decoration-ink-3 underline-offset-4 hover:text-ink"
+          >
+            Expert: Xenium viewer with SAM outlines
           </button>
           <button type="button" onClick={onBack} className="ml-2 h-8 rounded-full bg-raised px-3 text-[13px] text-ink hover:bg-[#2a2d32]">
             Back to one biopsy
@@ -313,7 +348,7 @@ export function CompareView({ adapter, kpmp, onOpen, onBack, onClassic, onAsk }:
             onChoose={choose}
             visible={visible}
             onOpen={() => onOpen(p.participant_id)}
-            onAsk={onAsk}
+            onSelected={(s) => setPicked((all) => ({ ...all, [pane]: s }))}
             onViewChange={moved(index)}
             nudge={nudges[index] ?? null}
           />

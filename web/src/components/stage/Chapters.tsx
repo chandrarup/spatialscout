@@ -54,6 +54,7 @@ interface Props {
 
 export function ChapterStrip({ chapters, shownCount, finished, current, onSelect }: Props) {
   return (
+    <div>
     <ol aria-label="Chapters" className="flex gap-1 overflow-x-auto pb-1">
       {chapters.map((c, i) => {
         const reached = c.atEvent !== null ? shownCount >= c.atEvent : finished;
@@ -75,5 +76,7 @@ export function ChapterStrip({ chapters, shownCount, finished, current, onSelect
         );
       })}
     </ol>
+    {!finished && <p className="mt-1 text-[11px] text-ink-3">Chapters unlock as the run plays.</p>}
+    </div>
   );
 }

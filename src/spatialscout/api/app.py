@@ -68,6 +68,7 @@ def create_app(
         clock=utc_now,
         prices=prices,
         transport=model_transport,
+        trial_daily_usd=live.trial_daily_usd,
     )
     orchestrator = Orchestrator(
         store=store,

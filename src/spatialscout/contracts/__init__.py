@@ -93,6 +93,7 @@ from .finding import (
     Region,
     RegionAuditRequest,
     SectionLog2Value,
+    VerificationBenchmark,
 )
 from .controls import LabelRuleArm, LabelSensitivityCheck, RandomThinningControl
 from .investigation import (

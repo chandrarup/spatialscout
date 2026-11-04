@@ -83,11 +83,15 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
+              <p className="w-full text-[13px] leading-relaxed text-ink-2 lg:text-right">
+                Watch a recorded run: two gene leads, stricter counting rules, every number rechecked.
+              </p>
               <button
                 type="button"
                 onClick={example ? () => onExample(example) : onAsk}
-                className="pointer-events-auto h-12 rounded-full bg-white px-6 text-[15px] font-medium text-black transition-transform hover:scale-[1.02] active:scale-95"
+                className="pointer-events-auto relative h-12 rounded-full bg-white px-6 text-[15px] font-medium text-black transition-transform hover:scale-[1.02] active:scale-95"
               >
+                <span aria-hidden="true" className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-stable motion-safe:animate-ping" />
                 Follow an investigation
               </button>
               <button type="button" onClick={onExplore} className="pointer-events-auto h-12 rounded-full bg-raised px-6 text-[15px] text-ink transition-colors hover:bg-[#2a2d32]">

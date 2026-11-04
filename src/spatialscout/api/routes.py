@@ -88,6 +88,8 @@ async def mode(request: Request) -> ModeInfo:
         default_run_mode=settings.default_run_mode,
         available_run_modes=available,
         recordings=recordings.infos(),
+        live_access=live_gate.access,
+        trial_remaining_usd=live_gate.trial_remaining_usd(),
     )
 
 
@@ -196,13 +198,25 @@ async def start_investigation(
     body: StartInvestigationRequest,
     orchestrator: OrchestratorDep,
     x_live_passcode: Annotated[str | None, Header()] = None,
+    x_live_access: Annotated[str | None, Header()] = None,
+    x_provider_keys: Annotated[str | None, Header()] = None,
+    x_spend_cap_usd: Annotated[float | None, Header()] = None,
 ) -> InvestigationSnapshot:
-    """Create a persisted investigation; its plan arrives as an event. A live run needs the passcode in the
-    `X-Live-Passcode` header (never the URL, which access logs keep) and budget left today; otherwise 403 and
-    nothing is created. Immutable replay returns the recorded investigation that answers the question."""
+    """Create a persisted investigation; its plan arrives as an event. A live run names its access in
+    `X-Live-Access`: `owner` (the passcode in `X-Live-Passcode`), `trial` (the server's trial budget) or `byok`
+    (keys in `X-Provider-Keys`, capped by `X-Spend-Cap-Usd`). Credentials travel in headers, never the URL, which
+    access logs keep; refused runs get 403 and nothing is created. Immutable replay returns the recorded
+    investigation that answers the question."""
     try:
         return orchestrator.start(
-            body.question, body.run_mode, passcode=x_live_passcode, dataset_id=body.dataset_id, regions=body.regions
+            body.question,
+            body.run_mode,
+            passcode=x_live_passcode,
+            dataset_id=body.dataset_id,
+            regions=body.regions,
+            access=x_live_access,
+            provider_keys=x_provider_keys,
+            budget_usd=x_spend_cap_usd,
         ).snapshot()
     except LiveRunRefused as refused:
         raise HTTPException(status_code=403, detail=str(refused)) from None

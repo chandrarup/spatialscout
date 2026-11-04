@@ -2538,6 +2538,14 @@ export interface ModeInfo {
   default_run_mode: "immutable_replay" | "cached_tool_rerun" | "live";
   available_run_modes: ("immutable_replay" | "cached_tool_rerun" | "live")[];
   recordings: ReplayInfo[];
+  /**
+   * Who may start a live run: the owner's passcode, the open trial, or bring-your-own-key.
+   */
+  live_access: ("owner" | "trial" | "byok")[];
+  /**
+   * Left in today's live trial budget; null when no trial is open.
+   */
+  trial_remaining_usd: number | null;
 }
 /**
  * Everything sent to a provider. Its content hash keys the cache and the replay (ADR-0003),
@@ -3047,4 +3055,36 @@ export interface Transcription {
    */
   audio_duration_ms: number;
   latency_ms: number;
+}
+/**
+ * How the claim verifier scores on valid and deliberately altered claims: every injected error it caught, and
+ * every valid claim it flagged, by check. Read from the committed benchmark results (`make benchmark`).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "VerificationBenchmark".
+ */
+export interface VerificationBenchmark {
+  dataset_id: string;
+  valid_claims: number;
+  injected_claims: number;
+  /**
+   * Injected claims any check detected.
+   */
+  injected_caught: number;
+  /**
+   * Valid claims any check flagged.
+   */
+  valid_flagged: number;
+  /**
+   * Valid claims flagged by the figure-read check alone.
+   */
+  valid_flagged_visual_only: number;
+  /**
+   * Valid claims the structural check flagged.
+   */
+  structural_false: number;
+  /**
+   * Valid claims the numerical check flagged.
+   */
+  numerical_false: number;
 }

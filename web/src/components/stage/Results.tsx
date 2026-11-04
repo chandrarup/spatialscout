@@ -6,7 +6,7 @@ import { type ReactNode, useState } from "react";
 import { api } from "../../api";
 import type { Claim, LabRun, ModeInfo, ReviewRequest, SubClaimVerdict, VerificationResult } from "../../contracts/generated";
 import type { InvestigationView } from "../../investigation";
-import { ClaimCard } from "../ClaimCard";
+import { ClaimCard, roundLongDecimals } from "../ClaimCard";
 import { ExportButton } from "../ExportButton";
 import { FindingsPanel } from "../FindingsPanel";
 import { TelemetryPills } from "../TelemetryPills";
@@ -60,6 +60,22 @@ function measuredSentence(v: SubClaimVerdict, claim: Claim | undefined): string 
   );
 }
 
+/** Plain reading of the measured behaviour: which way it went, under how many counting rules, over how many sections. */
+function holdsLine(claim: Claim): string | null {
+  const conditions = new Set<string>();
+  for (const key of Object.keys(claim.cited)) {
+    const m = /^pooled\[([a-z0-9_]+)\]\.observed_value$/.exec(key);
+    if (m) conditions.add(m[1]!);
+  }
+  if (conditions.size === 0) return null;
+  const rules = conditions.size === 1 ? "1 counting rule" : `${conditions.size} counting rules`;
+  const sections = claim.cited["eligible_section_ids.count"]?.value;
+  const over = typeof sections === "number" ? ` across ${sections} sections` : "";
+  if (claim.evidence_status === "stable") return `Holds up under every counting rule tested (${rules}${over})`;
+  if (claim.evidence_status === "segmentation_sensitive") return `Changes under stricter counting (${rules}${over})`;
+  return null;
+}
+
 /** A cited number's source, in words. */
 function citedLabel(key: string): string {
   return key
@@ -91,7 +107,7 @@ function Basis({ claim, verification, investigationId, onTissue }: { claim: Clai
       <div className="flex flex-col gap-4">
         <div>
           <p className="text-[12px] text-ink-3">The claim the agent wrote</p>
-          <p className="mt-1 text-[14px] leading-relaxed text-ink">{claim.text}</p>
+          <p className="mt-1 text-[14px] leading-relaxed text-ink">{roundLongDecimals(claim.text)}</p>
           <p className="mt-1 text-[12px] text-ink-3">
             Evidence label <span className={`rounded-full px-2 py-0.5 font-medium ${labelTone(claim.evidence_status)}`}>{claim.evidence_status.replaceAll("_", " ")}</span> · finding{" "}
             {claim.finding.finding_id}
@@ -168,7 +184,7 @@ export function Results({ view, graph, mission, chapters, mode, onCanvas, onRepl
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-5 pt-10 pb-28">
+      <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-5 pt-10 pb-44">
         <section aria-label="Hypothesis verdict" className="rise">
           {chapters && <div className="mb-6">{chapters}</div>}
           <p className="text-[13px] text-ink-3">What the investigation found</p>
@@ -186,7 +202,7 @@ export function Results({ view, graph, mission, chapters, mode, onCanvas, onRepl
                   const outcome = outcomeOf(claim);
                   const sentence = measuredSentence(v, claim);
                   return (
-                    <li key={v.sub_claim.text} data-testid="sub-claim-verdict" data-verdict={v.verdict} className={`rounded-3xl bg-panel p-6 ring-1 ${outcome.ring}`}>
+                    <li key={v.sub_claim.text} data-testid="sub-claim-verdict" data-verdict={v.verdict} className={`scroll-mt-24 rounded-3xl bg-panel p-6 ring-1 ${outcome.ring}`}>
                       <button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? null : i)} className="flex w-full flex-col gap-3 text-left">
                         <span className="flex flex-wrap items-baseline justify-between gap-3">
                           <span className="text-[13px] text-ink-3">
@@ -195,6 +211,7 @@ export function Results({ view, graph, mission, chapters, mode, onCanvas, onRepl
                           <span className="shrink-0 text-[13px] font-medium text-ink underline decoration-ink-3 underline-offset-4">{expanded ? "Hide the evidence" : "Why?"}</span>
                         </span>
                         <span className={`block text-[clamp(28px,3.6vw,46px)] leading-[1.05] font-semibold tracking-[-0.03em] ${outcome.tone}`}>{outcome.title}</span>
+                        {claim && holdsLine(claim) && <span className="block text-[15px] font-medium text-ink-2">{holdsLine(claim)}</span>}
                         {sentence && <span className="block max-w-[52rem] text-[16px] leading-relaxed text-ink">{sentence}</span>}
                         <span className="mt-1 flex flex-col gap-1 rounded-2xl bg-raised px-4 py-3 md:flex-row md:items-baseline md:gap-4">
                           <span className="shrink-0 text-[12px] text-ink-3">

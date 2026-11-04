@@ -44,6 +44,8 @@ export interface TissueContext {
   summary: string;
   /** The exact region and source the summary was computed on. */
   selection: RegionSelection | null;
+  /** Several regions asked about together (for example one box on each of two specimens). */
+  selections?: RegionSelection[];
 }
 
 type Selection = { kind: "cell"; index: number } | { kind: "box"; region: Region };

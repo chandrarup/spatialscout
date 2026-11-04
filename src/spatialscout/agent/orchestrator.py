@@ -158,6 +158,9 @@ class Orchestrator:
         passcode: str | None = None,
         dataset_id: str | None = None,
         regions: Sequence[Region] = (),
+        access: str | None = None,
+        provider_keys: str | None = None,
+        budget_usd: float | None = None,
     ) -> Investigation:
         """Create and persist an investigation, then propose its plan in the background.
 
@@ -171,10 +174,11 @@ class Orchestrator:
         question = normalise_question(question)
         if run_mode == "immutable_replay":
             return self._replay(question)
+        client = None
         if run_mode == "live":
             if self._live_gate is None:
                 raise RunModeUnavailable("Live runs are not enabled on this server.")
-            self._live_gate.admit(passcode)
+            client = self._live_gate.admit_access(access, passcode, provider_keys, budget_usd)
         # Only a cached tool rerun plays a recording's stored responses; a live run makes its own and is labelled live.
         recording = self._recordings.for_question(question) if run_mode == "cached_tool_rerun" else None
         dataset_id = (recording.info.dataset_id if recording else None) or dataset_id or self._dataset_id
@@ -191,7 +195,11 @@ class Orchestrator:
                    "recording_id": recording.info.recording_id if recording else None}
         if regions:  # only when drawn, so investigations without regions log exactly what they did before
             started["regions"] = [r.model_dump(mode="json") for r in regions]
+        if client is not None and access not in (None, "owner"):
+            started["live_access"] = access  # which account pays; never the keys
         investigation.audit_log.append("investigation_started", started)
+        if client is not None and self._live_gate is not None:
+            self._live_gate.bind(investigation.investigation_id, client)
         self._investigations[investigation.investigation_id] = investigation
         self._spawn(investigation, self._propose_plan(investigation, recording))
         return investigation
@@ -330,7 +338,7 @@ class Orchestrator:
         if state.run_mode == "live":
             if self._live_gate is None or not self._live_gate.enabled:
                 raise RunModeUnavailable("Live runs are not enabled on this server.")
-            source = LiveSource(self._live_gate.client, recording_id=investigation.investigation_id)
+            source = LiveSource(self._live_gate.client_for(investigation.investigation_id), recording_id=investigation.investigation_id)
             recorder = RecordingWriter(
                 investigation.directory / "recording.json",
                 ReplayInfo(

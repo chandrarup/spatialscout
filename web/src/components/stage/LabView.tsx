@@ -65,7 +65,9 @@ export function LabView({ investigationId, subClaims, verdicts, onLab }: Props) 
         setProblem(
           text.includes("no_recorded_lab")
             ? "This recorded run has no recorded lab. The lab is recorded for the featured run (the two-part podocyte LRP2 and B-cell UMOD question); live runs start it fresh."
-            : text.replace(/^Error:\s*/, ""),
+            : /^Error:\s*5\d\d\b/.test(text) || text.includes("Internal Server Error")
+              ? "The lab couldn't start on this run. Replay the featured recording to see the recorded lab — its timeline, literature and figures are all recorded."
+              : text.replace(/^Error:\s*/, ""),
         );
       });
   };

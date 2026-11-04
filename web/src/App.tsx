@@ -3,7 +3,7 @@
 // A recorded run arrives whole; it is played back on the canvas one event at a time, in recorded order, with each
 // event's recorded latency and cost shown, and the wait between events compressed.
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { api } from "./api";
+import { api, type LiveConnection } from "./api";
 import { DualViewer } from "./components/DualViewer";
 import { formatUtc } from "./components/RunModeBanner";
 import { CONDITION_NAMES } from "./components/Viewer";
@@ -19,7 +19,7 @@ import { Upload } from "./components/stage/Upload";
 import { RunCanvas } from "./components/stage/RunCanvas";
 import { buildGraph, isStep, playbackDelay } from "./components/stage/runGraph";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
-import type { AuditIndex, DataFit, DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, RunMode } from "./contracts/generated";
+import type { AuditIndex, DataFit, DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, Region, RunMode } from "./contracts/generated";
 import type { DatasetAdapter, LoadedSection } from "./datasets/adapter";
 import { kpmpAdapter } from "./datasets/kpmp";
 import { moleculeAdapter } from "./datasets/molecules";
@@ -298,6 +298,7 @@ export default function App() {
   const mission = investigation?.replay ? MISSIONS[investigation.replay.recording_id] : undefined;
   const [chapterId, setChapterId] = useState<string | null>(null);
   const [connectionsOpen, setConnectionsOpen] = useState(false);
+  const [connection, setConnection] = useState<LiveConnection>({ kind: "recorded" });
   const graph = useMemo(() => buildGraph(shown?.question ?? "", shown?.events ?? []), [shown]);
   const milestones = useMemo(() => milestonesOf(shown?.events ?? []), [shown]);
   const [toasts, setToasts] = useState<Milestone[]>([]);
@@ -405,13 +406,14 @@ export default function App() {
   const [fit, setFit] = useState<DataFit | null>(null);
   const [searching, setSearching] = useState(false);
   const [checking, setChecking] = useState<string | null>(null);
-  const canRun = mode?.default_run_mode === "live";
+  const live = connection.kind !== "recorded";
+  const canRun = live || mode?.default_run_mode === "live";
   const recorded = (question: string) => mode?.recordings.some((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase()) ?? false;
 
   const ask = (question: string) => {
     setProblem(null);
     setFit(null);
-    if (recorded(question)) return start(question);
+    if (recorded(question) && !live) return start(question);
     setChecking(question);
     setAgentOpen(true);
     api
@@ -432,9 +434,14 @@ export default function App() {
 
   const start = (question: string) => {
     setFit(null);
+    // A live run takes the researcher's selection with it: RNA boxes as regions on their section, and every box's
+    // computed numbers as stated context (protein boxes are separate specimens and a separate assay).
+    const selections = context?.selections ?? (context?.selection ? [context.selection] : []);
+    const asked = live && context ? `${question}\n\nContext from my selection (computed by SpatialScout, not by a model): ${context.summary}` : question;
+    const regions = (live ? selections.filter((s) => s.assay === "Xenium RNA").map((s) => s.region).slice(0, 2) : []) as [] | [Region] | [Region, Region];
     setContext(null);
     api
-      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: runsOn(question), regions: [] })
+      .start({ question: asked, run_mode: live ? "live" : (mode?.default_run_mode ?? "cached_tool_rerun"), dataset_id: runsOn(question), regions }, connection)
       .then((snapshot) => {
         follow_(snapshot, true);
         setFocus(null);
@@ -446,7 +453,9 @@ export default function App() {
         const text = String(error).replace(/^Error:\s*/, "");
         setAgentOpen(true);
         setProblem(
-          mode?.default_run_mode === "immutable_replay" ? `${text} This demo replays recorded runs only; pick one of the recorded questions.` : text,
+          !live && mode?.default_run_mode === "immutable_replay"
+            ? `${text} Recordings only answer the recorded questions: pick one, or open Connections for the live trial or your own keys.`
+            : text,
         );
       });
   };
@@ -512,7 +521,7 @@ export default function App() {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <button type="button" onClick={() => setConnectionsOpen(true)} className="h-8 rounded-full bg-raised px-3 text-[12px] text-ink hover:bg-[#2a2d32] sm:text-[13px]">
-            Connections
+            Connections{connection.kind === "trial" ? " · live trial" : connection.kind === "byok" ? " · your keys" : ""}
           </button>
           <button
             type="button"
@@ -536,7 +545,17 @@ export default function App() {
           )}
         </div>
       </header>
-      {connectionsOpen && <Connections mode={mode} onClose={() => setConnectionsOpen(false)} />}
+      {connectionsOpen && (
+        <Connections
+          mode={mode}
+          connection={connection}
+          onConnection={(c) => {
+            setConnection(c);
+            setProblem(null);
+          }}
+          onClose={() => setConnectionsOpen(false)}
+        />
+      )}
       <nav aria-label="Stages (narrow screens)" className="flex shrink-0 gap-1 overflow-x-auto px-3 pb-2 md:hidden">
         {nav.map((item) => (
           <button
@@ -670,6 +689,11 @@ export default function App() {
                 style={rail === "full" ? undefined : { width: `min(${railWidth}px, calc(100% - ${MIN_TISSUE}px))` }}
               >
                 <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+                  {summary && summary.calls > 0 && (
+                    <p className="w-full font-mono text-[11px] text-ink-3 tabular-nums" aria-label="Recorded spend so far">
+                      ${summary.cost.toFixed(2)} · {summary.minutes} recorded so far
+                    </p>
+                  )}
                   <div className="flex gap-1" role="tablist" aria-label="How to show the agent's steps">
                     {(
                       [

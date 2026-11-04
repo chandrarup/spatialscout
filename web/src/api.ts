@@ -31,7 +31,14 @@ import type {
   StartInvestigationRequest,
   StructureRun,
   Transcription,
+  VerificationBenchmark,
 } from "./contracts/generated";
+
+/** How a live run reaches the models: the open trial, or the visitor's own keys (kept in memory, never stored). */
+export type LiveConnection =
+  | { kind: "recorded" }
+  | { kind: "trial" }
+  | { kind: "byok"; keys: { meta: string; baseten?: string; fireworks?: string }; capUsd: number };
 
 async function json<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -87,6 +94,9 @@ export const api = {
     fetch(`/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}`).then(json<ContrastResult>),
   contrastFigureUrl: (datasetId: string, findingId: string) =>
     `/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}/figure.png`,
+  /** How the verifier scores on valid and deliberately altered claims, or null when no benchmark is committed. */
+  verificationBenchmark: (datasetId: string) =>
+    fetch(`/api/datasets/${encodeURIComponent(datasetId)}/verification-benchmark`).then((r) => (r.status === 404 ? null : json<VerificationBenchmark>(r))),
   investigationArtifact: (investigationId: string, artifactId: string) =>
     fetch(`/api/investigations/${encodeURIComponent(investigationId)}/artifacts/${encodeURIComponent(artifactId)}`).then(json<AuditResult>),
   investigationFigureUrl: (investigationId: string, findingId: string) =>
@@ -103,10 +113,17 @@ export const api = {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     }).then(json<InvestigationSnapshot>),
-  start: (body: StartInvestigationRequest) =>
+  /** Live credentials travel only in headers (never the URL) and only on this request. */
+  start: (body: StartInvestigationRequest, live?: LiveConnection) =>
     fetch("/api/investigations", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        ...(live?.kind === "trial" ? { "X-Live-Access": "trial" } : {}),
+        ...(live?.kind === "byok"
+          ? { "X-Live-Access": "byok", "X-Provider-Keys": JSON.stringify(live.keys), "X-Spend-Cap-Usd": String(live.capUsd) }
+          : {}),
+      },
       body: JSON.stringify(body),
     }).then(json<InvestigationSnapshot>),
   /** Transcribe a spoken question. Errors carry the server's message, which says to type instead. */
