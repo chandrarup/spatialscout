@@ -6,6 +6,7 @@ import { type ReactNode, useState } from "react";
 import { api } from "../../api";
 import type { Claim, LabRun, ModeInfo, ReviewRequest, SubClaimVerdict, VerificationResult } from "../../contracts/generated";
 import type { InvestigationView } from "../../investigation";
+import { BenchmarkCard } from "../BenchmarkCard";
 import { ClaimCard, roundLongDecimals } from "../ClaimCard";
 import { ExportButton } from "../ExportButton";
 import { FindingsPanel } from "../FindingsPanel";
@@ -134,7 +135,7 @@ function Basis({ claim, verification, investigationId, onTissue }: { claim: Clai
                     <span className="font-medium text-ink">{CHECK_NAME[check.kind] ?? check.kind}</span>
                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${check.status === "passed" ? "bg-[#222a10] text-stable" : "bg-[#2c1a20] text-bad"}`}>{check.status}</span>
                   </span>
-                  <span className="mt-0.5 block text-[12px] leading-relaxed text-ink-2">{check.details}</span>
+                  <span className="mt-0.5 block text-[12px] leading-relaxed text-ink-2">{roundLongDecimals(check.details)}</span>
                 </li>
               ))}
             </ul>
@@ -311,6 +312,11 @@ export function Results({ view, graph, mission, chapters, mode, onCanvas, onRepl
             <span className="text-[14px] text-ink-2 group-open:hidden">Show</span>
             <span className="hidden text-[14px] text-ink-2 group-open:inline">Hide</span>
           </summary>
+          {libraryDatasetId && (
+            <div className="mt-4">
+              <BenchmarkCard datasetId={libraryDatasetId} />
+            </div>
+          )}
           <div className="mt-4 flex flex-col gap-3 [&_section]:rounded-3xl [&_section]:border-0 [&_section]:bg-raised [&_section]:p-5">
             {view.claims.map((claim) => (
               <ClaimCard

@@ -399,7 +399,8 @@ export default function App() {
   const runsOn = (question: string): string | null => {
     const recording = mode?.recordings.find((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase());
     if (recording) return recording.dataset_id ?? mode?.dataset_id ?? null;
-    return mode?.dataset_id ?? null;
+    // A new question runs on the real kidney cohort, never the synthetic test section the server may default to.
+    return mode?.dataset_id === "synthetic" ? "GSE286184" : (mode?.dataset_id ?? null);
   };
 
   // Before a question that no recording answers runs, the data check says what it needs that the workspace lacks.

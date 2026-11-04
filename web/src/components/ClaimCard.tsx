@@ -188,11 +188,11 @@ function VerificationPanel({ verification }: { verification: VerificationResult 
             {check.reasons.length > 0 && (
               <ul className="list-disc pl-4 text-ink-2">
                 {check.reasons.map((reason) => (
-                  <li key={reason}>{reason}</li>
+                  <li key={reason}>{roundLongDecimals(reason)}</li>
                 ))}
               </ul>
             )}
-            {check.reasons.length === 0 && check.kind === "visual" && <span className="text-ink-2"> · {check.details}</span>}
+            {check.reasons.length === 0 && check.kind === "visual" && <span className="text-ink-2"> · {roundLongDecimals(check.details)}</span>}
           </li>
         ))}
       </ul>
