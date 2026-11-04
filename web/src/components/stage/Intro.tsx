@@ -18,18 +18,18 @@ interface Props {
 }
 
 const PIPELINE: { who: string; does: string }[] = [
-  { who: "You", does: "ask in plain words" },
+  { who: "You", does: "ask a question in plain words" },
   { who: "Muse Wonder", does: "plans the checks" },
-  { who: "Analysis engine", does: "re-counts every molecule under stricter rules" },
-  { who: "Controls", does: "random thinning, label swaps" },
+  { who: "Analysis engine", does: "re-counts molecules under stricter cell borders (code, not a model)" },
+  { who: "Controls", does: "test other explanations: random molecule loss, a second cell-labelling rule" },
   { who: "Verifier", does: "recomputes every number; Muse Spark reads each figure" },
-  { who: "Frozen rule", does: "gives the verdict" },
+  { who: "Lab", does: "sub-agents read papers, check protein images and draw figures" },
 ];
 
-const VERDICTS: { word: string; tone: string; means: string }[] = [
-  { word: "Confirmed", tone: "text-stable", means: "the signal behaved the way your hypothesis predicted" },
-  { word: "Refuted", tone: "text-sensitive", means: "it did the opposite of what you predicted" },
-  { word: "Inconclusive", tone: "text-ink-2", means: "the evidence can't separate the two" },
+const OUTCOMES: { word: string; tone: string; means: string }[] = [
+  { word: "Signal persists under tested rules", tone: "text-stable", means: "worth following up; the checks did not explain it away" },
+  { word: "Sensitive to assignment choices", tone: "text-sensitive", means: "it may come from how molecules were counted" },
+  { word: "More evidence needed", tone: "text-ink-2", means: "too few cells or sections to say" },
 ];
 
 /** The featured recorded question: the one with a confirmed and a refuted part, else the first real-data one. */
@@ -64,25 +64,43 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
           <p className="rise text-[clamp(52px,8.4vw,112px)] leading-[0.9] font-semibold tracking-[-0.05em]">SpatialScout</p>
           <div className="rise mt-5 grid grid-cols-1 items-end gap-6 [animation-delay:100ms] lg:grid-cols-[1.2fr_1fr]">
             <div>
-              <h1 className="text-[clamp(24px,2.6vw,34px)] leading-tight font-semibold tracking-[-0.02em]">Is it the cell, or its neighbour?</h1>
-              <p className="mt-3 max-w-[38rem] text-[17px] leading-relaxed text-ink">
-                In spatial transcriptomics, a molecule from one cell is easily counted toward the cell beside it. SpatialScout is an AI agent on Meta's Muse models
-                that re-counts the molecules under stricter rules, runs the controls and tells you which kidney findings still hold.
+              <h1 className="text-[clamp(26px,3vw,40px)] leading-tight font-semibold tracking-[-0.02em]">A co-scientist for kidney research</h1>
+              <p className="mt-3 max-w-[38rem] text-[18px] leading-relaxed text-ink">
+                Delegate the work of investigating tissue images, molecular signals and supporting evidence.
+              </p>
+              <p className="mt-3 max-w-[38rem] text-[13px] leading-relaxed text-ink-3">
+                Human kidney data. RNA cohort includes diabetic kidney disease (DKD); separate healthy/CKD/AKI protein images. Powered by Meta models; not an
+                official Meta product. Research use only.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
-              <button type="button" onClick={onExplore} className="pointer-events-auto h-12 rounded-full bg-white px-6 text-[15px] font-medium text-black transition-transform hover:scale-[1.02] active:scale-95">
-                Start with the diseased biopsy
-              </button>
               <button
                 type="button"
                 onClick={example ? () => onExample(example) : onAsk}
-                className="pointer-events-auto h-12 rounded-full bg-raised px-6 text-[15px] text-ink transition-colors hover:bg-[#2a2d32]"
+                className="pointer-events-auto h-12 rounded-full bg-white px-6 text-[15px] font-medium text-black transition-transform hover:scale-[1.02] active:scale-95"
               >
-                Watch a recorded run
+                Follow an investigation
+              </button>
+              <button type="button" onClick={onExplore} className="pointer-events-auto h-12 rounded-full bg-raised px-6 text-[15px] text-ink transition-colors hover:bg-[#2a2d32]">
+                Explore the tissue
               </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section aria-label="The work a researcher delegates" className="mx-auto w-full max-w-[1180px] px-5 pb-8">
+        <div className="rounded-3xl bg-panel p-6 md:p-8">
+          <p className="text-[13px] text-ink-3">The problem</p>
+          <p className="mt-2 max-w-[60rem] text-[clamp(18px,1.8vw,22px)] leading-snug text-ink">
+            A scientist sees an unexpected signal in a kidney sample. Before choosing the next lab experiment, someone has to work out whether the analysis is
+            dependable, whether other evidence agrees, and what the papers say.
+          </p>
+          <p className="mt-3 max-w-[60rem] text-[15px] leading-relaxed text-ink-2">
+            That usually means a tissue viewer, analysis code, control runs, another dataset, a literature search and a report, each by hand. SpatialScout runs
+            them as one delegated investigation and brings back evidence the researcher can inspect. Its first module checks whether a signal survives stricter
+            counting of which molecules belong to which cell, because in crowded tissue a molecule from one cell is easily counted toward its neighbour.
+          </p>
         </div>
       </section>
 
@@ -111,8 +129,8 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
         </article>
 
         <article className="flex flex-col rounded-3xl bg-panel p-5">
-          <p className="text-[13px] text-ink-3">2 · Ask</p>
-          <h2 className="mt-1 text-[19px] font-semibold">Watch the agent work it out</h2>
+          <p className="text-[13px] text-ink-3">2 · Delegate</p>
+          <h2 className="mt-1 text-[19px] font-semibold">Watch the work get done</h2>
           <ol className="mt-3 flex flex-col gap-1.5">
             {PIPELINE.map((p, i) => (
               <li key={p.who} className="flex items-baseline gap-3 text-[14px]">
@@ -126,18 +144,18 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
           {example && (
             <button type="button" onClick={() => onExample(example)} className="mt-auto pt-4 text-left text-[14px] leading-relaxed text-ink">
               <span className="text-ink-3">Try: </span>“{example}”
-              <span className="mt-1 block font-medium underline decoration-ink-3 underline-offset-4">Run this recorded question</span>
+              <span className="mt-1 block font-medium underline decoration-ink-3 underline-offset-4">Follow this recorded investigation</span>
             </button>
           )}
         </article>
 
         <article className="flex flex-col rounded-3xl bg-panel p-5">
           <p className="text-[13px] text-ink-3">3 · Decide</p>
-          <h2 className="mt-1 text-[19px] font-semibold">Get a verdict you can trace</h2>
+          <h2 className="mt-1 text-[19px] font-semibold">Get a research lead you can check</h2>
           <ul className="mt-3 flex flex-col gap-3">
-            {VERDICTS.map((v) => (
+            {OUTCOMES.map((v) => (
               <li key={v.word}>
-                <p className={`text-[24px] leading-none font-semibold tracking-tight ${v.tone}`}>{v.word}</p>
+                <p className={`text-[19px] leading-tight font-semibold tracking-tight ${v.tone}`}>{v.word}</p>
                 <p className="mt-1 text-[14px] text-ink-2">{v.means}</p>
               </li>
             ))}

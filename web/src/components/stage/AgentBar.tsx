@@ -4,6 +4,7 @@
 // during a run it narrates the steps and is the presenter's remote; after the verdict it shows only the outcome.
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ModeInfo } from "../../contracts/generated";
+import { claimOf, outcomeOf } from "./outcome";
 import type { InvestigationView } from "../../investigation";
 import { QuestionBar } from "../QuestionBar";
 import { DataFitCard } from "./DataFitCard";
@@ -143,14 +144,18 @@ export function AgentBar(props: Props) {
               <div>
                 <p className="text-[12px] text-ink-3">Done · {playback.steps} steps</p>
                 <ul className="mt-1 flex flex-wrap gap-x-5 gap-y-1">
-                  {view.verdict!.verdicts.map((v) => (
-                    <li key={v.sub_claim.text} className="flex items-baseline gap-2">
-                      <span className={`text-[20px] font-semibold tracking-tight uppercase ${v.verdict === "confirmed" ? "text-stable" : v.verdict === "refuted" ? "text-sensitive" : "text-ink-2"}`}>{v.verdict}</span>
-                      <span className="text-[13px] text-ink-2">
-                        {v.sub_claim.cell_type} · {v.sub_claim.genes.join("/")}
-                      </span>
-                    </li>
-                  ))}
+                  {view.verdict!.verdicts.map((v) => {
+                    const outcome = outcomeOf(claimOf(v, view.claims));
+                    return (
+                      <li key={v.sub_claim.text} className="flex items-baseline gap-2">
+                        <span className="text-[13px] text-ink-2">
+                          {v.sub_claim.cell_type} · {v.sub_claim.genes.join("/")}
+                        </span>
+                        <span className={`text-[16px] font-semibold tracking-tight ${outcome.tone}`}>{outcome.title}</span>
+                        <span className="text-[11px] text-ink-3 uppercase">prediction {v.verdict}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ) : (
@@ -196,7 +201,7 @@ export function AgentBar(props: Props) {
                 ← Step back
               </button>
               <button type="button" onClick={props.onResults} className="h-8 rounded-full bg-white px-4 text-[13px] font-medium text-black">
-                See the verdict
+                See the findings
               </button>
             </>
           )}
