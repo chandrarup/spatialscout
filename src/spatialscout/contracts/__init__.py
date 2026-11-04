@@ -117,7 +117,26 @@ from .model_call import (
 )
 from .package import PackageInfo, PackageManifest
 from .plan import Budget, Plan, PlanProposal, PlanStep, ProposedStep, ToolSpec
+from .datafit import DataFit, DataGap, NeedKind, NeedMatch, PublicDataset, UploadPrefill
+from .lab import (
+    CoMention,
+    DispatchProposal,
+    LabAgent,
+    LabEvent,
+    LabReport,
+    LabRun,
+    LabTask,
+    LabTaskProposal,
+    LiteratureDigest,
+    LiteratureRecord,
+    LiteratureReview,
+    LiteratureStatement,
+    LiteratureStatementDraft,
+    ProteinCrossCheck,
+    PublicationFigure,
+)
 from .protein import (
+    KpmpCellMap,
     KpmpChannel,
     KpmpManifest,
     KpmpParticipant,

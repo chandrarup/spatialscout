@@ -17,6 +17,9 @@ from ..gateway.gate import LiveGate
 from ..settings import Settings
 from .audit_routes import router as audit_router
 from .kpmp_routes import router as kpmp_router
+from .datafit_routes import router as datafit_router
+from .upload_routes import refuse_oversized_uploads
+from .upload_routes import router as upload_router
 from .routes import router
 from .structure_routes import router as structure_router
 from .voice import router as voice_router
@@ -27,11 +30,19 @@ class WebApp(StaticFiles):
     index.html; the content-hashed assets under /assets/ never change and may be cached for a year."""
 
     async def get_response(self, path, scope):
-        response = await super().get_response(path, scope)
         if path.startswith("assets/"):
+            response = await super().get_response(path, scope)
             response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
-        else:
-            response.headers["Cache-Control"] = "no-cache"
+            return response
+        # Modal mounts files with mtime 0, so a redeployed page of the same size keeps its ETag: never answer the
+        # page with 304, and send no validators for it.
+        conditional = {b"if-none-match", b"if-modified-since"}
+        scope = {**scope, "headers": [(k, v) for k, v in scope["headers"] if k.lower() not in conditional]}
+        response = await super().get_response(path, scope)
+        for header in ("etag", "last-modified"):
+            if header in response.headers:
+                del response.headers[header]
+        response.headers["Cache-Control"] = "no-cache"
         return response
 
 
@@ -84,6 +95,9 @@ def create_app(
     app.include_router(voice_router, prefix="/api")
     app.include_router(structure_router, prefix="/api")
     app.include_router(kpmp_router, prefix="/api")
+    app.include_router(upload_router, prefix="/api")
+    app.include_router(datafit_router, prefix="/api")
+    app.middleware("http")(refuse_oversized_uploads)
     if settings.web_dist is not None and (settings.web_dist / "index.html").is_file():
         app.mount("/", WebApp(directory=settings.web_dist, html=True), name="web")
     else:

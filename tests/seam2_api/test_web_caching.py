@@ -4,6 +4,7 @@ A judge who opened the public URL before a redeploy kept the old index.html, and
 page was cacheable. The page itself must be revalidated every time; the content-hashed assets may be cached for long.
 """
 
+import os
 from dataclasses import replace
 
 from fastapi.testclient import TestClient
@@ -27,6 +28,22 @@ def test_the_page_is_revalidated_on_every_visit(tmp_path):
             response = client.get(path)
             assert response.status_code == 200
             assert "no-cache" in response.headers["cache-control"]
+
+
+def test_a_redeployed_page_of_the_same_size_is_never_answered_not_modified(tmp_path):
+    """Modal mounts every file with mtime 0, so a new index.html of the same size gets the old ETag; a browser
+    revalidating with it must still receive the new page."""
+    settings = built_web_app(tmp_path)
+    page = settings.web_dist / "index.html"
+    os.utime(page, (0, 0))
+    with TestClient(create_app(settings)) as client:
+        first = client.get("/")
+        validators = {k: v for k, v in (("if-none-match", first.headers.get("etag")), ("if-modified-since", first.headers.get("last-modified"))) if v}
+        page.write_text('<script src="/assets/index-def456.js"></script>')
+        os.utime(page, (0, 0))
+        again = client.get("/", headers=validators)
+        assert again.status_code == 200
+        assert "index-def456" in again.text
 
 
 def test_content_hashed_assets_may_be_cached_for_long(tmp_path):

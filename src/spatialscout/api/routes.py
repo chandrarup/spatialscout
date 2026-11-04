@@ -1,5 +1,6 @@
 """HTTP API routes under /api."""
 
+import re
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -10,6 +11,8 @@ from ..agent import Investigation, NoRecordedInvestigation, Orchestrator, RunMod
 from ..agent.errors import DatasetUnavailable, InvalidRegions, ReviewRefused, UnknownClaim
 from ..audit import verify_chain
 from ..contracts import (
+    LabRun,
+    Recording,
     CapabilityReport,
     ChannelSet,
     ChainCheckResult,
@@ -208,6 +211,28 @@ async def download_package(investigation: InvestigationDep) -> FileResponse:
     return FileResponse(path, media_type="application/zip", filename=f"spatialscout-{investigation.investigation_id}.zip")
 
 
+ARTIFACT_ID = re.compile(r"^(fnd|ctl)-[0-9a-f]{16}$")
+
+
+@router.get("/investigations/{investigation_id}/artifacts/{artifact_id}")
+async def investigation_artifact(artifact_id: str, investigation: InvestigationDep) -> FileResponse:
+    """One computed artifact of this investigation (a finding or a control) as the analysis engine wrote it, so the run
+    canvas can show a step's own evidence. Read from the investigation's files; nothing is recomputed."""
+    path = investigation.directory / "artifacts" / f"{artifact_id}.json"
+    if not ARTIFACT_ID.match(artifact_id) or not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no artifact {artifact_id} in {investigation.investigation_id}")
+    return FileResponse(path, media_type="application/json")
+
+
+@router.get("/investigations/{investigation_id}/figures/{finding_id}.png")
+async def investigation_figure(finding_id: str, investigation: InvestigationDep) -> FileResponse:
+    """The composite figure the visual check read for this finding, as written during the run."""
+    path = investigation.directory / "figures" / f"{finding_id}.png"
+    if not ARTIFACT_ID.match(finding_id) or not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no figure for {finding_id} in {investigation.investigation_id}")
+    return FileResponse(path, media_type="image/png")
+
+
 @router.get("/investigations/{investigation_id}/claims/{claim_id}/challenges")
 async def claim_challenges(claim_id: str, investigation: InvestigationDep) -> ClaimChallenges:
     """The claim's recorded injected variants and their recorded verifications, for "Challenge the verifier". Read from
@@ -252,3 +277,92 @@ async def stream_events(
         after_seq = max(after_seq, int(last_event_id))
     async for event, line in investigation.events_after(after_seq, settings.stream_window_seconds):
         yield ServerSentEvent(raw_data=line, id=str(event.seq), retry=RECONNECT_DELAY_MS)
+
+
+# The lab: the follow-up phase on a finished investigation (sub-agents dispatched by Muse Wonder, run concurrently).
+LAB_FILE = re.compile(r"^figure-lab-\d+\.(svg|pdf|png)$")
+LAB_MEDIA = {"svg": "image/svg+xml", "pdf": "application/pdf", "png": "image/png"}
+
+
+def _lab_path(investigation: Investigation):
+    return investigation.directory / "lab" / "lab.json"
+
+
+def _recorded_lab(investigation: Investigation, request: Request):
+    replay = investigation.state.replay
+    if replay is None:
+        return None
+    settings: Settings = request.app.state.settings
+    folder = settings.recordings_dir / replay.recording_id / "lab"
+    return folder if (folder / "lab.json").is_file() else None
+
+
+@router.get("/investigations/{investigation_id}/lab")
+async def investigation_lab(investigation: InvestigationDep) -> LabRun:
+    """The investigation's lab run, once started: its dispatch, every sub-agent event with its timestamp, the literature
+    reviews (fetched records and cited statements only), protein cross-checks, publication figures and the report."""
+    path = _lab_path(investigation)
+    if investigation.state.run_mode == "immutable_replay" or not path.is_file():
+        # A replay's lab is served from its recording on request, never kept, so it always matches the recording.
+        raise HTTPException(status_code=404, detail={"code": "no_lab", "message": "The lab has not run for this investigation."})
+    return LabRun.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+@router.post("/investigations/{investigation_id}/lab")
+async def start_lab(investigation: InvestigationDep, request: Request, orchestrator: OrchestratorDep) -> LabRun:
+    """Runs the lab on a finished investigation. An immutable replay serves the recorded lab verbatim; a cached tool
+    rerun runs it again with the recorded model and Europe PMC responses (figures and protein checks recomputed); a
+    live investigation runs it live under the daily budget."""
+    from ..agent import utc_now
+    from ..gateway import ModelGateway
+    from ..gateway.live import LiveSource
+    from ..gateway.replay import ReplaySource
+    from ..lab.literature import EuropePmcLive, RecordedLiterature
+    from ..lab.run import Finished, run_lab
+
+    path = _lab_path(investigation)
+    if path.is_file() and investigation.state.run_mode != "immutable_replay":
+        return LabRun.model_validate_json(path.read_text(encoding="utf-8"))
+    if investigation.state.status.value != "complete":
+        raise HTTPException(status_code=409, detail={"code": "not_finished", "message": "The lab runs once the investigation has its verdict."})
+    settings: Settings = request.app.state.settings
+    recorded = _recorded_lab(investigation, request)
+    mode = investigation.state.run_mode
+    if mode == "immutable_replay":
+        if recorded is None:
+            raise HTTPException(status_code=404, detail={"code": "no_recorded_lab", "message": "This recorded investigation has no recorded lab."})
+        lab = LabRun.model_validate_json((recorded / "lab.json").read_text(encoding="utf-8"))
+        return lab.model_copy(update={"investigation_id": investigation.investigation_id, "origin": "replay"})
+    finished = Finished(investigation.directory)
+    if mode == "cached_tool_rerun":
+        if recorded is None:
+            raise HTTPException(status_code=404, detail={"code": "no_recorded_lab", "message": "No stored lab responses for this question."})
+        source = ReplaySource(Recording.model_validate_json((recorded / "recording.json").read_text(encoding="utf-8")))
+        literature = RecordedLiterature.load(recorded / "literature.json")
+    else:
+        gate = getattr(orchestrator, "_live_gate", None)
+        if gate is None or not gate.enabled:
+            raise HTTPException(status_code=409, detail={"code": "live_disabled", "message": "Live runs are not enabled on this server."})
+        source = LiveSource(gate.client, recording_id=f"{investigation.investigation_id}-lab")
+        literature = EuropePmcLive()
+    lab = await run_lab(
+        finished,
+        gateway_for=lambda on_call: ModelGateway(source, utc_now, run_mode=mode, on_call=on_call),
+        literature=literature, artifacts_dir=settings.artifacts_dir, out_dir=path.parent, clock=utc_now,
+        origin="replay" if mode == "cached_tool_rerun" else "live",
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(lab.model_dump_json(indent=1), encoding="utf-8")
+    return lab
+
+
+@router.get("/investigations/{investigation_id}/lab/figures/{name}")
+async def lab_figure(name: str, investigation: InvestigationDep, request: Request) -> FileResponse:
+    """A publication figure the lab rendered (SVG, PDF or a 300 dpi PNG)."""
+    path = investigation.directory / "lab" / "figures" / name
+    recorded = _recorded_lab(investigation, request)
+    if investigation.state.run_mode == "immutable_replay" and recorded is not None:
+        path = recorded / "figures" / name
+    if not LAB_FILE.match(name) or not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no lab figure {name}")
+    return FileResponse(path, media_type=LAB_MEDIA[name.rsplit(".", 1)[1]], filename=name)

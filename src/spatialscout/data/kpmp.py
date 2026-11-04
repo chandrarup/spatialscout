@@ -50,10 +50,16 @@ class Participant:
     panel_id: str
     role: str
     folder: str
+    enrollment: str  # KPMP's enrollment category, from atlas.kpmp.org (participantSummaryDataset), checked 2026-11-04
 
 
-HEALTHY_REFERENCE = Participant("164-17", "23-0159", "healthy reference", "participent_164-17")  # KPMP's folder spelling
-PARTICIPANTS = (HEALTHY_REFERENCE, Participant("31-10013", "23-0118", "diseased", "participant_31-10013"))
+HEALTHY_REFERENCE = Participant("164-17", "23-0159", "healthy reference", "participent_164-17", "Healthy Reference")  # KPMP's folder spelling
+PARTICIPANTS = (
+    HEALTHY_REFERENCE,
+    Participant("31-10013", "23-0118", "diseased", "participant_31-10013", "CKD"),
+    Participant("165-13", "24-0171", "healthy reference", "participant_165-13", "Healthy Reference"),
+    Participant("30-11101", "23-0148", "diseased", "participant_30-11101", "AKI"),
+)
 
 MEASURED_MARKERS = ("DAPI", "Podocalyxin", "LRP2", "UMOD", "CD20", "CD3", "CD8", "CD45", "aSMA", "CD31")
 AUDIT_MARKERS = ("Podocalyxin", "LRP2", "UMOD", "CD20")
@@ -74,7 +80,7 @@ DISPLAY_RULE = (
     f"Display only: {DOWNSAMPLE} x {DOWNSAMPLE} block means, scaled linearly so 0 is black and the "
     f"{DISPLAY_PERCENTILE}th percentile of in-cell pixels is full brightness. Measurements use the raw pixels."
 )
-CLINICAL_NOTE = "Clinical metadata not downloaded: no clinical value is shown."
+CLINICAL_NOTE = "KPMP enrollment category only, from the KPMP atlas; no other clinical value (eGFR, proteinuria, stage) was downloaded."
 
 
 @dataclass(frozen=True)
@@ -195,7 +201,7 @@ def build(kpmp_dir: Path, processed_dir: Path, artifacts_dir: Path, log=print) -
                 "about nucleus-sized, so 'whole cell' means the whole mask label: the nucleus and a thin rim, not the cytoplasm."
             ),
             channels=write_tiles(o, pid, out, artifacts_dir, log),
-            clinical={},
+            clinical={"KPMP enrollment category": participant.enrollment},
             clinical_note=CLINICAL_NOTE,
             source_files=[o["files"].stack.name, o["files"].channel_key.name, o["files"].mask.name],
         ))
@@ -213,9 +219,12 @@ def _open(kpmp_dir: Path, participant: Participant) -> dict:
     if missing:
         raise ValueError(f"{participant.participant_id}: panel {participant.panel_id} has no {', '.join(missing)} channel")
     labels = tifffile.imread(files.mask)
+    stack = tifffile.memmap(files.stack)
+    if labels.shape != stack.shape[-2:]:
+        raise ValueError(f"{files.mask.name} is {labels.shape}, but the channels of {files.stack.name} are {stack.shape[-2:]}: not the same image")
     if not np.array_equal(labels, np.round(labels)):
         raise ValueError(f"{files.mask.name}: labels are not whole numbers")
-    return {"files": files, "index": index, "stack": tifffile.memmap(files.stack), "labels": labels.astype(np.int32),
+    return {"files": files, "index": index, "stack": stack, "labels": labels.astype(np.int32),
             "pixel_size_um": pixel_size_um(files.stack)}
 
 

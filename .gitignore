@@ -33,3 +33,4 @@ spikes/out/
 # Agent worktrees live inside the repo folder; never commit them
 .claude/worktrees/
 smoke_public.png
+.taste-skill/

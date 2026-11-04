@@ -97,3 +97,24 @@ def test_the_sub_claim_verdict_streams_and_is_logged_and_a_failed_claim_never_co
 
     [logged] = audit_entries(client, investigation_id, "verdict_computed")
     assert logged["verdicts"] == event["verdict"]["verdicts"]
+
+
+def test_the_run_canvas_reads_each_finding_and_its_checked_figure_from_the_investigation(client):
+    investigation_id, events = run(client)
+    finding_id = next(e["artifact_id"] for e in of_type(events, "tool_finished") if e["artifact_id"].startswith("fnd-"))
+
+    artifact = client.get(f"/api/investigations/{investigation_id}/artifacts/{finding_id}")
+    assert artifact.status_code == 200
+    assert artifact.json()["finding_id"] == finding_id
+
+    [verified] = [e for e in of_type(events, "claim_verified") if not e["claim"]["injected"]["is_injected"]]
+    figure_finding = verified["verification"]["figure"]["finding_id"]
+    figure = client.get(f"/api/investigations/{investigation_id}/figures/{figure_finding}.png")
+    assert figure.status_code == 200 and figure.headers["content-type"] == "image/png"
+    assert figure.content[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_artifacts_outside_the_investigation_are_not_served(client):
+    investigation_id, _ = run(client)
+    for path in ("artifacts/fnd-0000000000000000", "artifacts/state", "artifacts/..%2Fstate", "figures/fnd-0000000000000000.png"):
+        assert client.get(f"/api/investigations/{investigation_id}/{path}").status_code == 404

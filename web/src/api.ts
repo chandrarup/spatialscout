@@ -7,12 +7,15 @@ import type {
   ClaimChallenges,
   ContrastIndex,
   ContrastResult,
+  DataFit,
   DatasetManifest,
   GateStatus,
   LabelRuleSet,
   PackedRegionView,
   InvestigationEvent,
   InvestigationSnapshot,
+  KpmpCellMap,
+  LabRun,
   KpmpManifest,
   ModeInfo,
   ProteinAuditResult,
@@ -43,6 +46,8 @@ export const api = {
     fetch(`/api/sections/${encodeURIComponent(sectionId)}/region-view`).then(json<RegionView>),
   datasets: () => fetch("/api/datasets").then(json<DatasetManifest[]>),
   /** The KPMP CODEX participants, or null when this server has no KPMP artifacts. */
+  dataFit: (question: string, search: boolean) =>
+    fetch("/api/data-fit", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, search }) }).then(json<DataFit>),
   kpmp: () => fetch("/api/kpmp").then((r) => (r.status === 404 ? null : json<KpmpManifest>(r))),
   kpmpFileUrl: (path: string) => `/api/kpmp/files/${path.split("/").map(encodeURIComponent).join("/")}`,
   kpmpProteinAudit: (participantId: string, populationMarker: string, marker: string, box: Region | null, signal?: AbortSignal) => {
@@ -50,6 +55,12 @@ export const api = {
     if (box) for (const k of ["x0", "y0", "x1", "y1"] as const) params.set(k, String(box[k]));
     return fetch(`/api/kpmp/${encodeURIComponent(participantId)}/protein-audit?${params}`, { signal }).then(json<ProteinAuditResult>);
   },
+  /** The lab run on a finished investigation, or null before it has run. */
+  lab: (investigationId: string) => fetch(`/api/investigations/${investigationId}/lab`).then((r) => (r.status === 404 ? null : json<LabRun>(r))),
+  startLab: (investigationId: string) => fetch(`/api/investigations/${investigationId}/lab`, { method: "POST" }).then(json<LabRun>),
+  labFigureUrl: (investigationId: string, name: string) => `/api/investigations/${investigationId}/lab/figures/${encodeURIComponent(name)}`,
+  /** A participant's marker-positive cells under the frozen thresholds, for drawing on the image. */
+  kpmpCells: (participantId: string) => fetch(`/api/kpmp/${encodeURIComponent(participantId)}/cells`).then(json<KpmpCellMap>),
   capabilityReport: (datasetId: string) =>
     fetch(`/api/datasets/${encodeURIComponent(datasetId)}/capability-report`).then(json<CapabilityReport>),
   labelRules: (datasetId: string) =>
@@ -71,6 +82,10 @@ export const api = {
     fetch(`/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}`).then(json<ContrastResult>),
   contrastFigureUrl: (datasetId: string, findingId: string) =>
     `/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}/figure.png`,
+  investigationArtifact: (investigationId: string, artifactId: string) =>
+    fetch(`/api/investigations/${encodeURIComponent(investigationId)}/artifacts/${encodeURIComponent(artifactId)}`).then(json<AuditResult>),
+  investigationFigureUrl: (investigationId: string, findingId: string) =>
+    `/api/investigations/${encodeURIComponent(investigationId)}/figures/${encodeURIComponent(findingId)}.png`,
   investigation: (investigationId: string) =>
     fetch(`/api/investigations/${investigationId}`).then(json<InvestigationSnapshot>),
   claimChallenges: (investigationId: string, claimId: string) =>

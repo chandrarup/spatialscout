@@ -1,4 +1,4 @@
-> Generated from `SpatialScout_Build_Whitepaper.docx` (Nov 2, 2026) with pandoc so agents can read it. The .docx is canonical.
+> Generated from `docs/archive/SpatialScout_Build_Whitepaper.docx` (Nov 2, 2026) with pandoc so agents can read it. The .docx is canonical.
 
 **Product whitepaper and implementation blueprint**
 

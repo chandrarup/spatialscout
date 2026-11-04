@@ -51,21 +51,22 @@ def kpmp_client(tmp_path):
         yield client, raw, tmp_path
 
 
-def test_the_manifest_lists_both_participants_with_tiles_thresholds_and_no_clinical_values(kpmp_client):
+def test_the_manifest_lists_every_participant_with_tiles_thresholds_and_only_the_enrollment_category(kpmp_client):
     client, _, _ = kpmp_client
     manifest = client.get("/api/kpmp").json()
     assert manifest["dataset_id"] == "KPMP-CODEX"
-    assert [p["participant_id"] for p in manifest["participants"]] == ["164-17", "31-10013"]
+    assert [p["participant_id"] for p in manifest["participants"]] == ["164-17", "31-10013", "165-13", "30-11101"]
+    assert [p["clinical"]["KPMP enrollment category"] for p in manifest["participants"]] == ["Healthy Reference", "CKD", "Healthy Reference", "AKI"]
     first = manifest["participants"][0]
     assert first["role"] == "healthy reference" and first["pixel_size_um"] == pytest.approx(0.5)
     assert first["extent"]["x1"] == pytest.approx(32.0) and first["cells"] == 256
-    assert first["clinical"] == {} and "not downloaded" in first["clinical_note"]
+    assert set(first["clinical"]) == {"KPMP enrollment category"} and "no other clinical value" in first["clinical_note"]
     assert {c["channel_id"] for c in first["channels"]} == {d[0] for d in DISPLAY}
     tile = first["channels"][0]["tiles"][0]
     response = client.get(f"/api/kpmp/files/{tile['path']}")
     assert response.status_code == 200 and response.content[:4] == b"RIFF"
     assert {t["source_participant_id"] for t in manifest["thresholds"]} == {"164-17"}
-    assert len(manifest["results"]) == 4
+    assert len(manifest["results"]) == 2 * len(PARTICIPANTS)
 
 
 def test_a_box_scopes_the_protein_audit_to_the_cells_whose_centroid_it_holds(kpmp_client):
@@ -93,3 +94,18 @@ def test_the_build_is_reproducible(kpmp_client):
     first = (tmp_path / "artifacts" / "KPMP" / "31-10013" / "audit_podocalyxin_lrp2.json").read_text()
     build(raw, tmp_path / "processed", tmp_path / "artifacts", log=lambda _: None)
     assert (tmp_path / "artifacts" / "KPMP" / "31-10013" / "audit_podocalyxin_lrp2.json").read_text() == first
+
+
+def test_the_cell_map_lists_each_marker_positive_cell_with_its_frozen_threshold_bits(kpmp_client):
+    """In the hand-built table cells 0-99 are Podocalyxin+ and cells 0-49 also LRP2+ (see the box test above)."""
+    client, _, _ = kpmp_client
+    cell_map = client.get("/api/kpmp/31-10013/cells").json()
+    assert cell_map["condition"] == "whole_cell" and cell_map["markers"][:2] == ["Podocalyxin", "LRP2"]
+    assert {t["source_participant_id"] for t in cell_map["thresholds"]} == {"164-17"}
+    bits = dict(zip(cell_map["cell_id"], cell_map["positive"], strict=True))
+    podocalyxin = sum(1 for b in bits.values() if b & 1)
+    both = sum(1 for b in bits.values() if b & 1 and b & 2)
+    assert podocalyxin == 100 and both == 50
+    assert len(cell_map["x_um"]) == len(cell_map["means"]) == len(bits) and cell_map["total_cells"] == 256
+    assert "not cell types" in cell_map["rule"]
+    assert client.get("/api/kpmp/nobody/cells").status_code == 404

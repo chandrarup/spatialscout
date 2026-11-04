@@ -4,7 +4,7 @@ import type { PackageInfo } from "../contracts/generated";
 export function ExportButton({ pkg }: { pkg: PackageInfo | null }) {
   if (!pkg) {
     return (
-      <button type="button" disabled className="w-full rounded-md border border-line px-4 py-2 text-sm text-ink-3">
+      <button type="button" disabled className="h-11 rounded-full bg-raised px-6 text-[15px] text-ink-3">
         Evidence package not ready
       </button>
     );
@@ -15,12 +15,12 @@ export function ExportButton({ pkg }: { pkg: PackageInfo | null }) {
       <a
         href={pkg.download_url}
         download
-        className="w-full rounded-md bg-accent px-4 py-2 text-center text-sm font-medium text-white hover:brightness-110"
+        className="inline-flex h-11 items-center justify-center rounded-full bg-white px-6 text-center text-[15px] font-medium text-black transition-transform active:scale-95"
       >
         Download evidence package
       </a>
       <p className="text-xs text-ink-2">
-        {pkg.review_state.replaceAll("_", " ")} · audit log {chain.entries} entries,{" "}
+        {pkg.review_state === "reviewed" ? "Reviewed by a researcher" : "Not yet reviewed by a researcher"} · audit log {chain.entries} entries,{" "}
         {chain.ok ? "chain verified" : `chain broken at entry ${chain.first_bad_seq}`} · head hash{" "}
         <span className="font-mono">{chain.head_hash?.slice(0, 12) ?? "none"}</span>
       </p>

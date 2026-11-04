@@ -81,3 +81,10 @@ Implications:
 - Cell types must be annotated by us from panel markers, labelled as our annotation.
 - There are no images, so SAM 3.1 needs an image we derive from the transcripts (a rendered RNA-density image of the section) or the separate 10x kidney preview dataset (not probed here). Markers used to render or prompt a mask must not also be used to validate that mask.
 - Display cell outlines are approximations (nucleus area → circle, or a hull of nuclear transcripts) and must be labelled as such.
+
+## KPMP enrollment categories (checked 2026-11-04)
+
+From the KPMP atlas GraphQL endpoint (`POST https://atlas.kpmp.org/graphql`,
+`participantSummaryDataset(redcapId){enrollmentCategory}`): 164-17 Healthy Reference, 165-13 Healthy Reference,
+31-10013 CKD, 30-11101 AKI. No other clinical value was fetched. The thresholds stay frozen on 164-17; the lab's
+protein cross-check stays on the recorded pair (164-17, 31-10013).
