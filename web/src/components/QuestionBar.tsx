@@ -114,13 +114,45 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
 
   return (
     <form
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-3"
       onSubmit={(event) => {
         event.preventDefault();
         ask(question);
       }}
     >
-      <div className="flex gap-2">
+      {examples.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <p className="text-[12px] text-ink-3">Recorded questions, ready to replay</p>
+          {examples.map((example) => (
+            <button
+              key={example}
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setQuestion(example);
+                ask(example);
+              }}
+              className="rounded-2xl bg-raised px-3.5 py-2.5 text-left text-[13px] leading-snug text-ink transition-colors hover:bg-[#2a2d32] active:scale-[0.99] disabled:opacity-40"
+            >
+              {example}
+            </button>
+          ))}
+          <button
+            type="button"
+            disabled={busy || voice !== "idle"}
+            onClick={() => void useSample()}
+            className="self-start rounded-full px-1 py-1 text-[12px] text-ink-3 underline-offset-4 hover:text-ink hover:underline disabled:opacity-40"
+          >
+            Transcribe the recorded spoken question
+          </button>
+        </div>
+      )}
+      {note && (
+        <p role={note.kind === "error" ? "alert" : "status"} className={`text-[12px] ${note.kind === "error" ? "text-bad" : "text-ink-2"}`}>
+          {note.text}
+        </p>
+      )}
+      <div className="flex items-center gap-2 rounded-full bg-raised p-1.5 pl-4">
         <label htmlFor="question" className="sr-only">
           Question
         </label>
@@ -129,8 +161,8 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
           ref={input}
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
-          placeholder="Ask about a gene, a cell type and an assignment condition…"
-          className="min-w-0 flex-1 rounded-md border border-line bg-panel px-3 py-2 text-sm text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none"
+          placeholder="Ask about a gene, a cell type, a condition…"
+          className="min-w-0 flex-1 bg-transparent text-[14px] text-ink placeholder:text-ink-3 focus:outline-none"
         />
         <button
           type="button"
@@ -158,57 +190,21 @@ export function QuestionBar({ examples, busy, onAsk }: Props) {
             }
           }}
           onContextMenu={(event) => event.preventDefault()}
-          className={`flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm select-none touch-none disabled:cursor-not-allowed disabled:opacity-40 ${
-            voice === "recording"
-              ? "border-red-500/60 bg-red-500/15 text-red-300"
-              : "border-line text-ink-2 hover:border-ink-3 hover:text-ink"
+          className={`grid h-9 w-9 shrink-0 place-items-center rounded-full select-none touch-none transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+            voice === "recording" ? "bg-bad text-white" : "text-ink-2 hover:bg-[#2a2d32] hover:text-ink"
           }`}
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="9" y="3" width="6" height="11" rx="3" />
             <path d="M5 11a7 7 0 0 0 14 0M12 18v3" strokeLinecap="round" />
           </svg>
-          <span className="hidden sm:inline">{{ idle: "Hold", starting: "Mic…", recording: "Release", transcribing: "…" }[voice]}</span>
         </button>
         <button
           type="submit"
           disabled={busy || !question.trim() || voice !== "idle"}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-9 shrink-0 rounded-full bg-white px-4 text-[14px] font-medium text-black transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
         >
           Ask
-        </button>
-      </div>
-      {note && (
-        <p
-          role={note.kind === "error" ? "alert" : "status"}
-          className={`text-xs ${note.kind === "error" ? "text-red-300" : "text-ink-2"}`}
-        >
-          {note.text}
-        </p>
-      )}
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        {examples.length > 0 && <span className="text-ink-3">Recorded question:</span>}
-        {examples.map((example) => (
-          <button
-            key={example}
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setQuestion(example);
-              ask(example);
-            }}
-            className="rounded-full border border-line px-3 py-1 text-ink-2 hover:border-ink-3 hover:text-ink disabled:opacity-40"
-          >
-            {example}
-          </button>
-        ))}
-        <button
-          type="button"
-          disabled={busy || voice !== "idle"}
-          onClick={() => void useSample()}
-          className="rounded-full border border-dashed border-line px-3 py-1 text-ink-3 hover:border-ink-3 hover:text-ink disabled:opacity-40"
-        >
-          Transcribe the recorded clip
         </button>
       </div>
     </form>

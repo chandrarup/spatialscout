@@ -102,3 +102,21 @@ class KpmpManifest(Contract):
     thresholds: list[ProteinThreshold]
     results: list[KpmpResultEntry]
     display_rule: str
+
+
+class KpmpCellMap(Contract):
+    """One participant's marker-positive cells, for drawing on the image: each cell's centroid and which of the audit
+    markers its whole-label mean reaches under the frozen thresholds. Positive for a marker, not a cell type: the masks
+    are nucleus-sized, so a label is the nucleus and a thin rim."""
+
+    participant_id: str
+    condition: str = Field(description="The measurement condition the positivity is read under.")
+    markers: list[str] = Field(description="Bit i of each cell's `positive` is markers[i].")
+    thresholds: list[ProteinThreshold]
+    total_cells: int = Field(description="All cells in the participant's table, positive or not.")
+    cell_id: list[int]
+    x_um: list[float]
+    y_um: list[float]
+    positive: list[int] = Field(description="Bitmask over `markers`; only cells positive for at least one are listed.")
+    means: list[list[float]] = Field(description="Per listed cell, its whole-label mean of each marker (0-255), rounded to 0.1.")
+    rule: str

@@ -9,9 +9,9 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 
-from ..contracts import KpmpManifest, ProteinAuditResult, Region
-from ..data.kpmp import RESULTS
-from ..engine.protein import protein_audit
+from ..contracts import KpmpCellMap, KpmpManifest, ProteinAuditResult, Region
+from ..data.kpmp import AUDIT_MARKERS, RESULTS
+from ..engine.protein import cell_means, positive, protein_audit
 from ..settings import Settings
 
 router = APIRouter()
@@ -96,3 +96,48 @@ async def kpmp_protein_audit(
     return protein_audit(table, pairs, participant_id=participant_id, role=participant.role,
                          population_marker=population_marker, marker=marker, thresholds=manifest.thresholds,
                          cell_table_checksum=checksum, roi=roi)
+
+
+CELL_MAP_CONDITION = "whole_cell"
+
+
+@lru_cache(maxsize=4)
+def _cell_map(folder: Path, mtime: float, participant_id: str, thresholds_json: str) -> KpmpCellMap:
+    manifest_thresholds = KpmpManifest.model_validate_json(thresholds_json).thresholds
+    table = pd.read_parquet(folder / "cells.parquet")
+    by_marker = {t.marker: t for t in manifest_thresholds}
+    markers = [m for m in AUDIT_MARKERS if m in by_marker]
+    mask = np.zeros(len(table), dtype=np.int64)
+    for bit, marker in enumerate(markers):
+        mask |= positive(table, marker, CELL_MAP_CONDITION, by_marker[marker].value).astype(np.int64) << bit
+    keep = mask > 0
+    means = np.stack([cell_means(table, m, CELL_MAP_CONDITION).to_numpy() for m in markers], axis=1)[keep]
+    return KpmpCellMap(
+        participant_id=participant_id,
+        condition=CELL_MAP_CONDITION,
+        markers=markers,
+        thresholds=[by_marker[m] for m in markers],
+        total_cells=int(len(table)),
+        cell_id=table["cell_id"].to_numpy()[keep].astype(int).tolist(),
+        x_um=np.round(table["x_um"].to_numpy()[keep], 1).tolist(),
+        y_um=np.round(table["y_um"].to_numpy()[keep], 1).tolist(),
+        positive=mask[keep].astype(int).tolist(),
+        means=np.round(np.nan_to_num(means), 1).tolist(),
+        rule=(
+            f"A cell is drawn when its {CELL_MAP_CONDITION.replace('_', ' ')} mean of a marker reaches that marker's frozen "
+            "threshold (Otsu on the healthy reference). KPMP's segmentation masks are nucleus-sized, so this marks "
+            "marker-positive nuclei, not cell types."
+        ),
+    )
+
+
+@router.get("/kpmp/{participant_id}/cells")
+async def kpmp_cells(participant_id: str, request: Request) -> KpmpCellMap:
+    """The participant's marker-positive cells under the frozen thresholds: centroids, a bitmask over the audit
+    markers and each cell's means, computed from the committed audit table."""
+    manifest = load_manifest(_root(request))
+    if not any(p.participant_id == participant_id for p in manifest.participants):
+        raise _problem(404, "unknown_participant", f"No KPMP participant {participant_id}.")
+    folder = _root(request) / "KPMP" / participant_id
+    thresholds = KpmpManifest.model_validate(manifest).model_dump_json()
+    return _cell_map(folder, (folder / "cells.parquet").stat().st_mtime, participant_id, thresholds)

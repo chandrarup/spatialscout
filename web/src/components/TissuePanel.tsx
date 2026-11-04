@@ -30,6 +30,10 @@ interface Props {
   /** Called with the open section's dataset manifest and section id. */
   onShow: (manifest: DatasetManifest, sectionId: string) => void;
   focus: TissueFocus | null;
+  /** The viewer alone, without the section controls and legend: the run canvas's lens. */
+  compact?: boolean;
+  /** With `compact`, still show the colour legend under the viewer. */
+  legend?: boolean;
 }
 
 const PREFERRED_GENES = ["LRP2", "NPHS1", "CUBN"];
@@ -41,7 +45,7 @@ function defaults(available: string[], preferred: string[]): Highlight {
   return chosen.slice(0, MAX_HIGHLIGHTED);
 }
 
-export function TissuePanel({ defaultDatasetId, onShow, focus }: Props) {
+export function TissuePanel({ defaultDatasetId, onShow, focus, compact = false, legend = false }: Props) {
   const [datasets, setDatasets] = useState<DatasetManifest[]>([]);
   const [sectionId, setSectionId] = useState<string | null>(null);
   const [labelRuleId, setLabelRuleId] = useState<string | null>(null);
@@ -118,8 +122,8 @@ export function TissuePanel({ defaultDatasetId, onShow, focus }: Props) {
   const focused = focus && section && focus.sectionId === section.view.section_id ? focus : null;
 
   return (
-    <section aria-label="Tissue viewer" className="flex min-h-[28rem] flex-col gap-3">
-      <ViewerControls
+    <section aria-label="Tissue viewer" className={`flex flex-col gap-3 ${compact ? "min-h-0" : "min-h-[28rem]"}`}>
+      {!compact && <ViewerControls
         datasets={datasets}
         sectionId={sectionId}
         onSection={pickSection}
@@ -134,7 +138,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus }: Props) {
         onCompare={setCompare}
         lockedGenes={lockedGenes}
         onUnlock={() => setLockedGenes(null)}
-      />
+      />}
       <div className="relative min-h-0 flex-1">
         {section ? (
           <Viewer
@@ -163,7 +167,7 @@ export function TissuePanel({ defaultDatasetId, onShow, focus }: Props) {
           </div>
         )}
       </div>
-      {section && (
+      {section && (!compact || legend) && (
         <ViewerLegend
           view={section.view}
           genes={genes}

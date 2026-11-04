@@ -1713,6 +1713,57 @@ export interface InvestigationState {
   regions: Region[];
 }
 /**
+ * One participant's marker-positive cells, for drawing on the image: each cell's centroid and which of the audit
+ * markers its whole-label mean reaches under the frozen thresholds. Positive for a marker, not a cell type: the masks
+ * are nucleus-sized, so a label is the nucleus and a thin rim.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "KpmpCellMap".
+ */
+export interface KpmpCellMap {
+  participant_id: string;
+  /**
+   * The measurement condition the positivity is read under.
+   */
+  condition: string;
+  /**
+   * Bit i of each cell's `positive` is markers[i].
+   */
+  markers: string[];
+  thresholds: ProteinThreshold[];
+  /**
+   * All cells in the participant's table, positive or not.
+   */
+  total_cells: number;
+  cell_id: number[];
+  x_um: number[];
+  y_um: number[];
+  /**
+   * Bitmask over `markers`; only cells positive for at least one are listed.
+   */
+  positive: number[];
+  /**
+   * Per listed cell, its whole-label mean of each marker (0-255), rounded to 0.1.
+   */
+  means: number[][];
+  rule: string;
+}
+/**
+ * A frozen positivity threshold on a marker's per-cell mean intensity.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "ProteinThreshold".
+ */
+export interface ProteinThreshold {
+  marker: string;
+  value: number;
+  rule: string;
+  /**
+   * The participant whose cells the threshold was derived from.
+   */
+  source_participant_id: string;
+}
+/**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
  * via the `definition` "KpmpChannel".
  */
@@ -1779,21 +1830,6 @@ export interface KpmpParticipant {
   };
   clinical_note: string;
   source_files: string[];
-}
-/**
- * A frozen positivity threshold on a marker's per-cell mean intensity.
- *
- * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
- * via the `definition` "ProteinThreshold".
- */
-export interface ProteinThreshold {
-  marker: string;
-  value: number;
-  rule: string;
-  /**
-   * The participant whose cells the threshold was derived from.
-   */
-  source_participant_id: string;
 }
 /**
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema

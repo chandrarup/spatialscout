@@ -3271,6 +3271,89 @@
       "title": "InvestigationStatus",
       "type": "string"
     },
+    "KpmpCellMap": {
+      "additionalProperties": false,
+      "description": "One participant's marker-positive cells, for drawing on the image: each cell's centroid and which of the audit\nmarkers its whole-label mean reaches under the frozen thresholds. Positive for a marker, not a cell type: the masks\nare nucleus-sized, so a label is the nucleus and a thin rim.",
+      "properties": {
+        "participant_id": {
+          "type": "string"
+        },
+        "condition": {
+          "description": "The measurement condition the positivity is read under.",
+          "type": "string"
+        },
+        "markers": {
+          "description": "Bit i of each cell's `positive` is markers[i].",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "thresholds": {
+          "items": {
+            "$ref": "#/definitions/ProteinThreshold"
+          },
+          "type": "array"
+        },
+        "total_cells": {
+          "description": "All cells in the participant's table, positive or not.",
+          "type": "integer"
+        },
+        "cell_id": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "x_um": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "y_um": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "positive": {
+          "description": "Bitmask over `markers`; only cells positive for at least one are listed.",
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "means": {
+          "description": "Per listed cell, its whole-label mean of each marker (0-255), rounded to 0.1.",
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "rule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "participant_id",
+        "condition",
+        "markers",
+        "thresholds",
+        "total_cells",
+        "cell_id",
+        "x_um",
+        "y_um",
+        "positive",
+        "means",
+        "rule"
+      ],
+      "title": "KpmpCellMap",
+      "type": "object"
+    },
     "KpmpChannel": {
       "additionalProperties": false,
       "properties": {

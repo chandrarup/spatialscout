@@ -1,5 +1,6 @@
 """HTTP API routes under /api."""
 
+import re
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -206,6 +207,28 @@ async def download_package(investigation: InvestigationDep) -> FileResponse:
     if not path.is_file():
         raise HTTPException(status_code=409, detail="the evidence package is not ready yet")
     return FileResponse(path, media_type="application/zip", filename=f"spatialscout-{investigation.investigation_id}.zip")
+
+
+ARTIFACT_ID = re.compile(r"^(fnd|ctl)-[0-9a-f]{16}$")
+
+
+@router.get("/investigations/{investigation_id}/artifacts/{artifact_id}")
+async def investigation_artifact(artifact_id: str, investigation: InvestigationDep) -> FileResponse:
+    """One computed artifact of this investigation (a finding or a control) as the analysis engine wrote it, so the run
+    canvas can show a step's own evidence. Read from the investigation's files; nothing is recomputed."""
+    path = investigation.directory / "artifacts" / f"{artifact_id}.json"
+    if not ARTIFACT_ID.match(artifact_id) or not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no artifact {artifact_id} in {investigation.investigation_id}")
+    return FileResponse(path, media_type="application/json")
+
+
+@router.get("/investigations/{investigation_id}/figures/{finding_id}.png")
+async def investigation_figure(finding_id: str, investigation: InvestigationDep) -> FileResponse:
+    """The composite figure the visual check read for this finding, as written during the run."""
+    path = investigation.directory / "figures" / f"{finding_id}.png"
+    if not ARTIFACT_ID.match(finding_id) or not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no figure for {finding_id} in {investigation.investigation_id}")
+    return FileResponse(path, media_type="image/png")
 
 
 @router.get("/investigations/{investigation_id}/claims/{claim_id}/challenges")

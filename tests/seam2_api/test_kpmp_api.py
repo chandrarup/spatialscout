@@ -93,3 +93,18 @@ def test_the_build_is_reproducible(kpmp_client):
     first = (tmp_path / "artifacts" / "KPMP" / "31-10013" / "audit_podocalyxin_lrp2.json").read_text()
     build(raw, tmp_path / "processed", tmp_path / "artifacts", log=lambda _: None)
     assert (tmp_path / "artifacts" / "KPMP" / "31-10013" / "audit_podocalyxin_lrp2.json").read_text() == first
+
+
+def test_the_cell_map_lists_each_marker_positive_cell_with_its_frozen_threshold_bits(kpmp_client):
+    """In the hand-built table cells 0-99 are Podocalyxin+ and cells 0-49 also LRP2+ (see the box test above)."""
+    client, _, _ = kpmp_client
+    cell_map = client.get("/api/kpmp/31-10013/cells").json()
+    assert cell_map["condition"] == "whole_cell" and cell_map["markers"][:2] == ["Podocalyxin", "LRP2"]
+    assert {t["source_participant_id"] for t in cell_map["thresholds"]} == {"164-17"}
+    bits = dict(zip(cell_map["cell_id"], cell_map["positive"], strict=True))
+    podocalyxin = sum(1 for b in bits.values() if b & 1)
+    both = sum(1 for b in bits.values() if b & 1 and b & 2)
+    assert podocalyxin == 100 and both == 50
+    assert len(cell_map["x_um"]) == len(cell_map["means"]) == len(bits) and cell_map["total_cells"] == 256
+    assert "not cell types" in cell_map["rule"]
+    assert client.get("/api/kpmp/nobody/cells").status_code == 404
