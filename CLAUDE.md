@@ -31,6 +31,8 @@ Run from the repo root, after `make install` (uv and npm, from the lockfiles).
 | `make audit` | After `make data`: recomputes the GSE286184 audit results, controls and composite figures into `artifacts/GSE286184/audit/`. Commit them. |
 | `make fixtures` | Rebuilds the synthetic section, the stored model responses that depend on it, and the recorded investigation that immutable replay plays. |
 | `make smoke` | `uv run spatialscout smoke`: replays the provider smoke check from `fixtures/smoke/` with no network. `--run-mode live` makes one tiny call per provider and model (cents, under the daily budget) and re-records it. |
+| `make kpmp` | `uv run spatialscout kpmp`: from the raw KPMP downloads in `data/kpmp/`, writes per-cell tables (git-ignored), frozen thresholds, the protein audit results and browser tiles into `artifacts/KPMP/`. About 30 s. |
+| `make smoke-public` | Playwright smoke run against the public URL: the KPMP viewer and the golden-path replay with its labels. |
 | `make data` | `uv run spatialscout ingest`: downloads any missing GSE286184 file, validates and labels all 22 sections, and rewrites `artifacts/GSE286184/`. Idempotent. |
 | `make deploy` | Builds the web app and deploys (or redeploys) it with the API on Modal: `deploy/modal_app.py`. |
 | `make modal-batch` | Runs `deploy/modal_batch.py` on Modal over all 22 sections with `.map()`; logs runtime and cost to `artifacts/modal_batch_gse286184.json`. |
