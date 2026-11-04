@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Region } from "../contracts/generated";
 import type { DatasetAdapter, GateQuery, LoadedSection, SectionChoice } from "../datasets/adapter";
+import { type PaneAudit, ProteinAuditPanel } from "./ProteinAuditPanel";
 import { type Camera, type GateReadout, type SamState, SectionPane, type Tool } from "./SectionPane";
 
 export interface RegionPair {
@@ -147,6 +148,10 @@ export function DualViewer({ adapters, defaultDatasetId, onShow, onContext }: Pr
   const [tool, setTool] = useState<Tool>("pan");
 
   const leftAdapter = sources[0] ? byId.get(sources[0].datasetId) : undefined;
+  useEffect(() => {
+    setHidden(new Set(leftAdapter?.defaultHidden ?? []));
+  }, [leftAdapter]);
+  const hasGates = SIDES.some((i) => !!(sources[i] && byId.get(sources[i]!.datasetId)?.gateStatus));
   const [query, setQuery] = useState<GateQuery | null>(null);
   useEffect(() => {
     if (leftAdapter && query === null) setQuery(leftAdapter.defaultGateQuery);
@@ -167,6 +172,8 @@ export function DualViewer({ adapters, defaultDatasetId, onShow, onContext }: Pr
   }, [keep, boxes[0], boxes[1], sources, onContext]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const gates = [useGate(panes[0], sources[0], byId, query), useGate(panes[1], sources[1], byId, query)];
+  const audits = [useProteinAudit(panes[0], sources[0], byId), useProteinAudit(panes[1], sources[1], byId)];
+  const auditPanes = SIDES.flatMap((i) => (audits[i] ? [audits[i]!] : []));
 
   const pick = (side: Side, value: string) => {
     const [datasetId, sectionId] = value.split("::");
@@ -193,7 +200,7 @@ export function DualViewer({ adapters, defaultDatasetId, onShow, onContext }: Pr
         <button type="button" onClick={fitBoth} className="rounded border border-line px-2 py-0.5 text-ink-2 hover:border-ink-3 hover:text-ink">
           Fit both
         </button>
-        <div className="ml-auto flex items-center gap-2 text-ink-3">
+        <div className={`ml-auto flex items-center gap-2 text-ink-3 ${hasGates ? "" : "hidden"}`}>
           <span>Gate population</span>
           <select
             aria-label="Cell type"
@@ -328,6 +335,8 @@ export function DualViewer({ adapters, defaultDatasetId, onShow, onContext }: Pr
         })}
       </div>
 
+      {auditPanes.length > 0 && <ProteinAuditPanel panes={auditPanes} />}
+
       {/* Region pair */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-md border border-line bg-panel px-3 py-2 text-xs text-ink-2">
         <span className="font-semibold text-ink">Region pair</span>
@@ -353,7 +362,9 @@ export function DualViewer({ adapters, defaultDatasetId, onShow, onContext }: Pr
           Keep this region pair with the next question
         </label>
         <span className="w-full text-[11px] text-ink-3">
-          Verdicts stay at cohort level; the region pair is shown beside them as visual evidence and does not scope the analysis.
+          {auditPanes.length > 0
+            ? "Protein audits are computed per participant for each box and are descriptive: one person against one person."
+            : "Verdicts stay at cohort level; the region pair is shown beside them as visual evidence and does not scope the analysis."}
         </span>
       </div>
     </section>
@@ -473,6 +484,34 @@ function useGate(pane: PaneModel, source: PaneSource | null, adapters: Map<strin
   }, [pane.box, sectionId, query, pump]);
 
   return readout;
+}
+
+/** The protein audit of a pane's box (or whole image) on a dataset that has one, refreshed shortly after the box settles. */
+function useProteinAudit(pane: PaneModel, source: PaneSource | null, adapters: Map<string, DatasetAdapter>): PaneAudit | null {
+  const adapter = source ? adapters.get(source.datasetId) : undefined;
+  const [audit, setAudit] = useState<PaneAudit | null>(null);
+  const sectionId = pane.loaded?.sectionId ?? null;
+  const title = pane.loaded?.title.split(" · ").slice(0, 2).join(" · ") ?? "";
+  useEffect(() => {
+    if (!adapter?.proteinAudit || !sectionId) {
+      setAudit(null);
+      return;
+    }
+    const controller = new AbortController();
+    setAudit((a) => ({ title, results: a?.title === title ? a.results : null, pending: true, problem: null }));
+    const timer = window.setTimeout(() => {
+      adapter.proteinAudit!(sectionId, pane.box, controller.signal)
+        .then((results) => setAudit({ title, results, pending: false, problem: null }))
+        .catch((e: unknown) => {
+          if (!controller.signal.aborted) setAudit({ title, results: null, pending: false, problem: String(e) });
+        });
+    }, 200);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [adapter, sectionId, pane.box, title]);
+  return audit;
 }
 
 // --- helpers ----------------------------------------------------------------------------------------------------------

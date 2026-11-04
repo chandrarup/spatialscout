@@ -4,7 +4,7 @@
 // Each pane holds exactly one adapter and draws layers only from the section that adapter loaded, so nothing from
 // one dataset is ever drawn over another's section. Coordinates are section micrometres throughout, y down.
 import type { Layer } from "@deck.gl/core";
-import type { GateStatus, Region, StructureRun } from "../contracts/generated";
+import type { GateStatus, ProteinAuditResult, Region, StructureRun } from "../contracts/generated";
 
 /** A section the adapter can open. */
 export interface SectionChoice {
@@ -90,4 +90,8 @@ export interface DatasetAdapter {
   /** Population and molecule gates for a box (or the whole section); absent when the dataset has no molecules. */
   gateStatus?(sectionId: string, query: GateQuery, box: Region | null, signal?: AbortSignal): Promise<GateStatus>;
   sam?: SamCapability;
+  /** Channels hidden when a section of this dataset first opens. */
+  defaultHidden?: ReadonlySet<string>;
+  /** The protein audit of a box (or the whole image) on an antibody-image dataset. */
+  proteinAudit?(sectionId: string, box: Region | null, signal?: AbortSignal): Promise<ProteinAuditResult[]>;
 }

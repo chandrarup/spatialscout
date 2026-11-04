@@ -14,8 +14,9 @@ import { QuestionBar } from "./components/QuestionBar";
 import { RunModeBanner } from "./components/RunModeBanner";
 import { TelemetryPills } from "./components/TelemetryPills";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
-import type { DatasetManifest, InvestigationEvent, InvestigationSnapshot, ModeInfo, Region } from "./contracts/generated";
+import type { DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, Region } from "./contracts/generated";
 import type { DatasetAdapter } from "./datasets/adapter";
+import { kpmpAdapter } from "./datasets/kpmp";
 import { moleculeAdapter } from "./datasets/molecules";
 import { type InvestigationView, applyEvent, fromSnapshot, lastSeq } from "./investigation";
 
@@ -42,15 +43,18 @@ export default function App() {
   const [approving, setApproving] = useState(false);
   const [workspace, setWorkspace] = useState<"dual" | "single">("dual");
   const [manifests, setManifests] = useState<DatasetManifest[]>([]);
-  const adapters = useMemo<DatasetAdapter[]>(() => manifests.map(moleculeAdapter), [manifests]);
+  const [kpmp, setKpmp] = useState<KpmpManifest | null | undefined>(undefined); // undefined while loading
+  const adapters = useMemo<DatasetAdapter[]>(() => [...(kpmp ? [kpmpAdapter(kpmp)] : []), ...manifests.map(moleculeAdapter)], [kpmp, manifests]);
   const [regionPair, setRegionPair] = useState<RegionPair | null>(null);
   const [contextRegions, setContextRegions] = useState<Region[]>([]);
+  const [dualShown, setDualShown] = useState<string | null>(null);
   const showFromDual = useCallback(
     (datasetId: string, sectionId: string) => {
+      setDualShown(`${datasetId} · ${datasetId === kpmp?.dataset_id ? "participant" : "section"} ${sectionId}`);
       const manifest = manifests.find((m) => m.dataset_id === datasetId);
       if (manifest) setShown({ manifest, sectionId });
     },
-    [manifests],
+    [manifests, kpmp],
   );
   const focusFinding = useCallback(
     (next: Omit<TissueFocus, "key">) => {
@@ -82,6 +86,10 @@ export default function App() {
       .datasets()
       .then(setManifests)
       .catch((error: unknown) => setProblem(String(error)));
+    api
+      .kpmp()
+      .then(setKpmp)
+      .catch(() => setKpmp(null));
     const id = window.location.hash.slice(1);
     if (INVESTIGATION_ID.test(id)) api.investigation(id).then(follow).catch(() => window.history.replaceState(null, "", " "));
     return () => unsubscribe.current?.();
@@ -134,7 +142,7 @@ export default function App() {
         <div className="shrink-0 lg:w-56">
           <h1 className="text-lg font-semibold tracking-tight text-ink">SpatialScout</h1>
           <p className="text-xs text-ink-3">
-            {shown ? `${shown.manifest.dataset_id} · section ${shown.sectionId}` : "loading section…"}
+            {workspace === "dual" && dualShown ? dualShown : shown ? `${shown.manifest.dataset_id} · section ${shown.sectionId}` : "loading section…"}
           </p>
         </div>
         <div className="min-w-0 flex-1">
@@ -146,7 +154,7 @@ export default function App() {
           <div role="tablist" aria-label="Workspace" className="flex items-center gap-1 text-xs">
             {(
               [
-                ["dual", "Control vs disease sections"],
+                ["dual", "Healthy vs diseased biopsies"],
                 ["single", "One section · molecules and conditions"],
               ] as const
             ).map(([id, label]) => (
@@ -166,10 +174,10 @@ export default function App() {
           </div>
           <div className="flex min-h-0 flex-1 flex-col *:flex-1">
             {workspace === "dual" ? (
-              adapters.length > 0 && (
+              adapters.length > 0 && kpmp !== undefined && (
                 <DualViewer
                   adapters={adapters}
-                  defaultDatasetId={manifests.some((m) => m.dataset_id === "GSE286184") ? "GSE286184" : (mode?.dataset_id ?? null)}
+                  defaultDatasetId={kpmp ? kpmp.dataset_id : manifests.some((m) => m.dataset_id === "GSE286184") ? "GSE286184" : (mode?.dataset_id ?? null)}
                   onShow={showFromDual}
                   onContext={setRegionPair}
                 />

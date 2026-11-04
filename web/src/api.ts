@@ -13,7 +13,9 @@ import type {
   PackedRegionView,
   InvestigationEvent,
   InvestigationSnapshot,
+  KpmpManifest,
   ModeInfo,
+  ProteinAuditResult,
   RecordedBoxes,
   Region,
   RegionView,
@@ -39,6 +41,14 @@ export const api = {
   regionView: (sectionId: string) =>
     fetch(`/api/sections/${encodeURIComponent(sectionId)}/region-view`).then(json<RegionView>),
   datasets: () => fetch("/api/datasets").then(json<DatasetManifest[]>),
+  /** The KPMP CODEX participants, or null when this server has no KPMP artifacts. */
+  kpmp: () => fetch("/api/kpmp").then((r) => (r.status === 404 ? null : json<KpmpManifest>(r))),
+  kpmpFileUrl: (path: string) => `/api/kpmp/files/${path.split("/").map(encodeURIComponent).join("/")}`,
+  kpmpProteinAudit: (participantId: string, populationMarker: string, marker: string, box: Region | null, signal?: AbortSignal) => {
+    const params = new URLSearchParams({ population_marker: populationMarker, marker });
+    if (box) for (const k of ["x0", "y0", "x1", "y1"] as const) params.set(k, String(box[k]));
+    return fetch(`/api/kpmp/${encodeURIComponent(participantId)}/protein-audit?${params}`, { signal }).then(json<ProteinAuditResult>);
+  },
   capabilityReport: (datasetId: string) =>
     fetch(`/api/datasets/${encodeURIComponent(datasetId)}/capability-report`).then(json<CapabilityReport>),
   labelRules: (datasetId: string) =>
