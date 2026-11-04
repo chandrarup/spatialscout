@@ -118,8 +118,29 @@ def claim(body: dict[str, Any]) -> dict[str, Any]:
     return {"text": text, "cited": cited}
 
 
+def visual(body: dict[str, Any]) -> dict[str, Any]:
+    """The hand-authored visual check. No model reads the figure here, so it reports no disagreement of its own: it
+    restates the direction and pattern the request says the claim states, and says that nobody looked."""
+    user = next(m for m in body["messages"] if m["role"] == "user")
+    data = json.loads(next(part["text"] for part in user["content"] if part["type"] == "text"))
+    stated = data.get("claim_states_direction") or ""
+    return {
+        "panel_a_direction": "holds" if "holds" in stated else "drops" if "drops" in stated else "unclear",
+        "panel_a_matches_claim": True,
+        "single_section_drives_panel_a": False,
+        "panel_b_matches_claim": True if data.get("claim_states_neighbour_pattern") else None,
+        "explanation": "Hand-authored response for tests: no model read this figure.",
+    }
+
+
+def is_visual(body: dict[str, Any]) -> bool:
+    return any(isinstance(m["content"], list) for m in body["messages"])
+
+
 def by_model(planner: Policy, agent: Policy, drafter: Policy = claim) -> Policy:
     def answer(body: dict[str, Any]) -> dict[str, Any]:
+        if is_visual(body):
+            return visual(body)
         if body["model"] == "muse-wonder-1.0":
             return planner(body)
         if body["model"] == "muse-spark-1.3":

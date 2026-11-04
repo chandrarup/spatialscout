@@ -1,0 +1,891 @@
+{
+ "schema_version": "1.0",
+ "claim_id": "clm-155515db06cb",
+ "claim_version": 1,
+ "base_status": "failed",
+ "variants": [
+  {
+   "kind": "reversed_direction",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-reversed_direction",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "synthetic",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). The pooled observed value drops below the threshold.",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-b35956c8392cec13",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "reversed_direction"
+    },
+    "direction": "drops",
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-reversed_direction",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+      "reasons": [
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "4 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Hand-authored response for tests: no model read this figure.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-b35956c8392cec13",
+     "finding_id": "fnd-697ce05f9889dc65",
+     "path": "figures/fnd-697ce05f9889dc65.png",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222",
+     "crop": {
+      "section_id": "SYN-01",
+      "x0": -75.0,
+      "y0": -75.0,
+      "x1": 225.0,
+      "y1": 225.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "drops",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Hand-authored response for tests: no model read this figure."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "direction": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+     "after": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). The pooled observed value drops below the threshold."
+    },
+    {
+     "field": "direction",
+     "before": null,
+     "after": "drops"
+    }
+   ],
+   "new_reasons": [],
+   "detected": false
+  },
+  {
+   "kind": "wrong_section_count",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-wrong_section_count",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "synthetic",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In synthetic section SYN-01, nucleus-only assignment keeps 2 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     },
+     "eligible_section_ids.count": {
+      "value": 2,
+      "source": "eligible_section_ids.count"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-b35956c8392cec13",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "wrong_section_count"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-wrong_section_count",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "section count mismatch: the claim cites 2 for eligible_section_ids.count, the finding has 0",
+      "reasons": [
+       "section count mismatch: the claim cites 2 for eligible_section_ids.count, the finding has 0",
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "cited eligible_section_ids.count is 2, but the independent recompute of eligible_section_ids.count gives 0",
+      "reasons": [
+       "cited eligible_section_ids.count is 2, but the independent recompute of eligible_section_ids.count gives 0"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Hand-authored response for tests: no model read this figure.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-b35956c8392cec13",
+     "finding_id": "fnd-697ce05f9889dc65",
+     "path": "figures/fnd-697ce05f9889dc65.png",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222",
+     "crop": {
+      "section_id": "SYN-01",
+      "x0": -75.0,
+      "y0": -75.0,
+      "x1": 225.0,
+      "y1": 225.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "unclear",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Hand-authored response for tests: no model read this figure."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "eligible_section_ids.count": 0,
+     "direction": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+     "after": "In synthetic section SYN-01, nucleus-only assignment keeps 2 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%)."
+    },
+    {
+     "field": "cited.eligible_section_ids.count",
+     "before": null,
+     "after": {
+      "value": 2,
+      "source": "eligible_section_ids.count"
+     }
+    }
+   ],
+   "new_reasons": [
+    "section count mismatch: the claim cites 2 for eligible_section_ids.count, the finding has 0",
+    "cited eligible_section_ids.count is 2, but the independent recompute of eligible_section_ids.count gives 0"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "wrong_dataset_reference",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-wrong_dataset_reference",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "GSE271188",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In GSE271188 section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-b35956c8392cec13",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "wrong_dataset_reference"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-wrong_dataset_reference",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "dataset reference 'GSE271188' names no dataset served here",
+      "reasons": [
+       "dataset reference 'GSE271188' names no dataset served here",
+       "dataset reference 'GSE271188' does not match the finding's dataset 'synthetic'",
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "4 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Hand-authored response for tests: no model read this figure.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-b35956c8392cec13",
+     "finding_id": "fnd-697ce05f9889dc65",
+     "path": "figures/fnd-697ce05f9889dc65.png",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222",
+     "crop": {
+      "section_id": "SYN-01",
+      "x0": -75.0,
+      "y0": -75.0,
+      "x1": 225.0,
+      "y1": 225.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "unclear",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Hand-authored response for tests: no model read this figure."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "direction": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "dataset_id",
+     "before": "synthetic",
+     "after": "GSE271188"
+    },
+    {
+     "field": "text",
+     "before": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+     "after": "In GSE271188 section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%)."
+    }
+   ],
+   "new_reasons": [
+    "dataset reference 'GSE271188' names no dataset served here",
+    "dataset reference 'GSE271188' does not match the finding's dataset 'synthetic'"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "changed_effect",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-changed_effect",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "synthetic",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.08,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-b35956c8392cec13",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "changed_effect"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-changed_effect",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+      "reasons": [
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "failed",
+      "details": "cited retention_nucleus_only is 0.08, but the independent recompute of sections[SYN-01].conditions[nucleus_only].retention gives 0",
+      "reasons": [
+       "cited retention_nucleus_only is 0.08, but the independent recompute of sections[SYN-01].conditions[nucleus_only].retention gives 0"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Hand-authored response for tests: no model read this figure.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-b35956c8392cec13",
+     "finding_id": "fnd-697ce05f9889dc65",
+     "path": "figures/fnd-697ce05f9889dc65.png",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222",
+     "crop": {
+      "section_id": "SYN-01",
+      "x0": -75.0,
+      "y0": -75.0,
+      "x1": 225.0,
+      "y1": 225.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "unclear",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Hand-authored response for tests: no model read this figure."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "direction": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "cited.retention_nucleus_only",
+     "before": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     },
+     "after": {
+      "value": 0.08,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    }
+   ],
+   "new_reasons": [
+    "cited retention_nucleus_only is 0.08, but the independent recompute of sections[SYN-01].conditions[nucleus_only].retention gives 0"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "figure_label_mismatch",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-figure_label_mismatch",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "synthetic",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-0000000000000000",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "figure_label_mismatch"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-figure_label_mismatch",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+      "reasons": [
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)",
+       "figure reference 'fig-0000000000000000' resolves to no figure"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "4 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "unavailable",
+      "details": "no composite figure to read",
+      "reasons": [
+       "no composite figure to read"
+      ]
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": null,
+    "visual": null,
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "direction": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "figure_id",
+     "before": "fig-b35956c8392cec13",
+     "after": "fig-0000000000000000"
+    }
+   ],
+   "new_reasons": [
+    "figure reference 'fig-0000000000000000' resolves to no figure"
+   ],
+   "detected": true
+  },
+  {
+   "kind": "misstated_spatial_pattern",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-misstated_spatial_pattern",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "synthetic",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). Excluded molecules lie closer to a cell of their gene's home type more often than retained molecules do.",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-b35956c8392cec13",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "misstated_spatial_pattern"
+    },
+    "direction": null,
+    "neighbour_pattern": "excluded_nearer_home"
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-misstated_spatial_pattern",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+      "reasons": [
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "unavailable",
+      "details": "the stated neighbour pattern has no recomputed neighbour-proximity shares to check against",
+      "reasons": [
+       "the stated neighbour pattern has no recomputed neighbour-proximity shares to check against"
+      ]
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Hand-authored response for tests: no model read this figure.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-b35956c8392cec13",
+     "finding_id": "fnd-697ce05f9889dc65",
+     "path": "figures/fnd-697ce05f9889dc65.png",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222",
+     "crop": {
+      "section_id": "SYN-01",
+      "x0": -75.0,
+      "y0": -75.0,
+      "x1": 225.0,
+      "y1": 225.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "holds",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": true,
+     "explanation": "Hand-authored response for tests: no model read this figure."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "direction": null,
+     "neighbour_pattern": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [
+    {
+     "field": "text",
+     "before": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+     "after": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%). Excluded molecules lie closer to a cell of their gene's home type more often than retained molecules do."
+    },
+    {
+     "field": "neighbour_pattern",
+     "before": null,
+     "after": "excluded_nearer_home"
+    }
+   ],
+   "new_reasons": [],
+   "detected": false
+  },
+  {
+   "kind": "missing_required_control",
+   "claim": {
+    "schema_version": "2.0",
+    "claim_id": "clm-155515db06cb-inj-missing_required_control",
+    "version": 1,
+    "investigation_id": "inv-3be0784c1d0c",
+    "dataset_id": "synthetic",
+    "finding": {
+     "finding_id": "fnd-697ce05f9889dc65",
+     "finding_kind": "audit"
+    },
+    "text": "In synthetic section SYN-01, nucleus-only assignment keeps 0 of the 4 LRP2 molecules that the default condition counts toward the 3 cells labelled Podocyte by construction (retention 0%).",
+    "cited": {
+     "cells_labelled": {
+      "value": 3,
+      "source": "sections[SYN-01].cells_labelled"
+     },
+     "molecules_default": {
+      "value": 4,
+      "source": "sections[SYN-01].conditions[default].molecules"
+     },
+     "molecules_nucleus_only": {
+      "value": 0,
+      "source": "sections[SYN-01].conditions[nucleus_only].molecules"
+     },
+     "retention_nucleus_only": {
+      "value": 0.0,
+      "source": "sections[SYN-01].conditions[nucleus_only].retention"
+     }
+    },
+    "controls": {
+     "random_thinning": null,
+     "label_sensitivity": null
+    },
+    "figure_id": "fig-b35956c8392cec13",
+    "evidence_status": "insufficient_evidence",
+    "verification_status": "failed",
+    "review_status": "unreviewed",
+    "injected": {
+     "is_injected": true,
+     "kind": "missing_required_control"
+    },
+    "direction": null,
+    "neighbour_pattern": null
+   },
+   "verification": {
+    "schema_version": "1.0",
+    "claim_id": "clm-155515db06cb-inj-missing_required_control",
+    "claim_version": 1,
+    "checks": [
+     {
+      "kind": "structural",
+      "status": "failed",
+      "details": "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+      "reasons": [
+       "required control not run: random-thinning control (a claim about assignment sensitivity must cite a home-matched random-thinning control)",
+       "required control not run: label-sensitivity check (a claim about this population must cite a label-sensitivity check: synthetic-by-construction reads LRP2)"
+      ]
+     },
+     {
+      "kind": "numerical",
+      "status": "passed",
+      "details": "4 cited numbers match the independent recompute",
+      "reasons": []
+     },
+     {
+      "kind": "visual",
+      "status": "passed",
+      "details": "Hand-authored response for tests: no model read this figure.",
+      "reasons": []
+     }
+    ],
+    "verification_status": "failed",
+    "finding_id": "fnd-697ce05f9889dc65",
+    "figure": {
+     "schema_version": "1.0",
+     "figure_id": "fig-b35956c8392cec13",
+     "finding_id": "fnd-697ce05f9889dc65",
+     "path": "figures/fnd-697ce05f9889dc65.png",
+     "sha256": "0710caad9d04617b965fdaaf26c2a99b64b4fbf61fcacb4e906c4cce64385222",
+     "crop": {
+      "section_id": "SYN-01",
+      "x0": -75.0,
+      "y0": -75.0,
+      "x1": 225.0,
+      "y1": 225.0
+     },
+     "evidence_rank": 1,
+     "panel_a": "Per-section observed share of cells expressing across default, nucleus-only for 0 eligible of 1 sections, with the pooled observed value and the pooled home-matched and cell-matched expectations.",
+     "panel_b": "300 x 300 µm crop of SYN-01 around evidence region rank 1: 0 retained and 4 excluded (yellow) molecules of the result in Podocyte cells under nucleus_only."
+    },
+    "visual": {
+     "panel_a_direction": "unclear",
+     "panel_a_matches_claim": true,
+     "single_section_drives_panel_a": false,
+     "panel_b_matches_claim": null,
+     "explanation": "Hand-authored response for tests: no model read this figure."
+    },
+    "tolerances": {
+     "count_abs": 0.0,
+     "fraction_abs": 1e-6
+    },
+    "recomputed": {
+     "sections[SYN-01].cells_labelled": 3,
+     "sections[SYN-01].conditions[default].molecules": 4,
+     "sections[SYN-01].conditions[nucleus_only].molecules": 0,
+     "sections[SYN-01].conditions[nucleus_only].retention": 0.0,
+     "direction": null
+    },
+    "in_validated_summary": false
+   },
+   "changes": [],
+   "new_reasons": [],
+   "detected": false
+  }
+ ]
+}

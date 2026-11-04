@@ -137,7 +137,9 @@ def _control_problems(claim: Claim, finding: AuditResult, controls: Mapping[str,
             problems.append(f"random-thinning control {thinning_id} resolves to no random-thinning control")
         elif control.finding_id != finding.finding_id:
             problems.append(f"random-thinning control {thinning_id} is about finding {control.finding_id}, not {finding.finding_id}")
-        elif not any(p.expectation_home_matched is not None for p in control.pooled):
+        elif not any(p.expectation_home_matched is not None for p in control.pooled) and not any(
+            c.expectation_home_matched is not None for section in control.sections for c in section.conditions
+        ):
             problems.append(f"random-thinning control {thinning_id} has no home-matched expectation")
     if "label_sensitivity" in required:
         check = controls.get(label_id) if label_id else None

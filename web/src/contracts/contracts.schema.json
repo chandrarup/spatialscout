@@ -253,6 +253,9 @@
             "budget_exhausted",
             "claim_drafted",
             "claim_rejected",
+            "claim_verified",
+            "claim_challenges_recorded",
+            "figure_failed",
             "package_exported",
             "error"
           ],
@@ -1111,12 +1114,20 @@
         },
         "details": {
           "type": "string"
+        },
+        "reasons": {
+          "description": "Every problem the check found; empty when it passed.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "required": [
         "kind",
         "status",
-        "details"
+        "details",
+        "reasons"
       ],
       "title": "CheckResult",
       "type": "object"
@@ -1206,6 +1217,38 @@
         },
         "injected": {
           "$ref": "#/definitions/InjectedError"
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "enum": [
+                "holds",
+                "drops"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The direction the claim states, when it states one in structured form; else read from its text."
+        },
+        "neighbour_pattern": {
+          "anyOf": [
+            {
+              "enum": [
+                "excluded_nearer_home",
+                "excluded_not_nearer_home"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The neighbour pattern the claim states, if any."
         }
       },
       "required": [
@@ -1222,9 +1265,85 @@
         "evidence_status",
         "verification_status",
         "review_status",
-        "injected"
+        "injected",
+        "direction",
+        "neighbour_pattern"
       ],
       "title": "Claim",
+      "type": "object"
+    },
+    "ClaimChallenge": {
+      "additionalProperties": false,
+      "description": "One recorded injected variant of a claim and its recorded verification. `detected` is the recorded outcome:\ntrue when a check found a problem the original claim did not have (`new_reasons`), false for a miss.",
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/InjectedErrorKind"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        },
+        "verification": {
+          "$ref": "#/definitions/VerificationResult"
+        },
+        "changes": {
+          "items": {
+            "$ref": "#/definitions/FieldChange"
+          },
+          "type": "array"
+        },
+        "new_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "detected": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "claim",
+        "verification",
+        "changes",
+        "new_reasons",
+        "detected"
+      ],
+      "title": "ClaimChallenge",
+      "type": "object"
+    },
+    "ClaimChallenges": {
+      "additionalProperties": false,
+      "description": "The \"Challenge the verifier\" options of one claim: its injected variants, named only by error kind.",
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_version": {
+          "type": "integer"
+        },
+        "base_status": {
+          "$ref": "#/definitions/VerificationStatus"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/definitions/ClaimChallenge"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "claim_id",
+        "claim_version",
+        "base_status",
+        "variants"
+      ],
+      "title": "ClaimChallenges",
       "type": "object"
     },
     "ClaimControls": {
@@ -1354,6 +1473,44 @@
         "problems"
       ],
       "title": "ClaimRejectedEvent",
+      "type": "object"
+    },
+    "ClaimVerifiedEvent": {
+      "additionalProperties": false,
+      "description": "A claim version after its three checks, with its verification status and every reason. An injected variant\ncarries `claim.injected.is_injected` and is always shown as injected.",
+      "properties": {
+        "seq": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "investigation_id": {
+          "type": "string"
+        },
+        "recorded_at_utc": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "type": {
+          "const": "claim_verified",
+          "default": "claim_verified",
+          "type": "string"
+        },
+        "claim": {
+          "$ref": "#/definitions/Claim"
+        },
+        "verification": {
+          "$ref": "#/definitions/VerificationResult"
+        }
+      },
+      "required": [
+        "seq",
+        "investigation_id",
+        "recorded_at_utc",
+        "type",
+        "claim",
+        "verification"
+      ],
+      "title": "ClaimVerifiedEvent",
       "type": "object"
     },
     "CompositeFigure": {
@@ -1928,6 +2085,24 @@
       "title": "EvidenceStatus",
       "type": "string"
     },
+    "FieldChange": {
+      "additionalProperties": false,
+      "description": "One field an injected error changed.",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "before": {},
+        "after": {}
+      },
+      "required": [
+        "field",
+        "before",
+        "after"
+      ],
+      "title": "FieldChange",
+      "type": "object"
+    },
     "FileChecksum": {
       "additionalProperties": false,
       "properties": {
@@ -2223,6 +2398,7 @@
           "budget_exhausted": "#/definitions/BudgetExhaustedEvent",
           "claim_drafted": "#/definitions/ClaimDraftedEvent",
           "claim_rejected": "#/definitions/ClaimRejectedEvent",
+          "claim_verified": "#/definitions/ClaimVerifiedEvent",
           "error": "#/definitions/ErrorEvent",
           "model_call": "#/definitions/ModelCallEvent",
           "package_ready": "#/definitions/PackageReadyEvent",
@@ -2265,6 +2441,9 @@
         },
         {
           "$ref": "#/definitions/ClaimRejectedEvent"
+        },
+        {
+          "$ref": "#/definitions/ClaimVerifiedEvent"
         },
         {
           "$ref": "#/definitions/PackageReadyEvent"
@@ -2346,6 +2525,7 @@
                 "budget_exhausted": "#/definitions/BudgetExhaustedEvent",
                 "claim_drafted": "#/definitions/ClaimDraftedEvent",
                 "claim_rejected": "#/definitions/ClaimRejectedEvent",
+                "claim_verified": "#/definitions/ClaimVerifiedEvent",
                 "error": "#/definitions/ErrorEvent",
                 "model_call": "#/definitions/ModelCallEvent",
                 "package_ready": "#/definitions/PackageReadyEvent",
@@ -2388,6 +2568,9 @@
               },
               {
                 "$ref": "#/definitions/ClaimRejectedEvent"
+              },
+              {
+                "$ref": "#/definitions/ClaimVerifiedEvent"
               },
               {
                 "$ref": "#/definitions/PackageReadyEvent"
@@ -5849,6 +6032,57 @@
         },
         "verification_status": {
           "$ref": "#/definitions/VerificationStatus"
+        },
+        "finding_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "figure": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CompositeFigure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The composite figure the visual check read."
+        },
+        "visual": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/VisualAnswer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tolerances": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "The declared tolerances of the numerical check.",
+          "type": "object"
+        },
+        "recomputed": {
+          "additionalProperties": true,
+          "description": "Each cited source's independently recomputed value.",
+          "type": "object"
+        },
+        "in_validated_summary": {
+          "default": false,
+          "description": "False for a failed claim: it stays in history only.",
+          "type": "boolean"
         }
       },
       "required": [
@@ -5856,7 +6090,13 @@
         "claim_id",
         "claim_version",
         "checks",
-        "verification_status"
+        "verification_status",
+        "finding_id",
+        "figure",
+        "visual",
+        "tolerances",
+        "recomputed",
+        "in_validated_summary"
       ],
       "title": "VerificationResult",
       "type": "object"
@@ -5871,6 +6111,53 @@
       ],
       "title": "VerificationStatus",
       "type": "string"
+    },
+    "VisualAnswer": {
+      "additionalProperties": false,
+      "description": "Muse Spark 1.3's reading of a composite figure, against this schema. A consistency check, not ground truth.",
+      "properties": {
+        "panel_a_direction": {
+          "description": "What Panel A shows: holds when the pooled observed line stays at or above the threshold line under every stricter condition, drops when it falls below it under at least one.",
+          "enum": [
+            "holds",
+            "drops",
+            "unclear"
+          ],
+          "type": "string"
+        },
+        "panel_a_matches_claim": {
+          "description": "Panel A's direction is the direction the claim states.",
+          "type": "boolean"
+        },
+        "single_section_drives_panel_a": {
+          "description": "One section's line alone accounts for Panel A's pooled direction.",
+          "type": "boolean"
+        },
+        "panel_b_matches_claim": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Panel B, read with the computed neighbour-proximity shares, shows the neighbour pattern the claim states; null when the claim states none."
+        },
+        "explanation": {
+          "description": "One or two sentences on what the panels show.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "panel_a_direction",
+        "panel_a_matches_claim",
+        "single_section_drives_panel_a",
+        "panel_b_matches_claim",
+        "explanation"
+      ],
+      "title": "VisualAnswer",
+      "type": "object"
     }
   }
 }

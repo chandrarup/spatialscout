@@ -5,6 +5,7 @@ import type {
   InvestigationSnapshot,
   InvestigationStatus,
   PackageInfo,
+  VerificationResult,
   Plan,
   ReplayInfo,
   RunMode,
@@ -18,6 +19,10 @@ export interface InvestigationView {
   status: InvestigationStatus;
   plan: Plan | null;
   claims: Claim[];
+  /** Each claim's latest verification, by claim id. */
+  verifications: Record<string, VerificationResult>;
+  /** Injected variants shown in the stream, always labelled as injected. */
+  injected: { claim: Claim; verification: VerificationResult }[];
   pkg: PackageInfo | null;
   events: InvestigationEvent[];
   error: string | null;
@@ -32,6 +37,8 @@ export function fromSnapshot(snapshot: InvestigationSnapshot): InvestigationView
     status: snapshot.status,
     plan: null,
     claims: [],
+    verifications: {},
+    injected: [],
     pkg: null,
     events: [],
     error: null,
@@ -67,6 +74,15 @@ export function applyEvent(view: InvestigationView, event: InvestigationEvent): 
       return next;
     case "claim_drafted":
       return { ...next, claims: [...next.claims, event.claim] };
+    case "claim_verified":
+      if (event.claim.injected.is_injected) {
+        return { ...next, injected: [...next.injected, { claim: event.claim, verification: event.verification }] };
+      }
+      return {
+        ...next,
+        claims: next.claims.map((claim) => (claim.claim_id === event.claim.claim_id ? event.claim : claim)),
+        verifications: { ...next.verifications, [event.claim.claim_id]: event.verification },
+      };
     case "package_ready":
       return { ...next, pkg: event.package, status: "complete" };
     case "error":

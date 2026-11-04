@@ -56,6 +56,11 @@ function describe(event: InvestigationEvent): string {
       return `budget spent (${event.tool_calls_used}/${event.max_tool_calls}); ${event.open_questions.length} open question(s)`;
     case "claim_rejected":
       return `claim draft on ${event.finding_id} rejected: ${event.problems.join("; ")}`;
+    case "claim_verified": {
+      const injected = event.claim.injected;
+      const what = injected.is_injected ? `injected error (${injected.kind}) on claim` : "claim";
+      return `${what} ${event.claim.claim_id}: ${event.verification.verification_status}`;
+    }
     case "error":
       return `${event.code}: ${event.message}`;
   }

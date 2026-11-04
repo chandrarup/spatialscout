@@ -2,7 +2,8 @@
 
 question -> plan proposed (Muse Wonder; checked, one re-plan) -> approval (or rejection) -> plan steps ->
 agent follow-ups (Muse Spark 1.3, within the tool-call budget) -> claims drafted in parallel (Muse Spark Open) ->
-package ready
+claims verified (structural, independent numerical recompute, visual check by Muse Spark 1.3), with their injected
+variants recorded for "Challenge the verifier" -> package ready
 
 The agent loop: after the plan's steps run, Muse Spark 1.3 reads each observation in turn and may request follow-up
 tools, each citing the observation that prompted it. Every request is validated (a registered tool, arguments valid
@@ -40,7 +41,9 @@ from ..contracts import (
     ClaimDraft,
     ClaimDraftedEvent,
     ClaimRejectedEvent,
+    ClaimVerifiedEvent,
     DatasetManifest,
+    InjectedErrorKind,
     ErrorEvent,
     FindingRef,
     FollowUpDecision,
@@ -71,6 +74,8 @@ from ..contracts import (
     new_id,
 )
 from ..data import DatasetStore
+from ..engine.figure import render_composite_figure
+from ..verify.verifier import VerificationContext, challenge, reasons_of, verify_claim
 from ..export import AUDIT_LOG_FILE, CLAIMS_FILE, MANIFEST_FILE, build_package
 from ..gateway import (
     GatewayError,
@@ -367,6 +372,7 @@ class Orchestrator:
             await self._run_tool(investigation, run, tool, arguments, step.arguments, step_id=step.step_id, reason=step.rationale)
         await self._follow_up(investigation, run, report, manifest)
         claims = await self._draft_claims(investigation, run)
+        claims = await self._verify_claims(investigation, run, claims)
         package = self._export(investigation, claims, run.open_questions)
         investigation.emit(PackageReadyEvent, status=InvestigationStatus.COMPLETE, package=package)
 
@@ -582,6 +588,90 @@ class Orchestrator:
             evidence_status=finding.label,
         )
         return claim, []
+
+    # --- verification ---------------------------------------------------------------------------------------
+
+    async def _verify_claims(self, investigation: Investigation, run: "_Run", claims: list[Claim]) -> list[Claim]:
+        """Verify every claim, record its injected variants for "Challenge the verifier", and show one injected variant
+        (the changed effect of the first claim, chosen by kind, never by outcome) in the stream, labelled as injected.
+        A failed claim stays in history; it is blocked only from the validated summary."""
+        if not claims:
+            return claims
+        state = investigation.state
+        findings = {o.artifact.finding_id: o.artifact for o in run.observations if isinstance(o.artifact, AuditResult)}
+        controls = {o.artifact.control_id: o.artifact for o in run.observations
+                    if isinstance(o.artifact, RandomThinningControl | LabelSensitivityCheck)}
+        figures_dir = investigation.directory / "figures"
+        figures, pngs = {}, {}
+        for claim in claims:
+            finding = findings.get(claim.finding.finding_id)
+            if finding is None or any(f.finding_id == finding.finding_id for f in figures.values()):
+                continue
+            try:
+                figure = await asyncio.to_thread(self._render_figure, finding, figures_dir)
+            except Exception as error:  # noqa: BLE001 - no figure leaves the visual check unavailable, nothing more
+                investigation.audit_log.append("figure_failed", {"finding_id": finding.finding_id, "error": f"{type(error).__name__}: {error}"})
+                continue
+            figures[figure.figure_id] = figure
+            pngs[figure.figure_id] = (figures_dir / f"{finding.finding_id}.png").read_bytes()
+        context = VerificationContext(
+            datasets=self._store.dataset_ids(),
+            findings=findings,
+            controls=controls,
+            figures=figures,
+            figure_png=pngs,
+            label_rules=self._store.label_rules(state.dataset_id),
+            load_sections=lambda ids, rule: [self._store.load_section(i, rule) for i in ids],
+            gateway=self._gateway(investigation, self._recording(investigation)),
+        )
+        verified_claims = []
+        challenges_dir = investigation.directory / "challenges"
+        challenges_dir.mkdir(exist_ok=True)
+        for index, claim in enumerate(claims):
+            finding = findings.get(claim.finding.finding_id)
+            if finding is not None:  # the recompute reads the molecule tables: keep it off the event loop
+                await asyncio.to_thread(context.recompute, finding)
+                for control in controls.values():
+                    if isinstance(control, LabelSensitivityCheck) and any(a.finding_id == finding.finding_id for a in control.arms):
+                        for arm in control.arms:
+                            await asyncio.to_thread(context.recompute, finding, arm.label_rule_id)
+            verified, verification = await verify_claim(claim, context)
+            self._announce_verification(investigation, verified, verification)
+            verified_claims.append(verified)
+            if finding is None:
+                continue
+            other = next((f.figure_id for f in figures.values() if f.finding_id != finding.finding_id), None)
+            challenges = await challenge(verified, verification, context, other_figure_id=other)
+            (challenges_dir / f"{claim.claim_id}.json").write_text(challenges.model_dump_json(indent=1), encoding="utf-8")
+            investigation.audit_log.append(
+                "claim_challenges_recorded",
+                {"claim_id": claim.claim_id, "claim_version": claim.version,
+                 "variants": [{"kind": v.kind.value, "verification_status": v.verification.verification_status.value,
+                               "detected": v.detected, "new_reasons": v.new_reasons} for v in challenges.variants]},
+            )
+            if index == 0:
+                shown = next(v for v in challenges.variants if v.kind == InjectedErrorKind.CHANGED_EFFECT)
+                self._announce_verification(investigation, shown.claim, shown.verification)
+        return verified_claims
+
+    def _render_figure(self, finding: AuditResult, out_dir: Path):
+        region = next((r for r in finding.evidence_regions if r.rank == 1), None)
+        sections = {}
+        if region is not None:
+            sections[region.region.section_id] = self._store.load_section(region.region.section_id, finding.population.label_rule_id)
+        title = f"{' / '.join(finding.genes) if finding.measure != 'co_expression_score' else 'Co-expression score'} in cells labelled " \
+                f"{finding.population.cell_type} ({finding.population.label_rule_id})"
+        return render_composite_figure(finding, sections, out_dir, title=title)
+
+    def _announce_verification(self, investigation: Investigation, claim: Claim, verification) -> None:
+        investigation.audit_log.append(
+            "claim_verified",
+            {"claim_id": claim.claim_id, "claim_version": claim.version, "finding_id": claim.finding.finding_id,
+             "injected": claim.injected.model_dump(mode="json"), "verification_status": verification.verification_status.value,
+             "checks": {c.kind: c.status for c in verification.checks}, "reasons": reasons_of(verification),
+             "figure_id": verification.figure.figure_id if verification.figure else None},
+        )
+        investigation.emit(ClaimVerifiedEvent, claim=claim, verification=verification)
 
     def _export(self, investigation: Investigation, claims: list[Claim], open_questions: list[OpenQuestion]) -> PackageInfo:
         """Write the evidence package, then log the export. The package's manifest anchors the audit log at
