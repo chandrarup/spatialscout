@@ -1,4 +1,4 @@
-> Generated from `SpatialScout Whitepaper.docx` (Oct 28, 2026) with pandoc so agents can read it. The .docx is canonical. Superseded on scientific claims by build-whitepaper-v2.md.
+> **Pre-build planning draft (Oct 28 2026), with placeholders.** It describes plans that were not built (SAM 3.1 fine-tuning, a lab validation study) and is superseded by the README and `docs/spec/`. Generated from `SpatialScout Whitepaper.docx` with pandoc.
 
 # SpatialScout: Trustworthy Disease Discovery in Spatial Biology
 

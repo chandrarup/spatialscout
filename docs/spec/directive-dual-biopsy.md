@@ -1,3 +1,5 @@
+> **Status (Nov 4 2026): planning input, not a description of results.** Adopted only with the corrections in `docs/spec/revision-3-dual-biopsy-draft.md` §6. Its patient profile ("Patient #DKD-04", eGFR, KDIGO stage) is invented and its numbers (3.2x, 82%, >75%) were written before any analysis. None of them appears in the product; see the README for computed results.
+
 # Agent Directive: Re-Centering SpatialScout on the Interactive Dual-Biopsy TIFF & Hypothesis-Testing Demo
 
 > **CRITICAL COURSE CORRECTION FOR CODING AGENTS:** Read this directive immediately before proceeding with `docs/spec/spec.md` and `docs/spec/tickets-draft.md`. Earlier agent revisions stripped out real microscopy `.tif` images because `GSE286184` only deposited `(x, y)` tables, reducing the product to an abstract scatter-plot CSV filter. **That is NOT the product vision and will not win the 25% Demo or 30% Impact scores at the [Meta Global AI Developer Hackathon](https://cerebralvalley.ai/e/meta-ai-developer-hackathon).**

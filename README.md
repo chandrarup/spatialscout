@@ -84,6 +84,8 @@ Live runs need provider keys in `.env`, `SPATIALSCOUT_LIVE_PASSCODE` and `SPATIA
 - **The visual check** wrongly disputes a third of valid co-expression claims in the benchmark.
 - **No clinical metadata** is shown: the KPMP clinical export was not downloaded.
 
+The root PRD (`spatialscout_prd_srs_spec.md`), the two whitepaper `.docx` files and `docs/product/` are pre-build planning drafts with placeholders, superseded by `docs/spec/` and this README.
+
 ## Roadmap (not built)
 
 - More participants, and a KPMP clinical-metadata view sourced from KPMP's own files.
@@ -94,5 +96,5 @@ Live runs need provider keys in `.env`, `SPATIALSCOUT_LIVE_PASSCODE` and `SPATIA
 ## Credits
 
 - **GSE286184:** Xenium in situ profiling of human glomerular disease, [NCBI GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE286184); paper [PMC13586693](https://pmc.ncbi.nlm.nih.gov/articles/PMC13586693/).
-- **KPMP:** Kidney Precision Medicine Project, [Kidney Tissue Atlas](https://atlas.kpmp.org/repository/), open-access CODEX image collections and segmentation for participants 164-17 and 31-10013.
+- **KPMP:** Kidney Precision Medicine Project, [Kidney Tissue Atlas](https://atlas.kpmp.org/repository/), open-access CODEX image collections and segmentation for participants 164-17 and 31-10013. Segmentation data DOI [10.48698/swzg-8j41](https://doi.org/10.48698/swzg-8j41). The Kidney Precision Medicine Project (KPMP) is supported by grant U24 DK114886 from the National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK). Please follow KPMP's citation guideline when presenting or publishing KPMP data.
 - **Method:** Mitchel et al. (2026) on how segmentation errors distort spatial differential expression motivated the assignment conditions.
