@@ -171,7 +171,7 @@ def depth_profile(
         section_id=section.section_id,
         label_rule_id=section.label_rule_id,
         region=region,
-        scope="molecules whose own x, y lie in the box" + (f", assigned by default to {cell_type} cells" if cell_type else ""),
+        scope="whose own x, y lie in the box" + (f", assigned by default to {cell_type} cells" if cell_type else ""),
         genes=list(genes),
         cell_type=cell_type,
         conditions=list(masks),

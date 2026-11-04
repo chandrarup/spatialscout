@@ -22,13 +22,13 @@ interface Props {
   onOpenSection: (sectionId: string) => void;
 }
 
-/** Deep blue (shallow) to yellow (deep), a perceptually ordered ramp. */
+/** Blue (shallow) to yellow (deep), ordered in lightness and bright enough to read on black. */
 function depthColour(t: number): [number, number, number] {
   const stops: [number, number, number][] = [
-    [68, 1, 84],
-    [59, 82, 139],
-    [33, 145, 140],
-    [94, 201, 98],
+    [80, 120, 255],
+    [40, 170, 230],
+    [40, 200, 160],
+    [150, 220, 80],
     [253, 231, 37],
   ];
   const s = Math.min(0.9999, Math.max(0, t)) * (stops.length - 1);
@@ -184,7 +184,7 @@ export function DepthView({ region, genes, cellType, labelRuleId, onOpenSection 
             views={new OrbitView({ id: "depth", orbitAxis: "Z", fovy: 40 })}
             initialViewState={{ target: [0, 0, 0], rotationX: 35, rotationOrbit: -30, zoom: Math.log2(500 / span), minZoom: -4, maxZoom: 12 }}
             controller={{ dragPan: true, dragRotate: true, scrollZoom: true, inertia: false }}
-            layers={[plane, new PointCloudLayer({ id: "depth-points", data, pointSize: 2.2, sizeUnits: "pixels", material: false })]}
+            layers={[plane, new PointCloudLayer({ id: "depth-points", data, pointSize: 3.5, sizeUnits: "pixels", material: false })]}
           />
         )}
         {!data && !problem && <p className="shimmer-text absolute top-3 left-3 text-[12px]">Loading measured depths…</p>}

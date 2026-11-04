@@ -604,7 +604,7 @@ export default function App() {
         {stage === "run" && shown && (
           <div className="absolute inset-0 flex">
             {/* The tissue the agent is working on: the main surface. */}
-            <div className={`relative flex min-w-0 flex-1 flex-col ${rail === "full" ? "hidden" : ""}`}>
+            <div className={`relative flex min-w-0 flex-1 flex-col overflow-y-auto md:overflow-visible ${rail === "full" ? "hidden" : ""}`}>
               <div className="flex-none px-5 pt-4 pb-2">
                 <p className="text-[12px] text-ink-3">{playing ? "Replaying a recorded investigation" : shown.status.replaceAll("_", " ")}</p>
                 {mission ? (
@@ -630,11 +630,11 @@ export default function App() {
                     : "Each dot is one RNA molecule in a Xenium kidney section. When the agent's first result arrives, the view flies to the region it cites."}
                 </p>
               </div>
-              <div className="flex min-h-0 flex-1 flex-col px-3 pb-2 *:flex-1">
+              <div className="flex min-h-[60vh] flex-1 flex-col px-3 pb-2 *:flex-1 md:min-h-0">
                 <TissuePanel defaultDatasetId={datasetId} focus={focus} compact />
               </div>
               {/* Milestones: glow while the agent works, then fade. */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 flex flex-col items-center gap-2">
+              <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 hidden flex-col items-center gap-2 md:flex">
                 {toasts.map((t) => (
                   <div key={t.key} className="milestone flex items-center gap-3 rounded-full bg-[#111214]/95 py-2 pr-5 pl-2 backdrop-blur">
                     <AgentOrb size={26} working={!t.final} />
@@ -647,7 +647,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setRail("rail")}
-                  className="absolute top-4 right-5 z-10 flex items-center gap-3 rounded-full bg-raised py-2 pr-4 pl-3 text-left text-[13px] text-ink ring-1 ring-white/[0.06] hover:bg-[#2a2d32]"
+                  className="order-first mx-5 mt-3 flex items-center gap-3 self-start rounded-full bg-raised py-2 pr-4 pl-3 text-left text-[13px] text-ink ring-1 ring-white/[0.06] hover:bg-[#2a2d32] md:absolute md:top-4 md:right-5 md:z-10 md:m-0"
                 >
                   <span className={`h-2 w-2 rounded-full ${finishedRun ? "bg-stable" : "animate-pulse bg-stable"}`} />
                   {finishedRun && summary ? (
