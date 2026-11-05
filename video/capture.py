@@ -20,38 +20,15 @@ W, H = 1920, 1080
 QUESTION = "Compare these two regions: does B-cell UMOD look like spillover in the diseased tissue but not in the healthy one?"
 GOLDEN = "My hypothesis: the podocytes this atlas calls 'endocytic' really carry LRP2"
 
-CURSOR = """
-(() => {
-  const install = () => {
-    if (document.getElementById('__cursor')) return;
-    const c = document.createElement('div');
-    c.id = '__cursor';
-    c.style.cssText = 'position:fixed;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;'
-      + 'background:rgba(255,255,255,0.92);box-shadow:0 0 0 2px rgba(0,0,0,0.55),0 4px 14px rgba(0,0,0,0.5);'
-      + 'pointer-events:none;z-index:2147483647;transition:transform 120ms ease-out;transform:translate(960px,540px)';
-    document.body.appendChild(c);
-    let x = 960, y = 540;
-    addEventListener('mousemove', e => { x = e.clientX; y = e.clientY; c.style.transform = `translate(${x}px,${y}px)`; }, true);
-    addEventListener('mousedown', () => {
-      c.style.transform = `translate(${x}px,${y}px) scale(0.7)`;
-      const r = document.createElement('div');
-      r.style.cssText = `position:fixed;left:${x}px;top:${y}px;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;`
-        + 'border:3px solid rgba(74,222,128,0.95);pointer-events:none;z-index:2147483646;transition:all 520ms ease-out;';
-      document.body.appendChild(r);
-      requestAnimationFrame(() => { r.style.transform = 'scale(4.5)'; r.style.opacity = '0'; });
-      setTimeout(() => r.remove(), 600);
-    }, true);
-    addEventListener('mouseup', () => { c.style.transform = `translate(${x}px,${y}px)`; }, true);
-  };
-  if (document.body) install(); else addEventListener('DOMContentLoaded', install);
-})();
-"""
-
-
 class Director:
     def __init__(self, page, t0: float):
         self.page, self.t0, self.marks = page, t0, []
         self.x, self.y = W / 2, H / 2
+        self.path: list[list[float]] = [[0.0, self.x, self.y]]
+        self.clicks: list[float] = []
+
+    def now(self) -> float:
+        return round(time.monotonic() - self.t0, 3)
 
     def mark(self, name: str, target=None, pad: int = 120) -> None:
         rect = None
@@ -63,8 +40,11 @@ class Director:
         print(f"{self.marks[-1]['t']:7.2f}s  {name}")
 
     def move(self, x: float, y: float, steps: int = 28) -> None:
+        self.path.append([self.now(), self.x, self.y])
         self.page.mouse.move(x, y, steps=steps)
+        self.page.wait_for_timeout(steps * 12)
         self.x, self.y = x, y
+        self.path.append([self.now(), x, y])
 
     def click(self, locator, name: str | None = None, pause: int = 450) -> None:
         locator.scroll_into_view_if_needed()
@@ -73,6 +53,7 @@ class Director:
             self.mark(name, b)
         self.move(b["x"] + b["width"] / 2, b["y"] + b["height"] / 2)
         self.page.wait_for_timeout(pause)
+        self.clicks.append(self.now())
         self.page.mouse.down()
         self.page.wait_for_timeout(90)
         self.page.mouse.up()
@@ -80,6 +61,7 @@ class Director:
     def drag(self, pane, fx0: float, fy0: float, fx1: float, fy1: float) -> None:
         b = pane.bounding_box()
         self.move(b["x"] + b["width"] * fx0, b["y"] + b["height"] * fy0)
+        self.clicks.append(self.now())
         self.page.mouse.down()
         self.move(b["x"] + b["width"] * fx1, b["y"] + b["height"] * fy1, steps=40)
         self.page.mouse.up()
@@ -96,9 +78,8 @@ def main(url: str) -> int:
     video_dir = HERE / "out" / "raw"
     shutil.rmtree(video_dir, ignore_errors=True)
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--hide-scrollbars"])
+        browser = p.chromium.launch(headless=False, args=["--hide-scrollbars", "--window-size=1920,1180", "--window-position=0,0"])
         ctx = browser.new_context(viewport={"width": W, "height": H}, record_video_dir=str(video_dir), record_video_size={"width": W, "height": H})
-        ctx.add_init_script(CURSOR)
         page = ctx.new_page()
         t0 = time.monotonic()
         d = Director(page, t0)
@@ -268,6 +249,7 @@ def main(url: str) -> int:
     (HERE / "public").mkdir(exist_ok=True)
     shutil.copy(src, HERE / "public" / "screen.webm")
     (HERE / "src" / "marks.json").write_text(json.dumps(d.marks, indent=1))
+    (HERE / "src" / "cursor.json").write_text(json.dumps({"path": d.path, "clicks": d.clicks}))
     print(f"wrote {HERE / 'public' / 'screen.webm'} and {len(d.marks)} marks")
     return 0
 

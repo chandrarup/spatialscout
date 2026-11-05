@@ -1,5 +1,6 @@
 import { AbsoluteFill, Easing, OffthreadVideo, Series, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import marksJson from "./marks.json";
+import cursorJson from "./cursor.json";
 import { Intro, INTRO_FRAMES } from "./Intro";
 import { Outro, OUTRO_FRAMES } from "./Outro";
 import { C, FONT } from "./ui";
@@ -26,8 +27,8 @@ const SHOTS: Shot[] = [
   { from: "ask-both", to: "data-fit", dur: 6, zoom: "question", title: "Ask about both regions", maxZoom: 1.6 },
   { from: "data-fit", to: "go-live", dur: 3, zoom: "data-fit", maxZoom: 1.6 },
   { from: "go-live", to: "live-running", dur: 5, title: "Live: Muse Wonder writes the plan" },
-  { from: "follow", to: "resize", dur: 12, zoom: "team", title: "Here's one I made earlier", maxZoom: 1.5 },
-  { from: "resize", to: "evidence", dur: 20, title: "The research team at work (time-lapse)", maxRate: 6.5 },
+  { from: "follow", to: "resize", dur: 8, zoom: "team", title: "Here's one I made earlier", maxZoom: 1.5 },
+  { from: "resize", to: "evidence", dur: 9, title: "The research team at work" },
   { from: "findings", to: "verdict-2", dur: 10, zoom: "verdict-1", title: "Part 1 · Confirmed", maxZoom: 1.8 },
   { from: "verdict-2", to: "challenge", dur: 12, zoom: "verdict-2", title: "Part 2 · Refuted, with caveats", maxZoom: 1.8 },
   { from: "evidence", to: "depth", dur: 3, title: "Molecules at measured depth" },
@@ -80,6 +81,57 @@ function camera(rect: number[] | null, maxZoom: number) {
   return { s, x, y };
 }
 
+const PATH = (cursorJson as { path: number[][]; clicks: number[] }).path;
+const CLICKS = (cursorJson as { path: number[][]; clicks: number[] }).clicks;
+const CARD_X = (W * (1 - CARD)) / 2;
+const CARD_Y = (H * (1 - CARD)) / 2 - 22;
+
+function pointer(t: number) {
+  if (t <= PATH[0][0]) return { x: PATH[0][1], y: PATH[0][2] };
+  for (let i = 1; i < PATH.length; i++) {
+    const [t1, x1, y1] = PATH[i];
+    if (t <= t1) {
+      const [t0, x0, y0] = PATH[i - 1];
+      const u = t1 > t0 ? (t - t0) / (t1 - t0) : 1;
+      const e = u * u * (3 - 2 * u);
+      return { x: x0 + (x1 - x0) * e, y: y0 + (y1 - y0) * e };
+    }
+  }
+  const last = PATH[PATH.length - 1];
+  return { x: last[1], y: last[2] };
+}
+
+function Cursor({ t, rate, place }: { t: number; rate: number; place: (x: number, y: number) => { x: number; y: number } }) {
+  const p = pointer(t);
+  const { x, y } = place(p.x, p.y);
+  if (x < CARD_X || y < CARD_Y || x > CARD_X + W * CARD || y > CARD_Y + H * CARD) return null;
+  const ages = CLICKS.map((c) => (t - c) / rate).filter((a) => a >= 0 && a < 0.6);
+  const press = ages.some((a) => a < 0.16) ? 0.82 : 1;
+  return (
+    <>
+      {ages.map((a, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            left: x - 14,
+            top: y - 14,
+            width: 28,
+            height: 28,
+            borderRadius: 14,
+            border: `3px solid ${C.rna}`,
+            transform: `scale(${1 + (a / 0.6) * 2.6})`,
+            opacity: 1 - a / 0.6,
+          }}
+        />
+      ))}
+      <svg width={34} height={34} viewBox="0 0 24 24" style={{ position: "absolute", left: x - 5, top: y - 3, transform: `scale(${press})`, transformOrigin: "5px 3px", filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.55))" }}>
+        <path d="M5 3 L5 20 L9.5 15.8 L12.6 22 L15.3 20.7 L12.3 14.6 L18.5 14.6 Z" fill="#fff" stroke="#111" strokeWidth={1.3} strokeLinejoin="round" />
+      </svg>
+    </>
+  );
+}
+
 function Title({ text }: { text: string }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -119,8 +171,8 @@ function Shot({ clip, title }: { clip: Clip; title: string | null }) {
       <div
         style={{
           position: "absolute",
-          left: (W * (1 - CARD)) / 2,
-          top: (H * (1 - CARD)) / 2 - 22,
+          left: CARD_X,
+          top: CARD_Y,
           width: W * CARD,
           height: H * CARD,
           borderRadius: 18,
@@ -139,6 +191,11 @@ function Shot({ clip, title }: { clip: Clip; title: string | null }) {
           />
         </div>
       </div>
+      <Cursor
+        t={clip.start + (frame / FPS) * clip.rate}
+        rate={clip.rate}
+        place={(px, py) => ({ x: CARD_X + CARD * (px * s + cam.x * k), y: CARD_Y + CARD * (py * s + cam.y * k) })}
+      />
       {title && <Title text={title} />}
     </AbsoluteFill>
   );
