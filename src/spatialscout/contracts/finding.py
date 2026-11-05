@@ -232,6 +232,20 @@ class AuditIndex(Contract):
     section_disclosure: str | None = Field(default=None, description="How many sections and donors the dataset holds; shown with every section count.")
 
 
+class VerificationBenchmark(Contract):
+    """How the claim verifier scores on valid and deliberately altered claims: every injected error it caught, and
+    every valid claim it flagged, by check. Read from the committed benchmark results (`make benchmark`)."""
+
+    dataset_id: str
+    valid_claims: int
+    injected_claims: int
+    injected_caught: int = Field(description="Injected claims any check detected.")
+    valid_flagged: int = Field(description="Valid claims any check flagged.")
+    valid_flagged_visual_only: int = Field(description="Valid claims flagged by the figure-read check alone.")
+    structural_false: int = Field(description="Valid claims the structural check flagged.")
+    numerical_false: int = Field(description="Valid claims the numerical check flagged.")
+
+
 class GateStatus(Contract):
     """Cells and molecules in a box against the frozen gates, fast enough to show while a box is dragged."""
 
@@ -246,6 +260,15 @@ class GateStatus(Contract):
     passes_population_gate: bool
     passes_molecule_gate: bool
     status: str
+
+
+class RegionAuditRequest(Contract):
+    """A box the researcher drew on one RNA section, to audit one population and its genes inside it."""
+
+    region: Region
+    cell_type: str
+    genes: list[str] = Field(min_length=1)
+    label_rule_id: str | None = None
 
 
 class SectionLog2Value(Contract):

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ModeInfo } from "../../contracts/generated";
 import { claimOf, outcomeOf } from "./outcome";
 import type { InvestigationView } from "../../investigation";
+import { describeSelection } from "../../selection";
 import { QuestionBar } from "../QuestionBar";
 import { DataFitCard } from "./DataFitCard";
 import type { TissueContext } from "./Explore";
@@ -277,9 +278,19 @@ export function AgentBar(props: Props) {
         </p>
       )}
       {context && !props.dataFit && (
-        <button type="button" onClick={props.onClearContext} className="mt-1 text-[12px] text-ink-3 hover:text-ink">
-          Clear the selection
-        </button>
+        <div className="mt-2 rounded-2xl bg-raised/60 px-3 py-2 text-[12px] leading-relaxed text-ink-2">
+          {(context.selections ?? (context.selection ? [context.selection] : [])).map((s) => (
+            <p key={`${s.pane}-${s.sourceId}`} data-testid="assistant-selection">
+              <span className="text-ink">Selection{s.pane !== "explore" ? ` (${s.pane} pane)` : ""}:</span> {describeSelection(s)}
+            </p>
+          ))}
+          <p className="text-ink-3">
+            The numbers above were computed on {context.selections && context.selections.length > 1 ? "these selections" : "this selection"}. Recorded investigations below replay their original RNA run and do not use it. With the live trial or your own keys (Connections), your question runs live and takes these numbers along as context; protein boxes stay labelled as separate specimens.
+          </p>
+          <button type="button" onClick={props.onClearContext} className="mt-1 text-[12px] text-ink-3 underline underline-offset-4 hover:text-ink">
+            Clear the selection
+          </button>
+        </div>
       )}
       {!props.busy && !props.dataFit && !props.checking && runs.length > 0 && (
         <ul className="mt-3 flex flex-col gap-0.5">

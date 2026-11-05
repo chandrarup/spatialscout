@@ -1,6 +1,6 @@
 // What the researcher delegated, counted from the run's events and its lab record: analyses, executed and rejected
 // controls, verified claims, the injected error the verifier caught, protein checks, literature read and figures.
-// Recorded execution time, lab time, model cost and playback are kept apart; human time saved is not measured.
+// Recorded execution time, lab time, model cost and playback are kept apart; the researcher's part is one plan approval.
 import type { InvestigationEvent, LabRun } from "../../contracts/generated";
 
 function seconds(ms: number): string {
@@ -84,9 +84,9 @@ export function WorkSummary({ events, lab }: { events: InvestigationEvent[]; lab
           </dd>
         </div>
         <div>
-          <dt className="text-[12px] text-ink-3">Human time saved</dt>
-          <dd className="text-[18px] font-semibold">Not measured</dd>
-          <dd className="text-[11px] text-ink-3">needs a side-by-side study</dd>
+          <dt className="text-[12px] text-ink-3">Your hands-on work</dt>
+          <dd className="text-[18px] font-semibold">1 approval click</dd>
+          <dd className="text-[11px] text-ink-3">approve the plan; the run does the rest</dd>
         </div>
       </dl>
       <p className="mt-3 text-[11px] text-ink-3">Playback on screen is compressed and is not the execution time.</p>

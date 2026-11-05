@@ -3,7 +3,7 @@
 // A recorded run arrives whole; it is played back on the canvas one event at a time, in recorded order, with each
 // event's recorded latency and cost shown, and the wait between events compressed.
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { api } from "./api";
+import { api, type LiveConnection } from "./api";
 import { DualViewer } from "./components/DualViewer";
 import { formatUtc } from "./components/RunModeBanner";
 import { CONDITION_NAMES } from "./components/Viewer";
@@ -13,12 +13,13 @@ import { CompareView } from "./components/stage/CompareView";
 import { Connections } from "./components/stage/Connections";
 import { Explore, type TissueContext } from "./components/stage/Explore";
 import { Intro } from "./components/stage/Intro";
+import { ResearchTeam } from "./components/stage/ResearchTeam";
 import { Results } from "./components/stage/Results";
 import { Upload } from "./components/stage/Upload";
 import { RunCanvas } from "./components/stage/RunCanvas";
 import { buildGraph, isStep, playbackDelay } from "./components/stage/runGraph";
 import { type TissueFocus, TissuePanel } from "./components/TissuePanel";
-import type { AuditIndex, DataFit, DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, RunMode } from "./contracts/generated";
+import type { AuditIndex, DataFit, DatasetManifest, InvestigationEvent, InvestigationSnapshot, KpmpManifest, ModeInfo, Region, RunMode } from "./contracts/generated";
 import type { DatasetAdapter, LoadedSection } from "./datasets/adapter";
 import { kpmpAdapter } from "./datasets/kpmp";
 import { moleculeAdapter } from "./datasets/molecules";
@@ -105,6 +106,63 @@ function runSummary(events: InvestigationEvent[]) {
   return { steps: events.filter(isStep).length, calls: calls.length, cost, minutes };
 }
 
+const RAIL_KEY = "spatialscout.railWidth";
+const DEFAULT_RAIL = 560;
+const MIN_RAIL = 300;
+const MIN_TISSUE = 360;
+
+function useNarrow(): boolean {
+  const query = "(max-width: 767px)";
+  const [narrow, setNarrow] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const list = window.matchMedia(query);
+    const on = () => setNarrow(list.matches);
+    list.addEventListener("change", on);
+    return () => list.removeEventListener("change", on);
+  }, []);
+  return narrow;
+}
+
+/** The separator between the tissue and the steps: drag it, or focus it and use the arrow keys (Home resets). */
+function SplitHandle({ width, onWidth }: { width: number; onWidth: (w: number) => void }) {
+  const clamp = (w: number, total: number) => Math.max(MIN_RAIL, Math.min(total - MIN_TISSUE, w));
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize the tissue and the agent's steps"
+      aria-valuemin={MIN_RAIL}
+      aria-valuenow={Math.round(width)}
+      tabIndex={0}
+      className="group relative z-10 w-2 shrink-0 cursor-col-resize touch-none bg-line/40 outline-none hover:bg-white/20 focus-visible:bg-white/40"
+      onKeyDown={(e) => {
+        const total = e.currentTarget.parentElement?.clientWidth ?? window.innerWidth;
+        if (e.key === "ArrowLeft") onWidth(clamp(width + 40, total));
+        else if (e.key === "ArrowRight") onWidth(clamp(width - 40, total));
+        else if (e.key === "Home") onWidth(clamp(DEFAULT_RAIL, total));
+        else return;
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onPointerDown={(e) => {
+        const parent = e.currentTarget.parentElement;
+        if (!parent) return;
+        e.currentTarget.setPointerCapture(e.pointerId);
+        const box = parent.getBoundingClientRect();
+        const move = (event: PointerEvent) => onWidth(clamp(box.right - event.clientX, box.width));
+        const up = () => {
+          window.removeEventListener("pointermove", move);
+          window.removeEventListener("pointerup", up);
+        };
+        window.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", up);
+      }}
+    >
+      <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/30 group-hover:bg-white/70" aria-hidden="true" />
+    </div>
+  );
+}
+
 export default function App() {
   const [mode, setMode] = useState<ModeInfo | null>(null);
   const [investigation, dispatch] = useReducer(reducer, null);
@@ -119,7 +177,25 @@ export default function App() {
   const [strips, setStrips] = useState<{ section: LoadedSection; role: string }[]>([]);
   const [participantId, setParticipantId] = useState<string | null>(null);
   const [focus, setFocus] = useState<TissueFocus | null>(null);
-  const [rail, setRail] = useState<Rail>("rail");
+  const [railChoice, setRail] = useState<Rail>("rail");
+  const narrow = useNarrow();
+  // On phones the tissue and the steps take turns rather than sharing a narrow row.
+  const rail: Rail = narrow && railChoice === "rail" ? "hidden" : railChoice;
+  const [railWidth, setRailWidthState] = useState(() => {
+    const saved = Number(window.localStorage.getItem(RAIL_KEY));
+    return Number.isFinite(saved) && saved >= MIN_RAIL ? saved : DEFAULT_RAIL;
+  });
+  const setRailWidth = useCallback((w: number) => {
+    setRailWidthState(w);
+    window.localStorage.setItem(RAIL_KEY, String(Math.round(w)));
+  }, []);
+  const [graphFit, setGraphFit] = useState(0);
+  const [railView, setRailView] = useState<"team" | "graph">("team");
+  const [recording, setRecording] = useState(() => window.localStorage.getItem("spatialscout.recording") === "on");
+  useEffect(() => {
+    document.documentElement.dataset.recording = recording ? "on" : "off";
+    window.localStorage.setItem("spatialscout.recording", recording ? "on" : "off");
+  }, [recording]);
   const [follow, setFollow] = useState(true);
   const [shownCount, setShownCount] = useState(Number.POSITIVE_INFINITY);
   const [paused, setPaused] = useState(false);
@@ -222,6 +298,7 @@ export default function App() {
   const mission = investigation?.replay ? MISSIONS[investigation.replay.recording_id] : undefined;
   const [chapterId, setChapterId] = useState<string | null>(null);
   const [connectionsOpen, setConnectionsOpen] = useState(false);
+  const [connection, setConnection] = useState<LiveConnection>({ kind: "recorded" });
   const graph = useMemo(() => buildGraph(shown?.question ?? "", shown?.events ?? []), [shown]);
   const milestones = useMemo(() => milestonesOf(shown?.events ?? []), [shown]);
   const [toasts, setToasts] = useState<Milestone[]>([]);
@@ -242,7 +319,7 @@ export default function App() {
       setRail("hidden");
     }
   }, [finishedRun, shown, stage]);
-  const datasetId = shown?.plan?.dataset_id ?? mode?.dataset_id ?? "GSE286184";
+  const datasetId = shown?.plan?.dataset_id ?? (mode?.dataset_id === "synthetic" ? "GSE286184" : mode?.dataset_id) ?? "GSE286184";
 
   // When a finding arrives, fly the tissue to its first evidence region and split it against the stricter condition.
   const focusFinding = useCallback(
@@ -299,9 +376,14 @@ export default function App() {
       }
       return;
     }
+    openFindings(chapter.section ?? "");
+  };
+  /** Open the findings at the first of `labels` (separated by "|") that exists there. */
+  function openFindings(labels: string) {
+    if (!investigation?.verdict) return;
     setStage("results");
     window.setTimeout(() => {
-      const target = (chapter.section ?? "")
+      const target = labels
         .split("|")
         .map((label) => document.querySelector<HTMLElement>(`[aria-label="${label}"]`))
         .find(Boolean);
@@ -310,27 +392,29 @@ export default function App() {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     }, 120);
-  };
+  }
   const currentChapter =
     stage === "run" ? ([...chapters].reverse().find((c) => c.atEvent !== null && Math.min(shownCount, total) >= c.atEvent)?.id ?? null) : stage === "results" ? chapterId : null;
 
   const runsOn = (question: string): string | null => {
     const recording = mode?.recordings.find((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase());
     if (recording) return recording.dataset_id ?? mode?.dataset_id ?? null;
-    return mode?.dataset_id ?? null;
+    // A new question runs on the real kidney cohort, never the synthetic test section the server may default to.
+    return mode?.dataset_id === "synthetic" ? "GSE286184" : (mode?.dataset_id ?? null);
   };
 
   // Before a question that no recording answers runs, the data check says what it needs that the workspace lacks.
   const [fit, setFit] = useState<DataFit | null>(null);
   const [searching, setSearching] = useState(false);
   const [checking, setChecking] = useState<string | null>(null);
-  const canRun = mode?.default_run_mode === "live";
+  const live = connection.kind !== "recorded";
+  const canRun = live || mode?.default_run_mode === "live";
   const recorded = (question: string) => mode?.recordings.some((r) => r.question.trim().toLowerCase() === question.trim().toLowerCase()) ?? false;
 
   const ask = (question: string) => {
     setProblem(null);
     setFit(null);
-    if (recorded(question)) return start(question);
+    if (recorded(question) && !live) return start(question);
     setChecking(question);
     setAgentOpen(true);
     api
@@ -349,13 +433,20 @@ export default function App() {
       .finally(() => setChecking(null));
   };
 
-  const start = (question: string) => {
+  const start = (question: string, via: LiveConnection = connection) => {
     setFit(null);
+    const live = via.kind !== "recorded";
+    // A live run takes the researcher's selection with it: RNA boxes as regions on their section, and every box's
+    // computed numbers as stated context (protein boxes are separate specimens and a separate assay).
+    const selections = context?.selections ?? (context?.selection ? [context.selection] : []);
+    const asked = live && context ? `${question}\n\nContext from my selection (computed by SpatialScout, not by a model): ${context.summary}` : question;
+    const regions = (live ? selections.filter((s) => s.assay === "Xenium RNA").map((s) => s.region).slice(0, 2) : []) as [] | [Region] | [Region, Region];
     setContext(null);
     api
-      .start({ question, run_mode: mode?.default_run_mode ?? "cached_tool_rerun", dataset_id: runsOn(question), regions: [] })
+      .start({ question: asked, run_mode: live ? "live" : (mode?.default_run_mode ?? "cached_tool_rerun"), dataset_id: runsOn(question), regions }, via)
       .then((snapshot) => {
-        follow_(snapshot, true);
+        // A recording is paced for watching; a live run shows each event as it arrives.
+        follow_(snapshot, !live);
         setFocus(null);
         setRail("rail");
         setAgentOpen(false);
@@ -365,7 +456,9 @@ export default function App() {
         const text = String(error).replace(/^Error:\s*/, "");
         setAgentOpen(true);
         setProblem(
-          mode?.default_run_mode === "immutable_replay" ? `${text} This demo replays recorded runs only; pick one of the recorded questions.` : text,
+          !live && mode?.default_run_mode === "immutable_replay"
+            ? `${text} Recordings only answer the recorded questions: pick one, or open Connections for the live trial or your own keys.`
+            : text,
         );
       });
   };
@@ -378,6 +471,16 @@ export default function App() {
       .catch((error: unknown) => setProblem(String(error)))
       .finally(() => setApproving(false));
   };
+
+  // A live run started from this page goes straight through: its plan is approved as soon as it is proposed (the
+  // plan stays on screen and in the audit log), so the researcher never has to step it along.
+  const autoApproved = useRef(new Set<string>());
+  useEffect(() => {
+    if (!investigation || investigation.runMode !== "live" || investigation.status !== "awaiting_approval") return;
+    if (autoApproved.current.has(investigation.investigationId)) return;
+    autoApproved.current.add(investigation.investigationId);
+    decide(api.approve);
+  }, [investigation?.investigationId, investigation?.status, investigation?.runMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const busy = investigation !== null && (["planning", "running"].includes(investigation.status) || playing);
   const runMode = investigation?.runMode ?? mode?.default_run_mode ?? null;
@@ -431,13 +534,22 @@ export default function App() {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <button type="button" onClick={() => setConnectionsOpen(true)} className="h-8 rounded-full bg-raised px-3 text-[12px] text-ink hover:bg-[#2a2d32] sm:text-[13px]">
-            Connections
+            Connections{connection.kind === "trial" ? " · live trial" : connection.kind === "byok" ? " · your keys" : ""}
+          </button>
+          <button
+            type="button"
+            aria-pressed={recording}
+            onClick={() => setRecording((r) => !r)}
+            title="A steadier screen for recording: no drifting images, the run mode and recording time always shown. Results are unchanged."
+            className="hidden h-8 rounded-full bg-raised px-3 text-[12px] text-ink-2 hover:text-ink aria-pressed:bg-white aria-pressed:text-black sm:block sm:text-[13px]"
+          >
+            Recording mode
           </button>
           {runMode && (
             <p role="status" className="flex items-center gap-2 text-[12px] text-ink-2 sm:text-[13px]" title={RUN_MODE_NOTE[runMode]}>
               <span className="h-2 w-2 rounded-full bg-run-mode" aria-hidden="true" />
               <strong className="font-medium text-ink">{RUN_MODE_LABEL[runMode]}</strong>
-              <span className="hidden lg:inline">
+              <span className={recording ? "inline" : "hidden lg:inline"}>
                 {RUN_MODE_NOTE[runMode]}
                 {replay && <> · recorded {formatUtc(replay.recorded_at)}</>}
                 {replay?.origin === "hand_authored" && " · responses hand-authored"}
@@ -446,7 +558,17 @@ export default function App() {
           )}
         </div>
       </header>
-      {connectionsOpen && <Connections mode={mode} onClose={() => setConnectionsOpen(false)} />}
+      {connectionsOpen && (
+        <Connections
+          mode={mode}
+          connection={connection}
+          onConnection={(c) => {
+            setConnection(c);
+            setProblem(null);
+          }}
+          onClose={() => setConnectionsOpen(false)}
+        />
+      )}
       <nav aria-label="Stages (narrow screens)" className="flex shrink-0 gap-1 overflow-x-auto px-3 pb-2 md:hidden">
         {nav.map((item) => (
           <button
@@ -465,6 +587,7 @@ export default function App() {
       <main className="relative min-h-0 flex-1">
         {stage === "intro" && (
           <Intro
+            key={recording ? "still" : "drift"}
             strips={strips}
             visible={introChannels}
             kpmp={kpmp}
@@ -499,6 +622,10 @@ export default function App() {
             }}
             onBack={() => setStage("explore")}
             onClassic={() => setStage("classic")}
+            onAsk={(c) => {
+              setContext(c);
+              setAgentOpen(true);
+            }}
           />
         )}
         {stage === "classic" && adapters.length > 0 && (
@@ -509,7 +636,7 @@ export default function App() {
         {stage === "run" && shown && (
           <div className="absolute inset-0 flex">
             {/* The tissue the agent is working on: the main surface. */}
-            <div className={`relative flex min-w-0 flex-1 flex-col ${rail === "full" ? "hidden" : ""}`}>
+            <div className={`relative flex min-w-0 flex-1 flex-col overflow-y-auto md:overflow-visible ${rail === "full" ? "hidden" : ""}`}>
               <div className="flex-none px-5 pt-4 pb-2">
                 <p className="text-[12px] text-ink-3">{playing ? "Replaying a recorded investigation" : shown.status.replaceAll("_", " ")}</p>
                 {mission ? (
@@ -531,15 +658,15 @@ export default function App() {
                 )}
                 <p className="mt-1 max-w-[60rem] text-[13px] leading-relaxed text-ink-2">
                   {focus
-                    ? `On screen: Xenium section ${focus.sectionId}, the region the agent cites for ${focus.cellType} ${focus.highlight.join("/")} (white box). Left of the divider, every molecule counted the usual way; right, the stricter ${CONDITION_NAMES[focus.condition] ?? focus.condition} rule, with the molecules it drops in yellow. Drag the divider.`
+                    ? `On screen: Xenium section ${focus.sectionId}, the region the agent cites for ${focus.cellType} ${focus.highlight.join("/")} (outlined). Yellow: the molecules the stricter ${CONDITION_NAMES[focus.condition] ?? focus.condition} rule drops. Switch the counting rule above the tissue, or compare both rules on the same section.`
                     : "Each dot is one RNA molecule in a Xenium kidney section. When the agent's first result arrives, the view flies to the region it cites."}
                 </p>
               </div>
-              <div className="flex min-h-0 flex-1 flex-col px-3 pb-[150px] *:flex-1">
-                <TissuePanel defaultDatasetId={datasetId} onShow={() => undefined} focus={focus} compact />
+              <div className="flex min-h-[60vh] flex-1 flex-col px-3 pb-2 *:flex-1 md:min-h-0">
+                <TissuePanel defaultDatasetId={datasetId} focus={focus} compact />
               </div>
               {/* Milestones: glow while the agent works, then fade. */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-[176px] z-20 flex flex-col items-center gap-2">
+              <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 hidden flex-col items-center gap-2 md:flex">
                 {toasts.map((t) => (
                   <div key={t.key} className="milestone flex items-center gap-3 rounded-full bg-[#111214]/95 py-2 pr-5 pl-2 backdrop-blur">
                     <AgentOrb size={26} working={!t.final} />
@@ -552,7 +679,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setRail("rail")}
-                  className="absolute top-4 right-5 z-10 flex items-center gap-3 rounded-full bg-raised py-2 pr-4 pl-3 text-left text-[13px] text-ink ring-1 ring-white/[0.06] hover:bg-[#2a2d32]"
+                  className="order-first mx-5 mt-3 flex items-center gap-3 self-start rounded-full bg-raised py-2 pr-4 pl-3 text-left text-[13px] text-ink ring-1 ring-white/[0.06] hover:bg-[#2a2d32] md:absolute md:top-4 md:right-5 md:z-10 md:m-0"
                 >
                   <span className={`h-2 w-2 rounded-full ${finishedRun ? "bg-stable" : "animate-pulse bg-stable"}`} />
                   {finishedRun && summary ? (
@@ -566,28 +693,79 @@ export default function App() {
                 </button>
               )}
             </div>
+            {rail === "rail" && <SplitHandle width={railWidth} onWidth={setRailWidth} />}
             {/* The agent's steps, as a graph. */}
             {rail !== "hidden" && (
-              <aside aria-label="The agent's steps" className={`relative flex flex-col bg-[#0d0e10] ${rail === "full" ? "flex-1" : "w-[min(44vw,620px)] border-l border-line"}`}>
-                <header className="flex items-center justify-between gap-2 px-4 py-2.5">
-                  <h2 className="text-[13px] font-semibold">
-                    The agent's steps <span className="font-normal text-ink-3">· drag, zoom, click a card</span>
-                  </h2>
-                  <div className="flex gap-1">
-                    {!follow && (
-                      <button type="button" onClick={() => setFollow(true)} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
-                        Follow
+              <aside
+                aria-label="The agent's steps"
+                className={`relative flex min-w-0 flex-col bg-[#0d0e10] ${rail === "full" ? "flex-1" : "shrink-0"}`}
+                style={rail === "full" ? undefined : { width: `min(${railWidth}px, calc(100% - ${MIN_TISSUE}px))` }}
+              >
+                <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+                  {summary && summary.calls > 0 && (
+                    <p className="w-full font-mono text-[11px] text-ink-3 tabular-nums" aria-label="Recorded spend so far">
+                      ${summary.cost.toFixed(2)} · {summary.minutes} recorded so far
+                    </p>
+                  )}
+                  <div className="flex gap-1" role="tablist" aria-label="How to show the agent's steps">
+                    {(
+                      [
+                        ["team", "Research team"],
+                        ["graph", "Detailed graph"],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        role="tab"
+                        aria-selected={railView === id}
+                        onClick={() => setRailView(id)}
+                        className="h-7 rounded-full px-3 text-[13px] font-semibold text-ink-3 hover:text-ink aria-selected:bg-raised aria-selected:text-ink"
+                      >
+                        {label}
                       </button>
-                    )}
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    <button type="button" onClick={() => setFollow(true)} disabled={follow} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink disabled:text-ink-3">
+                      {follow ? "Following the run" : "Follow evidence"}
+                    </button>
+                    <button type="button" onClick={() => setGraphFit((k) => k + 1)} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
+                      Fit graph
+                    </button>
                     <button type="button" onClick={() => setRail(rail === "full" ? "rail" : "full")} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
                       {rail === "full" ? "Show the tissue" : "Expand"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRail("rail");
+                        setRailWidth(DEFAULT_RAIL);
+                      }}
+                      className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink"
+                    >
+                      Reset layout
                     </button>
                     <button type="button" onClick={() => setRail("hidden")} className="h-7 rounded-full px-2.5 text-[12px] text-ink-2 hover:bg-raised hover:text-ink">
                       Hide
                     </button>
                   </div>
                 </header>
-                <div className="relative min-h-0 flex-1 pb-[140px]">
+                {railView === "team" && (
+                  <div className="relative min-h-0 flex-1">
+                    <ResearchTeam
+                      events={shown.events}
+                      investigationId={shown.investigationId}
+                      complete={finishedRun}
+                      onOpen={(target) => {
+                        if (target.kind === "graph") setRailView("graph");
+                        else if (target.kind === "finding") focusFinding(target.id, () => rail === "full" && setRail("rail"));
+                        else openFindings(target.section);
+                      }}
+                    />
+                  </div>
+                )}
+                <div className={`relative min-h-0 flex-1 ${railView === "graph" ? "" : "hidden"}`}>
                   <RunCanvas
                     graph={graph}
                     investigationId={shown.investigationId}
@@ -596,6 +774,7 @@ export default function App() {
                     follow={follow}
                     onFollow={setFollow}
                     zoom={rail === "full" ? 0.9 : 0.72}
+                    fitKey={graphFit}
                   />
                 </div>
               </aside>
@@ -658,7 +837,7 @@ export default function App() {
       </main>
 
       {showBar && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-3">
+        <div className={stage === "run" ? "relative z-40 flex shrink-0 justify-center border-t border-line px-3 py-2" : "pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-3"}>
           <AgentBar
             mode={mode}
             view={stage === "run" ? shown : null}
@@ -695,6 +874,14 @@ export default function App() {
                     searching,
                     canRun,
                     onAskAnyway: () => start(fit.question),
+                    onTrial: mode?.live_access.includes("trial")
+                      ? () => {
+                          const trial: LiveConnection = { kind: "trial" };
+                          setConnection(trial);
+                          start(fit.question, trial);
+                        }
+                      : undefined,
+                    onConnect: () => setConnectionsOpen(true),
                     onUpload: (prefill) => {
                       setUploadPrefill(prefill);
                       setFit(null);

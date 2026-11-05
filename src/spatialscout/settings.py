@@ -22,12 +22,14 @@ class LiveSettings:
     - `SPATIALSCOUT_DAILY_BUDGET_USD`: the most live calls may spend per UTC day
     - `SPATIALSCOUT_SPEND_DIR`: where the file-locked spend ledger lives (a shared volume when deployed)
     - `SPATIALSCOUT_ENV_FILE`: a `.env` file to read provider keys from when they are not in the environment
+    - `SPATIALSCOUT_TRIAL_DAILY_USD`: opens a passcode-free live trial on the server's keys, capped per UTC day
     """
 
     passcode: str | None = field(default=None, repr=False)
     daily_budget_usd: float | None = None
     spend_dir: Path | None = None
     env_file: Path | None = None
+    trial_daily_usd: float | None = None
 
     @property
     def configured(self) -> bool:
@@ -46,6 +48,8 @@ class Settings:
     """Committed derived artifacts, such as artifacts/GSE286184/ (manifest, capability report, label rules)."""
     processed_dir: Path | None = None
     """Validated GSE286184 tables written by `spatialscout ingest` (git-ignored)."""
+    depth_dir: Path | None = None
+    """Measured-depth sidecars, one `<section>/depth.parquet` + `depth.json` each; defaults to processed_dir."""
     raw_dir: Path | None = None
     """Raw GSE286184 GEO files (git-ignored); in a worktree, point it at the main checkout's data/raw/GSE286184."""
     kpmp_dir: Path | None = None
@@ -82,5 +86,6 @@ class Settings:
                 daily_budget_usd=float(budget) if budget else None,
                 spend_dir=Path(env("SPATIALSCOUT_SPEND_DIR", str(root / "data" / "spend"))),
                 env_file=Path(env("SPATIALSCOUT_ENV_FILE", str(root / ".env"))),
+                trial_daily_usd=float(env("SPATIALSCOUT_TRIAL_DAILY_USD") or 0) or None,
             ),
         )

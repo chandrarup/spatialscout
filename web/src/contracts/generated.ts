@@ -1321,6 +1321,163 @@ export interface FileChecksum {
   bytes: number;
 }
 /**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DepthBin".
+ */
+export interface DepthBin {
+  z0: number;
+  z1: number;
+  /**
+   * gene -> condition -> molecules in this interval.
+   */
+  counts: {
+    [k: string]: {
+      [k: string]: number;
+    };
+  };
+}
+/**
+ * Molecules inside a box (by their own x, y) with measured z, sampled deterministically to a point budget for
+ * drawing. Counts always say how many there are; the sample is for display only.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DepthPoints".
+ */
+export interface DepthPoints {
+  schema_version: string;
+  depth_version: string;
+  section_id: string;
+  region: Region;
+  genes: string[];
+  /**
+   * [z0, z1] in µm, inclusive.
+   */
+  z_range: number[];
+  /**
+   * Molecules of the genes in the box, with or without depth.
+   */
+  total_in_box: number;
+  /**
+   * Of those, with a measured z inside z_range.
+   */
+  eligible: number;
+  displayed: number;
+  sampling: string;
+  x: number[];
+  y: number[];
+  z: number[];
+  /**
+   * Index into `genes`.
+   */
+  gene_index: number[];
+  /**
+   * Counted toward a cell under the default condition.
+   */
+  assigned: boolean[];
+  /**
+   * Still counted under `stricter_condition`.
+   */
+  kept_stricter: boolean[];
+  stricter_condition: string;
+}
+/**
+ * Full-data transcript counts of a box by depth interval, gene and assignment condition. Descriptive: it says
+ * where molecules sit in z, not why a signal is present.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DepthProfile".
+ */
+export interface DepthProfile {
+  schema_version: string;
+  depth_version: string;
+  kind: "new_descriptive_depth_exploration";
+  dataset_id: string;
+  section_id: string;
+  label_rule_id: string;
+  region: Region;
+  scope: string;
+  genes: string[];
+  cell_type: string | null;
+  /**
+   * 'all' counts every molecule in scope; the others count molecules kept under that condition.
+   */
+  conditions: string[];
+  units: "µm";
+  bin_um: number;
+  bins: DepthBin[];
+  /**
+   * gene -> condition -> molecules over all bins; equals the sum of the bins.
+   */
+  totals: {
+    [k: string]: {
+      [k: string]: number;
+    };
+  };
+  /**
+   * gene -> molecules in scope without a measured z (in no bin).
+   */
+  missing_depth: {
+    [k: string]: number;
+  };
+  source: DepthSource;
+}
+/**
+ * Where a section's depths come from and how complete they are.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DepthSource".
+ */
+export interface DepthSource {
+  schema_version: string;
+  depth_version: string;
+  dataset_id: string;
+  section_id: string;
+  units: "µm";
+  /**
+   * How x, y and z relate to the displayed section coordinates.
+   */
+  coordinate_note: string;
+  /**
+   * The deposited transcripts file the z values were read from.
+   */
+  raw_file: string;
+  raw_sha256: string;
+  /**
+   * Checksum of the validated molecule table the sidecar is joined to.
+   */
+  molecules_sha256: string;
+  sidecar_sha256: string;
+  /**
+   * Validated molecules in the section.
+   */
+  molecules: number;
+  with_depth: number;
+  missing_depth: number;
+  /**
+   * Largest |x| or |y| difference between the raw row and the validated molecule.
+   */
+  max_xy_disagreement_um: number;
+  z_min: number | null;
+  z_max: number | null;
+}
+/**
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "DepthProfileRequest".
+ */
+export interface DepthProfileRequest {
+  region: Region;
+  /**
+   * @minItems 1
+   */
+  genes: [string, ...string[]];
+  bin_um: number;
+  /**
+   * Only molecules assigned (default condition) to cells of this type.
+   */
+  cell_type: string | null;
+  label_rule_id: string | null;
+}
+/**
  * The dispatcher's answer: the sub-agents to start, at most eight.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -2381,6 +2538,14 @@ export interface ModeInfo {
   default_run_mode: "immutable_replay" | "cached_tool_rerun" | "live";
   available_run_modes: ("immutable_replay" | "cached_tool_rerun" | "live")[];
   recordings: ReplayInfo[];
+  /**
+   * Who may start a live run: the owner's passcode, the open trial, or bring-your-own-key.
+   */
+  live_access: ("owner" | "trial" | "byok")[];
+  /**
+   * Left in today's live trial budget; null when no trial is open.
+   */
+  trial_remaining_usd: number | null;
 }
 /**
  * Everything sent to a provider. Its content hash keys the cache and the replay (ADR-0003),
@@ -2697,6 +2862,21 @@ export interface Recording {
   calls: RecordedCall[];
 }
 /**
+ * A box the researcher drew on one RNA section, to audit one population and its genes inside it.
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "RegionAuditRequest".
+ */
+export interface RegionAuditRequest {
+  region: Region;
+  cell_type: string;
+  /**
+   * @minItems 1
+   */
+  genes: [string, ...string[]];
+  label_rule_id: string | null;
+}
+/**
  * Everything the viewer draws for one region of a section, in micrometres.
  *
  * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
@@ -2875,4 +3055,36 @@ export interface Transcription {
    */
   audio_duration_ms: number;
   latency_ms: number;
+}
+/**
+ * How the claim verifier scores on valid and deliberately altered claims: every injected error it caught, and
+ * every valid claim it flagged, by check. Read from the committed benchmark results (`make benchmark`).
+ *
+ * This interface was referenced by `SpatialScoutContracts`'s JSON-Schema
+ * via the `definition` "VerificationBenchmark".
+ */
+export interface VerificationBenchmark {
+  dataset_id: string;
+  valid_claims: number;
+  injected_claims: number;
+  /**
+   * Injected claims any check detected.
+   */
+  injected_caught: number;
+  /**
+   * Valid claims any check flagged.
+   */
+  valid_flagged: number;
+  /**
+   * Valid claims flagged by the figure-read check alone.
+   */
+  valid_flagged_visual_only: number;
+  /**
+   * Valid claims the structural check flagged.
+   */
+  structural_false: number;
+  /**
+   * Valid claims the numerical check flagged.
+   */
+  numerical_false: number;
 }

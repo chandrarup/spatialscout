@@ -9,6 +9,10 @@ import type {
   ContrastResult,
   DataFit,
   DatasetManifest,
+  DepthPoints,
+  DepthProfile,
+  DepthProfileRequest,
+  DepthSource,
   GateStatus,
   LabelRuleSet,
   PackedRegionView,
@@ -21,12 +25,20 @@ import type {
   ProteinAuditResult,
   RecordedBoxes,
   Region,
+  RegionAuditRequest,
   RegionView,
   ReviewRequest,
   StartInvestigationRequest,
   StructureRun,
   Transcription,
+  VerificationBenchmark,
 } from "./contracts/generated";
+
+/** How a live run reaches the models: the open trial, or the visitor's own keys (kept in memory, never stored). */
+export type LiveConnection =
+  | { kind: "recorded" }
+  | { kind: "trial" }
+  | { kind: "byok"; keys: { meta: string; baseten?: string; fireworks?: string }; capUsd: number };
 
 async function json<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -82,6 +94,9 @@ export const api = {
     fetch(`/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}`).then(json<ContrastResult>),
   contrastFigureUrl: (datasetId: string, findingId: string) =>
     `/api/datasets/${encodeURIComponent(datasetId)}/contrast-results/${encodeURIComponent(findingId)}/figure.png`,
+  /** How the verifier scores on valid and deliberately altered claims, or null when no benchmark is committed. */
+  verificationBenchmark: (datasetId: string) =>
+    fetch(`/api/datasets/${encodeURIComponent(datasetId)}/verification-benchmark`).then((r) => (r.status === 404 ? null : json<VerificationBenchmark>(r))),
   investigationArtifact: (investigationId: string, artifactId: string) =>
     fetch(`/api/investigations/${encodeURIComponent(investigationId)}/artifacts/${encodeURIComponent(artifactId)}`).then(json<AuditResult>),
   investigationFigureUrl: (investigationId: string, findingId: string) =>
@@ -98,10 +113,17 @@ export const api = {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     }).then(json<InvestigationSnapshot>),
-  start: (body: StartInvestigationRequest) =>
+  /** Live credentials travel only in headers (never the URL) and only on this request. */
+  start: (body: StartInvestigationRequest, live?: LiveConnection) =>
     fetch("/api/investigations", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        ...(live?.kind === "trial" ? { "X-Live-Access": "trial" } : {}),
+        ...(live?.kind === "byok"
+          ? { "X-Live-Access": "byok", "X-Provider-Keys": JSON.stringify(live.keys), "X-Spend-Cap-Usd": String(live.capUsd) }
+          : {}),
+      },
       body: JSON.stringify(body),
     }).then(json<InvestigationSnapshot>),
   /** Transcribe a spoken question. Errors carry the server's message, which says to type instead. */
@@ -132,6 +154,32 @@ export const api = {
     if (box) for (const key of ["x0", "y0", "x1", "y1"] as const) query.set(key, String(box[key]));
     return fetch(`/api/sections/${encodeURIComponent(sectionId)}/gate-status?${query}`, { signal }).then(json<GateStatus>);
   },
+  /** A fresh deterministic audit of one population inside a drawn box: the agent's audit operation, no model call. */
+  regionAudit: (body: RegionAuditRequest, signal?: AbortSignal) =>
+    fetch(`/api/sections/${encodeURIComponent(body.region.section_id)}/region-audit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    }).then(json<AuditResult>),
+  depthSections: () => fetch("/api/depth/sections").then(json<string[]>),
+  depth: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/depth`).then(json<DepthSource>),
+  depthPoints: (region: Region, genes: string[], zRange: [number, number] | null, budget: number, signal?: AbortSignal) => {
+    const query = new URLSearchParams({ x0: String(region.x0), y0: String(region.y0), x1: String(region.x1), y1: String(region.y1), budget: String(budget) });
+    for (const gene of genes) query.append("genes", gene);
+    if (zRange) {
+      query.set("z0", String(zRange[0]));
+      query.set("z1", String(zRange[1]));
+    }
+    return fetch(`/api/sections/${encodeURIComponent(region.section_id)}/depth/points?${query}`, { signal }).then(json<DepthPoints>);
+  },
+  depthProfile: (body: DepthProfileRequest, signal?: AbortSignal) =>
+    fetch(`/api/sections/${encodeURIComponent(body.region.section_id)}/depth-profile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    }).then(json<DepthProfile>),
   samBoxes: (sectionId: string) => fetch(`/api/sections/${encodeURIComponent(sectionId)}/sam-boxes`).then(json<RecordedBoxes>),
   /** SAM 3.1 on a drawn box. Errors carry the server's message (for example: no stored response for this box). */
   samOutline: async (sectionId: string, box: Region): Promise<StructureRun> => {

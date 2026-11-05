@@ -1,24 +1,104 @@
-# Demo video script (about 3 minutes)
+# Demo video script (about 2 minutes 50 seconds)
 
-Built from the deployed UI and the featured recording (`fixtures/recordings/gse286184-two-part-hypothesis/`, recorded live 2026-11-04 02:53 UTC, with its lab). Every value on screen is read from recorded events or committed artifacts. If a re-recording changes an outcome, change the narration to match the new run, never the other way round.
+You record the middle (screen plus your voice). The opening and closing are Remotion clips: `video/out/intro.mp4` (22 s) and `video/out/outro.mp4` (16 s). In your editor (iMovie, CapCut, QuickTime) put intro → your screen recording → outro, and speak over the clips too. Rebuild them with `npm --prefix video run render`.
 
-Start from a fresh page at the public URL. Everything shown is immutable replay (the header says so) except the sample-data audit at the end, which computes fresh. Nothing below needs hidden setup.
+## Voiceover for the finished video
 
-| Time | Screen and action | Narration |
+`video/out/spatialscout-demo-v2.mp4` (2:38) is the whole video: intro, the real public site driven by `video/capture.py`, and outro. Record your voice over it. Rebuild: `uv run python -u video/capture.py <url>`, then `npm --prefix video run render:demo`.
+
+| At | On screen | Say |
 | --- | --- | --- |
-| 0:00–0:20 | Overview: real KPMP kidney biopsies drift across the top; "A co-scientist for kidney research"; the scope line under it. | "A kidney researcher has tissue images and thousands of cell measurements. An unexpected signal may be worth following up, but first someone has to connect the evidence and test the other explanations. SpatialScout is a co-scientist for that work, powered by Meta models, starting with human kidney data that includes diabetic kidney disease." |
-| 0:20–0:40 | Click **Follow an investigation**. The run opens: mission "Investigate an unexpected signal in kidney immune cells", the six chapters, and **Exact research question** folded under it. | "The researcher delegates an investigation. The exact question is kept here; the mission is its summary. SpatialScout plans the checks, runs the analysis and brings back evidence they can inspect." |
-| 0:40–1:05 | Chapter **The checks**: the agent's steps play; Muse Wonder's plan, then Muse Spark 1.3 reading each result and requesting controls. | "Muse Wonder plans two analyses across 21 kidney sections. Muse Spark reads each result and asks for its controls: does random molecule loss alone explain the change, and does it depend on how cells were labelled? Code runs every analysis; no model computes a number." |
-| 1:05–1:30 | Chapter **What the data shows**: the real Xenium section with the agent's region boxed; drag the divider between usual and stricter counting. | "Here the signal is UMOD in cells labelled as B cells. Under the usual counting 17.0% carry it; counting only molecules over the nucleus, 12.3%. Random molecule loss alone would predict 9.5%. It survives these checks." |
-| 1:30–1:55 | **Skip to end**, **See the findings**: "Signal persists under tested rules" with the plain sentence, and the separate **Prediction check**. Scroll to **Work delegated**. | "The finding is stated as measured behaviour. The researcher predicted the B-cell signal would drop; the prediction check says refuted, which is about this test, not biological truth. Here is the work that was delegated: analyses, controls, verified claims, and an injected error the verifier caught, with the recorded time and cost. Human time saved isn't measured yet." |
-| 1:55–2:20 | Chapter **Other evidence**: **Run the lab**; the parallel lanes play; scroll to the protein cross-check (**Different specimens**) and the literature card. | "Then Muse Wonder dispatches sub-agents in parallel: protein images from different kidney specimens, a literature agent reading Europe PMC with every citation checked against what it fetched, and a figure agent. The protein images are another line of evidence, not a matched repeat." |
-| 2:20–2:40 | Chapter **Review the result**: the checked claims, including the deliberately wrong copy failing the numerical check. | "Every cited number is recomputed from the molecule tables. A deliberately changed number fails that check. In our benchmark the verifier caught 147 of 147 injected errors, and wrongly disputed 7 of 21 valid claims; we report both." |
-| 2:40–2:55 | Chapter **The next experiment**: the lab's analysis (what happened, why, what to do next), then **Download evidence package**. | "The outcome is a research lead with its limits, a suggested follow-up such as RNAscope on human biopsies, figures, and an evidence package with a notebook that rechecks every number." |
-| 2:55–3:00 | **Your data** → **Try it on the sample**; then open **Connections**. | "The same engine audits compatible Xenium sections you bring. From kidney tissue to a checked research lead, so the scientist can spend more time choosing the next experiment." |
+| 0:00 | Intro clip (22 s) | "Every kidney biopsy is a crime scene. Millions of molecules, each assigned to a cell by a drawn boundary. Draw it too wide, and an immune cell 'expresses' a kidney gene. Meet SpatialScout: an agentic lab on Meta models." |
+| 0:22 | Overview (12 s) | "Most tools give one answer and never doubt it. SpatialScout plans, counts, tests alternatives, and checks every number." |
+| 0:34 | Two biopsies, two boxes (20 s) | "A healthy biopsy and a diseased one, from different people. I draw a box on each, and the protein audit runs on exactly that box. Too few cells? It says so." |
+| 0:54 | Question, free trial (14 s) | "Now I ask about both regions, live, on the free trial. Muse Wonder writes the plan, and it just goes." |
+| 1:08 | Recorded run (17 s) | "While that cooks, here's one I made earlier. Muse Wonder plans, Muse Spark plays the sceptic, and code rechecks every number." |
+| 1:25 | Part 1 (10 s) | "Part one: podocytes really carry LRP2. Confirmed." |
+| 1:35 | Part 2 (12 s) | "Part two, my spillover hunch: refuted. But one baseline disagrees, so it's a lead, not proof." |
+| 1:47 | 3D depth (10 s) | "Here are those molecules at their real depths, in 3D." |
+| 1:57 | Verifier (14 s) | "Let me try to cheat. I flip one claim, and the verifier catches it. In our benchmark: 147 out of 147 errors caught." |
+| 2:11 | Evidence package (11 s) | "I leave with a report, the next experiment, and the evidence. Eighteen model calls, 29 cents." |
+| 2:22 | Outro clip (16 s) | "It doesn't drink coffee. It doesn't sleep. It just really wants to check your numbers. Our live run? We'll let it run. Happy scouting." |
 
-Notes for the presenter:
+Story: **the crime scene** (a molecule may sit in the wrong cell) → **the investigation** (you pick the suspects, the agentic lab works the case) → **the verdict** (one hunch holds, one doesn't, and it tells you how sure it is).
 
-- The run plays for about a minute; use the chapters or **Skip to end** rather than waiting.
-- Gene symbols appear only once the problem is clear (from 1:05).
-- The podocyte LRP2 branch is the other half of the same recording; open it under the findings if asked. Its nucleus-only share (23.8%) is below its random-loss expectation (24.4%) and still passes the frozen tolerance rule.
-- Live runs and bring-your-own-key are not on the public site; Connections says so.
+Every number comes from the featured recording (`fixtures/recordings/gse286184-two-part-hypothesis/`, recorded live 2026-11-04 02:53 UTC) or `artifacts/`.
+
+## Before recording
+
+1. Open the public site, bare `/`, browser window at 1920×1080. Click **Recording mode** in the header.
+2. Rehearse once without capturing so the images are warm.
+3. Open **Connections** and check the free trial still has budget.
+4. Start your screen recorder. Speak slowly; 2 minutes 50 seconds total is fine up to 3:00.
+
+## Script
+
+### 1. Intro clip — 0:00–0:22 (play `intro.mp4`, speak over it)
+
+> "Every kidney biopsy is a crime scene. This dataset alone holds 21.8 million RNA molecules in 753,099 cells, from healthy kidneys and four diseases. Each molecule is assigned to a cell by a boundary someone drew. Draw it a little too wide, and an immune cell suddenly 'expresses' a kidney gene. So we built SpatialScout: a co-scientist powered by Meta models that works like an agentic lab."
+
+### 2. What's out there — 0:22–0:35
+
+**Show:** the app's **Overview** page with the two real biopsies.
+
+> "Today, segmentation tools give you one answer and never doubt it. General AI assistants read papers but never touch the molecule table. SpatialScout plans the analysis, runs the counts, asks for the controls that could explain a signal away, and refuses any number it can't recompute."
+
+### 3. You pick the suspects — 0:35–1:00
+
+**Show:**
+1. Click **Explore the tissue** → **Compare with the healthy reference**.
+2. Scroll-zoom the top biopsy only; the bottom stays put.
+3. Top pane: **Draw box**, drag a box, **Analyse this region**. Bottom pane: same.
+4. Click **Ask SpatialScout about both regions**, type: *Compare these two regions: does B-cell UMOD look like spillover in the diseased tissue but not in the healthy one?*
+5. Click **Run it live (free trial)**. Let it start for 3 seconds.
+
+> "These are real biopsies from different people, a healthy one with 28,299 cells and a diseased one with 26,524, so each moves on its own. I draw a region on each and the protein audit runs on exactly that box, right now. If there are too few cells, it says so instead of forcing an answer. Then I ask about both together. Muse Wonder writes the plan, and since this is live, it just goes."
+
+### 4. Here's one I made earlier — 1:00–1:20
+
+**Show:** back to **Overview** → **Follow an investigation**. Point at the **Research team** steps lighting up. Drag the separator to make the tissue bigger. Keep the replay label visible.
+
+> "While that one cooks, here's one I made earlier: the same kind of question, recorded live last night. Muse Wonder plans, Muse Spark plays the sceptic and demands controls, Spark Open drafts claims, and scientific code runs every measurement and independently rechecks every cited number."
+
+### 5. The verdict, honestly — 1:20–1:55
+
+**Show:** **Skip to end** → **See the findings**. Part 1 (podocyte LRP2, **Confirmed**). Then Part 2 (B-cell UMOD) and its figure; point at the observed value and the two baselines.
+
+> "Part one: podocytes really do carry LRP2. Counting only molecules over the nucleus, 23.8%, against 24.4% expected from random loss. Confirmed.
+> Part two was my spillover hunch. UMOD in B cells goes from 17% to 12.3%. One random-loss baseline predicts 9.5%, so under the frozen rule the signal persists and my hunch is refuted. But a second baseline predicts 13.7%, and the label check can't rule out mislabelled cells. So it doesn't hand me a confident answer; it hands me a lead and tells me exactly how sure to be."
+
+### 6. Look inside the tissue — 1:55–2:08
+
+**Show:** chapter **What the data shows** → **3D molecule depth** (section GSM8720426). Orbit a little, drag **Slice from**.
+
+> "And I can look at those molecules at their measured depths and slice through them. It helps me inspect the data; it doesn't prove why the signal is there."
+
+### 7. Try to cheat — 2:08–2:22
+
+**Show:** chapter **Review the result** → open a claim → **Challenge the verifier** → **Changed effect**. It fails.
+
+> "Now let me try to cheat. I change one number, and the verifier catches it. Across our benchmark it caught 147 of 147 injected errors and wrongly disputed 7 of 21 valid claims. We show both."
+
+### 8. What you walk away with — 2:22–2:34
+
+**Show:** chapter **The next experiment** → **Download evidence package**.
+
+> "I leave with a traceable report, figures, open questions, a suggested next experiment and a verification notebook. 18 Meta model calls, 29 cents, about three minutes."
+
+### 9. Outro clip — 2:34–2:50 (play `outro.mp4`, speak over it)
+
+> "It doesn't drink coffee. It doesn't sleep. It just *really* wants to check your numbers. Oh, and our live run? Still checking. We'll let it run. Happy scouting."
+
+## Don't say
+
+- "Meta's AI Co-Scientist": it is built on Meta models, not a Meta product.
+- That the recorded run analysed the boxes you just drew. The box numbers are fresh and go to the live run as context.
+- That the UMOD result proves spillover is absent, or that depth proves vertical overlap.
+- "Before and after" for the two biopsies: they are different people on different protein panels.
+- Lupus nephritis: roadmap, not current data.
+
+## If something goes wrong
+
+- Live trial out of budget: skip step 3's last click and say "or bring your own model key".
+- A box shows "insufficient evidence": leave it on screen and say the line about too few cells.
+- Slow image load: keep talking; cut the wait in the editor.

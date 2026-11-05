@@ -48,7 +48,20 @@ interface Props {
   evidenceRegion: Region | null;
   /** With a focused finding, only molecules of this population's cells are drawn as excluded. */
   excludedCellType: string | null;
+  /**
+   * How `compare` is shown: one canvas under the usual rule, one canvas under the stricter rule (dropped molecules
+   * hidden), one canvas with the dropped molecules in yellow, or the split. Without `compare`, always the usual rule.
+   */
+  display?: Display;
+  /** Draw a box instead of panning. */
+  boxMode?: boolean;
+  box?: Region | null;
+  onBox?: (box: Region | null) => void;
+  /** Refit the whole section whenever this changes. */
+  fitKey?: number;
 }
+
+export type Display = "usual" | "stricter" | "excluded" | "compare";
 
 /** Molecules of one layer: positions, optional per-molecule colours, and each point's molecule index. */
 interface MoleculeBuffer {
@@ -66,16 +79,32 @@ interface Camera {
 const BACKGROUND_ALPHA = 150;
 const FLY_MS = 800;
 
-export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo, evidenceRegion, excludedCellType }: Props) {
+export function Viewer({
+  section,
+  genes,
+  cellTypes,
+  visibleGenes,
+  compare: compared,
+  flyTo,
+  evidenceRegion,
+  excludedCellType,
+  display = "compare",
+  boxMode = false,
+  box = null,
+  onBox,
+  fitKey = 0,
+}: Props) {
   const container = useRef<HTMLDivElement>(null);
   const size = useSize(container);
   const view = section.view;
   const [camera, setCamera] = useState<Camera | null>(null);
   const [split, setSplit] = useState(0.5);
   const zoomRange = useRef<{ min: number; max: number }>({ min: -10, max: 10 });
+  const compare = compared && display === "compare" ? compared : null;
+  const single = compared && display !== "compare" ? display : "usual";
 
-  // Fit the whole section once the container has a size, and again whenever another section opens (not when the
-  // same section reloads under another label rule, so a fly-to survives it).
+  // Fit the whole section once the container has a size, whenever another section opens (not when the same section
+  // reloads under another label rule, so a fly-to survives it), and on an explicit Fit. A resize keeps the camera.
   useEffect(() => {
     if (!size) return;
     const { x0, y0, x1, y1 } = view.region;
@@ -83,7 +112,7 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
     const fit = Math.log2(scale);
     zoomRange.current = { min: fit - 2, max: fit + 8 };
     setCamera({ target: [(x0 + x1) / 2, (y0 + y1) / 2], zoom: fit });
-  }, [view.section_id, size !== null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [view.section_id, size !== null, fitKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fly into a region: ease the shared camera over FLY_MS so both halves of the split stay aligned throughout.
   const cameraRef = useRef(camera);
@@ -113,10 +142,12 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
     return () => cancelAnimationFrame(frame);
   }, [flyTo?.key, view.section_id, size !== null, camera !== null]); // eslint-disable-line react-hooks/exhaustive-deps -- camera: a viewer mounted by the fly-to itself flies once it has fitted
 
-  const { background, highlighted } = useMemo(() => moleculeBuffers(section, genes, visibleGenes), [section, genes, visibleGenes]);
+  const keepUnder = single === "stricter" ? compared : null;
+  const { background, highlighted } = useMemo(() => moleculeBuffers(section, genes, visibleGenes, keepUnder), [section, genes, visibleGenes, keepUnder]);
+  const excludedUnder = compare ?? (single === "excluded" ? compared : null);
   const excluded = useMemo(
-    () => (compare ? excludedBuffer(section, compare, visibleGenes, excludedCellType) : buffer(0, false)),
-    [section, compare, visibleGenes, excludedCellType],
+    () => (excludedUnder ? excludedBuffer(section, excludedUnder, visibleGenes, excludedCellType) : buffer(0, false)),
+    [section, excludedUnder, visibleGenes, excludedCellType],
   );
   const cellColours = useMemo(() => cellRingColours(section, cellTypes), [section, cellTypes]);
 
@@ -211,25 +242,65 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
           }),
         ]
       : []),
-  ];
-
-  const layers = [
-    ...sharedLayers("left"),
-    ...(compare
+    ...(box && box.section_id === view.section_id
       ? [
-          ...sharedLayers("right"),
-          new ScatterplotLayer({
-            id: "right-molecules-excluded",
-            data: { length: excluded.length, attributes: { getPosition: { value: excluded.positions, size: 2 } } },
-            getFillColor: [...rgbOf(EXCLUDED_MOLECULE), 255],
-            getRadius: 0.55,
-            radiusUnits: "common",
-            radiusMinPixels: 2,
-            pickable: true,
+          new PathLayer<Region>({
+            id: `${side}-user-box`,
+            data: [box],
+            getPath: (r) => [[r.x0, r.y0], [r.x1, r.y0], [r.x1, r.y1], [r.x0, r.y1], [r.x0, r.y0]],
+            getColor: [255, 255, 255, 240],
+            getWidth: 2,
+            widthUnits: "pixels",
           }),
         ]
       : []),
   ];
+  const excludedLayer = (side: string) =>
+    new ScatterplotLayer({
+      id: `${side}-molecules-excluded`,
+      data: { length: excluded.length, attributes: { getPosition: { value: excluded.positions, size: 2 } } },
+      getFillColor: [...rgbOf(EXCLUDED_MOLECULE), 255],
+      getRadius: 0.55,
+      radiusUnits: "common",
+      radiusMinPixels: 2,
+      pickable: true,
+    });
+
+  const layers = [
+    ...sharedLayers("left"),
+    ...(single === "excluded" ? [excludedLayer("left")] : []),
+    ...(compare ? [...sharedLayers("right"), excludedLayer("right")] : []),
+  ];
+
+  // Box drawing on the left (or only) view, from screen pixels to section micrometres through that view's camera.
+  const toSection = (clientX: number, clientY: number): [number, number] | null => {
+    const rect = container.current?.getBoundingClientRect();
+    const left = viewState?.left;
+    if (!rect || !left || !camera) return null;
+    const scale = 2 ** camera.zoom;
+    return [left.target[0] + (clientX - rect.left - splitX / 2) / scale, left.target[1] + (clientY - rect.top - rect.height / 2) / scale];
+  };
+  const drag = useRef<[number, number] | null>(null);
+  const [draft, setDraft] = useState<Region | null>(null);
+  const boxOf = (a: [number, number], b: [number, number]): Region => {
+    const { x0, y0, x1, y1 } = view.region;
+    const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+    return {
+      section_id: view.section_id,
+      x0: clamp(Math.min(a[0], b[0]), x0, x1),
+      x1: clamp(Math.max(a[0], b[0]), x0, x1),
+      y0: clamp(Math.min(a[1], b[1]), y0, y1),
+      y1: clamp(Math.max(a[1], b[1]), y0, y1),
+    };
+  };
+  const singleLabel =
+    single === "stricter"
+      ? `Stricter assignment · ${CONDITION_NAMES[compared ?? ""] ?? compared}: only molecules it still counts toward a cell`
+      : single === "excluded"
+        ? `Usual assignment · ${excluded.length.toLocaleString()} molecules the ${CONDITION_NAMES[compared ?? ""] ?? compared} rule drops, in yellow${excludedCellType ? ` (in ${excludedCellType} cells)` : ""}`
+        : compared
+          ? "Usual assignment (default)"
+          : null;
 
   return (
     <div ref={container} className="relative h-full w-full overflow-hidden rounded-lg border border-line bg-surface">
@@ -241,8 +312,52 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
           onViewStateChange={onViewStateChange as never}
           layers={layers}
           layerFilter={({ layer, viewport }) => layer.id.startsWith(`${viewport.id}-`)}
-          getTooltip={(info) => tooltip(info, section, background, highlighted, excluded, compare)}
+          getTooltip={(info) => tooltip(info, section, background, highlighted, excluded, compared)}
         />
+      )}
+      {boxMode && (
+        <div
+          data-testid="rna-box-overlay"
+          className="absolute inset-y-0 left-0 z-10 cursor-crosshair touch-none"
+          style={{ width: splitX }}
+          onPointerDown={(e) => {
+            const p = toSection(e.clientX, e.clientY);
+            if (!p || e.button !== 0) return;
+            e.currentTarget.setPointerCapture(e.pointerId);
+            drag.current = p;
+          }}
+          onPointerMove={(e) => {
+            const p = drag.current && toSection(e.clientX, e.clientY);
+            if (drag.current && p) setDraft(boxOf(drag.current, p));
+          }}
+          onPointerUp={(e) => {
+            const s = drag.current;
+            drag.current = null;
+            setDraft(null);
+            const p = s && toSection(e.clientX, e.clientY);
+            if (!s || !p) return;
+            const r = boxOf(s, p);
+            onBox?.(r.x1 - r.x0 > 2 && r.y1 - r.y0 > 2 ? r : null);
+          }}
+        >
+          {draft && camera && viewState?.left && (
+            <div
+              className="pointer-events-none absolute border border-white/90 bg-white/10"
+              style={{
+                left: splitX / 2 + (draft.x0 - viewState.left.target[0]) * 2 ** camera.zoom,
+                top: (size?.height ?? 0) / 2 + (draft.y0 - viewState.left.target[1]) * 2 ** camera.zoom,
+                width: (draft.x1 - draft.x0) * 2 ** camera.zoom,
+                height: (draft.y1 - draft.y0) * 2 ** camera.zoom,
+              }}
+            />
+          )}
+        </div>
+      )}
+      {singleLabel && (
+        <div data-testid="rna-display-label" className="pointer-events-none absolute left-3 top-2 max-w-[80%] rounded bg-panel/85 px-2 py-0.5 text-xs text-ink-2">
+          {single === "excluded" && <span style={{ color: EXCLUDED_MOLECULE }}>● </span>}
+          {singleLabel}
+        </div>
       )}
       {compare && size && (
         <>
@@ -274,8 +389,9 @@ export function Viewer({ section, genes, cellTypes, visibleGenes, compare, flyTo
           >
             <div className="mx-auto h-full w-0.5 bg-ink-2/80" />
           </div>
-          <div className="pointer-events-none absolute left-3 top-2 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">default</div>
-          <div className="pointer-events-none absolute right-3 top-2 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">
+          <div className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 rounded bg-panel/85 px-2 py-0.5 text-[11px] text-ink-3">Same section, different counting rules</div>
+          <div className="pointer-events-none absolute left-3 top-8 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">usual (default)</div>
+          <div className="pointer-events-none absolute right-3 top-8 rounded bg-panel/80 px-2 py-0.5 text-xs text-ink-2">
             {CONDITION_NAMES[compare] ?? compare} · <span style={{ color: EXCLUDED_MOLECULE }}>●</span>{" "}
             {excluded.length.toLocaleString()} excluded molecules shown
             {excludedCellType ? ` (in ${excludedCellType} cells)` : ""}
@@ -295,16 +411,19 @@ function moleculeBuffers(
   section: SectionArrays,
   genes: Highlight,
   visibleGenes: ReadonlySet<string> | null,
+  keepUnder: ConditionName | null,
 ): { background: MoleculeBuffer; highlighted: MoleculeBuffer } {
   const names = section.view.genes;
   const visible = names.map((gene) => visibleGenes === null || visibleGenes.has(gene));
   const slot = names.map((gene) => genes.indexOf(gene));
   const slotColour = GENE_SLOTS.map((hex) => rgbOf(hex));
+  const keepBit = keepUnder === null ? undefined : (section.view.molecules.condition_bits as Record<string, number | undefined>)[keepUnder];
+  const kept = (i: number) => keepBit === undefined || (((section.inclusionBits[i] ?? 0) >> keepBit) & 1) === 1;
   let highlightedCount = 0;
   let backgroundCount = 0;
   for (let i = 0; i < section.moleculeCount; i++) {
     const g = section.geneIndex[i] ?? 0;
-    if (!visible[g]) continue;
+    if (!visible[g] || !kept(i)) continue;
     if ((slot[g] ?? -1) >= 0) highlightedCount++;
     else backgroundCount++;
   }
@@ -314,7 +433,7 @@ function moleculeBuffers(
   let h = 0;
   for (let i = 0; i < section.moleculeCount; i++) {
     const g = section.geneIndex[i] ?? 0;
-    if (!visible[g]) continue;
+    if (!visible[g] || !kept(i)) continue;
     const s = slot[g] ?? -1;
     const x = section.positions[2 * i] ?? 0;
     const y = section.positions[2 * i + 1] ?? 0;

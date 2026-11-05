@@ -34,6 +34,10 @@ web_image = (
             # Modal cuts web requests at 150 s; each SSE connection ends well before that and the client reconnects.
             "SPATIALSCOUT_STREAM_WINDOW_SECONDS": "110",
             "SPATIALSCOUT_DEFAULT_RUN_MODE": "immutable_replay",
+            # The public live trial runs on the Secret's provider keys under this daily cap. Its ledger needs flock,
+            # so it sits on the container's disk, not the Volume: a container restart starts a fresh day's ledger.
+            "SPATIALSCOUT_TRIAL_DAILY_USD": "3",
+            "SPATIALSCOUT_SPEND_DIR": "/root/data/spend",
         }
     )
     # Only the package, fixtures, configs, committed artifacts and the built web app are shipped: never the repo

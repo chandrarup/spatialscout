@@ -53,28 +53,34 @@ export function ClaimCard({ claim, verification, investigationId, onReview }: Pr
         </span>
       </header>
       {challenges && challenges.variants.length > 0 && (
-        <label className="mb-2 flex flex-wrap items-center gap-2 text-xs text-ink-2">
-          Challenge the verifier
-          <select
-            className="rounded border border-line bg-raised px-2 py-1 text-xs text-ink"
-            value={chosen}
-            onChange={(event) => setChosen(event.target.value)}
-          >
-            <option value="">Original claim</option>
-            {challenges.variants.map((v) => (
-              <option key={v.kind} value={v.kind}>
-                {kindLabel(v.kind)}
-              </option>
+        <div className="mb-2 text-xs text-ink-2" role="group" aria-label="Challenge the verifier" data-testid="challenge-selector">
+          <p>
+            <span className="font-medium text-ink">Challenge the verifier</span>{" "}
+            <span className="text-ink-3">
+              · {challenges.variants.length} recorded altered copies of this claim, each checked by the same verifier (separate from the run's one injected claim)
+            </span>
+          </p>
+          <div className="mt-1 flex flex-wrap gap-1">
+            {[{ kind: "", label: "Original claim" }, ...challenges.variants.map((v) => ({ kind: v.kind, label: kindLabel(v.kind) }))].map((c) => (
+              <button
+                key={c.kind || "original"}
+                type="button"
+                aria-pressed={chosen === c.kind}
+                onClick={() => setChosen(c.kind)}
+                className="rounded-full border border-line px-2 py-0.5 text-ink-2 hover:text-ink aria-pressed:border-white aria-pressed:bg-white aria-pressed:text-black"
+              >
+                {c.label}
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
       )}
       {shown.injected.is_injected && (
         <p className="mb-2 rounded bg-red-500/15 px-2 py-1 text-xs font-medium text-red-300">
           Injected error ({kindLabel(shown.injected.kind ?? "")}): deliberately altered to test verification
         </p>
       )}
-      <p className="mb-3 text-sm leading-relaxed text-ink">{shown.text}</p>
+      <p className="mb-3 text-sm leading-relaxed text-ink">{roundLongDecimals(shown.text)}</p>
       <div className="mb-3 flex flex-wrap gap-1.5">
         <Status label="Evidence" value={shown.evidence_status} />
         <Status label="Verification" value={shown.verification_status} />
@@ -182,11 +188,11 @@ function VerificationPanel({ verification }: { verification: VerificationResult 
             {check.reasons.length > 0 && (
               <ul className="list-disc pl-4 text-ink-2">
                 {check.reasons.map((reason) => (
-                  <li key={reason}>{reason}</li>
+                  <li key={reason}>{roundLongDecimals(reason)}</li>
                 ))}
               </ul>
             )}
-            {check.reasons.length === 0 && check.kind === "visual" && <span className="text-ink-2"> · {check.details}</span>}
+            {check.reasons.length === 0 && check.kind === "visual" && <span className="text-ink-2"> · {roundLongDecimals(check.details)}</span>}
           </li>
         ))}
       </ul>
@@ -196,6 +202,14 @@ function VerificationPanel({ verification }: { verification: VerificationResult 
 
 function kindLabel(kind: string): string {
   return kind.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
+}
+
+/** Model-drafted claim text can carry full-precision floats; round long decimal runs for display only. */
+export function roundLongDecimals(text: string): string {
+  return text.replace(/\d+\.\d{4,}/g, (m) => {
+    const n = Number(m);
+    return Number.isFinite(n) ? String(Math.round(n * 1000) / 1000) : m;
+  });
 }
 
 function Status({ label, value }: { label: string; value: string }) {

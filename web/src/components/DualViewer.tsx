@@ -63,7 +63,7 @@ export function DualViewer({ adapters, defaultDatasetId, onShow, onContext }: Pr
   }, [sources, onShow]);
 
   // --- cameras ---------------------------------------------------------------------------------------------------
-  const [linked, setLinked] = useState(true);
+  const [linked, setLinked] = useState(false);
   const [cameras, setCameras] = useState<[Camera | null, Camera | null]>([null, null]);
   const [sizes, setSizes] = useState<[{ width: number; height: number } | null, { width: number; height: number } | null]>([null, null]);
   const onSizes = useMemo(

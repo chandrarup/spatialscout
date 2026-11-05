@@ -77,6 +77,35 @@ function CallLine({ call }: { call: ModelCallRecord }) {
   );
 }
 
+// A finding's figure is written when the verifier reads it, near the end of a live run. Until then the file does not
+// exist: say so and look again every few seconds instead of showing a broken image.
+const FIGURE_RETRY_MS = 4000;
+function FigureThumb({ url, findingId }: { url: string; findingId: string }) {
+  const [attempt, setAttempt] = useState(0);
+  const [missing, setMissing] = useState(false);
+  useEffect(() => {
+    if (!missing) return;
+    const timer = window.setTimeout(() => {
+      setMissing(false);
+      setAttempt((a) => a + 1);
+    }, FIGURE_RETRY_MS);
+    return () => window.clearTimeout(timer);
+  }, [missing]);
+  return (
+    <>
+      <img
+        key={attempt}
+        src={attempt ? `${url}?try=${attempt}` : url}
+        alt={`Computed figure for ${findingId}`}
+        className={`block w-full bg-white ${missing ? "hidden" : ""}`}
+        loading="lazy"
+        onError={() => setMissing(true)}
+      />
+      {missing && <span className="block rounded-lg bg-raised px-3 py-2.5 text-left text-[12px] text-ink-3">Figure appears when the verifier reads it</span>}
+    </>
+  );
+}
+
 const Card = memo(function Card({ data }: NodeProps<Node<CardData>>) {
   const { node, latest, investigationId, onFocus } = data;
   const [open, setOpen] = useState(false);
@@ -112,10 +141,10 @@ const Card = memo(function Card({ data }: NodeProps<Node<CardData>>) {
         <button
           type="button"
           onClick={() => onFocus(node.figureFindingId!)}
-          className={`nodrag relative mt-3 block w-full overflow-hidden rounded-lg bg-white ${node.kind === "check" && latest ? "scan" : ""}`}
+          className={`nodrag relative mt-3 block w-full overflow-hidden rounded-lg ${node.kind === "check" && latest ? "scan" : ""}`}
           title="Open this finding's evidence region on its section"
         >
-          <img src={api.investigationFigureUrl(investigationId, node.figureFindingId)} alt={`Computed figure for ${node.figureFindingId}`} className="block w-full" loading="lazy" />
+          <FigureThumb url={api.investigationFigureUrl(investigationId, node.figureFindingId)} findingId={node.figureFindingId} />
         </button>
       )}
       {node.calls.length > 0 && <ul className="mt-3 space-y-1 rounded-lg bg-raised px-2.5 py-2">{node.calls.map((c) => <CallLine key={c.call_id} call={c} />)}</ul>}
@@ -139,9 +168,11 @@ interface Props {
   onFollow: (follow: boolean) => void;
   /** The zoom the camera follows at; smaller in a narrow rail. */
   zoom?: number;
+  /** Fit every card in view whenever this changes. */
+  fitKey?: number;
 }
 
-function Canvas({ graph, investigationId, rightInset, onFocus, follow, onFollow, zoom: followZoom = 0.9 }: Props) {
+function Canvas({ graph, investigationId, rightInset, onFocus, follow, onFollow, zoom: followZoom = 0.9, fitKey = 0 }: Props) {
   const flow = useReactFlow();
   const laneCount = Math.max(1, graph.lanes.length);
   const centre = ((laneCount - 1) / 2) * LANE;
@@ -186,6 +217,9 @@ function Canvas({ graph, investigationId, rightInset, onFocus, follow, onFollow,
     const zoom = followZoom;
     void flow.setCenter(p.x + WIDTH / 2 + rightInset / 2 / zoom, p.y + 200, { zoom, duration: 900 });
   }, [follow, graph.latest, placed, flow, rightInset, followZoom]);
+  useEffect(() => {
+    if (fitKey) void flow.fitView({ padding: 0.15, duration: 500 });
+  }, [fitKey, flow]);
 
   return (
     <ReactFlow

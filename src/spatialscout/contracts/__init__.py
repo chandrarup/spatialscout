@@ -91,7 +91,9 @@ from .finding import (
     PooledConditionValue,
     Population,
     Region,
+    RegionAuditRequest,
     SectionLog2Value,
+    VerificationBenchmark,
 )
 from .controls import LabelRuleArm, LabelSensitivityCheck, RandomThinningControl
 from .investigation import (
@@ -163,5 +165,7 @@ from .region import (
 from .review import CheckKind, CheckResult, ClaimChallenge, ClaimChallenges, FieldChange, ReviewDecision, ReviewRequest, VerificationResult, VisualAnswer
 from .verdict import HypothesisVerdict, Prediction, SubClaim, SubClaimVerdict
 from .voice import Transcription
+
+from .depth import DepthBin, DepthPoints, DepthProfile, DepthProfileRequest, DepthSource  # noqa: E402
 
 __all__ = [name for name in dir() if not name.startswith("_")]

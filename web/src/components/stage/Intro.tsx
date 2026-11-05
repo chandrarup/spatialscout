@@ -56,7 +56,11 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
                   </p>
                 </div>
               ))
-            : [0, 1].map((i) => <div key={i} className="bg-black" />)}
+            : [0, 1].map((i) => (
+                <div key={i} className="grid place-items-center bg-black text-[12px] text-ink-3" role={i === 0 ? "status" : undefined}>
+                  {i === 0 ? (kpmp === null ? "The biopsy images could not be loaded." : "Loading the KPMP biopsy images…") : ""}
+                </div>
+              ))}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-surface to-transparent" />
         </div>
 
@@ -65,20 +69,20 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
           <div className="rise mt-5 grid grid-cols-1 items-end gap-6 [animation-delay:100ms] lg:grid-cols-[1.2fr_1fr]">
             <div>
               <h1 className="text-[clamp(26px,3vw,40px)] leading-tight font-semibold tracking-[-0.02em]">A co-scientist for kidney research</h1>
-              <p className="mt-3 max-w-[38rem] text-[18px] leading-relaxed text-ink">
-                Delegate the work of investigating tissue images, molecular signals and supporting evidence.
+              <p className="mt-3 max-w-[36rem] text-[17px] leading-relaxed text-ink">
+                Delegate investigations across tissue images, gene and protein data, and the literature. Powered by Meta models.
               </p>
-              <p className="mt-3 max-w-[38rem] text-[13px] leading-relaxed text-ink-3">
-                Human kidney data. RNA cohort includes diabetic kidney disease (DKD); separate healthy/CKD/AKI protein images. Powered by Meta models; not an
-                official Meta product. Research use only.
+              <p className="mt-3 max-w-[36rem] text-[13px] leading-relaxed text-ink-3">
+                Human kidney data (RNA incl. DKD; separate protein biopsies). Research use only; not an official Meta product.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <button
                 type="button"
                 onClick={example ? () => onExample(example) : onAsk}
-                className="pointer-events-auto h-12 rounded-full bg-white px-6 text-[15px] font-medium text-black transition-transform hover:scale-[1.02] active:scale-95"
+                className="pointer-events-auto relative h-12 rounded-full bg-white px-6 text-[15px] font-medium text-black transition-transform hover:scale-[1.02] active:scale-95"
               >
+                <span aria-hidden="true" className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-stable motion-safe:animate-ping" />
                 Follow an investigation
               </button>
               <button type="button" onClick={onExplore} className="pointer-events-auto h-12 rounded-full bg-raised px-6 text-[15px] text-ink transition-colors hover:bg-[#2a2d32]">
@@ -93,13 +97,11 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
         <div className="rounded-3xl bg-panel p-6 md:p-8">
           <p className="text-[13px] text-ink-3">The problem</p>
           <p className="mt-2 max-w-[60rem] text-[clamp(18px,1.8vw,22px)] leading-snug text-ink">
-            A scientist sees an unexpected signal in a kidney sample. Before choosing the next lab experiment, someone has to work out whether the analysis is
-            dependable, whether other evidence agrees, and what the papers say.
+            An unexpected signal in a kidney sample: is it real, does other evidence agree, and what do the papers say?
           </p>
           <p className="mt-3 max-w-[60rem] text-[15px] leading-relaxed text-ink-2">
-            That usually means a tissue viewer, analysis code, control runs, another dataset, a literature search and a report, each by hand. SpatialScout runs
-            them as one delegated investigation and brings back evidence the researcher can inspect. Its first module checks whether a signal survives stricter
-            counting of which molecules belong to which cell, because in crowded tissue a molecule from one cell is easily counted toward its neighbour.
+            SpatialScout runs those checks as one delegated investigation. First module: does the signal survive stricter counting of which molecules belong to
+            which cell?
           </p>
         </div>
       </section>

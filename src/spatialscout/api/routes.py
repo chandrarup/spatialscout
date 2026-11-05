@@ -3,6 +3,8 @@
 import re
 from typing import Annotated
 
+import numpy as np
+
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.sse import EventSourceResponse, ServerSentEvent
@@ -21,6 +23,9 @@ from ..contracts import (
     DatasetManifest,
     LabelRuleSet,
     PackedRegionView,
+    AuditResult,
+    Region,
+    RegionAuditRequest,
     InvestigationSnapshot,
     ModeInfo,
     RegionView,
@@ -29,7 +34,7 @@ from ..contracts import (
     StartInvestigationRequest,
 )
 from ..data import DatasetStore, SectionNotIngested, SectionTables, UnknownDataset, UnknownLabelRule, UnknownSection
-from ..engine import build_packed_region_view, build_region_view, conditions_for, section_channels
+from ..engine import PRIMARY_CONDITIONS, audit_population, build_packed_region_view, build_region_view, conditions_for, section_channels
 from ..gateway import LiveRunRefused, RecordingLibrary
 from ..gateway.gate import LiveGate
 from ..settings import Settings
@@ -83,6 +88,8 @@ async def mode(request: Request) -> ModeInfo:
         default_run_mode=settings.default_run_mode,
         available_run_modes=available,
         recordings=recordings.infos(),
+        live_access=live_gate.access,
+        trial_remaining_usd=live_gate.trial_remaining_usd(),
     )
 
 
@@ -154,6 +161,31 @@ def packed_region_view(section_id: str, store: StoreDep, label_rule_id: str | No
     )
 
 
+@router.post("/sections/{section_id}/region-audit")
+def region_audit(section_id: str, body: RegionAuditRequest, store: StoreDep) -> AuditResult:
+    """Audit one population inside a box drawn on this section: the same engine operation as the agent's
+    `audit_population` tool with its `roi`, deterministic and without a model call. The box is clamped to the
+    section; one box is one section, so the label is usually insufficient evidence while the counts stand."""
+    if body.region.section_id != section_id:
+        raise HTTPException(status_code=422, detail=f"the box is on section {body.region.section_id}, not {section_id}")
+    section = _section(store, section_id, body.label_rule_id)
+    xs = np.concatenate([section.molecules["x"].to_numpy(), section.cells["x"].to_numpy()])
+    ys = np.concatenate([section.molecules["y"].to_numpy(), section.cells["y"].to_numpy()])
+    r = body.region
+    x0, x1 = max(min(r.x0, r.x1), float(np.nanmin(xs))), min(max(r.x0, r.x1), float(np.nanmax(xs)))
+    y0, y1 = max(min(r.y0, r.y1), float(np.nanmin(ys))), min(max(r.y0, r.y1), float(np.nanmax(ys)))
+    if x1 <= x0 or y1 <= y0:
+        raise HTTPException(status_code=422, detail="the box has no area inside the section")
+    roi = Region(section_id=section_id, x0=x0, y0=y0, x1=x1, y1=y1)
+    group = store.section_info(section_id).group
+    try:
+        return audit_population(
+            [section], body.cell_type, body.genes, PRIMARY_CONDITIONS, section_groups={section_id: group} if group else None, roi=roi
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from None
+
+
 @router.get("/sections/{section_id}/channels")
 def channels(section_id: str, store: StoreDep) -> ChannelSet:
     """The section's rendered channels (nuclei and five marker groups), each with its molecule count and whether
@@ -166,13 +198,25 @@ async def start_investigation(
     body: StartInvestigationRequest,
     orchestrator: OrchestratorDep,
     x_live_passcode: Annotated[str | None, Header()] = None,
+    x_live_access: Annotated[str | None, Header()] = None,
+    x_provider_keys: Annotated[str | None, Header()] = None,
+    x_spend_cap_usd: Annotated[float | None, Header()] = None,
 ) -> InvestigationSnapshot:
-    """Create a persisted investigation; its plan arrives as an event. A live run needs the passcode in the
-    `X-Live-Passcode` header (never the URL, which access logs keep) and budget left today; otherwise 403 and
-    nothing is created. Immutable replay returns the recorded investigation that answers the question."""
+    """Create a persisted investigation; its plan arrives as an event. A live run names its access in
+    `X-Live-Access`: `owner` (the passcode in `X-Live-Passcode`), `trial` (the server's trial budget) or `byok`
+    (keys in `X-Provider-Keys`, capped by `X-Spend-Cap-Usd`). Credentials travel in headers, never the URL, which
+    access logs keep; refused runs get 403 and nothing is created. Immutable replay returns the recorded
+    investigation that answers the question."""
     try:
         return orchestrator.start(
-            body.question, body.run_mode, passcode=x_live_passcode, dataset_id=body.dataset_id, regions=body.regions
+            body.question,
+            body.run_mode,
+            passcode=x_live_passcode,
+            dataset_id=body.dataset_id,
+            regions=body.regions,
+            access=x_live_access,
+            provider_keys=x_provider_keys,
+            budget_usd=x_spend_cap_usd,
         ).snapshot()
     except LiveRunRefused as refused:
         raise HTTPException(status_code=403, detail=str(refused)) from None

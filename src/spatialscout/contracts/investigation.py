@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import Field, field_validator
 
@@ -95,3 +96,7 @@ class ModeInfo(Contract):
     default_run_mode: RunMode
     available_run_modes: list[RunMode]
     recordings: list[ReplayInfo]
+    live_access: list[Literal["owner", "trial", "byok"]] = Field(
+        default_factory=list, description="Who may start a live run: the owner's passcode, the open trial, or bring-your-own-key."
+    )
+    trial_remaining_usd: float | None = Field(default=None, description="Left in today's live trial budget; null when no trial is open.")

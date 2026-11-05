@@ -80,14 +80,14 @@ function loadParticipant(p: KpmpParticipant, manifest: KpmpManifest): LoadedSect
     provenance: `Real CODEX microscopy · KPMP ${p.participant_id}`,
     provenanceDetail: `${manifest.display_rule} ${p.mask_note} ${p.clinical_note}`,
     cellTypes: [],
+    // Hidden channels get no layer at all: a BitmapLayer fetches its image even while invisible.
     layers: ({ idPrefix, visibleChannels, gain }): Layer[] =>
-      strips.map((s) => {
+      strips.filter((s) => visibleChannels.has(s.channel)).map((s) => {
         const colour = rgbOf(KPMP_COLOURS[s.channel] ?? OTHER_CHANNEL);
         return new BitmapLayer({
           id: `${idPrefix}-kpmp-${p.participant_id}-${s.channel}-${s.n}`,
           image: s.url,
           bounds: [s.bounds.x0, s.bounds.y1, s.bounds.x1, s.bounds.y0],
-          visible: visibleChannels.has(s.channel),
           tintColor: colour,
           opacity: Math.min(1, BASE_OPACITY * gain),
           parameters: ADDITIVE,

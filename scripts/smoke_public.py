@@ -11,12 +11,102 @@ It checks structure and labels, never an outcome: any verdict the recording hold
 
 import sys
 import time
+from urllib.parse import urljoin
 
 from playwright.sync_api import expect, sync_playwright
 
 URL = "https://chandrarupdaka--spatialscout.us-east.modal.run"
 GOLDEN = "My hypothesis: the podocytes this atlas calls 'endocytic' really carry LRP2"
 LIMIT_S = 180
+
+
+def drag_box(page, pane, fx0: float, fy0: float, fx1: float, fy1: float) -> None:
+    """Drag from one fraction of the pane's box to another."""
+    b = pane.bounding_box()
+    page.mouse.move(b["x"] + b["width"] * fx0, b["y"] + b["height"] * fy0)
+    page.mouse.down()
+    page.mouse.move(b["x"] + b["width"] * (fx0 + fx1) / 2, b["y"] + b["height"] * (fy0 + fy1) / 2, steps=4)
+    page.mouse.move(b["x"] + b["width"] * fx1, b["y"] + b["height"] * fy1, steps=4)
+    page.mouse.up()
+
+
+def compare_panes(page) -> None:
+    """Two specimens: each pane's camera moves alone, and each pane's box reaches its own participant's audit."""
+    top, bottom = page.locator("[data-pane=top]"), page.locator("[data-pane=bottom]")
+    camera = lambda pane: pane.locator("[data-camera]").get_attribute("data-camera")  # noqa: E731
+    expect(bottom.locator("[data-camera]")).to_be_attached(timeout=60_000)
+    top_before, bottom_before = camera(top), camera(bottom)
+    b = top.bounding_box()
+    page.mouse.move(b["x"] + b["width"] * 0.5, b["y"] + b["height"] * 0.6)
+    page.mouse.wheel(0, -600)
+    page.wait_for_timeout(800)
+    assert camera(top) != top_before, "the top pane did not zoom"
+    assert camera(bottom) == bottom_before, "zooming the top pane moved the bottom pane"
+    top.get_by_role("button", name="Fit").click()
+    assert camera(bottom) == bottom_before, "fitting the top pane moved the bottom pane"
+
+    sent: list[str] = []
+    page.on("request", lambda r: sent.append(r.url) if "/protein-audit" in r.url and "x0=" in r.url else None)
+    for pane, frac in ((top, (0.35, 0.45, 0.55, 0.85)), (bottom, (0.55, 0.4, 0.8, 0.8))):
+        pane.get_by_role("button", name="Draw box").click()
+        drag_box(page, pane, *frac)
+        pane.get_by_role("button", name="Analyse this region").click()
+        expect(pane.get_by_test_id("region-protein-audit")).to_be_visible(timeout=60_000)
+    tops = [u for u in sent if "164-17" in u or "165-13" in u]
+    bottoms = [u for u in sent if "31-10013" in u or "30-11101" in u]
+    assert tops and bottoms, sent
+    assert {u.split("x0=")[1] for u in tops}.isdisjoint({u.split("x0=")[1] for u in bottoms}), "the two boxes reached the same calculation"
+    print(f"paired boxes: {len(tops)} top and {len(bottoms)} bottom region audits, each on its own participant and box")
+
+
+def run_workspace(page) -> None:
+    """The run's split resizes from the keyboard, and a box on the RNA tissue gets a fresh scoped audit."""
+    rail = page.get_by_role("complementary", name="The agent's steps")
+    width = rail.bounding_box()["width"]
+    separator = page.get_by_role("separator", name="Resize the tissue and the agent's steps")
+    separator.focus()
+    for _ in range(3):
+        separator.press("ArrowRight")
+    narrower = rail.bounding_box()["width"]
+    assert narrower < width - 60, (width, narrower)
+    page.get_by_role("button", name="Reset layout").click()
+    page.get_by_role("button", name="Fit graph").click()
+    print(f"run split: steps pane {width:.0f} px, {narrower:.0f} px after three arrow presses, reset")
+
+    tissue = page.get_by_label("Tissue viewer")
+    expect(tissue.get_by_role("button", name="Usual assignment")).to_be_visible(timeout=60_000)
+    page.wait_for_timeout(2500)
+    tissue.get_by_role("button", name="Draw box").click()
+    drag_box(page, tissue.get_by_test_id("rna-box-overlay"), 0.3, 0.35, 0.7, 0.75)
+    tissue.get_by_role("button", name="Analyse selected region").click()
+    expect(tissue.get_by_test_id("rna-region-result")).to_be_visible(timeout=60_000)
+    print(f"rna box: {' '.join(tissue.get_by_test_id('rna-region-result').inner_text().split())[:140]}")
+    tissue.get_by_role("button", name="Clear the box").click()
+
+    expect(tissue.get_by_role("button", name="Follow evidence")).to_be_visible(timeout=150_000)
+    tissue.get_by_role("button", name="3D molecule depth").click()
+    expect(tissue.get_by_test_id("depth-counts")).to_be_visible(timeout=90_000)
+    expect(tissue.get_by_test_id("depth-slice-counts")).to_be_visible(timeout=90_000)
+    whole = tissue.get_by_test_id("depth-slice-counts").inner_text()
+    slider = tissue.get_by_label("Slice from (µm)")
+    slider.focus()
+    slider.press("End")
+    expect(tissue.get_by_test_id("depth-slice-counts")).not_to_have_text(whole, timeout=30_000)
+    print(f"depth: {' '.join(tissue.get_by_test_id('depth-counts').inner_text().split())[:110]} | {' '.join(tissue.get_by_test_id('depth-slice-counts').inner_text().split())[:120]}")
+    tissue.get_by_role("button", name="2D map").click()
+
+
+def findings_checks(page) -> None:
+    """A recorded challenge variant fails verification on screen, and the evidence package downloads."""
+    page.evaluate("document.querySelector('[aria-label=\"Checked claims\"]').open = true")
+    selector = page.get_by_test_id("challenge-selector").first
+    expect(selector).to_be_visible(timeout=30_000)
+    selector.get_by_role("button").nth(1).click()
+    expect(page.get_by_text("failed").first).to_be_visible(timeout=10_000)
+    href = page.locator("a[href*='package']").first.get_attribute("href")
+    response = page.request.get(urljoin(page.url, href))
+    assert response.ok and response.body()[:2] == b"PK", (href, response.status)
+    print(f"findings: a recorded challenge variant shown failing; evidence package {len(response.body()):,} bytes")
 
 
 def main(url: str) -> int:
@@ -36,6 +126,7 @@ def main(url: str) -> int:
         expect(page.get_by_test_id("provenance-right")).to_contain_text("real microscopy")
         expect(page.locator("[data-testid=protein-audit-result]")).to_have_count(4, timeout=60_000)
         print("side by side: two KPMP strips and four protein audit results")
+        compare_panes(page)
 
         page.get_by_role("button", name="Talk to SpatialScout").click()
         box = page.get_by_placeholder("Ask about a gene, a cell type, a condition…")
@@ -47,14 +138,19 @@ def main(url: str) -> int:
         page.get_by_role("button", name="Ask something else").click()
         started = time.monotonic()
         page.get_by_role("button", name=GOLDEN).click()
+        expect(page.get_by_test_id("team-job")).to_have_count(5, timeout=30_000)
+        expect(page.locator("[data-testid=team-job][data-status=done]").first).to_be_visible(timeout=60_000)
+        print("research team: five jobs, lit from the served events")
+        page.get_by_role("tab", name="Detailed graph").click()
         expect(page.locator(".react-flow__node").first).to_be_visible(timeout=30_000)
         print("run canvas: the first step is drawn")
+        run_workspace(page)
         page.get_by_role("button", name="See the findings").click(timeout=LIMIT_S * 1000)
         expect(page.locator("[data-testid=sub-claim-verdict]").first).to_be_visible(timeout=LIMIT_S * 1000)
         elapsed = time.monotonic() - started
         verdicts = page.locator("[data-testid=sub-claim-verdict]").evaluate_all("els => els.map(e => e.dataset.verdict)")
         banner = page.get_by_text("Immutable replay", exact=True).locator("xpath=..").inner_text()
-        page.screenshot(path="smoke_public.png")
+        findings_checks(page)
 
         lab_started = time.monotonic()
         page.get_by_role("button", name="Run the lab").click()

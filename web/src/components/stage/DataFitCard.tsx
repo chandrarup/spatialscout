@@ -11,6 +11,10 @@ interface Props {
   /** Whether a new question can run here (live runs); in replay only recorded questions play. */
   canRun: boolean;
   onAskAnyway: () => void;
+  /** Start this question as a live trial run; absent when no trial is open. */
+  onTrial?: () => void;
+  /** Open Connections to run it on the researcher's own keys. */
+  onConnect: () => void;
   onAsk: (question: string) => void;
   onUpload: (prefill: DataFit["upload_prefill"]) => void;
   onDismiss: () => void;
@@ -34,11 +38,11 @@ function headline(fit: DataFit, canRun: boolean): string {
   const hard = fit.gaps.filter((g) => g.hard);
   if (hard.length > 0) return `I can't prove this with the data here: it needs ${needs(hard)}.`;
   if (fit.gaps.length > 0) return `The data here answers part of this; it lacks ${needs(fit.gaps)}.`;
-  if (!canRun) return "The data here can answer this, but this public demo replays recorded runs only.";
+  if (!canRun) return "The data here can answer this. The recorded demo only replays its runs; run this one live with the free trial or your own model key.";
   return "The data here can answer this.";
 }
 
-export function DataFitCard({ fit, searching, canRun, onAskAnyway, onAsk, onUpload, onDismiss }: Props) {
+export function DataFitCard({ fit, searching, canRun, onAskAnyway, onTrial, onConnect, onAsk, onUpload, onDismiss }: Props) {
   const hard = fit.gaps.some((g) => g.hard);
   const found = fit.matched.filter((m) => m.available);
   return (
@@ -131,6 +135,16 @@ export function DataFitCard({ fit, searching, canRun, onAskAnyway, onAsk, onUplo
         {!hard && canRun && (
           <button type="button" onClick={onAskAnyway} className="h-8 rounded-full bg-white px-4 text-[13px] font-medium text-black">
             {fit.gaps.length > 0 ? "Run on what is here" : "Run it"}
+          </button>
+        )}
+        {!hard && !canRun && onTrial && (
+          <button type="button" onClick={onTrial} className="h-8 rounded-full bg-white px-4 text-[13px] font-medium text-black">
+            Run it live (free trial)
+          </button>
+        )}
+        {!hard && !canRun && (
+          <button type="button" onClick={onConnect} className="h-8 rounded-full bg-raised px-4 text-[13px] text-ink hover:bg-[#2a2d32]">
+            Use your own model key
           </button>
         )}
         <button type="button" onClick={onDismiss} className="h-8 rounded-full px-3 text-[13px] text-ink-2 hover:bg-raised hover:text-ink">
