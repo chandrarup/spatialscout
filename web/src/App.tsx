@@ -433,8 +433,9 @@ export default function App() {
       .finally(() => setChecking(null));
   };
 
-  const start = (question: string) => {
+  const start = (question: string, via: LiveConnection = connection) => {
     setFit(null);
+    const live = via.kind !== "recorded";
     // A live run takes the researcher's selection with it: RNA boxes as regions on their section, and every box's
     // computed numbers as stated context (protein boxes are separate specimens and a separate assay).
     const selections = context?.selections ?? (context?.selection ? [context.selection] : []);
@@ -442,9 +443,10 @@ export default function App() {
     const regions = (live ? selections.filter((s) => s.assay === "Xenium RNA").map((s) => s.region).slice(0, 2) : []) as [] | [Region] | [Region, Region];
     setContext(null);
     api
-      .start({ question: asked, run_mode: live ? "live" : (mode?.default_run_mode ?? "cached_tool_rerun"), dataset_id: runsOn(question), regions }, connection)
+      .start({ question: asked, run_mode: live ? "live" : (mode?.default_run_mode ?? "cached_tool_rerun"), dataset_id: runsOn(question), regions }, via)
       .then((snapshot) => {
-        follow_(snapshot, true);
+        // A recording is paced for watching; a live run shows each event as it arrives.
+        follow_(snapshot, !live);
         setFocus(null);
         setRail("rail");
         setAgentOpen(false);
@@ -469,6 +471,16 @@ export default function App() {
       .catch((error: unknown) => setProblem(String(error)))
       .finally(() => setApproving(false));
   };
+
+  // A live run started from this page goes straight through: its plan is approved as soon as it is proposed (the
+  // plan stays on screen and in the audit log), so the researcher never has to step it along.
+  const autoApproved = useRef(new Set<string>());
+  useEffect(() => {
+    if (!investigation || investigation.runMode !== "live" || investigation.status !== "awaiting_approval") return;
+    if (autoApproved.current.has(investigation.investigationId)) return;
+    autoApproved.current.add(investigation.investigationId);
+    decide(api.approve);
+  }, [investigation?.investigationId, investigation?.status, investigation?.runMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const busy = investigation !== null && (["planning", "running"].includes(investigation.status) || playing);
   const runMode = investigation?.runMode ?? mode?.default_run_mode ?? null;
@@ -862,6 +874,14 @@ export default function App() {
                     searching,
                     canRun,
                     onAskAnyway: () => start(fit.question),
+                    onTrial: mode?.live_access.includes("trial")
+                      ? () => {
+                          const trial: LiveConnection = { kind: "trial" };
+                          setConnection(trial);
+                          start(fit.question, trial);
+                        }
+                      : undefined,
+                    onConnect: () => setConnectionsOpen(true),
                     onUpload: (prefill) => {
                       setUploadPrefill(prefill);
                       setFit(null);

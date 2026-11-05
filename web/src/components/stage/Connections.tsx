@@ -82,7 +82,7 @@ export function Connections({ mode, connection, onConnection, onClose }: Props) 
               {badge(trialOpen, trialOpen ? (chosen === "trial" ? "In use" : `Open · $${(mode?.trial_remaining_usd ?? 0).toFixed(2)} left today`) : "Not open on this server")}
             </div>
             <p className="mt-1.5 text-[13px] leading-relaxed text-ink-2">
-              Ask any question about the GSE286184 kidney sections. The models are called live on this server's account, under a shared daily trial budget; you approve the plan before any analysis runs. A run costs roughly $0.30.
+              Ask any question about the GSE286184 kidney sections. The models are called live on this server's account, under a shared daily trial budget. The run goes straight through and its plan stays on screen. A run costs roughly $0.30.
             </p>
             <button type="button" role="radio" aria-checked={chosen === "trial"} disabled={!trialOpen || chosen === "trial"} onClick={() => onConnection({ kind: "trial" })} className="mt-3 h-8 rounded-full bg-white px-3 text-[12px] font-medium text-black disabled:opacity-50">
               Use the live trial
@@ -136,7 +136,7 @@ export function Connections({ mode, connection, onConnection, onClose }: Props) 
           </li>
         </ul>
         <p className="mt-4 text-[12px] leading-relaxed text-ink-3">
-          With a live connection, questions that match a recording still run live (fresh calls, labelled "Live run"). Every live run proposes a plan you approve first, and every number it shows is computed by the analysis engine. Running locally with your keys in .env also works: <span className="font-mono">make serve</span>.
+          With a live connection, questions that match a recording still run live (fresh calls, labelled "Live run"). Every live run shows its plan as it proceeds, and every number it shows is computed by the analysis engine. Running locally with your keys in .env also works: <span className="font-mono">make serve</span>.
         </p>
       </div>
     </div>

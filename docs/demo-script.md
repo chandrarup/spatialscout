@@ -1,36 +1,86 @@
-# Demo video script (about 3 minutes)
+# Demo video script (about 2 minutes 50 seconds)
 
-Built from the deployed UI and the featured recording (`fixtures/recordings/gse286184-two-part-hypothesis/`, recorded live 2026-11-04 02:53 UTC, with its lab). Every value on screen is read from recorded events, committed artifacts, or a calculation the app runs in front of the viewer (the box audits, the depth view, the sample upload). If a re-recording changes an outcome, change the narration to match the new run, never the other way round.
+You record the middle (screen plus your voice). The opening and closing are Remotion clips: `video/out/intro.mp4` (22 s) and `video/out/outro.mp4` (16 s). In your editor (iMovie, CapCut, QuickTime) put intro → your screen recording → outro, and speak over the clips too. Rebuild them with `npm --prefix video run render`.
 
-What is recorded and what is fresh:
+Story: **the crime scene** (a molecule may sit in the wrong cell) → **the investigation** (you pick the suspects, the agentic lab works the case) → **the verdict** (one hunch holds, one doesn't, and it tells you how sure it is).
 
-- **Immutable replay** (the header says so): the investigation, its controls, claims, verdict and lab.
-- **Computed now, no model call**: a protein audit of a box you draw on a KPMP biopsy; an RNA audit of a box you draw on a Xenium section (**Analyse selected region**); the measured-depth view and depth profile; the sample-data audit. A newly drawn box is never presented as analysed by the recording.
+Every number comes from the featured recording (`fixtures/recordings/gse286184-two-part-hypothesis/`, recorded live 2026-11-04 02:53 UTC) or `artifacts/`.
 
 ## Before recording
 
-1. Open bare `/` in a fresh browser window at 1920×1080 if available; adjust browser zoom so the run view's tissue, steps pane and docked playback bar all fit.
-2. Click **Recording mode** in the header (stops the drifting hero images and keeps the run mode and recording time visible). It changes no result.
-3. Rehearse the whole path once without capturing, so the tissue tiles, the two evidence sections and the depth sidecars are warm. Cold first loads are slower; don't present warming as a speed-up.
-4. In the run view, use **Reset layout** before each take.
+1. Open the public site, bare `/`, browser window at 1920×1080. Click **Recording mode** in the header.
+2. Rehearse once without capturing so the images are warm.
+3. Open **Connections** and check the free trial still has budget.
+4. Start your screen recorder. Speak slowly; 2 minutes 50 seconds total is fine up to 3:00.
 
-## Sequence
+## Script
 
-| Time | Screen and action | Narration |
-| --- | --- | --- |
-| 0:00–0:20 | Overview: real KPMP biopsies (healthy reference and diseased); the bio under "A co-scientist for kidney research"; the source line. | "Kidney researchers have tissue images and gene and protein measurements. Connecting that evidence and checking a surprising signal takes a lot of work. SpatialScout is a spatial-omics co-scientist powered by Meta models that lets them delegate it." |
-| 0:20–0:45 | **Explore the tissue** → **Compare with the healthy reference**. Scroll-zoom the top pane only; the bottom stays put. In each pane click **Draw box**, drag a box, then **Analyse this region**. | "These are different specimens, so each pane has its own camera. I select a region and the protein audit uses exactly that box: the specimen, the method and the box stay attached to the result." |
-| 0:45–1:10 | Back to **Overview** → **Follow an investigation**. In the steps pane the **Research team** lights up job by job; drag the separator to make the tissue larger; open **Detailed graph** briefly, then **Fit graph**. | "Here is a recorded RNA investigation. Muse Wonder plans the work, the analysis engine runs the counts, Muse Spark asks for controls that could explain the signal away, and every claim is checked. Each job links to its output, and I can keep the tissue large." |
-| 1:10–1:35 | Chapter **What the data shows**: Xenium section GSM8720426 with the agent's region outlined and the molecules the stricter rule drops in yellow. Click **Compare conditions** for a moment, then **3D molecule depth**; orbit; drag **Slice from**. | "UMOD in cells labelled as B cells: 17.0% carry it under the usual counting, 12.3% counting only molecules over the nucleus, against 9.5% from random loss alone. It persists under the tested rules. Here are the same molecules at their measured depths. This new depth profile, 324 UMOD molecules in the box, helps examine the data; it doesn't by itself say why the signal is there." |
-| 1:35–2:00 | **Skip to end** → **See the findings** → chapter **Other evidence**: **Run the lab**; the parallel lanes; the protein cross-check (**Different specimens**) and the literature card. | "The lab checks protein evidence from separate specimens, reads the relevant papers and prepares figures. It brings back supporting evidence and the gaps that remain." |
-| 2:00–2:25 | Chapter **Review the result**: open a claim, click a **Challenge the verifier** button (for example a changed effect); it fails. | "Every cited number is recomputed from the molecule tables. This deliberately changed copy fails the check; each claim has seven recorded altered copies. In our benchmark the verifier caught 147 of 147 injected errors and wrongly disputed 7 of 21 valid claims; we report both." |
-| 2:25–2:45 | Chapter **The next experiment**: the lab's analysis and next step; **Download evidence package**. | "The deliverable is a research lead, its limitations, a suggested follow-up experiment and reproducible evidence." |
-| 2:45–3:00 | **Your data** → **Try it on the sample (3 GSE286184 crops)**; then **Connections**. | "Researchers can bring compatible Xenium sections. The platform grows module by module, while the scientist decides what to investigate next." |
+### 1. Intro clip — 0:00–0:22 (play `intro.mp4`, speak over it)
 
-## Notes for the presenter
+> "Every kidney biopsy is a crime scene. This dataset alone holds 21.8 million RNA molecules in 753,099 cells, from healthy kidneys and four diseases. Each molecule is assigned to a cell by a boundary someone drew. Draw it a little too wide, and an immune cell suddenly 'expresses' a kidney gene. So we built SpatialScout: a co-scientist powered by Meta models that works like an agentic lab."
 
-- The run plays for about a minute and a half; use the chapters or **Skip to end** rather than waiting.
-- Draw an RNA box only after the view has flown to GSM8720426 (the **Follow evidence** button appears): before the first finding arrives the canvas shows the synthetic section SYN-01, and the box card would say so.
-- The podocyte LRP2 branch is the other half of the same recording (section GSM8720423, also with measured depth). Its nucleus-only share (23.8%) is below its random-loss expectation (24.4%) and still passes the frozen tolerance rule.
-- No SAM 3.1 call happens in this recording; the Research team says so. SAM outlines are in **Xenium viewer with SAM outlines** (from the comparison view), labelled exploratory.
-- Live runs and bring-your-own-key are not on the public site; Connections says so. LN is roadmap, not current data.
+### 2. What's out there — 0:22–0:35
+
+**Show:** the app's **Overview** page with the two real biopsies.
+
+> "Today, segmentation tools give you one answer and never doubt it. General AI assistants read papers but never touch the molecule table. SpatialScout plans the analysis, runs the counts, asks for the controls that could explain a signal away, and refuses any number it can't recompute."
+
+### 3. You pick the suspects — 0:35–1:00
+
+**Show:**
+1. Click **Explore the tissue** → **Compare with the healthy reference**.
+2. Scroll-zoom the top biopsy only; the bottom stays put.
+3. Top pane: **Draw box**, drag a box, **Analyse this region**. Bottom pane: same.
+4. Click **Ask SpatialScout about both regions**, type: *Compare these two regions: does B-cell UMOD look like spillover in the diseased tissue but not in the healthy one?*
+5. Click **Run it live (free trial)**. Let it start for 3 seconds.
+
+> "These are real biopsies from different people, a healthy one with 28,299 cells and a diseased one with 26,524, so each moves on its own. I draw a region on each and the protein audit runs on exactly that box, right now. If there are too few cells, it says so instead of forcing an answer. Then I ask about both together. Muse Wonder writes the plan, and since this is live, it just goes."
+
+### 4. Here's one I made earlier — 1:00–1:20
+
+**Show:** back to **Overview** → **Follow an investigation**. Point at the **Research team** steps lighting up. Drag the separator to make the tissue bigger. Keep the replay label visible.
+
+> "While that one cooks, here's one I made earlier: the same kind of question, recorded live last night. Muse Wonder plans, Muse Spark plays the sceptic and demands controls, Spark Open drafts claims, and scientific code runs every measurement and independently rechecks every cited number."
+
+### 5. The verdict, honestly — 1:20–1:55
+
+**Show:** **Skip to end** → **See the findings**. Part 1 (podocyte LRP2, **Confirmed**). Then Part 2 (B-cell UMOD) and its figure; point at the observed value and the two baselines.
+
+> "Part one: podocytes really do carry LRP2. Counting only molecules over the nucleus, 23.8%, against 24.4% expected from random loss. Confirmed.
+> Part two was my spillover hunch. UMOD in B cells goes from 17% to 12.3%. One random-loss baseline predicts 9.5%, so under the frozen rule the signal persists and my hunch is refuted. But a second baseline predicts 13.7%, and the label check can't rule out mislabelled cells. So it doesn't hand me a confident answer; it hands me a lead and tells me exactly how sure to be."
+
+### 6. Look inside the tissue — 1:55–2:08
+
+**Show:** chapter **What the data shows** → **3D molecule depth** (section GSM8720426). Orbit a little, drag **Slice from**.
+
+> "And I can look at those molecules at their measured depths and slice through them. It helps me inspect the data; it doesn't prove why the signal is there."
+
+### 7. Try to cheat — 2:08–2:22
+
+**Show:** chapter **Review the result** → open a claim → **Challenge the verifier** → **Changed effect**. It fails.
+
+> "Now let me try to cheat. I change one number, and the verifier catches it. Across our benchmark it caught 147 of 147 injected errors and wrongly disputed 7 of 21 valid claims. We show both."
+
+### 8. What you walk away with — 2:22–2:34
+
+**Show:** chapter **The next experiment** → **Download evidence package**.
+
+> "I leave with a traceable report, figures, open questions, a suggested next experiment and a verification notebook. 18 Meta model calls, 29 cents, about three minutes."
+
+### 9. Outro clip — 2:34–2:50 (play `outro.mp4`, speak over it)
+
+> "It doesn't drink coffee. It doesn't sleep. It just *really* wants to check your numbers. Oh, and our live run? Still checking. We'll let it run. Happy scouting."
+
+## Don't say
+
+- "Meta's AI Co-Scientist": it is built on Meta models, not a Meta product.
+- That the recorded run analysed the boxes you just drew. The box numbers are fresh and go to the live run as context.
+- That the UMOD result proves spillover is absent, or that depth proves vertical overlap.
+- "Before and after" for the two biopsies: they are different people on different protein panels.
+- Lupus nephritis: roadmap, not current data.
+
+## If something goes wrong
+
+- Live trial out of budget: skip step 3's last click and say "or bring your own model key".
+- A box shows "insufficient evidence": leave it on screen and say the line about too few cells.
+- Slow image load: keep talking; cut the wait in the editor.

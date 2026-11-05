@@ -69,23 +69,14 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
           <div className="rise mt-5 grid grid-cols-1 items-end gap-6 [animation-delay:100ms] lg:grid-cols-[1.2fr_1fr]">
             <div>
               <h1 className="text-[clamp(26px,3vw,40px)] leading-tight font-semibold tracking-[-0.02em]">A co-scientist for kidney research</h1>
-              <p className="mt-3 max-w-[40rem] text-[17px] leading-relaxed text-ink">
-                SpatialScout is a spatial-omics co-scientist powered by Meta models. Delegate investigations across kidney tissue images, gene and protein
-                measurements, and scientific literature. Specialised agents run the available tools, test alternative explanations and assemble evidence for the
-                next experiment.
+              <p className="mt-3 max-w-[36rem] text-[17px] leading-relaxed text-ink">
+                Delegate investigations across tissue images, gene and protein data, and the literature. Powered by Meta models.
               </p>
-              <p className="mt-3 max-w-[40rem] text-[13px] leading-relaxed text-ink-3">
-                First completed module: does a kidney RNA signal survive a change to how molecules are assigned to cells?
-              </p>
-              <p className="mt-1 max-w-[40rem] text-[13px] leading-relaxed text-ink-3">
-                Human kidney RNA cohort includes DKD; protein images are from separate healthy/CKD/AKI specimens. Lupus nephritis (LN) is on the roadmap, not in
-                the current data. Not an official Meta product. Research use only.
+              <p className="mt-3 max-w-[36rem] text-[13px] leading-relaxed text-ink-3">
+                Human kidney data (RNA incl. DKD; separate protein biopsies). Research use only; not an official Meta product.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
-              <p className="w-full text-[13px] leading-relaxed text-ink-2 lg:text-right">
-                Watch a recorded run: two gene leads, stricter counting rules, every number rechecked.
-              </p>
               <button
                 type="button"
                 onClick={example ? () => onExample(example) : onAsk}
@@ -106,13 +97,11 @@ export function Intro({ strips, visible, kpmp, audits, mode, onExplore, onAsk, o
         <div className="rounded-3xl bg-panel p-6 md:p-8">
           <p className="text-[13px] text-ink-3">The problem</p>
           <p className="mt-2 max-w-[60rem] text-[clamp(18px,1.8vw,22px)] leading-snug text-ink">
-            A scientist sees an unexpected signal in a kidney sample. Before choosing the next lab experiment, someone has to work out whether the analysis is
-            dependable, whether other evidence agrees, and what the papers say.
+            An unexpected signal in a kidney sample: is it real, does other evidence agree, and what do the papers say?
           </p>
           <p className="mt-3 max-w-[60rem] text-[15px] leading-relaxed text-ink-2">
-            That usually means a tissue viewer, analysis code, control runs, another dataset, a literature search and a report, each by hand. SpatialScout runs
-            them as one delegated investigation and brings back evidence the researcher can inspect. Its first module checks whether a signal survives stricter
-            counting of which molecules belong to which cell, because in crowded tissue a molecule from one cell is easily counted toward its neighbour.
+            SpatialScout runs those checks as one delegated investigation. First module: does the signal survive stricter counting of which molecules belong to
+            which cell?
           </p>
         </div>
       </section>

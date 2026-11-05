@@ -79,6 +79,19 @@ def test_an_unknown_audit_result_is_not_found(client):
     assert client.get("/api/datasets/GSE286184/audit-results/fnd-0000").status_code == 404
 
 
+def test_the_verification_benchmark_reports_caught_and_flagged_counts(client):
+    bench = client.get("/api/datasets/GSE286184/verification-benchmark").json()
+
+    assert (bench["valid_claims"], bench["injected_claims"]) == (21, 147)
+    assert bench["injected_caught"] == bench["injected_claims"] == 147
+    assert (bench["valid_flagged"], bench["valid_flagged_visual_only"]) == (7, 7)
+    assert (bench["structural_false"], bench["numerical_false"]) == (0, 0)
+
+
+def test_the_verification_benchmark_is_not_found_without_committed_results(client):
+    assert client.get("/api/datasets/synthetic/verification-benchmark").status_code == 404
+
+
 def test_gate_status_of_a_box_on_the_synthetic_section(client):
     """SYN-01: podocytes C01 (46, 86), C02 (70, 92), C03 (78, 70); only C03 carries LRP2 (4 molecules)."""
     whole = client.get("/api/sections/SYN-01/gate-status", params={"cell_type": "Podocyte", "genes": ["LRP2"]}).json()

@@ -145,7 +145,7 @@ function Basis({ claim, verification, investigationId, onTissue }: { claim: Clai
       <div className="flex flex-col gap-3">
         <p className="text-[12px] text-ink-3">3 · The figure Muse Spark read</p>
         <img src={api.investigationFigureUrl(investigationId, claim.finding.finding_id)} alt={`Computed figure for ${claim.finding.finding_id}`} className="block w-full rounded-2xl bg-white" loading="lazy" />
-        {verification?.visual && <p className="text-[13px] leading-relaxed text-ink-2">“{verification.visual.explanation}”</p>}
+        {verification?.visual && <p className="text-[13px] leading-relaxed text-ink-2">“{roundLongDecimals(verification.visual.explanation)}”</p>}
         <button type="button" onClick={onTissue} className="h-10 self-start rounded-full bg-white px-4 text-[13px] font-medium text-black">
           See it on the tissue
         </button>
