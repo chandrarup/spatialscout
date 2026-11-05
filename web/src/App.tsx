@@ -319,7 +319,7 @@ export default function App() {
       setRail("hidden");
     }
   }, [finishedRun, shown, stage]);
-  const datasetId = shown?.plan?.dataset_id ?? mode?.dataset_id ?? "GSE286184";
+  const datasetId = shown?.plan?.dataset_id ?? (mode?.dataset_id === "synthetic" ? "GSE286184" : mode?.dataset_id) ?? "GSE286184";
 
   // When a finding arrives, fly the tissue to its first evidence region and split it against the stricter condition.
   const focusFinding = useCallback(
