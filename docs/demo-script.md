@@ -2,6 +2,24 @@
 
 You record the middle (screen plus your voice). The opening and closing are Remotion clips: `video/out/intro.mp4` (22 s) and `video/out/outro.mp4` (16 s). In your editor (iMovie, CapCut, QuickTime) put intro → your screen recording → outro, and speak over the clips too. Rebuild them with `npm --prefix video run render`.
 
+## Voiceover for the finished video
+
+`video/out/spatialscout-demo.mp4` (2:52) is the whole video: intro, the real public site driven by `video/capture.py`, and outro. Record your voice over it. Rebuild: `uv run python -u video/capture.py <url>`, then `npm --prefix video run render:demo`.
+
+| At | On screen | Say |
+| --- | --- | --- |
+| 0:00 | Intro clip | "Every kidney biopsy is a crime scene. This dataset alone holds 21.8 million RNA molecules in 753,099 cells, from healthy kidneys and four diseases. Each molecule is assigned to a cell by a boundary someone drew. Draw it a little too wide, and an immune cell suddenly 'expresses' a kidney gene. So we built SpatialScout: a co-scientist powered by Meta models that works like an agentic lab." |
+| 0:22 | Overview | "Today, segmentation tools give you one answer and never doubt it. General AI assistants read papers but never touch the molecule table. SpatialScout plans the analysis, runs the counts, asks for the controls that could explain a signal away, and refuses any number it can't recompute." |
+| 0:34 | Healthy and diseased biopsies, zoom, two boxes | "Here's a healthy biopsy and a diseased one, from different people, so each moves on its own. I draw a region on each, and the protein audit runs on exactly that box, right now. The diseased box has too few cells, so it says insufficient evidence instead of forcing an answer." |
+| 0:54 | Typing the question, free trial | "Then I ask about both regions together, and run it live on the free trial. Muse Wonder writes the plan, and it just goes." |
+| 1:08 | Recorded run, research team | "While that one cooks, here's one I made earlier. Muse Wonder plans, the engine re-counts under stricter rules, Muse Spark plays the sceptic and demands controls, Spark Open drafts claims, and code rechecks every cited number." |
+| 1:40 | Part 1 | "Part one: podocytes really do carry LRP2. 23.8% over the nucleus, against 24.4% expected from random loss. Confirmed." |
+| 1:50 | Part 2 | "Part two was my spillover hunch. UMOD in B cells goes from 17% to 12.3%. One random-loss baseline predicts 9.5%, so under the frozen rule it persists and my hunch is refuted. But a second baseline predicts 13.7%, and the label check can't rule out mislabelled cells. A lead, not proof, and it tells me exactly how sure to be." |
+| 2:02 | 3D depth | "And here are those molecules at their measured depths. It helps me inspect the data; it doesn't prove why the signal is there." |
+| 2:12 | Challenge the verifier | "Now let me try to cheat. I flip one claim's direction, and the verifier catches it. Across our benchmark it caught 147 of 147 injected errors and wrongly disputed 7 of 21 valid claims. We show both." |
+| 2:25 | Evidence package | "I leave with a traceable report, figures, a suggested next experiment and a verification notebook. 18 Meta model calls, 29 cents, about three minutes." |
+| 2:36 | Outro clip | "It doesn't drink coffee. It doesn't sleep. It just really wants to check your numbers. Oh, and our live run? Still checking. We'll let it run. Happy scouting." |
+
 Story: **the crime scene** (a molecule may sit in the wrong cell) → **the investigation** (you pick the suspects, the agentic lab works the case) → **the verdict** (one hunch holds, one doesn't, and it tells you how sure it is).
 
 Every number comes from the featured recording (`fixtures/recordings/gse286184-two-part-hypothesis/`, recorded live 2026-11-04 02:53 UTC) or `artifacts/`.

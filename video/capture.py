@@ -103,7 +103,7 @@ def main(url: str) -> int:
         t0 = time.monotonic()
         d = Director(page, t0)
         page.goto(url, wait_until="networkidle", timeout=120_000)
-        expect(page.get_by_role("heading", level=1)).to_be_visible(timeout=60_000)
+        expect(page.get_by_role("button", name="Explore the tissue")).to_be_visible(timeout=120_000)
         rec = page.get_by_role("button", name="Recording mode")
         if rec.count():
             rec.click()
@@ -146,7 +146,7 @@ def main(url: str) -> int:
             d.hold(2200)
 
         d.click(page.get_by_role("button", name="Ask SpatialScout about both regions"), "ask-both")
-        box = page.get_by_placeholder("Ask about a gene, a cell type, a condition…")
+        box = page.get_by_role("textbox", name="Question")
         expect(box).to_be_visible(timeout=15_000)
         d.mark("question", box)
         d.type(box, QUESTION)
